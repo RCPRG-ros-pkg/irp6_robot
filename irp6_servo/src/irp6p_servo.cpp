@@ -13,7 +13,7 @@
 
 IRP6pServo::IRP6pServo(const std::string& name) :
     RTT::TaskContext(name, PreOperational), setpoint_port("setpoint"), jointState_port(
-      "jointState"), autoSynchronize_prop("auto_synchronize" , "", false), hi_(NUMBER_OF_DRIVES)
+      "servo_states"), autoSynchronize_prop("auto_synchronize" , "", false), hi_(NUMBER_OF_DRIVES)
 {
   this->ports()->addPort(setpoint_port);
   this->ports()->addPort(jointState_port);
@@ -167,7 +167,7 @@ void IRP6pServo::updateHook()
       }
       break;
     case MOVE_FROM_SYNCHRO_AREA :
-      if (hi_.isImpulseZero(0))
+      if (hi_.isImpulseZero(synchro_drive_))
       {
         std::cout << "[servo " << synchro_drive_ << " ] MOVE_FROM_SYNCHRO_AREA cmp " << std::endl;
         hi_.finishSynchro(synchro_drive_);
@@ -222,23 +222,28 @@ void IRP6pServo::updateHook()
     std::cout << e.what() << std::endl;
   }
 
-  for (unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
-    motor_pos[i] = ((double)hi_.getPosition(i) / (ENC_RES[i]/(2*M_PI)));
-  
-  if(!checkMotorPosition(motor_pos))
-    std::cout << "current motor state out of range !!!" << std::endl;
-
-  mp2i(motor_pos, joint_pos_);
-  
-  for (unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
+  if(state_ == SERVOING)
   {
-    jointState.states[i].position = joint_pos_[i];
-    jointState.states[i].velocity = (joint_pos_[i] - joint_pos_old_[i]) / DT;
-    jointState.states[i].effort = 0.0;
-    joint_pos_old_[i] = joint_pos_[i];
+    for (unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
+      motor_pos[i] = ((double)hi_.getPosition(i) / (ENC_RES[i]/(2*M_PI)));
+  
+    if(!checkMotorPosition(motor_pos))
+      std::cout << "current motor state out of range !!!" << std::endl;
+
+    mp2i(motor_pos, joint_pos_);
+  
+    for (unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
+    {
+      jointState.states[i].position = joint_pos_[i];
+      jointState.states[i].velocity = (joint_pos_[i] - joint_pos_old_[i]) / DT;
+      jointState.states[i].effort = 0.0;
+      joint_pos_old_[i] = joint_pos_[i];
+    }
+
+    jointState_port.write(jointState);
+
   }
 
-  jointState_port.write(jointState);
 }
 
 void IRP6pServo::mp2i(const double* motors, double* joints)
