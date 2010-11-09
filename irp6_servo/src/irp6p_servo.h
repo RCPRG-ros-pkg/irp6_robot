@@ -53,7 +53,7 @@ public:
   Regulator();
   ~Regulator();
 
-  int doServo(int, int);
+  int doServo(double, int);
   void reset();
   void setParam(double a, double b0, double b1);
 private:
@@ -113,7 +113,7 @@ private:
   State state_;
   SynchroState synchro_state_;
   unsigned int synchro_drive_;
-  int64_t pos_inc_[NUMBER_OF_DRIVES];
+  double pos_inc_[NUMBER_OF_DRIVES];
   double motor_pos_old_[NUMBER_OF_DRIVES];
 
   double joint_pos_[NUMBER_OF_DRIVES];

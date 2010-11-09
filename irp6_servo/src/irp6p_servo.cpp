@@ -107,12 +107,12 @@ void IRP6pServo::updateHook()
   {
   case NOT_SYNCHRONIZED :
     for (unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
-      pos_inc_[i] = 0;
+      pos_inc_[i] = 0.0;
     break;
   case SERVOING :
     if (setpoint_port.read(setpoint) == RTT::NewData)
     {
-      std::cout << "received new setpoint " << std::endl;
+//      std::cout << "received new setpoint " << std::endl;
       double joint_pos_new[NUMBER_OF_DRIVES];
       double motor_pos_new[NUMBER_OF_DRIVES];
 
@@ -121,23 +121,25 @@ void IRP6pServo::updateHook()
       
       if(i2mp(joint_pos_new, motor_pos_new))
       {
+     //   std::cout << "pos inc : ";
         for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
         {
-          pos_inc_[i] = (int64_t)((motor_pos_new[i] - motor_pos_old_[i]) * (ENC_RES[i]/(2*M_PI)));
-          motor_pos_old_[i] = motor_pos_new[i]; 
+          pos_inc_[i] = (motor_pos_new[i] - motor_pos_old_[i]) * ((double)ENC_RES[i]/(2*M_PI));
+          motor_pos_old_[i] = motor_pos_new[i];
+      //    std::cout << pos_inc_[i] << " ";
         }
+      //  std::cout << std::endl;
       } else 
       {
         std::cout << "setpoint out of motor range !!! " << std::endl;
         for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
-          pos_inc_[i] = 0; 
+          pos_inc_[i] = 0.0; 
       }
-
     }
     else
     {
       for (unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
-        pos_inc_[i] = 0;
+        pos_inc_[i] = 0.0;
     }
     break;
   case SYNCHRONIZING :
@@ -147,7 +149,7 @@ void IRP6pServo::updateHook()
          if (hi_.isInSynchroArea(synchro_drive_))
          {
            std::cout << "[servo " << synchro_drive_ << " ] MOVE_TO_SYNCHRO_AREA cmp" << std::endl;
-           pos_inc_[synchro_drive_] = 0;
+           pos_inc_[synchro_drive_] = 0.0;
            delay_ = 500;
            synchro_state_ = STOP;
            std::cout << "[servo " << synchro_drive_ << " ] STOP start" << std::endl;
@@ -175,9 +177,10 @@ void IRP6pServo::updateHook()
         reg_[synchro_drive_].reset();
         pos_inc_[synchro_drive_] = 0;
         motor_pos_old_[synchro_drive_] = 0;
-        if(synchro_drive_ < NUMBER_OF_DRIVES)
+        
+        if(++synchro_drive_ < NUMBER_OF_DRIVES)
         {
-          ++synchro_drive_;
+          //++synchro_drive_;
           synchro_state_ = MOVE_TO_SYNCHRO_AREA;
         } else
         {
@@ -202,7 +205,7 @@ void IRP6pServo::updateHook()
       increment = 0;
     }
 
-    if(abs(pos_inc_[i]) > 400)
+    if(fabs(pos_inc_[i]) > 400)
     {
       std::cout << "!!!! pos_inc > 400 !!!!" << std::endl;
       pos_inc_[i] = 0;
@@ -397,7 +400,7 @@ Regulator::~Regulator()
 
 }
 
-int Regulator::doServo(int pos_inc_new, int pos_inc)
+int Regulator::doServo(double pos_inc_new, int pos_inc)
 {
 
   // algorytm regulacji dla serwomechanizmu
@@ -427,9 +430,9 @@ int Regulator::doServo(int pos_inc_new, int pos_inc)
   delta_eint = delta_eint_old + 1.008 * (step_new_pulse - position_increment_new) - 0.992 * (step_old_pulse
                - position_increment_old);
 
-//  double a = 0.548946716233 / 2;
-//  double b0 = 1.576266 / 2; //9.244959545156;
-//  double b1 = 1.468599 / 2; //8.613484947882;
+  //  double a = 0.548946716233 / 2;
+  //  double b0 = 1.576266 / 2; //9.244959545156;
+  //  double b1 = 1.468599 / 2; //8.613484947882;
 
   // obliczenie nowej wartosci wypelnienia PWM algorytm PD + I
   set_value_new = (1 + a_) * set_value_old - a_ * set_value_very_old + b0_ * delta_eint - b1_ * delta_eint_old;
