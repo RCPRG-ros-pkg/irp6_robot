@@ -42,7 +42,7 @@
     <visual>
       <origin rpy="-1.57 0 0.0" xyz="0 0 0.4"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link1.3ds" scale="0.01 0.01 0.01" />
+        <mesh filename="package://irp6_defs/meshes/link1.3ds" />
       </geometry>
     </visual>
     
@@ -72,7 +72,7 @@
     <visual>
       <origin rpy="0 0 0.0" xyz="0.45 0.0 0.0"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link2.3ds" scale="0.01 0.01 0.01" />
+        <mesh filename="package://irp6_defs/meshes/link2.3ds" />
       </geometry>
     </visual>
     
@@ -102,14 +102,14 @@
     <visual>
       <origin rpy="0 0 1.57" xyz="0 0.67 0.0"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link3.3ds" scale="0.01 0.01 0.01" />
+        <mesh filename="package://irp6_defs/meshes/link3.3ds" />
       </geometry>
     </visual>
     
     <collision>
-      <origin rpy="0 0 0.0" xyz="0 0.3 0.0"/>
+      <origin rpy="0 0 1.57" xyz="0 0.67 0.0"/>
       <geometry>
-        <box size="0.10 0.67 0.15"/>
+        <mesh filename="package://irp6_defs/meshes/link3.stlb" />
       </geometry>
     </collision>
   </link>
@@ -132,10 +132,16 @@
     <visual>
       <origin rpy="1.57 0 1.57" xyz="0.0 0.175 0.0"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link4.3ds" scale="0.01 0.01 0.01" />
+        <mesh filename="package://irp6_defs/meshes/link4.3ds" />
       </geometry>
     </visual>
 
+    <collision>
+      <origin rpy="1.57 0 1.57" xyz="0.0 0.175 0.0"/>
+      <geometry>
+        <mesh filename="package://irp6_defs/meshes/link4.stlb" />
+      </geometry>
+    </collision>
   </link>
 
   <joint name="joint5" type="revolute">
@@ -156,17 +162,16 @@
     <visual>
       <origin rpy="1.57 0 0.0" xyz="0.0 0.0 0.2"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link5.3ds" scale="0.01 0.01 0.01" />
+        <mesh filename="package://irp6_defs/meshes/link5.3ds" />
       </geometry>
     </visual>
 
     <collision>
-      <origin rpy="1.57 0 0.0" xyz="0 0.12 0.2"/>
+      <origin rpy="1.57 0 0.0" xyz="0.0 0.0 0.2"/>
       <geometry>
-        <cylinder radius="0.05" length="0.30" />
+        <mesh filename="package://irp6_defs/meshes/link5.stlb" />
       </geometry>
     </collision>
-
   </link>
 
   <joint name="joint6" type="revolute">
@@ -187,7 +192,7 @@
     <visual>
       <origin rpy="0 0 0.0" xyz="0 0.0 0.0"/>
       <geometry>
-         <mesh filename="package://irp6_defs/meshes/link6.3ds" scale="0.01 0.01 0.01" />
+         <mesh filename="package://irp6_defs/meshes/link6.3ds" />
       </geometry>
     </visual>
 
@@ -198,6 +203,7 @@
       </geometry>
     </collision>
   </link>
+
 <!--
   <joint name="laser_tilt" type="revolute">
     <origin rpy="${0.5 * M_PI} 0 0" xyz="0.0 -0.1 2.2"/>
