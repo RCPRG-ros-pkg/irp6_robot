@@ -81,7 +81,7 @@ private:
 };
 
 typedef enum { NOT_SYNCHRONIZED, SERVOING, SYNCHRONIZING } State;
-typedef enum { MOVE_TO_SYNCHRO_AREA, STOP, MOVE_FROM_SYNCHRO_AREA } SynchroState;
+typedef enum { MOVE_TO_SYNCHRO_AREA, STOP, MOVE_FROM_SYNCHRO_AREA, SYNCHRO_END } SynchroState;
 
 class IRP6pServo: public RTT::TaskContext
 {
@@ -104,8 +104,8 @@ private:
 
   bool checkMotorPosition(const double *);
 
-  oro_servo_msgs::Setpoints setpoint;
-  oro_servo_msgs::ServoStates jointState;
+  oro_servo_msgs::Setpoints setpoint_;
+  oro_servo_msgs::ServoStates jointState_;
 
   hi_moxa::HI_moxa hi_;
   Regulator reg_[NUMBER_OF_DRIVES];

@@ -52,7 +52,8 @@ bool IRP6pServo::configureHook()
   for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
     reg_[i].setParam(A[i], BB0[i], BB1[i]);
 
-  jointState.states.resize(NUMBER_OF_DRIVES);
+  jointState_.states.resize(NUMBER_OF_DRIVES);
+  setpoint_.setpoints.resize(NUMBER_OF_DRIVES);
   return true;
 }
 
@@ -68,6 +69,19 @@ bool IRP6pServo::startHook()
     {
       for (unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
         motor_pos_old_[i] = ((double)hi_.getPosition(i) / (ENC_RES[i]/(2*M_PI)));
+
+      if(!checkMotorPosition(motor_pos_old_))
+        std::cout << "current motor state out of range !!!" << std::endl;
+
+      mp2i(motor_pos_old_, joint_pos_);
+
+      for (unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
+      {
+        setpoint_.setpoints[i].position = joint_pos_[i];
+        setpoint_.setpoints[i].velocity = 0.0;
+        setpoint_.setpoints[i].acceleration = 0.0;
+      }
+
       state_ = SERVOING;
     }
     else
@@ -76,7 +90,7 @@ bool IRP6pServo::startHook()
       
       if(autoSynchronize_prop.get())
       {
-	std::cout << "synchronizing .. " << std::endl;
+        std::cout << "synchronizing .. " << std::endl;
         synchro_state_ = MOVE_TO_SYNCHRO_AREA;
         state_ = SYNCHRONIZING;
         synchro_drive_ = 0;
@@ -93,8 +107,10 @@ bool IRP6pServo::startHook()
   }
 
   for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
+  {
     reg_[i].reset();
-
+    pos_inc_[i] = 0.0;
+  }
   return true;
 }
 
@@ -110,25 +126,22 @@ void IRP6pServo::updateHook()
       pos_inc_[i] = 0.0;
     break;
   case SERVOING :
-    if (setpoint_port.read(setpoint) == RTT::NewData)
+    if (setpoint_port.read(setpoint_) == RTT::NewData)
     {
-//      std::cout << "received new setpoint " << std::endl;
+
       double joint_pos_new[NUMBER_OF_DRIVES];
       double motor_pos_new[NUMBER_OF_DRIVES];
 
       for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
-        joint_pos_new[i] = setpoint.setpoints[i].position;
+        joint_pos_new[i] = setpoint_.setpoints[i].position;
       
       if(i2mp(joint_pos_new, motor_pos_new))
       {
-     //   std::cout << "pos inc : ";
         for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
         {
           pos_inc_[i] = (motor_pos_new[i] - motor_pos_old_[i]) * ((double)ENC_RES[i]/(2*M_PI));
           motor_pos_old_[i] = motor_pos_new[i];
-      //    std::cout << pos_inc_[i] << " ";
         }
-      //  std::cout << std::endl;
       } else 
       {
         std::cout << "setpoint out of motor range !!! " << std::endl;
@@ -175,22 +188,36 @@ void IRP6pServo::updateHook()
         hi_.finishSynchro(synchro_drive_);
         hi_.resetPosition(synchro_drive_);
         reg_[synchro_drive_].reset();
-        pos_inc_[synchro_drive_] = 0;
-        motor_pos_old_[synchro_drive_] = 0;
+        pos_inc_[synchro_drive_] = 0.0;
+        motor_pos_old_[synchro_drive_] = ((double)hi_.getPosition(synchro_drive_) / (ENC_RES[synchro_drive_]/(2*M_PI)));
         
         if(++synchro_drive_ < NUMBER_OF_DRIVES)
         {
-          //++synchro_drive_;
           synchro_state_ = MOVE_TO_SYNCHRO_AREA;
         } else
         {
-          state_ = SERVOING;
+          synchro_state_ = SYNCHRO_END;
         }
       }
       else
       {
         pos_inc_[synchro_drive_] = SYNCHRO_STEP_FINE[synchro_drive_] * (ENC_RES[synchro_drive_]/(2*M_PI));
       }
+      break;
+    case SYNCHRO_END:
+      if(!checkMotorPosition(motor_pos_old_))
+        std::cout << "current motor state out of range !!!" << std::endl;
+
+      mp2i(motor_pos_old_, joint_pos_);
+
+      for (unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
+      {
+        setpoint_.setpoints[i].position = joint_pos_[i];
+        setpoint_.setpoints[i].velocity = 0.0;
+        setpoint_.setpoints[i].acceleration = 0.0;
+      }
+
+      state_ = SERVOING;
       break;
     }
     break;
@@ -237,13 +264,16 @@ void IRP6pServo::updateHook()
   
     for (unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
     {
-      jointState.states[i].position = joint_pos_[i];
-      jointState.states[i].velocity = (joint_pos_[i] - joint_pos_old_[i]) / DT;
-      jointState.states[i].effort = 0.0;
+      jointState_.states[i].position = joint_pos_[i];
+      jointState_.states[i].velocity = (joint_pos_[i] - joint_pos_old_[i]) / DT;
+      jointState_.states[i].effort = 0.0;
+
+      jointState_.setpoints = setpoint_.setpoints;
+
       joint_pos_old_[i] = joint_pos_[i];
     }
 
-    jointState_port.write(jointState);
+    jointState_port.write(jointState_);
 
   }
 
