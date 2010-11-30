@@ -369,7 +369,7 @@ bool IRP6pServo::i2mp(const double* joints, double* motors)
 
   // Obliczanie kata obrotu walu silnika napedowego obrotu kisci V
   motors[4] = GEAR[4] * joints[4] + SYNCHRO_JOINT_POSITION[4]
-            + joints[3] + joints[2] + joints[1] + M_PI_2;
+            + motors[3];
 
   // Ograniczenie na obrot.
   while (motors[4] < -80)
