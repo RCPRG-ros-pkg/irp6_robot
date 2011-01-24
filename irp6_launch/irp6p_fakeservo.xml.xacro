@@ -55,6 +55,13 @@
   <simple name="name_id" type="string"><value>irp6p_controller/joint_trajectory_action/result</value></simple>
 </struct>
 
+<struct name="command" type="ConnPolicy">
+  <simple name="type" type="short"><value>0</value></simple>
+  <simple name="size" type="short"><value>1</value></simple>
+  <simple name="transport" type="short"><value>3</value></simple>
+  <simple name="name_id" type="string"><value>irp6p_controller/command</value></simple>
+</struct>
+
 <struct name="JointStatePublisher" type="JointStatePublisher">
   <struct name="Activity" type="PeriodicActivity">
     <simple name="Period" type="double"><value>0.01</value></simple>
@@ -126,6 +133,7 @@
     <simple name="setpoint" type="string"><value>setpoint</value></simple>
     <simple name="servo_states" type="string"><value>servo_states</value></simple>
     <simple name="buffer_ready" type="string"><value>buf</value></simple>
+    <simple name="trajectory_compleat" type="string"><value>comp</value></simple>
   </struct>
 </struct>
 
@@ -152,6 +160,9 @@
   <struct name="Ports" type="PropertyBag">
   	<simple name="trajectory_point" type="string"><value>trajectory</value></simple>
     <simple name="buffer_ready" type="string"><value>buf</value></simple>
+    <simple name="trajectory_compleat" type="string"><value>comp</value></simple>
+    
+    <simple name="command" type="string"><value>command</value></simple>
 
 	  <simple name="goal" type="string"><value>goal</value></simple>
   	<simple name="cancel" type="string"><value>cancel</value></simple>
