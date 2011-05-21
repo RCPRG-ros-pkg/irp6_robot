@@ -11,12 +11,11 @@
 #include <string>
 #include <vector>
 
+#include <math.h>
+
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
 #include <rtt/Property.hpp>
-
-#include "oro_servo_msgs/Setpoints.h"
-#include "oro_servo_msgs/ServoStates.h"
 
 #include "hi_moxa.h"
 
@@ -93,10 +92,9 @@ public:
   bool startHook();
   void updateHook();
 protected:
-  RTT::InputPort<oro_servo_msgs::Setpoints> setpoint_port;
-  RTT::OutputPort<oro_servo_msgs::ServoStates> jointState_port;
-
-  RTT::Property<bool> autoSynchronize_prop;
+  RTT::InputPort<std::vector<double> > dsrJntPos_port_;
+  RTT::OutputPort<std::vector<double> > cmdJntPos_port_;
+  RTT::OutputPort<std::vector<double> > msrJntPos_port_;
 
 private:
   void mp2i(const double* motors, double* joints);
@@ -104,8 +102,10 @@ private:
 
   bool checkMotorPosition(const double *);
 
-  oro_servo_msgs::Setpoints setpoint_;
-  oro_servo_msgs::ServoStates jointState_;
+  std::vector<double> dsrJntPos_;
+  std::vector<double> msrJntPos_;
+
+  bool autoSynchronize_;
 
   hi_moxa::HI_moxa hi_;
   Regulator reg_[NUMBER_OF_DRIVES];
