@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "cpf.dtd">
 <properties>
-<simple name="Import" type="string"><value>$(find rtt_ros_integration)/lib/orocos</value></simple>
-<simple name="Import" type="string"><value>$(find rtt_ros_integration_std_msgs)/lib/orocos</value></simple>
-<simple name="Import" type="string"><value>$(find rtt_ros_integration_sensor_msgs)/lib/orocos</value></simple>
-<simple name="Import" type="string"><value>$(find rtt_ros_integration_actionlib_msgs)/lib/orocos</value></simple>
-<simple name="Import" type="string"><value>$(find rtt_ros_integration_pr2_controllers_msgs)/lib/orocos</value></simple>
-<simple name="Import" type="string"><value>$(find rtt_ros_integration_trajectory_msgs)/lib/orocos</value></simple>
-<simple name="Import" type="string"><value>$(find oro_servo_msgs)/lib/orocos</value></simple>
-<simple name="Import" type="string"><value>$(find fake_servo)/lib/orocos</value></simple>
-<simple name="Import" type="string"><value>$(find oro_joint_state_publisher)/lib/orocos</value></simple>
-<simple name="Import" type="string"><value>$(find oro_joint_trajectory_action)/lib/orocos</value></simple>
-<simple name="Import" type="string"><value>$(find joint_spline_trajectory_generator)/lib/orocos</value></simple>
-
-<struct name="joints_state" type="ConnPolicy">
+<simple name="Import" type="string"><value>rtt_ros_integration</value></simple>
+<simple name="Import" type="string"><value>rtt_ros_integration_std_msgs</value></simple>
+<simple name="Import" type="string"><value>rtt_ros_integration_sensor_msgs</value></simple>
+<simple name="Import" type="string"><value>rtt_ros_integration_actionlib_msgs</value></simple>
+<simple name="Import" type="string"><value>rtt_ros_integration_pr2_controllers_msgs</value></simple>
+<simple name="Import" type="string"><value>rtt_ros_integration_trajectory_msgs</value></simple>
+<simple name="Import" type="string"><value>irp6_servo</value></simple>
+<simple name="Import" type="string"><value>oro_joint_state_publisher</value></simple>
+<simple name="Import" type="string"><value>oro_joint_trajectory_action</value></simple>
+<simple name="Import" type="string"><value>joint_spline_trajectory_generator</value></simple>
+<!--
+<struct name="setpoint" type="ConnPolicy">
+  <simple name="type" type="short"><value>0</value></simple>
+  <simple name="size" type="short"><value>1</value></simple>
+  <simple name="transport" type="short"><value>3</value></simple>
+  <simple name="name_id" type="string"><value>/setpoint</value></simple>
+</struct>
+-->
+<struct name="jointState" type="ConnPolicy">
   <simple name="type" type="short"><value>0</value></simple>
   <simple name="size" type="short"><value>1</value></simple>
   <simple name="transport" type="short"><value>3</value></simple>
   <simple name="name_id" type="string"><value>/joint_states</value></simple>
 </struct>
-
 <struct name="goal" type="ConnPolicy">
   <simple name="type" type="short"><value>0</value></simple>
   <simple name="size" type="short"><value>1</value></simple>
@@ -55,13 +60,6 @@
   <simple name="name_id" type="string"><value>irp6p_controller/joint_trajectory_action/result</value></simple>
 </struct>
 
-<struct name="command" type="ConnPolicy">
-  <simple name="type" type="short"><value>0</value></simple>
-  <simple name="size" type="short"><value>1</value></simple>
-  <simple name="transport" type="short"><value>3</value></simple>
-  <simple name="name_id" type="string"><value>irp6p_controller/command</value></simple>
-</struct>
-
 <struct name="JointStatePublisher" type="JointStatePublisher">
   <struct name="Activity" type="PeriodicActivity">
     <simple name="Period" type="double"><value>0.01</value></simple>
@@ -73,7 +71,7 @@
   <simple name="AutoStart" type="boolean"><value>1</value></simple>
   
   <struct name="Properties" type="PropertyBag">
-    <simple name="number_of_joints" type="long"><value>6</value></simple>
+    <simple name="number_of_joints" type="short"><value>6</value></simple>
     <simple name="joint0_name" type="string"><value>joint1</value></simple>
     <simple name="joint1_name" type="string"><value>joint2</value></simple>
     <simple name="joint2_name" type="string"><value>joint3</value></simple>
@@ -83,12 +81,12 @@
   </struct>
   
   <struct name="Ports" type="PropertyBag">
-	  <simple name="servo_states" type="string"><value>servo_states</value></simple>
-    <simple name="joints_state" type="string"><value>joints_state</value></simple>
+    <simple name="msrJntPos" type="string"><value> msrJntPos</value></simple>
+    <simple name="joints_state" type="string"><value> jointState</value></simple>
   </struct>
 </struct>
 
-<struct name="Servo" type="FakeServo">
+<struct name="Servo" type="IRP6pServo">
   <struct name="Activity" type="PeriodicActivity">
     <simple name="Period" type="double"><value>0.002</value></simple>
     <simple name="Priority" type="short"><value>5</value></simple>
@@ -99,19 +97,13 @@
   <simple name="AutoStart" type="boolean"><value>1</value></simple>
 
   <struct name="Properties" type="PropertyBag">
-    <simple name="number_of_joints" type="long"><value>6</value></simple>
-    <simple name="joint0_position" type="double"><value>0.0</value></simple>
-    <simple name="joint1_position" type="double"><value>-1.57</value></simple>
-    <simple name="joint2_position" type="double"><value>0.0</value></simple>
-    <simple name="joint3_position" type="double"><value>0.0</value></simple>
-    <simple name="joint4_position" type="double"><value>0.0</value></simple>
-    <simple name="joint5_position" type="double"><value>0.0</value></simple>
-
+    <simple name="auto_synchronize" type="boolean"><value>1</value></simple>
   </struct>
 
   <struct name="Ports" type="PropertyBag">
-	  <simple name="servo_states" type="string"><value>servo_states</value></simple>
-    <simple name="setpoint" type="string"><value>setpoint</value></simple>
+    <simple name="desJntPos" type="string"><value> desJntPos</value></simple>
+    <simple name="cmdJntPos" type="string"><value> cmdJntPos</value></simple>
+    <simple name="msrJntPos" type="string"><value> msrJntPos</value></simple>
   </struct>
 </struct>
 
@@ -129,9 +121,10 @@
   </struct>
   
   <struct name="Ports" type="PropertyBag">
-	  <simple name="trajectory_point" type="string"><value>trajectory</value></simple>
-    <simple name="setpoint" type="string"><value>setpoint</value></simple>
-    <simple name="servo_states" type="string"><value>servo_states</value></simple>
+  	<simple name="desJntPos" type="string"><value>desJntPos</value></simple>
+    <simple name="cmdJntPos" type="string"><value>cmdJntPos</value></simple>  
+  
+	<simple name="trajectory_point" type="string"><value>trajectory</value></simple>
     <simple name="buffer_ready" type="string"><value>buf</value></simple>
     <simple name="trajectory_compleat" type="string"><value>comp</value></simple>
   </struct>
@@ -164,7 +157,7 @@
     
     <simple name="command" type="string"><value>command</value></simple>
 
-	  <simple name="goal" type="string"><value>goal</value></simple>
+	<simple name="goal" type="string"><value>goal</value></simple>
   	<simple name="cancel" type="string"><value>cancel</value></simple>
   	<simple name="result" type="string"><value>result</value></simple>
   	<simple name="feedback" type="string"><value>feedback</value></simple>
