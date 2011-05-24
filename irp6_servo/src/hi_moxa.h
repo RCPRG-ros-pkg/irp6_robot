@@ -18,58 +18,74 @@
 #include <string>
 #include <vector>
 
-namespace hi_moxa
-{
+namespace hi_moxa {
 
-const int BAUD = B921600; // 921600;
-const int WRITE_BYTES = 10;
-const int READ_BYTES = 8;
-const char INIT_PORT_CHAR = 50;
+const std::size_t WRITE_BYTES = 10;
+const std::size_t READ_BYTES = 8;
+const std::size_t MOXA_SERVOS_NR = 8;
+const int MAX_PARAM_SET_ATTEMPTS = 3;
+const int MAX_COMM_TIMEOUTS = 3;
+const int FIRST_HARDWARE_READS_WITH_ZERO_INCREMENT = 4;
 
-const int MOXA_SERVOS_NR = 8;
+const int MAX_CURRENT_0 = 15000;
+const int MAX_CURRENT_1 = 18000;
+const int MAX_CURRENT_2 = 10000;
+const int MAX_CURRENT_3 = 10000;
+const int MAX_CURRENT_4 = 10000;
+const int MAX_CURRENT_5 = 10000;
 
-const long COMMCYCLE_TIME_NS = 2000000;
+/*!
+ * @brief IRp6 postument max encoder increment
+ * @ingroup irp6p_m
+ */
+const double ridiculous_increment[] = { 150, 200, 100, 100, 100, 100 };
 
 // ------------------------------------------------------------------------
 //                HARDWARE_INTERFACE class
 // ------------------------------------------------------------------------
 
 
-class HI_moxa
-{
+class HI_moxa {
 
 public:
 
-  HI_moxa(unsigned int numberOfDrivers); // Konstruktor
-  ~HI_moxa();
+	HI_moxa(unsigned int numberOfDrivers); // Konstruktor
+	~HI_moxa();
 
-  virtual void init(std::vector<std::string> ports);
-  virtual void insertSetValue(int drive_offset, double set_value);
-  virtual int getCurrent(int drive_offset);
-  virtual double getIncrement(int drive_offset);
-  virtual long int getPosition(int drive_offset);
-  virtual uint64_t readWriteHardware(void); // Obsluga sprzetu
-  virtual void resetCounters(void); // Zerowanie licznikow polozenia
-  virtual void startSynchro(int drive_offset);
-  virtual void finishSynchro(int drive_offset);
-  virtual bool isInSynchroArea(int drive);
+	virtual void init(std::vector<std::string> ports);
+	virtual void insertSetValue(int drive_offset, double set_value);
+	virtual int getCurrent(int drive_offset);
+	virtual double getIncrement(int drive_offset);
+	virtual long int getPosition(int drive_offset);
+	virtual uint64_t readWriteHardware(void); // Obsluga sprzetu
+	virtual void resetCounters(void); // Zerowanie licznikow polozenia
+	virtual void startSynchro(int drive_offset);
+	virtual void finishSynchro(int drive_offset);
+	virtual bool isInSynchroArea(int drive);
 
-  virtual bool isImpulseZero(int drive_offset);
-  virtual void resetPosition(int drive_offset);
+	virtual bool isImpulseZero(int drive_offset);
+	virtual void resetPosition(int drive_offset);
 
-  bool isRobotSynchronized();
+	bool isRobotSynchronized();
+	virtual void set_command_param(int drive_offset, uint8_t param);
+	virtual int set_parameter(int drive_number, const int parameter,
+			uint32_t new_value);
 
 protected:
 private:
+#if defined(B921600)
+	static const speed_t BAUD = B921600;
+#else
+	static const speed_t BAUD = 921600;
+#endif
 
-  int fd[MOXA_SERVOS_NR], fd_max;
-  unsigned int last_drive_number;
-  struct servo_St servo_data[MOXA_SERVOS_NR];
-  struct termios oldtio[MOXA_SERVOS_NR];
-
-  bool robot_synchronized;
-  bool power_fault;
-
+	std::size_t last_drive_number;
+	//std::vector<double> ridiculous_increment;
+	std::vector<std::string> port_names;
+	int fd[MOXA_SERVOS_NR], fd_max;
+	struct servo_St servo_data[MOXA_SERVOS_NR];
+	struct termios oldtio[MOXA_SERVOS_NR];
+	bool hardware_panic;
 }; // koniec: class hardware_interface
 
 } // namespace hi_moxa
