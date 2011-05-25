@@ -121,10 +121,10 @@
   </struct>
   
   <struct name="Ports" type="PropertyBag">
-  	<simple name="desJntPos" type="string"><value>desJntPos</value></simple>
+    <simple name="desJntPos" type="string"><value>desJntPos</value></simple>
     <simple name="cmdJntPos" type="string"><value>cmdJntPos</value></simple>  
   
-	<simple name="trajectory_point" type="string"><value>trajectory</value></simple>
+    <simple name="trajectory_point" type="string"><value>trajectory</value></simple>
     <simple name="buffer_ready" type="string"><value>buf</value></simple>
     <simple name="trajectory_compleat" type="string"><value>comp</value></simple>
   </struct>
@@ -155,7 +155,7 @@
     <simple name="buffer_ready" type="string"><value>buf</value></simple>
     <simple name="trajectory_compleat" type="string"><value>comp</value></simple>
     
-    <simple name="command" type="string"><value>command</value></simple>
+        <!--<simple name="command" type="string"><value>command</value></simple> -->
 
 	<simple name="goal" type="string"><value>goal</value></simple>
   	<simple name="cancel" type="string"><value>cancel</value></simple>

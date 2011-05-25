@@ -38,7 +38,7 @@ const int MAX_CURRENT_5 = 10000;
  * @brief IRp6 postument max encoder increment
  * @ingroup irp6p_m
  */
-const double ridiculous_increment[] = { 150, 200, 100, 100, 100, 100 };
+const double ridiculous_increment[] = { 150, 200, 150, 150, 150, 200 };
 
 // ------------------------------------------------------------------------
 //                HARDWARE_INTERFACE class

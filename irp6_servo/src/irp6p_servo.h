@@ -103,6 +103,7 @@ private:
   bool checkMotorPosition(const double *);
 
   std::vector<double> dsrJntPos_;
+  std::vector<double> cmdJntPos_;
   std::vector<double> msrJntPos_;
 
   bool autoSynchronize_;

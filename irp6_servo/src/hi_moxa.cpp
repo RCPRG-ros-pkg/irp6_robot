@@ -28,8 +28,10 @@ HI_moxa::~HI_moxa() {
 
 void HI_moxa::init(std::vector<std::string> ports) {
 
-	if (ports.size() != last_drive_number)
+	if (ports.size() != (last_drive_number+1))
 		throw(std::runtime_error("ports list size invalid !!!"));
+
+	port_names = ports;
 
 	// inicjalizacja zmiennych
 	for (unsigned int i = 0; i <= last_drive_number; i++) {

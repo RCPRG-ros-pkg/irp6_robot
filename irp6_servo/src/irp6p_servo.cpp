@@ -12,7 +12,7 @@
 #include "irp6p_servo.h"
 
 IRP6pServo::IRP6pServo(const std::string& name) :
-    RTT::TaskContext(name, PreOperational),autoSynchronize_(false), hi_(NUMBER_OF_DRIVES)
+    RTT::TaskContext(name, PreOperational),autoSynchronize_(false), hi_(NUMBER_OF_DRIVES-1)
 {
   this->ports()->addPort("desJntPos", dsrJntPos_port_);
   this->ports()->addPort("cmdJntPos", cmdJntPos_port_);
@@ -54,6 +54,7 @@ bool IRP6pServo::configureHook()
 
   dsrJntPos_.resize(NUMBER_OF_DRIVES);
   msrJntPos_.resize(NUMBER_OF_DRIVES);
+  cmdJntPos_.resize(NUMBER_OF_DRIVES);
   return true;
 }
 
@@ -80,7 +81,7 @@ bool IRP6pServo::startHook()
         dsrJntPos_[i] = joint_pos_[i];
 
       }
-
+      cmdJntPos_ = dsrJntPos_;
       state_ = SERVOING;
     }
     else
@@ -141,13 +142,14 @@ void IRP6pServo::updateHook()
           pos_inc_[i] = (motor_pos_new[i] - motor_pos_old_[i]) * ((double)ENC_RES[i]/(2*M_PI));
           motor_pos_old_[i] = motor_pos_new[i];
         }
-        cmdJntPos_port_.write(dsrJntPos_);
+        
       } else 
       {
         std::cout << "setpoint out of motor range !!! " << std::endl;
         for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
           pos_inc_[i] = 0.0; 
       }
+      cmdJntPos_ = dsrJntPos_;
     }
     else
     {
@@ -266,6 +268,7 @@ void IRP6pServo::updateHook()
     }
 
     msrJntPos_port_.write(msrJntPos_);
+    cmdJntPos_port_.write(cmdJntPos_);
 
   }
 
