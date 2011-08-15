@@ -184,7 +184,7 @@ void IRP6pServo::updateHook()
       }
       break;
     case MOVE_FROM_SYNCHRO_AREA :
-      if (hi_.isImpulseZero(synchro_drive_))
+      if (hi_.isImpulseZero(synchro_drive_) && isInSynchroArea(synchro_drive_))
       {
         std::cout << "[servo " << synchro_drive_ << " ] MOVE_FROM_SYNCHRO_AREA cmp " << std::endl;
         hi_.finishSynchro(synchro_drive_);
