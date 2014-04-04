@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+        <simple name="Import" type="string"><value>rtt_rosnode</value></simple>
+	<simple name="Import" type="string"><value>rtt_std_msgs</value></simple>
+	<simple name="Import" type="string"><value>rtt_sensor_msgs</value></simple>
+        <!--simple name="Import" type="string"><value>rtt_control_msgs</value></simple-->
+        <simple name="Import" type="string"><value>rtt_actionlib_msgs</value></simple>
+        <simple name="Import" type="string"><value>rtt_trajectory_msgs</value></simple>
+
+<!-- LOAD COMOPONENTS -->
+	<simple name="Import" type="string"><value>hardware_interface</value></simple>
+	<simple name="Import" type="string"><value>servo_regulator</value></simple>
+        <simple name="Import" type="string"><value>sarkofag_kinematic</value></simple>
+
+	<!--simple name="Import" type="string"><value>oro_joint_trajectory_action</value></simple>
+	<simple name="Import" type="string"><value>joint_spline_trajectory_generator</value></simple-->
+
+
+    <!--struct name="goal" type="ConnPolicy">
+        <simple name="type" type="long"><value>0</value></simple>
+        <simple name="size" type="long"><value>1</value></simple>
+        <simple name="transport" type="long"><value>3</value></simple>
+        <simple name="name_id" type="string"><value>sarkofag_controller/joint_trajectory_action/goal</value></simple>
+    </struct>
+
+    <struct name="cancel" type="ConnPolicy">
+        <simple name="type" type="long"><value>0</value></simple>
+        <simple name="size" type="long"><value>1</value></simple>
+        <simple name="transport" type="long"><value>3</value></simple>
+        <simple name="name_id" type="string"><value>sarkofag_controller/joint_trajectory_action/cancel</value></simple>
+    </struct>
+
+    <struct name="result" type="ConnPolicy">
+        <simple name="type" type="long"><value>0</value></simple>
+        <simple name="size" type="long"><value>1</value></simple>
+        <simple name="transport" type="long"><value>3</value></simple>
+        <simple name="name_id" type="string"><value>sarkofag_controller/joint_trajectory_action/result</value></simple>
+    </struct>
+
+    <struct name="status" type="ConnPolicy">
+        <simple name="type" type="long"><value>0</value></simple>
+        <simple name="size" type="long"><value>1</value></simple>
+        <simple name="transport" type="long"><value>3</value></simple>
+        <simple name="name_id" type="string"><value>sarkofag_controller/joint_trajectory_action/status</value></simple>
+    </struct>
+
+    <struct name="feedback" type="ConnPolicy">
+        <simple name="type" type="long"><value>0</value></simple>
+        <simple name="size" type="long"><value>1</value></simple>
+        <simple name="transport" type="long"><value>3</value></simple>
+        <simple name="name_id" type="string"><value>sarkofag_controller/joint_trajectory_action/feedback</value></simple>
+    </struct-->
+
+
+
+	
+
+<!-- CREATE COMOPONENTS -->
+
+	<struct name="HardwareInterface" type="HardwareInterface">
+		<struct name="Activity" type="PeriodicActivity">
+			<simple name="Period" type="double"><value>0.002</value></simple>
+			<simple name="Priority" type="long"><value>5</value></simple>
+			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+		</struct>
+		<simple name="AutoConf" type="boolean"><value>1</value></simple>
+		<simple name="AutoStart" type="boolean"><value>1</value></simple>
+
+		<struct name="Properties" type="PropertyBag">
+                        <simple name="auto_synchronize" type="boolean"><value>1</value></simple>
+                        <simple name="number_of_drives" type="boolean"><value>1</value></simple>
+	  	</struct>
+
+	  	<struct name="Ports" type="PropertyBag">
+	    		<simple name="computedPwm_in" type="string"><value>computedPwm</value></simple>
+	    		<simple name="posInc_out" type="string"><value>posInc</value></simple>
+	    		<simple name="deltaInc_out" type="string"><value>deltaInc</value></simple>
+
+	    		<!--simple name="desJntPos" type="string"><value>jntPosCmd</value></simple>
+	    		<simple name="cmdJntPos" type="string"><value>desJntPos</value></simple-->
+	  	</struct>
+
+                <struct name="Peers" type="PropertyBag">
+                      <simple type="string"><value>SarkofagKinematic</value></simple>
+                </struct>
+	</struct>
+
+
+
+        <struct name="ServoRegulator" type="ServoRegulator">
+		<struct name="Activity" type="PeriodicActivity">
+			<simple name="Period" type="double"><value>0.002</value></simple>
+			<simple name="Priority" type="long"><value>5</value></simple>
+			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+		</struct>
+
+		<simple name="AutoConf" type="boolean"><value>1</value></simple>
+		<simple name="AutoStart" type="boolean"><value>1</value></simple>
+
+		<struct name="Properties" type="PropertyBag">
+			<simple name="auto_synchronize" type="boolean"><value>1</value></simple>
+                        <simple name="number_of_drives" type="boolean"><value>1</value></simple>
+	  	</struct>
+
+	  	<struct name="Ports" type="PropertyBag">
+	    		<simple name="posInc_in" type="string"><value>posInc</value></simple>
+	    		<simple name="deltaInc_in" type="string"><value>deltaInc</value></simple>
+	    		<simple name="computedPwm_out" type="string"><value>computedPwm</value></simple>
+	  	</struct>
+        </struct>
+
+
+	<struct name="SarkofagKinematic" type="SarkofagKinematic">
+		<struct name="Activity" type="NonPeriodicActivity">
+    			<simple name="Priority" type="long"><value>2</value></simple>
+    			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+  		</struct>
+
+		<simple name="AutoConf" type="boolean"><value>1</value></simple>
+  		<simple name="AutoStart" type="boolean"><value>1</value></simple>
+
+                <struct name="Peers" type="PropertyBag">
+                      <simple type="string"><value>HardwareInterface</value></simple>
+                </struct>
+
+	</struct>
+
+
+	<!--struct name="JointSplineTrajectoryGenerator" type="JointSplineTrajectoryGenerator">
+  		<struct name="Activity" type="PeriodicActivity">
+    			<simple name="Period" type="double"><value>0.002</value></simple>
+    			<simple name="Priority" type="long"><value>5</value></simple>
+    			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+  		</struct>
+  
+		<simple name="AutoConf" type="boolean"><value>1</value></simple>
+  		<simple name="AutoStart" type="boolean"><value>1</value></simple>
+  
+		<struct name="Properties" type="PropertyBag">
+ 			<simple name="number_of_joints" type="long"><value>1</value></simple>
+  		</struct>
+  
+  		<struct name="Ports" type="PropertyBag">
+    			<simple name="DesiredJointPosition" type="string"><value>desJntPos</value></simple>
+    			<simple name="JointPositionCommand" type="string"><value>jntPosCmd</value></simple>  
+  
+    			<simple name="trajectory_point" type="string"><value>trajectory</value></simple>
+    			<simple name="buffer_ready" type="string"><value>buf</value></simple>
+    			<simple name="trajectory_compleat" type="string"><value>comp</value></simple>
+  		</struct>
+	</struct>
+
+	<struct name="JointTrajectoryAction" type="JointTrajectoryAction">
+		<struct name="Activity" type="NonPeriodicActivity">
+    			<simple name="Priority" type="long"><value>2</value></simple>
+    			<simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+  		</struct>
+
+		<struct name="Properties" type="PropertyBag">
+    			<simple name="number_of_joints" type="long"><value>1</value></simple>
+    			<simple name="joint0_name" type="string"><value>joint1</value></simple>
+  		</struct>
+
+		<simple name="AutoConf" type="boolean"><value>1</value></simple>
+  		<simple name="AutoStart" type="boolean"><value>1</value></simple>
+
+  		<struct name="Ports" type="PropertyBag">
+  			<simple name="trajectory_point" type="string"><value>trajectory</value></simple>
+    			<simple name="buffer_ready" type="string"><value>buf</value></simple>
+    			<simple name="trajectory_compleat" type="string"><value>comp</value></simple>
+
+                        <simple name="_action_goal" type="string"><value>goal</value></simple>
+                        <simple name="_action_cancel" type="string"><value>cancel</value></simple>
+                        <simple name="_action_result" type="string"><value>result</value></simple>
+                        <simple name="_action_status" type="string"><value>status</value></simple>
+                        <simple name="_action_feedback" type="string"><value>feedback</value></simple>
+
+		
+    	  	</struct>
+
+	</struct-->	
+
+
+
+<!-- CREATE CONECTIONS -->
+
+
+
+</properties>

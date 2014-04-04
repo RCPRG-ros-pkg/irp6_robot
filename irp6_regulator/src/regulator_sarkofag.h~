@@ -1,0 +1,35 @@
+// -------------------------------------------------------------------------
+//                            sg_local.h
+// Definicje struktur danych i metod dla procesu EDP on_track
+//
+// Ostatnia modyfikacja: 2006
+// -------------------------------------------------------------------------
+
+#ifndef __REGULATOR_SARKOFAG_H
+#define __REGULATOR_SARKOFAG_H
+//#include "base/edp/edp_typedefs.h"
+#include "regulator.h"
+
+const double SYNCHRO_STEP_COARSE = 0.5;
+const double SYNCHRO_STEP_FINE = 0.02;
+
+class NL_regulator_8_sarkofag : public NL_regulator
+{
+	/* Klasa regulatorow konkretnych */
+	// Obiekt z algorytmem regulacji
+	long gripper_blocked_start_time;
+	int sum_of_currents, current_index;
+	double deviation;
+	double deviation_integral;
+
+public:
+	NL_regulator_8_sarkofag(uint8_t _axis_number, uint8_t reg_no, uint8_t reg_par_no, double aa, double bb0, double bb1, double k_ff, motor_driven_effector &_master, REG_OUTPUT _reg_output); // konstruktor
+
+	virtual uint8_t compute_set_value(void);
+	// obliczenie nastepnej wartosci zadanej dla napedu - metoda konkretna
+
+};
+
+
+#endif
+

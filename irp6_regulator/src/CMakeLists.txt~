@@ -1,0 +1,5 @@
+add_library(regulator
+	regulator.cpp
+)
+
+install(TARGETS regulator DESTINATION lib)

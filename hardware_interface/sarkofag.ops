@@ -1,0 +1,82 @@
+import("rtt_ros")
+ros.import("rtt_rosnode")
+ros.import("rtt_std_msgs")
+ros.import("rtt_sensor_msgs")
+ros.import("rtt_actionlib_msgs")
+ros.import("rtt_trajectory_msgs")
+
+ros.import("hardware_interface")
+ros.import("servo_regulator")
+ros.import("sarkofag_kinematic")
+#ros.import("oro_joint_trajectory_action")
+#ros.import("joint_spline_trajectory_generator")
+
+## Load components
+loadComponent("HardwareInterface","HardwareInterface")
+loadComponent("ServoRegulator","ServoRegulator")
+loadComponent("SarkofagKinematic","SarkofagKinematic")
+
+#loadComponent("JointSplineTrajectoryGenerator", "JointSplineTrajectoryGenerator")
+#loadComponent("JointTrajectoryAction", "JointTrajectoryAction")
+
+ServoRegulator.number_of_drives = 1;
+HardwareInterface.number_of_drives = 1;
+
+
+connectPeers("HardwareInterface","SarkofagKinematic")
+
+## Give it a periodic activity
+setActivity("HardwareInterface",0.002,HighestPriority,ORO_SCHED_RT)
+setActivity("ServoRegulator",0.002,HighestPriority,ORO_SCHED_RT)
+setActivity("SarkofagKinematic",0,HighestPriority,ORO_SCHED_RT)
+
+#setActivity("JointSplineTrajectoryGenerator",0.002,HighestPriority,ORO_SCHED_RT)
+#setActivity("JointTrajectoryAction",0.002,HighestPriority,ORO_SCHED_RT)
+
+## Create connections
+#stream("HardwareInterface.computedPwm_in", rostopic.connection("computedPwm_in"))
+#stream("HardwareInterface.posInc_out", rostopic.connection("posInc_out"))
+#stream("HardwareInterface.deltaInc_out", rostopic.connection("deltaInc_out"))
+
+#stream("ServoRegulator.posInc_in", rostopic.connection("posInc_in"))
+#stream("ServoRegulator.deltaInc_in", rostopic.connection("deltaInc_in"))
+#stream("ServoRegulator.computedPwm_out", rostopic.connection("computedPwm_out"))
+
+#stream("JointTrajectoryAction.buffer_ready", rostopic.connection("buf_in"));
+#stream("JointTrajectoryAction.trajectory_point", rostopic.connection("trajectory_out"));
+
+#stream("JointSplineTrajectoryGenerator.buffer_ready", rostopic.connection("buf_out"));
+#stream("JointSplineTrajectoryGenerator.trajectory_point", rostopic.connection("trajectory_in"));
+
+#stream("JointSplineTrajectoryGenerator.DesiredJointPosition", rostopic.connection("dsr_Jnt_in"));
+#stream("JointSplineTrajectoryGenerator.setpoint_out", rostopic.connection("setpoint_out"));
+
+
+## Connect
+connect("HardwareInterface.computedPwm_in","ServoRegulator.computedPwm_out", ConnPolicy())
+connect("ServoRegulator.posInc_in","HardwareInterface.posInc_out", ConnPolicy())
+connect("ServoRegulator.deltaInc_in","HardwareInterface.deltaInc_out", ConnPolicy())
+
+#connect("SarkofagServo.desJntPos","JointSplineTrajectoryGenerator.DesiredJointPosition", ConnPolicy())
+#connect("JointSplineTrajectoryGenerator.JointPositionCommand","SarkofagServo.cmdJntPos", ConnPolicy())
+
+#connect("JointTrajectoryAction.trajectory_point","JointSplineTrajectoryGenerator.trajectory_point", ConnPolicy())
+#connect("JointTrajectoryAction.buffer_ready","JointSplineTrajectoryGenerator.buffer_ready", ConnPolicy())
+#connect("JointTrajectoryAction.trajectory_compleat","JointSplineTrajectoryGenerator.trajectory_compleat", ConnPolicy())
+
+
+## Connect the 
+#loadService("SarkofagServo","rosservice")
+#SarkofagServo.rosservice.connect( "increment", "/increment", "std_srvs/Empty")
+#SarkofagServo.rosservice.connect( "updated", "/updated", "std_srvs/Empty")
+
+## Configure the HelloRobot component
+HardwareInterface.configure()
+ServoRegulator.configure()
+SarkofagKinematic.configure()
+
+## Start it
+HardwareInterface.start()
+ServoRegulator.start()
+SarkofagKinematic.start()
+
