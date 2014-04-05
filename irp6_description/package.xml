@@ -1,0 +1,17 @@
+<package>
+  <name>irp6_description</name>
+  <version>0.1.0</version>
+  <description>
+    This package contains URDF files for the irp6 robot.
+  </description>
+
+  <maintainer email="konradb3@gmail.com">Konrad Banachowicz</maintainer>
+
+  <author>Konrad Banachowicz</author>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>xacro</run_depend>
+</package>
