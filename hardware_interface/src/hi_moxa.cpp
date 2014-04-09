@@ -361,10 +361,10 @@ uint64_t HI_moxa::HI_read_write_hardware(void)
         //master.controller_state_edp_buf.is_synchronised = robot_synchronized;
         //master.controller_state_edp_buf.robot_in_fault_state = power_fault;
         if (power_fault) {
-            hardware_panic = true;
-            std::cout << "[error] power_fault" << std::endl;
+            //hardware_panic = true;
+            //std::cout << "[error] power_fault" << std::endl;
             if (error_msg_power_stage == 0) {
-                temp_message << "[error] power_fault" <<  std::endl;
+                //temp_message << "[error] power_fault" <<  std::endl;
                 std::cerr << temp_message.str() << std::cerr.flush();
                 //master.msg->message(lib::NON_FATAL_ERROR, "Wylaczono moc - robot zablokowany");
                 error_msg_power_stage++;

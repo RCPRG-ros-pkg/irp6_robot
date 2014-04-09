@@ -1,14 +1,24 @@
 <launch>
 
-    <include file="$(find rtt_ros)/launch/deployer.launch">
-	<arg name="NAME" value="ROS_OROCOS_ROBOT"/>
-        <arg name="DEPLOYER_ARGS" value="-s $(find irp6_bringup)/config/irp6.ops"/>
-        <arg name="LOG_LEVEL" value="Warning"/>
-        <arg name="DEBUG" value="false"/>
-    </include>
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find irp6_description)/robots/irp6p.urdf.xacro'" />
+  
+  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher"/>
+  
+  <include file="$(find rtt_ros)/launch/deployer.launch">
+    <arg name="NAME" value="ROS_OROCOS_ROBOT"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find irp6_bringup)/config/irp6.ops"/>
+    <arg name="LOG_LEVEL" value="Error"/>
+    <arg name="DEBUG" value="false"/>
+  </include>
 
   <group ns="ROS_OROCOS_ROBOT">
     <rosparam>
+      JntPub:
+        joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
+      JointSplineTrajectoryGenerator:
+        number_of_joints: 6
+      JointTrajectoryAction:
+        joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
     </rosparam>
 </group>
 
