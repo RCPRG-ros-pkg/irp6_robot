@@ -1,82 +1,114 @@
 import("rtt_ros")
 ros.import("rtt_rosnode")
+ros.import("rtt_actionlib")
 ros.import("rtt_std_msgs")
 ros.import("rtt_sensor_msgs")
 ros.import("rtt_actionlib_msgs")
 ros.import("rtt_trajectory_msgs")
+ros.import("rtt_control_msgs")
 
+ros.import("conman");
+ros.import("conman_ros");
 ros.import("hardware_interface")
 ros.import("irp6_regulator")
-#ros.import("sarkofag_kinematic")
-#ros.import("oro_joint_trajectory_action")
-#ros.import("joint_spline_trajectory_generator")
+ros.import("oro_joint_state_publisher")
+ros.import("oro_joint_trajectory_action")
+ros.import("joint_spline_trajectory_generator")
 
-## Load components
+
+//------------------------------------------------------------------------------
+//-- Controller manager
+//------------------------------------------------------------------------------
+loadComponent("scheme", "conman::Scheme");
+setActivity("scheme", 0.002, 5, ORO_SCHED_RT);
+scheme.loadService("conman_ros");
+scheme.configure();
+
+//------------------------------------------------------------------------------
+//-- Controller
+//------------------------------------------------------------------------------
 loadComponent("HardwareInterface","HardwareInterface")
-loadComponent("IRp6Regulator","IRp6Regulator")
-#loadComponent("SarkofagKinematic","SarkofagKinematic")
-
-#loadComponent("JointSplineTrajectoryGenerator", "JointSplineTrajectoryGenerator")
-#loadComponent("JointTrajectoryAction", "JointTrajectoryAction")
-
-IRp6Regulator.number_of_drives = 6;
+//setActivity("HardwareInterface", 0.002, 5, ORO_SCHED_RT)
 HardwareInterface.number_of_drives = 6;
+HardwareInterface.configure()
 
-#connectPeers("HardwareInterface","SarkofagKinematic")
+loadComponent("IRp6Regulator","IRp6Regulator")
+//setActivity("IRp6Regulator", 0, 5, ORO_SCHED_RT)
+IRp6Regulator.number_of_drives = 6;
+IRp6Regulator.configure()
 
-## Give it a periodic activity
-setActivity("HardwareInterface", 0.002, 5, ORO_SCHED_RT)
-setActivity("IRp6Regulator", 0, 5, ORO_SCHED_RT)
-#setActivity("SarkofagKinematic",0,2, ORO_SCHED_RT)
+loadComponent("trans","IRP6PTransmission")
+//setActivity("trans", 0.02, 5, ORO_SCHED_RT)
+trans.configure()
 
-#setActivity("JointSplineTrajectoryGenerator",0.002,2,ORO_SCHED_RT)
-#setActivity("JointTrajectoryAction",0.002,2,ORO_SCHED_RT)
+loadComponent("transInv","IRP6PTransmissionInv")
+//setActivity("transInv", 0.02, 5, ORO_SCHED_RT)
+transInv.configure()
 
-## Create connections
-#stream("HardwareInterface.computedPwm_in", rostopic.connection("computedPwm_in"))
-#stream("HardwareInterface.posInc_out", rostopic.connection("posInc_out"))
-#stream("HardwareInterface.deltaInc_out", rostopic.connection("deltaInc_out"))
+loadComponent("JointSplineTrajectoryGenerator", "JointSplineTrajectoryGenerator")
+//setActivity("JointSplineTrajectoryGenerator",0.002,2,ORO_SCHED_RT)
 
-#stream("ServoRegulator.posInc_in", rostopic.connection("posInc_in"))
-#stream("ServoRegulator.deltaInc_in", rostopic.connection("deltaInc_in"))
-#stream("ServoRegulator.computedPwm_out", rostopic.connection("computedPwm_out"))
+JointSplineTrajectoryGenerator.loadService("rosparam");
+JointSplineTrajectoryGenerator.rosparam.getAll();
 
-#stream("JointTrajectoryAction.buffer_ready", rostopic.connection("buf_in"));
-#stream("JointTrajectoryAction.trajectory_point", rostopic.connection("trajectory_out"));
-
-#stream("JointSplineTrajectoryGenerator.buffer_ready", rostopic.connection("buf_out"));
-#stream("JointSplineTrajectoryGenerator.trajectory_point", rostopic.connection("trajectory_in"));
-
-#stream("JointSplineTrajectoryGenerator.DesiredJointPosition", rostopic.connection("dsr_Jnt_in"));
-#stream("JointSplineTrajectoryGenerator.setpoint_out", rostopic.connection("setpoint_out"));
-
+connect("trans.JointPosition","JointSplineTrajectoryGenerator.JointPosition", ConnPolicy())
+connect("JointSplineTrajectoryGenerator.JointPositionCommand","transInv.JointPosition", ConnPolicy())
+JointSplineTrajectoryGenerator.configure()
 
 ## Connect
 connect("HardwareInterface.computedPwm_in","IRp6Regulator.computedPwm_out", ConnPolicy())
+connect("HardwareInterface.MotorPosition","trans.MotorPosition", ConnPolicy())
+connect("transInv.MotorPosition", "HardwareInterface.MotorPositionCommand", ConnPolicy())
 connect("IRp6Regulator.posInc_in","HardwareInterface.posInc_out", ConnPolicy())
 connect("IRp6Regulator.deltaInc_in","HardwareInterface.deltaInc_out", ConnPolicy())
 
-#connect("SarkofagServo.desJntPos","JointSplineTrajectoryGenerator.DesiredJointPosition", ConnPolicy())
-#connect("JointSplineTrajectoryGenerator.JointPositionCommand","SarkofagServo.cmdJntPos", ConnPolicy())
+addPeer("scheme", "HardwareInterface");
+addPeer("scheme", "IRp6Regulator");
+addPeer("scheme", "trans");
+addPeer("scheme", "transInv");
+addPeer("scheme", "JointSplineTrajectoryGenerator");
 
-#connect("JointTrajectoryAction.trajectory_point","JointSplineTrajectoryGenerator.trajectory_point", ConnPolicy())
-#connect("JointTrajectoryAction.buffer_ready","JointSplineTrajectoryGenerator.buffer_ready", ConnPolicy())
-#connect("JointTrajectoryAction.trajectory_compleat","JointSplineTrajectoryGenerator.trajectory_compleat", ConnPolicy())
+scheme.addBlock("HardwareInterface");
+scheme.addBlock("IRp6Regulator");
+scheme.latchConnections("HardwareInterface", "IRp6Regulator", true);
+scheme.addBlock("trans");
+scheme.latchConnections("HardwareInterface", "trans", true);
+scheme.addBlock("transInv");
+scheme.addBlock("JointSplineTrajectoryGenerator");
 
+// ROS Interface
 
-## Connect the 
-#loadService("SarkofagServo","rosservice")
-#SarkofagServo.rosservice.connect( "increment", "/increment", "std_srvs/Empty")
-#SarkofagServo.rosservice.connect( "updated", "/updated", "std_srvs/Empty")
+loadComponent("JointTrajectoryAction", "JointTrajectoryAction")
+setActivity("JointTrajectoryAction",0 ,2 ,ORO_SCHED_RT)
+JointTrajectoryAction.loadService("rosparam");
+JointTrajectoryAction.rosparam.getAll();
 
-## Configure the HelloRobot component
-IRp6Regulator.configure()
-HardwareInterface.configure()
-#SarkofagKinematic.configure()
+JointTrajectoryAction.loadService("actionlib")
+JointTrajectoryAction.actionlib.connect("/irp6p_arm/joint_trajectory_action")
+
+connect("JointTrajectoryAction.trajectoryPtr","JointSplineTrajectoryGenerator.trajectoryPtr", ConnPolicy())
+JointTrajectoryAction.configure()
+
+// joint states
+loadComponent("JntPub", "JointStatePublisher");
+setActivity("JntPub", 0.01, 2, ORO_SCHED_RT);
+JntPub.loadService("rosparam");
+JntPub.rosparam.getAll();
+
+connect("trans.JointPosition", "JntPub.JointPosition", ConnPolicy());
+connect("trans.JointPosition", "JntPub.JointVelocity", ConnPolicy());
+connect("trans.JointPosition", "JntPub.JointEffort", ConnPolicy());
+
+stream("JntPub.joint_state", ros.comm.topic("/joint_states"));
+
+JntPub.configure()
 
 ## Start it
+scheme.start()
 IRp6Regulator.start()
 HardwareInterface.start()
+trans.start()
+transInv.start()
+JntPub.start()
 
-#SarkofagKinematic.start()
 

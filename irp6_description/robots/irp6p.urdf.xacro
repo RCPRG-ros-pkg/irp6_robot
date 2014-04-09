@@ -64,14 +64,14 @@
     <visual>
       <origin rpy="-1.57 0 0.0" xyz="0 0 0.4"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link1.3ds" />
+        <mesh filename="package://irp6_description/meshes/link1.3ds" />
       </geometry>
     </visual>
     
     <collision>
       <origin rpy="-1.57 0 0.0" xyz="0 0 0.4"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link1.stlb" />
+        <mesh filename="package://irp6_description/meshes/link1.stlb" />
       </geometry>
     </collision>
   </link>
@@ -94,7 +94,7 @@
     <visual>
       <origin rpy="0 0 0.0" xyz="0.45 0.0 0.0"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link2.3ds" />
+        <mesh filename="package://irp6_description/meshes/link2.3ds" />
       </geometry>
     </visual>
     
@@ -124,14 +124,14 @@
     <visual>
       <origin rpy="0 0 1.57" xyz="0 0.67 0.0"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link3.3ds" />
+        <mesh filename="package://irp6_description/meshes/link3.3ds" />
       </geometry>
     </visual>
     
     <collision>
       <origin rpy="0 0 1.57" xyz="0 0.67 0.0"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link3.stlb" scale="1.0 1.0 1.3" />
+        <mesh filename="package://irp6_description/meshes/link3.stlb" scale="1.0 1.0 1.3" />
       </geometry>
     </collision>
   </link>
@@ -154,14 +154,14 @@
     <visual>
       <origin rpy="1.57 0 1.57" xyz="0.0 0.175 0.0"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link4.3ds" />
+        <mesh filename="package://irp6_description/meshes/link4.3ds" />
       </geometry>
     </visual>
 
     <collision>
       <origin rpy="1.57 0 1.57" xyz="0.0 0.175 0.0"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link4.stlb" />
+        <mesh filename="package://irp6_description/meshes/link4.stlb" />
       </geometry>
     </collision>
   </link>
@@ -184,14 +184,14 @@
     <visual>
       <origin rpy="1.57 0 0.0" xyz="0.0 0.0 0.19"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link5.3ds" />
+        <mesh filename="package://irp6_description/meshes/link5.3ds" />
       </geometry>
     </visual>
 
     <collision>
       <origin rpy="1.57 0 0.0" xyz="0.0 0.0 0.19"/>
       <geometry>
-        <mesh filename="package://irp6_defs/meshes/link5.stlb" />
+        <mesh filename="package://irp6_description/meshes/link5.stlb" />
       </geometry>
     </collision>
   </link>
@@ -214,7 +214,7 @@
     <visual>
       <origin rpy="0 0 0.0" xyz="0 0.0 0.0"/>
       <geometry>
-         <mesh filename="package://irp6_defs/meshes/link6.3ds" />
+         <mesh filename="package://irp6_description/meshes/link6.3ds" />
       </geometry>
     </visual>
 
