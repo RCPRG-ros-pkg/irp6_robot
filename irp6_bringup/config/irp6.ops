@@ -14,7 +14,7 @@ ros.import("irp6_regulator")
 ros.import("oro_joint_state_publisher")
 ros.import("internal_space_spline_trajectory_action")
 ros.import("internal_space_spline_trajectory_generator")
-ros.import("y_tmp_generator")
+
 
 
 //------------------------------------------------------------------------------
@@ -70,16 +70,7 @@ connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","HardwareInterface
 
 SplineTrajectoryGeneratorMotor.configure()
 
-loadComponent("YTmpGenerator", "YTmpGenerator")
-//setActivity("YTmpGenerator",0.002,2,ORO_SCHED_RT)
 
-YTmpGenerator.loadService("rosparam");
-YTmpGenerator.rosparam.getAll();
-
-
-connect("trans.JointPosition","YTmpGenerator.JointPosition", ConnPolicy())
-connect("YTmpGenerator.JointPositionCommand","transInv.JointPosition", ConnPolicy())
-YTmpGenerator.configure()
 
 
 
@@ -97,7 +88,7 @@ addPeer("scheme", "trans");
 addPeer("scheme", "transInv");
 addPeer("scheme", "SplineTrajectoryGeneratorJoint");
 addPeer("scheme", "SplineTrajectoryGeneratorMotor");
-addPeer("scheme", "YTmpGenerator");
+
 
 scheme.addBlock("HardwareInterface");
 scheme.addBlock("IRp6Regulator");
@@ -108,7 +99,7 @@ scheme.addBlock("transInv");
 scheme.addBlock("SplineTrajectoryGeneratorJoint");
 scheme.addBlock("SplineTrajectoryGeneratorMotor");
 scheme.latchConnections("HardwareInterface", "SplineTrajectoryGeneratorMotor", true);
-scheme.addBlock("YTmpGenerator");
+
 
 // ROS Interface
 
@@ -127,7 +118,7 @@ SplineTrajectoryActionJoint.actionlib.connect("/irp6p_arm/spline_trajectory_acti
 connect("SplineTrajectoryActionJoint.trajectoryPtr","SplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
 connect("trans.JointPosition","SplineTrajectoryActionJoint.JointPosition", ConnPolicy())
 
-//connect("SplineTrajectoryActionJoint.trajectoryPtr","YTmpGenerator.trajectoryPtr", ConnPolicy())
+
 SplineTrajectoryActionJoint.configure()
 
 
@@ -146,7 +137,7 @@ SplineTrajectoryActionMotor.actionlib.connect("/irp6p_arm/spline_trajectory_acti
 connect("SplineTrajectoryActionMotor.trajectoryPtr","SplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
 connect("trans.JointPosition","SplineTrajectoryActionMotor.JointPosition", ConnPolicy())
 
-//connect("SplineTrajectoryActionMotor.trajectoryPtr","YTmpGenerator.trajectoryPtr", ConnPolicy())
+
 SplineTrajectoryActionMotor.configure()
 
 
