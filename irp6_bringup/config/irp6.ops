@@ -122,7 +122,7 @@ SplineTrajectoryActionJoint.loadService("rosparam");
 SplineTrajectoryActionJoint.rosparam.getAll();
 
 SplineTrajectoryActionJoint.loadService("actionlib")
-SplineTrajectoryActionJoint.actionlib.connect("/irp6p_arm/joint_trajectory_joint_action")
+SplineTrajectoryActionJoint.actionlib.connect("/irp6p_arm/spline_trajectory_action_joint")
 
 connect("SplineTrajectoryActionJoint.trajectoryPtr","SplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
 connect("trans.JointPosition","SplineTrajectoryActionJoint.JointPosition", ConnPolicy())
@@ -141,7 +141,7 @@ SplineTrajectoryActionMotor.loadService("rosparam");
 SplineTrajectoryActionMotor.rosparam.getAll();
 
 SplineTrajectoryActionMotor.loadService("actionlib")
-SplineTrajectoryActionMotor.actionlib.connect("/irp6p_arm/joint_trajectory_motor_action")
+SplineTrajectoryActionMotor.actionlib.connect("/irp6p_arm/spline_trajectory_action_motor")
 
 connect("SplineTrajectoryActionMotor.trajectoryPtr","SplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
 connect("trans.JointPosition","SplineTrajectoryActionMotor.JointPosition", ConnPolicy())

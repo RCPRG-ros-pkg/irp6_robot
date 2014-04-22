@@ -54,7 +54,7 @@ if __name__ == '__main__':
   
   conmanSwitch(['SplineTrajectoryGeneratorMotor'], [], True)
   
-  motor_client = actionlib.SimpleActionClient('/irp6p_arm/joint_trajectory_motor_action', FollowJointTrajectoryAction)
+  motor_client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_motor', FollowJointTrajectoryAction)
   motor_client.wait_for_server()
 
   print 'server ok'
@@ -75,7 +75,7 @@ if __name__ == '__main__':
   
   conmanSwitch(['SplineTrajectoryGeneratorJoint'], ['SplineTrajectoryGeneratorMotor'], True)
   
-  joint_client = actionlib.SimpleActionClient('/irp6p_arm/joint_trajectory_joint_action', FollowJointTrajectoryAction)
+  joint_client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
   joint_client.wait_for_server()
 
   print 'server ok'
