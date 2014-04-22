@@ -7,7 +7,7 @@
   <include file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="ROS_OROCOS_ROBOT"/>
     <arg name="DEPLOYER_ARGS" value="-s $(find irp6_bringup)/config/irp6.ops"/>
-    <arg name="LOG_LEVEL" value="Error"/>
+    <arg name="LOG_LEVEL" value="Info"/>
     <arg name="DEBUG" value="false"/>
   </include>
 
@@ -15,12 +15,15 @@
     <rosparam>
       JntPub:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
-      JointSplineTrajectoryGenerator:
+      SplineTrajectoryGeneratorJoint:
         number_of_joints: 6
-      JointTrajectoryAction:
+      SplineTrajectoryActionJoint:
+        joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
+      SplineTrajectoryGeneratorMotor:
+        number_of_joints: 6
+      SplineTrajectoryActionMotor:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
     </rosparam>
 </group>
 
 </launch>
-
