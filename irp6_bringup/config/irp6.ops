@@ -46,29 +46,29 @@ loadComponent("transInv","IRP6PTransmissionInv")
 //setActivity("transInv", 0.02, 5, ORO_SCHED_RT)
 transInv.configure()
 
-loadComponent("JointSplineTrajectoryGeneratorJoint", "InternalSpaceSplineTrajectoryGenerator")
-//setActivity("JointSplineTrajectoryGeneratorJoint",0.002,2,ORO_SCHED_RT)
+loadComponent("SplineTrajectoryGeneratorJoint", "InternalSpaceSplineTrajectoryGenerator")
+//setActivity("SplineTrajectoryGeneratorJoint",0.002,2,ORO_SCHED_RT)
 
-JointSplineTrajectoryGeneratorJoint.loadService("rosparam");
-JointSplineTrajectoryGeneratorJoint.rosparam.getAll();
-
-
-connect("trans.JointPosition","JointSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
-connect("JointSplineTrajectoryGeneratorJoint.JointPositionCommand","transInv.JointPosition", ConnPolicy())
-JointSplineTrajectoryGeneratorJoint.configure()
-
-loadComponent("JointSplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
-//setActivity("JointSplineTrajectoryGeneratorMotor",0.002,2,ORO_SCHED_RT)
-
-JointSplineTrajectoryGeneratorMotor.loadService("rosparam");
-JointSplineTrajectoryGeneratorMotor.rosparam.getAll();
+SplineTrajectoryGeneratorJoint.loadService("rosparam");
+SplineTrajectoryGeneratorJoint.rosparam.getAll();
 
 
-connect("HardwareInterface.MotorPosition","JointSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
-connect("JointSplineTrajectoryGeneratorMotor.JointPositionCommand","HardwareInterface.MotorPositionCommand", ConnPolicy())
+connect("trans.JointPosition","SplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
+connect("SplineTrajectoryGeneratorJoint.JointPositionCommand","transInv.JointPosition", ConnPolicy())
+SplineTrajectoryGeneratorJoint.configure()
+
+loadComponent("SplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
+//setActivity("SplineTrajectoryGeneratorMotor",0.002,2,ORO_SCHED_RT)
+
+SplineTrajectoryGeneratorMotor.loadService("rosparam");
+SplineTrajectoryGeneratorMotor.rosparam.getAll();
 
 
-JointSplineTrajectoryGeneratorMotor.configure()
+connect("HardwareInterface.MotorPosition","SplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
+connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","HardwareInterface.MotorPositionCommand", ConnPolicy())
+
+
+SplineTrajectoryGeneratorMotor.configure()
 
 loadComponent("YTmpGenerator", "YTmpGenerator")
 //setActivity("YTmpGenerator",0.002,2,ORO_SCHED_RT)
@@ -95,8 +95,8 @@ addPeer("scheme", "HardwareInterface");
 addPeer("scheme", "IRp6Regulator");
 addPeer("scheme", "trans");
 addPeer("scheme", "transInv");
-addPeer("scheme", "JointSplineTrajectoryGeneratorJoint");
-addPeer("scheme", "JointSplineTrajectoryGeneratorMotor");
+addPeer("scheme", "SplineTrajectoryGeneratorJoint");
+addPeer("scheme", "SplineTrajectoryGeneratorMotor");
 addPeer("scheme", "YTmpGenerator");
 
 scheme.addBlock("HardwareInterface");
@@ -105,9 +105,9 @@ scheme.latchConnections("HardwareInterface", "IRp6Regulator", true);
 scheme.addBlock("trans");
 scheme.latchConnections("HardwareInterface", "trans", true);
 scheme.addBlock("transInv");
-scheme.addBlock("JointSplineTrajectoryGeneratorJoint");
-scheme.addBlock("JointSplineTrajectoryGeneratorMotor");
-scheme.latchConnections("HardwareInterface", "JointSplineTrajectoryGeneratorMotor", true);
+scheme.addBlock("SplineTrajectoryGeneratorJoint");
+scheme.addBlock("SplineTrajectoryGeneratorMotor");
+scheme.latchConnections("HardwareInterface", "SplineTrajectoryGeneratorMotor", true);
 scheme.addBlock("YTmpGenerator");
 
 // ROS Interface
@@ -124,7 +124,7 @@ JointTrajectoryJointAction.rosparam.getAll();
 JointTrajectoryJointAction.loadService("actionlib")
 JointTrajectoryJointAction.actionlib.connect("/irp6p_arm/joint_trajectory_joint_action")
 
-connect("JointTrajectoryJointAction.trajectoryPtr","JointSplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
+connect("JointTrajectoryJointAction.trajectoryPtr","SplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
 connect("trans.JointPosition","JointTrajectoryJointAction.JointPosition", ConnPolicy())
 
 //connect("JointTrajectoryJointAction.trajectoryPtr","YTmpGenerator.trajectoryPtr", ConnPolicy())
@@ -143,7 +143,7 @@ JointTrajectoryMotorAction.rosparam.getAll();
 JointTrajectoryMotorAction.loadService("actionlib")
 JointTrajectoryMotorAction.actionlib.connect("/irp6p_arm/joint_trajectory_motor_action")
 
-connect("JointTrajectoryMotorAction.trajectoryPtr","JointSplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
+connect("JointTrajectoryMotorAction.trajectoryPtr","SplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
 connect("trans.JointPosition","JointTrajectoryMotorAction.JointPosition", ConnPolicy())
 
 //connect("JointTrajectoryMotorAction.trajectoryPtr","YTmpGenerator.trajectoryPtr", ConnPolicy())

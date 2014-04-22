@@ -17,11 +17,11 @@
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
       YTmpGenerator:
         number_of_joints: 6
-      JointSplineTrajectoryGeneratorJoint:
+      SplineTrajectoryGeneratorJoint:
         number_of_joints: 6
       JointTrajectoryJointAction:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
-      JointSplineTrajectoryGeneratorMotor:
+      SplineTrajectoryGeneratorMotor:
         number_of_joints: 6
       JointTrajectoryMotorAction:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
