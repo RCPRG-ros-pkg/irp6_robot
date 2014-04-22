@@ -9,7 +9,7 @@ from control_msgs.msg import *
 
 if __name__ == '__main__':
   rospy.init_node('simple_trajectory')
-  client = actionlib.SimpleActionClient('/irp6p_arm/joint_trajectory_joint_action', FollowJointTrajectoryAction)
+  client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
   client.wait_for_server()
 
   print 'server ok'
