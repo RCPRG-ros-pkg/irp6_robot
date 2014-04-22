@@ -19,11 +19,11 @@
         number_of_joints: 6
       SplineTrajectoryGeneratorJoint:
         number_of_joints: 6
-      JointTrajectoryJointAction:
+      SplineTrajectoryActionJoint:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
       SplineTrajectoryGeneratorMotor:
         number_of_joints: 6
-      JointTrajectoryMotorAction:
+      SplineTrajectoryActionMotor:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
     </rosparam>
 </group>
