@@ -14,6 +14,7 @@ ros.import("irp6_regulator")
 ros.import("oro_joint_state_publisher")
 ros.import("internal_space_spline_trajectory_action")
 ros.import("internal_space_spline_trajectory_generator")
+ros.import("irp6p_kinematic")
 
 
 
@@ -40,6 +41,9 @@ IRp6Regulator.configure()
 
 loadComponent("trans","IRP6PTransmission")
 //setActivity("trans", 0.02, 5, ORO_SCHED_RT)
+trans.configure()
+
+loadComponent("ForwardKinematic","Irp6pForwardKinematic")
 trans.configure()
 
 loadComponent("transInv","IRP6PTransmissionInv")
