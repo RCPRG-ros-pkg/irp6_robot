@@ -44,7 +44,9 @@ loadComponent("trans","IRP6PTransmission")
 trans.configure()
 
 loadComponent("ForwardKinematic","Irp6pForwardKinematic")
-trans.configure()
+ForwardKinematic.configure()
+
+connect("trans.JointPosition","ForwardKinematic.JointPosition", ConnPolicy())
 
 loadComponent("transInv","IRP6PTransmissionInv")
 //setActivity("transInv", 0.02, 5, ORO_SCHED_RT)
@@ -89,15 +91,18 @@ connect("IRp6Regulator.deltaInc_in","HardwareInterface.deltaInc_out", ConnPolicy
 addPeer("scheme", "HardwareInterface");
 addPeer("scheme", "IRp6Regulator");
 addPeer("scheme", "trans");
+addPeer("scheme", "ForwardKinematic");
 addPeer("scheme", "transInv");
 addPeer("scheme", "SplineTrajectoryGeneratorJoint");
 addPeer("scheme", "SplineTrajectoryGeneratorMotor");
+
 
 
 scheme.addBlock("HardwareInterface");
 scheme.addBlock("IRp6Regulator");
 scheme.latchConnections("HardwareInterface", "IRp6Regulator", true);
 scheme.addBlock("trans");
+scheme.addBlock("ForwardKinematic");
 scheme.latchConnections("HardwareInterface", "trans", true);
 scheme.addBlock("transInv");
 scheme.addBlock("SplineTrajectoryGeneratorJoint");
@@ -159,14 +164,18 @@ stream("JntPub.joint_state", ros.comm.topic("/joint_states"));
 
 JntPub.configure()
 
+stream("ForwardKinematic.OutputPose", ros.comm.topic("/cartesian_position"))
+
 ## Start it
 scheme.start()
 IRp6Regulator.start()
 HardwareInterface.start()
 trans.start()
+ForwardKinematic.start()
 transInv.start()
 JntPub.start()
 SplineTrajectoryActionJoint.start()
 SplineTrajectoryActionMotor.start()
+
 
 

@@ -23,6 +23,25 @@ class Irp6pForwardKinematic : public RTT::TaskContext {
   RTT::OutputPort<geometry_msgs::Pose> port_output_pose_;
 
   Eigen::VectorXd joint_position_;
+  Eigen::VectorXd local_current_joints_tmp_;
+
+
+  //! D-H kinematic parameters - length of 2nd segment.
+  double a2;
+
+  //! D-H kinematic parameters - length of 3rd segment.
+  double a3;
+
+  //! D-H kinematic parameters - length of 4th segment.
+  double d5;
+
+  //! D-H kinematic parameters - length of 5th segment.
+  double d6;
+
+  //! D-H kinematic parameters - length of 6th segment.
+  double d7;
+
+
 };
 
 #endif /* Irp6pForwardKinematic */
