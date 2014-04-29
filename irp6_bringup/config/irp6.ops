@@ -46,6 +46,9 @@ trans.configure()
 loadComponent("ForwardKinematic","Irp6pForwardKinematic")
 ForwardKinematic.configure()
 
+loadComponent("InverseKinematic","Irp6pInverseKinematic")
+InverseKinematic.configure()
+
 connect("trans.JointPosition","ForwardKinematic.JointPosition", ConnPolicy())
 
 loadComponent("transInv","IRP6PTransmissionInv")
