@@ -39,7 +39,7 @@ void Irp6pInverseKinematic::updateHook() {
   if (port_input_pose_.read(pos) == RTT::NewData) {
 
     Eigen::Affine3d trans;
-    tf::poseEigenToMsg(trans, pos);
+    tf::poseMsgToEigen(pos, trans);
 
     port_current_joint_position_.read(local_current_joints_);
 
@@ -47,9 +47,7 @@ void Irp6pInverseKinematic::updateHook() {
                                         &local_desired_joints_);
 
     port_output_joint_position_.write(local_desired_joints_);
-
   }
-
 }
 
 void Irp6pInverseKinematic::inverse_kinematics_single_iteration(
