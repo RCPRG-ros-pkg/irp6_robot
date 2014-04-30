@@ -46,14 +46,18 @@ trans.configure()
 loadComponent("ForwardKinematic","Irp6pForwardKinematic")
 ForwardKinematic.configure()
 
+connect("trans.JointPosition","ForwardKinematic.JointPosition", ConnPolicy())
+
 loadComponent("InverseKinematic","Irp6pInverseKinematic")
 InverseKinematic.configure()
 
-connect("trans.JointPosition","ForwardKinematic.JointPosition", ConnPolicy())
+connect("trans.JointPosition","InverseKinematic.CurrentJointPosition", ConnPolicy())
 
 loadComponent("transInv","IRP6PTransmissionInv")
 //setActivity("transInv", 0.02, 5, ORO_SCHED_RT)
 transInv.configure()
+
+connect("transInv.JointPosition","InverseKinematic.OutputJointPosition", ConnPolicy())
 
 loadComponent("SplineTrajectoryGeneratorJoint", "InternalSpaceSplineTrajectoryGenerator")
 //setActivity("SplineTrajectoryGeneratorJoint",0.002,2,ORO_SCHED_RT)
@@ -95,6 +99,7 @@ addPeer("scheme", "HardwareInterface");
 addPeer("scheme", "IRp6Regulator");
 addPeer("scheme", "trans");
 addPeer("scheme", "ForwardKinematic");
+addPeer("scheme", "InverseKinematic");
 addPeer("scheme", "transInv");
 addPeer("scheme", "SplineTrajectoryGeneratorJoint");
 addPeer("scheme", "SplineTrajectoryGeneratorMotor");
@@ -106,6 +111,7 @@ scheme.addBlock("IRp6Regulator");
 scheme.latchConnections("HardwareInterface", "IRp6Regulator", true);
 scheme.addBlock("trans");
 scheme.addBlock("ForwardKinematic");
+scheme.addBlock("InverseKinematic");
 scheme.latchConnections("HardwareInterface", "trans", true);
 scheme.addBlock("transInv");
 scheme.addBlock("SplineTrajectoryGeneratorJoint");
@@ -175,6 +181,7 @@ IRp6Regulator.start()
 HardwareInterface.start()
 trans.start()
 ForwardKinematic.start()
+InverseKinematic.start()
 transInv.start()
 JntPub.start()
 SplineTrajectoryActionJoint.start()
