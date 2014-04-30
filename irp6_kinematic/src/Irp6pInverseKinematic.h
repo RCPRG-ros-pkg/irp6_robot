@@ -15,16 +15,29 @@ class Irp6pInverseKinematic : public RTT::TaskContext {
   bool configureHook();
   void updateHook();
  private:
-  void direct_kinematics_transform(
+
+  /*
+   void direct_kinematics_transform(
+   const Eigen::VectorXd& local_current_joints,
+   Eigen::Affine3d* local_current_end_effector_frame);
+   */
+
+  Eigen::VectorXd local_desired_joints_;
+  Eigen::VectorXd local_current_joints_;
+
+  void inverse_kinematics_single_iteration(
       const Eigen::VectorXd& local_current_joints,
-      Eigen::Affine3d* local_current_end_effector_frame);
+      const Eigen::Affine3d& local_desired_end_effector_frame,
+      Eigen::VectorXd* local_desired_joints);
 
-  RTT::InputPort<Eigen::VectorXd> port_joint_position_;
-  RTT::OutputPort<geometry_msgs::Pose> port_output_pose_;
-
-  Eigen::VectorXd joint_position_;
-  Eigen::VectorXd local_current_joints_tmp_;
-
+  RTT::InputPort<Eigen::VectorXd> port_current_joint_position_;
+  RTT::OutputPort<Eigen::VectorXd> port_output_joint_position_;
+  RTT::InputPort<geometry_msgs::Pose> port_input_pose_;
+  /*
+   Eigen::VectorXd joint_position_;
+   Eigen::VectorXd local_current_joints_tmp_;
+   */
+  geometry_msgs::Pose pos;
 
   //! D-H kinematic parameters - length of 2nd segment.
   double a2;
@@ -40,7 +53,6 @@ class Irp6pInverseKinematic : public RTT::TaskContext {
 
   //! D-H kinematic parameters - length of 6th segment.
   double d7;
-
 
 };
 
