@@ -29,11 +29,7 @@ bool Irp6pInverseKinematic::configureHook() {
 
   local_desired_joints_.resize(6);
   local_current_joints_.resize(6);
-
-  /*
-   joint_position_.resize(6);
-   local_current_joints_tmp_.resize(6);
-   */
+  local_current_joints_tmp_.resize(6);
 
   return true;
 }
@@ -46,15 +42,6 @@ void Irp6pInverseKinematic::updateHook() {
     tf::poseEigenToMsg(trans, pos);
 
     port_current_joint_position_.read(local_current_joints_);
-
-    /*
-
-     geometry_msgs::Pose pos;
-
-     direct_kinematics_transform(joint_position_, &trans);
-
-     tf::poseEigenToMsg(trans, pos);
-     */
 
     inverse_kinematics_single_iteration(local_current_joints_, trans,
                                         &local_desired_joints_);
@@ -70,53 +57,180 @@ void Irp6pInverseKinematic::inverse_kinematics_single_iteration(
     const Eigen::Affine3d& local_desired_end_effector_frame,
     Eigen::VectorXd* local_desired_joints) {
 
+  // poprawka w celu uwzglednienia konwencji DH
+  local_current_joints_tmp_ = local_current_joints;
+
+  local_current_joints_tmp_[2] += local_current_joints_tmp_[1] + M_PI_2;
+  local_current_joints_tmp_[3] += local_current_joints_tmp_[2];
+
+  // Stale
+  const double EPS = 1e-10;
+
+  // Zmienne pomocnicze.
+  double Nx, Ox, Ax, Px;
+  double Ny, Oy, Ay, Py;
+  double Nz, Oz, Az, Pz;
+  double s0, c0, s1, c1, s3, c3, s4, c4;
+  double E, F, K, ro, G, H;
+  double t5, t_ok;
+
+  // Przepisanie zmiennych.
+  Nx = local_desired_end_effector_frame(0, 0);
+  Ny = local_desired_end_effector_frame(1, 0);
+  Nz = local_desired_end_effector_frame(2, 0);
+  Ox = local_desired_end_effector_frame(0, 1);
+  Oy = local_desired_end_effector_frame(1, 1);
+  Oz = local_desired_end_effector_frame(2, 1);
+  Ax = local_desired_end_effector_frame(0, 2);
+  Ay = local_desired_end_effector_frame(1, 2);
+  Az = local_desired_end_effector_frame(2, 2);
+  Px = local_desired_end_effector_frame(0, 3);
+  Py = local_desired_end_effector_frame(1, 3);
+  Pz = local_desired_end_effector_frame(2, 3);
+
+  //  Wyliczenie Theta1.
+  (*local_desired_joints)[0] = (atan2(Py, Px));
+  s0 = sin((*local_desired_joints)[0]);
+  c0 = cos((*local_desired_joints)[0]);
+
+  // Wyliczenie Theta5.
+  c4 = Ay * c0 - Ax * s0;
+  // Sprawdzenie bledow numerycznych.
+  if (fabs(c4 * c4 - 1) > EPS)
+    s4 = sqrt(1 - c4 * c4);
+  else
+    s4 = 0;
+
+  double cj_tmp;
+  double dj_translation;
+  // Sprawdzenie rozwiazania.
+  if (local_current_joints_tmp_[4] > M_PI) {
+    cj_tmp = local_current_joints_tmp_[4] - 2 * M_PI;
+    dj_translation = 2 * M_PI;
+  } else if (local_current_joints_tmp_[4] < -M_PI) {
+    cj_tmp = local_current_joints_tmp_[4] + 2 * M_PI;
+    dj_translation = -2 * M_PI;
+  } else {
+    cj_tmp = local_current_joints_tmp_[4];
+    dj_translation = 0.0;
+  }
+
+  // Niejednoznacznosc - uzywamy rozwiazanie blizsze poprzedniemu.
+  if (cj_tmp > 0)
+    (*local_desired_joints)[4] = atan2(s4, c4);
+  else
+    (*local_desired_joints)[4] = atan2(-s4, c4);
+
+  // Dodanie przesuniecia.
+  (*local_desired_joints)[4] += dj_translation;
+
+  // Wyliczenie Theta4 i Theta6.
+  if (fabs(s4) < EPS) {
+    printf("Osobliwosc\n");
+    // W przypadku osobliwosci katowi theta4 przypisywana wartosc poprzednia.
+    (*local_desired_joints)[3] = local_current_joints_tmp_[3];
+    t5 = atan2(c0 * Nx + s0 * Ny, c0 * Ox + s0 * Oy);
+
+    // Sprawdzenie warunkow.
+    t_ok = t5 + (*local_desired_joints)[3];
+    if (fabs(t_ok - local_current_joints_tmp_[5])
+        > fabs(
+            t5 - M_PI + (*local_desired_joints)[3]
+                - (local_current_joints_tmp_[5])))
+      t_ok = t5 - M_PI + (*local_desired_joints)[3];
+    if (fabs(t_ok - local_current_joints_tmp_[5])
+        > fabs(
+            t5 + M_PI + (*local_desired_joints)[3]
+                - (local_current_joints_tmp_[5])))
+      t_ok = t5 + M_PI + (*local_desired_joints)[3];
+
+    if (fabs(t_ok - local_current_joints_tmp_[5])
+        > fabs(
+            t5 - 2 * M_PI + (*local_desired_joints)[3]
+                - (local_current_joints_tmp_[5])))
+      t_ok = t5 - 2 * M_PI + (*local_desired_joints)[3];
+    if (fabs(t_ok - local_current_joints_tmp_[5])
+        > fabs(
+            t5 + 2 * M_PI + (*local_desired_joints)[3]
+                - (local_current_joints_tmp_[5])))
+      t_ok = t5 + 2 * M_PI + (*local_desired_joints)[3];
+
+    if (fabs(t_ok - local_current_joints_tmp_[5])
+        > fabs(
+            t5 - (*local_desired_joints)[3] - (local_current_joints_tmp_[5])))
+      t_ok = t5 - (*local_desired_joints)[3];
+    if (fabs(t_ok - local_current_joints_tmp_[5])
+        > fabs(
+            t5 - M_PI - (*local_desired_joints)[3]
+                - (local_current_joints_tmp_[5])))
+      t_ok = t5 - M_PI - (*local_desired_joints)[3];
+    if (fabs(t_ok - local_current_joints_tmp_[5])
+        > fabs(
+            t5 + M_PI - (*local_desired_joints)[3]
+                - (local_current_joints_tmp_[5])))
+      t_ok = t5 + M_PI - (*local_desired_joints)[3];
+
+    if (fabs(t_ok - local_current_joints_tmp_[5])
+        > fabs(
+            t5 - 2 * M_PI - (*local_desired_joints)[3]
+                - (local_current_joints_tmp_[5])))
+      t_ok = t5 - 2 * M_PI - (*local_desired_joints)[3];
+    if (fabs(t_ok - local_current_joints_tmp_[5])
+        > fabs(
+            t5 + 2 * M_PI - (*local_desired_joints)[3]
+                - (local_current_joints_tmp_[5])))
+      t_ok = t5 + 2 * M_PI - (*local_desired_joints)[3];
+
+    (*local_desired_joints)[5] = t_ok;
+  } else {
+    t5 = atan2(-s0 * Ox + c0 * Oy, s0 * Nx - c0 * Ny);
+    t_ok = t5;
+
+    // Sprawdzenie warunkow.
+    if (fabs(t_ok - local_current_joints_tmp_[5])
+        > fabs(t5 - M_PI - (local_current_joints_tmp_[5])))
+      t_ok = t5 - M_PI;
+    if (fabs(t_ok - local_current_joints_tmp_[5])
+        > fabs(t5 + M_PI - (local_current_joints_tmp_[5])))
+      t_ok = t5 + M_PI;
+
+    (*local_desired_joints)[5] = t_ok;
+    t_ok = atan2(c0 * Ax + s0 * Ay, Az);
+
+    if (fabs(t_ok - local_current_joints_tmp_[3])
+        > fabs(t_ok - M_PI - (local_current_joints_tmp_[3])))
+      t_ok = t_ok - M_PI;
+    if (fabs(t_ok - local_current_joints_tmp_[3])
+        > fabs(t_ok + M_PI - (local_current_joints_tmp_[3])))
+      t_ok = t_ok + M_PI;
+    (*local_desired_joints)[3] = t_ok;
+  }  //: else
+
+  // Wyliczenie Theta2.
+  c3 = cos((*local_desired_joints)[3]);
+  s3 = sin((*local_desired_joints)[3]);
+
+  E = c0 * Px + s0 * Py - c3 * d5;
+  F = -Pz - s3 * d5;
+  G = 2 * E * a2;
+  H = 2 * F * a2;
+  K = E * E + F * F + a2 * a2 - a3 * a3;
+  ro = sqrt(G * G + H * H);
+
+  (*local_desired_joints)[1] = atan2(K / ro, sqrt(1 - ((K * K) / (ro * ro))))
+      - atan2(G, H);
+
+  // Wyliczenie Theta3.
+  s1 = sin((*local_desired_joints)[1]);
+  c1 = cos((*local_desired_joints)[1]);
+  (*local_desired_joints)[2] = atan2(F - a2 * s1, E - a2 * c1);
+
+  // poprawka w celu dostosowania do konwencji DH
+  (*local_desired_joints)[2] -= (*local_desired_joints)[1] + M_PI_2;
+  (*local_desired_joints)[3] -= (*local_desired_joints)[2]
+      + (*local_desired_joints)[1] + M_PI_2;
+
 }
-
-/*
- void Irp6pInverseKinematic::direct_kinematics_transform(
- const Eigen::VectorXd& local_current_joints,
- Eigen::Affine3d* local_current_end_effector_frame) {
-
- // poprawka w celu uwzglednienia konwencji DH
- local_current_joints_tmp_ = local_current_joints;
-
- local_current_joints_tmp_[2] += local_current_joints_tmp_[1] + M_PI_2;
- local_current_joints_tmp_[3] += local_current_joints_tmp_[2];
-
- // Parametry pomocnicze - przeliczenie zmiennych.
- const double s1 = sin(local_current_joints_tmp_[0]);
- const double c1 = cos(local_current_joints_tmp_[0]);
- const double s2 = sin(local_current_joints_tmp_[1]);
- const double c2 = cos(local_current_joints_tmp_[1]);
- const double s3 = sin(local_current_joints_tmp_[2]);
- const double c3 = cos(local_current_joints_tmp_[2]);
- const double s4 = sin(local_current_joints_tmp_[3]);
- const double c4 = cos(local_current_joints_tmp_[3]);
- const double s5 = sin(local_current_joints_tmp_[4]);
- const double c5 = cos(local_current_joints_tmp_[4]);
- const double s6 = sin(local_current_joints_tmp_[5]);
- const double c6 = cos(local_current_joints_tmp_[5]);
-
- // Proste zadanie kinematyki.
- (*local_current_end_effector_frame)(0, 0) = (c1 * s4 * c5 + s1 * s5) * c6
- + c1 * c4 * s6;  //NX
- (*local_current_end_effector_frame)(0, 1) = -(c1 * s4 * c5 + s1 * s5) * s6
- + c1 * c4 * c6;  //OX
- (*local_current_end_effector_frame)(0, 2) = c1 * s4 * s5 - s1 * c5;  //AX
- (*local_current_end_effector_frame)(0, 3) = c1 * (a2 * c2 + a3 * c3 + d5 * c4);  //PX
- (*local_current_end_effector_frame)(1, 0) = (s1 * s4 * c5 - c1 * s5) * c6
- + s1 * c4 * s6;  //NY2
- (*local_current_end_effector_frame)(1, 1) = -(s1 * s4 * c5 - c1 * s5) * s6
- + s1 * c4 * c6;  //OY
- (*local_current_end_effector_frame)(1, 2) = s1 * s4 * s5 + c1 * c5;  //AY
- (*local_current_end_effector_frame)(1, 3) = s1 * (a2 * c2 + a3 * c3 + d5 * c4);  //PY
- (*local_current_end_effector_frame)(2, 0) = c4 * c5 * c6 - s4 * s6;  //NZ
- (*local_current_end_effector_frame)(2, 1) = -c4 * c5 * s6 - s4 * c6;  //OZ
- (*local_current_end_effector_frame)(2, 2) = c4 * s5;  //AZ
- (*local_current_end_effector_frame)(2, 3) = -a2 * s2 - a3 * s3 - d5 * s4;  //PZ
-
- }
- */
 
 ORO_CREATE_COMPONENT(Irp6pInverseKinematic)
 
