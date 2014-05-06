@@ -12,9 +12,10 @@ ros.import("conman_ros");
 ros.import("hardware_interface")
 ros.import("irp6_regulator")
 ros.import("oro_joint_state_publisher")
-ros.import("oro_joint_trajectory_action")
-ros.import("joint_spline_trajectory_generator")
-
+ros.import("internal_space_spline_trajectory_action")
+ros.import("internal_space_spline_trajectory_generator")
+ros.import("irp6p_kinematic")
+ros.import("controller_common");
 
 //------------------------------------------------------------------------------
 //-- Controller manager
@@ -41,19 +42,50 @@ loadComponent("trans","IRP6PTransmission")
 //setActivity("trans", 0.02, 5, ORO_SCHED_RT)
 trans.configure()
 
+loadComponent("ForwardKinematic","Irp6pForwardKinematic")
+ForwardKinematic.configure()
+
+connect("trans.JointPosition","ForwardKinematic.JointPosition", ConnPolicy())
+
+loadComponent("InverseKinematic","Irp6pInverseKinematic")
+InverseKinematic.configure()
+
+connect("trans.JointPosition","InverseKinematic.CurrentJointPosition", ConnPolicy())
+
 loadComponent("transInv","IRP6PTransmissionInv")
-//setActivity("transInv", 0.02, 5, ORO_SCHED_RT)
 transInv.configure()
 
-loadComponent("JointSplineTrajectoryGenerator", "JointSplineTrajectoryGenerator")
-//setActivity("JointSplineTrajectoryGenerator",0.002,2,ORO_SCHED_RT)
+connect("transInv.JointPosition","InverseKinematic.OutputJointPosition", ConnPolicy())
 
-JointSplineTrajectoryGenerator.loadService("rosparam");
-JointSplineTrajectoryGenerator.rosparam.getAll();
+loadComponent("SplineTrajectoryGeneratorJoint", "InternalSpaceSplineTrajectoryGenerator")
 
-connect("trans.JointPosition","JointSplineTrajectoryGenerator.JointPosition", ConnPolicy())
-connect("JointSplineTrajectoryGenerator.JointPositionCommand","transInv.JointPosition", ConnPolicy())
-JointSplineTrajectoryGenerator.configure()
+SplineTrajectoryGeneratorJoint.loadService("rosparam");
+SplineTrajectoryGeneratorJoint.rosparam.getAll();
+
+
+connect("trans.JointPosition","SplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
+connect("SplineTrajectoryGeneratorJoint.JointPositionCommand","transInv.JointPosition", ConnPolicy())
+SplineTrajectoryGeneratorJoint.configure()
+
+loadComponent("SplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
+
+SplineTrajectoryGeneratorMotor.loadService("rosparam");
+SplineTrajectoryGeneratorMotor.rosparam.getAll();
+
+
+connect("HardwareInterface.MotorPosition","SplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
+connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","HardwareInterface.MotorPositionCommand", ConnPolicy())
+
+
+SplineTrajectoryGeneratorMotor.configure()
+
+loadComponent("PoseInt", "CartesianInterpolator");
+
+connect("ForwardKinematic.OutputPose", "PoseInt.CartesianPosition", ConnPolicy());
+connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputPose", ConnPolicy());
+
+PoseInt.configure();
+
 
 ## Connect
 connect("HardwareInterface.computedPwm_in","IRp6Regulator.computedPwm_out", ConnPolicy())
@@ -65,29 +97,67 @@ connect("IRp6Regulator.deltaInc_in","HardwareInterface.deltaInc_out", ConnPolicy
 addPeer("scheme", "HardwareInterface");
 addPeer("scheme", "IRp6Regulator");
 addPeer("scheme", "trans");
+addPeer("scheme", "ForwardKinematic");
+addPeer("scheme", "InverseKinematic");
 addPeer("scheme", "transInv");
-addPeer("scheme", "JointSplineTrajectoryGenerator");
+addPeer("scheme", "SplineTrajectoryGeneratorJoint");
+addPeer("scheme", "SplineTrajectoryGeneratorMotor");
+addPeer("scheme", "PoseInt");
+
+
 
 scheme.addBlock("HardwareInterface");
 scheme.addBlock("IRp6Regulator");
 scheme.latchConnections("HardwareInterface", "IRp6Regulator", true);
 scheme.addBlock("trans");
+scheme.addBlock("ForwardKinematic");
+scheme.addBlock("InverseKinematic");
 scheme.latchConnections("HardwareInterface", "trans", true);
 scheme.addBlock("transInv");
-scheme.addBlock("JointSplineTrajectoryGenerator");
+scheme.addBlock("SplineTrajectoryGeneratorJoint");
+scheme.addBlock("SplineTrajectoryGeneratorMotor");
+scheme.latchConnections("HardwareInterface", "SplineTrajectoryGeneratorMotor", true);
+scheme.addBlock("PoseInt");
 
 // ROS Interface
 
-loadComponent("JointTrajectoryAction", "JointTrajectoryAction")
-setActivity("JointTrajectoryAction",0 ,2 ,ORO_SCHED_RT)
-JointTrajectoryAction.loadService("rosparam");
-JointTrajectoryAction.rosparam.getAll();
+//
+// SplineTrajectoryActionJoint
+// 
 
-JointTrajectoryAction.loadService("actionlib")
-JointTrajectoryAction.actionlib.connect("/irp6p_arm/joint_trajectory_action")
+loadComponent("SplineTrajectoryActionJoint", "InternalSpaceSplineTrajectoryAction")
+setActivity("SplineTrajectoryActionJoint",0.01 ,2 ,ORO_SCHED_RT)
+SplineTrajectoryActionJoint.loadService("rosparam");
+SplineTrajectoryActionJoint.rosparam.getAll();
 
-connect("JointTrajectoryAction.trajectoryPtr","JointSplineTrajectoryGenerator.trajectoryPtr", ConnPolicy())
-JointTrajectoryAction.configure()
+SplineTrajectoryActionJoint.loadService("actionlib")
+SplineTrajectoryActionJoint.actionlib.connect("/irp6p_arm/spline_trajectory_action_joint")
+
+connect("SplineTrajectoryActionJoint.trajectoryPtr","SplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
+connect("trans.JointPosition","SplineTrajectoryActionJoint.JointPosition", ConnPolicy())
+
+
+SplineTrajectoryActionJoint.configure()
+
+
+//
+// SplineTrajectoryActionMotor
+// 
+
+loadComponent("SplineTrajectoryActionMotor", "InternalSpaceSplineTrajectoryAction")
+setActivity("SplineTrajectoryActionMotor",0.01 ,2 ,ORO_SCHED_RT)
+SplineTrajectoryActionMotor.loadService("rosparam");
+SplineTrajectoryActionMotor.rosparam.getAll();
+
+SplineTrajectoryActionMotor.loadService("actionlib")
+SplineTrajectoryActionMotor.actionlib.connect("/irp6p_arm/spline_trajectory_action_motor")
+
+connect("SplineTrajectoryActionMotor.trajectoryPtr","SplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
+connect("trans.JointPosition","SplineTrajectoryActionMotor.JointPosition", ConnPolicy())
+
+
+SplineTrajectoryActionMotor.configure()
+
 
 // joint states
 loadComponent("JntPub", "JointStatePublisher");
@@ -103,12 +173,19 @@ stream("JntPub.joint_state", ros.comm.topic("/joint_states"));
 
 JntPub.configure()
 
+stream("ForwardKinematic.OutputPose", ros.comm.topic("/cartesian_position"))
+
 ## Start it
 scheme.start()
 IRp6Regulator.start()
 HardwareInterface.start()
 trans.start()
+ForwardKinematic.start()
+InverseKinematic.start()
 transInv.start()
 JntPub.start()
+SplineTrajectoryActionJoint.start()
+SplineTrajectoryActionMotor.start()
+
 
 

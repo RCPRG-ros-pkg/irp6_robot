@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-add_definitions(-DOROCOS_TARGET=gnulinux)
-
 project(irp6_regulator)
 
 find_package(catkin REQUIRED COMPONENTS rtt_ros)
@@ -14,7 +12,6 @@ catkin_package(
   CATKIN_DEPENDS rtt_ros 
 )
 
-add_definitions(-DRTT_COMPONENT)
 orocos_component(${PROJECT_NAME} src/IRp6Regulator.cpp src/Regulator.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
