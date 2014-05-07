@@ -32,6 +32,8 @@ bool ForceControlLaw::startHook() {
 }
 
 void ForceControlLaw::updateHook() {
+  // w pierwszej kolejnosci zwiekszam to co krok na x o wartość 0.0001 - dzialalo
+  // current_pose_.position.x = current_pose_.position.x + 0.00001;
 
   port_output_pose_.write(current_pose_);
 

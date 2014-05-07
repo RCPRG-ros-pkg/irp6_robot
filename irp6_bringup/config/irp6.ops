@@ -16,6 +16,7 @@ ros.import("internal_space_spline_trajectory_action")
 ros.import("internal_space_spline_trajectory_generator")
 ros.import("irp6p_kinematic")
 ros.import("controller_common");
+ros.import("force_contol");
 
 //------------------------------------------------------------------------------
 //-- Controller manager
@@ -79,13 +80,17 @@ connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","HardwareInterface
 
 SplineTrajectoryGeneratorMotor.configure()
 
-loadComponent("PoseInt", "CartesianInterpolator");
+loadComponent("PoseInt", "CartesianInterpolator")
 
-connect("ForwardKinematic.OutputPose", "PoseInt.CartesianPosition", ConnPolicy());
-connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputPose", ConnPolicy());
+connect("ForwardKinematic.OutputPose", "PoseInt.CartesianPosition", ConnPolicy())
+connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputPose", ConnPolicy())
 
 PoseInt.configure();
 
+loadComponent("ForceControlLaw", "ForceControlLaw")
+ForceControlLaw.configure()
+connect("ForceControlLaw.OutputPose", "InverseKinematic.InputPose", ConnPolicy())
+connect("ForceControlLaw.CurrentPose", "ForwardKinematic.OutputPose", ConnPolicy())
 
 ## Connect
 connect("HardwareInterface.computedPwm_in","IRp6Regulator.computedPwm_out", ConnPolicy())
@@ -100,9 +105,11 @@ addPeer("scheme", "trans");
 addPeer("scheme", "ForwardKinematic");
 addPeer("scheme", "InverseKinematic");
 addPeer("scheme", "transInv");
+addPeer("scheme", "ForceControlLaw");
 addPeer("scheme", "SplineTrajectoryGeneratorJoint");
 addPeer("scheme", "SplineTrajectoryGeneratorMotor");
 addPeer("scheme", "PoseInt");
+
 
 
 
@@ -114,6 +121,7 @@ scheme.addBlock("ForwardKinematic");
 scheme.addBlock("InverseKinematic");
 scheme.latchConnections("HardwareInterface", "trans", true);
 scheme.addBlock("transInv");
+scheme.addBlock("ForceControlLaw");
 scheme.addBlock("SplineTrajectoryGeneratorJoint");
 scheme.addBlock("SplineTrajectoryGeneratorMotor");
 scheme.latchConnections("HardwareInterface", "SplineTrajectoryGeneratorMotor", true);
@@ -183,6 +191,7 @@ trans.start()
 ForwardKinematic.start()
 InverseKinematic.start()
 transInv.start()
+#ForceControlLaw.start()
 JntPub.start()
 SplineTrajectoryActionJoint.start()
 SplineTrajectoryActionMotor.start()
