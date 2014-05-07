@@ -23,7 +23,19 @@ bool ForceControlLaw::configureHook() {
   return true;
 }
 
+
+bool ForceControlLaw::startHook() {
+  if(port_current_pose_.read(current_pose_) == RTT::NoData) {
+    return false;
+  }
+  return true;
+}
+
 void ForceControlLaw::updateHook() {
+
+  port_output_pose_.write(current_pose_);
+
+
 /*
   if (port_joint_position_.read(joint_position_) == RTT::NewData) {
 

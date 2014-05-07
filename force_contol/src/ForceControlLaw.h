@@ -13,7 +13,8 @@ class ForceControlLaw : public RTT::TaskContext {
   ForceControlLaw(const std::string& name);
   virtual ~ForceControlLaw();
 
-  bool configureHook();
+  virtual bool configureHook();
+  virtual bool startHook();
   void updateHook();
 
  private:
@@ -23,6 +24,8 @@ class ForceControlLaw : public RTT::TaskContext {
   RTT::OutputPort<geometry_msgs::Pose> port_output_pose_;
 
   RTT::InputPort<geometry_msgs::Wrench> port_current_wrench_;
+
+  geometry_msgs::Pose current_pose_;
 
 };
 
