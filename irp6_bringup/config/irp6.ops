@@ -6,6 +6,7 @@ ros.import("rtt_sensor_msgs")
 ros.import("rtt_actionlib_msgs")
 ros.import("rtt_trajectory_msgs")
 ros.import("rtt_control_msgs")
+ros.import("rtt_cartesian_trajectory_msgs")
 
 ros.import("conman");
 ros.import("conman_ros");
@@ -175,8 +176,23 @@ SplineTrajectoryActionMotor.actionlib.connect("/irp6p_arm/spline_trajectory_acti
 connect("SplineTrajectoryActionMotor.trajectoryPtr","SplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
 connect("trans.JointPosition","SplineTrajectoryActionMotor.JointPosition", ConnPolicy())
 
-
 SplineTrajectoryActionMotor.configure()
+
+//
+//
+//
+
+loadComponent("CartesianTrajectoryAction", "CartesianTrajectoryAction")
+setActivity("CartesianTrajectoryAction",0.01 ,2 ,ORO_SCHED_RT)
+
+CartesianTrajectoryAction.configure()
+
+CartesianTrajectoryAction.loadService("actionlib")
+CartesianTrajectoryAction.actionlib.connect("/irp6p_arm/cartesian_trajectory")
+
+connect("CartesianTrajectoryAction.CartesianTrajectoryCommand","PoseInt.CartesianTrajectoryCommand", ConnPolicy())
+//connect("CartesianTrajectoryAction.trajectoryPtr","PoseInt.CartesianPiositionCommand", ConnPolicy())
+//connect("CartesianTrajectoryAction.trajectoryPtr","ForwardKinematic.OutputPose", ConnPolicy())
 
 
 // joint states
@@ -193,7 +209,7 @@ stream("JntPub.joint_state", ros.comm.topic("/joint_states"));
 
 JntPub.configure()
 
-#stream("ForwardKinematic.OutputPose", ros.comm.topic("/cartesian_position"))
+stream("ForwardKinematic.OutputPose", ros.comm.topic("/cartesian_position"))
 #stream("ATI6284.Wrench", ros.comm.topic("/ati_wrench"))
 
 ## Start it
@@ -209,6 +225,7 @@ ATI6284.start()
 JntPub.start()
 SplineTrajectoryActionJoint.start()
 SplineTrajectoryActionMotor.start()
+CartesianTrajectoryAction.start()
 
 
 
