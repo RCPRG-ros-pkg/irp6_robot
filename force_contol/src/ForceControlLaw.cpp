@@ -32,24 +32,16 @@ bool ForceControlLaw::startHook() {
 }
 
 void ForceControlLaw::updateHook() {
-  // w pierwszej kolejnosci zwiekszam to co krok na x o wartość 0.0001 - dzialalo
-  // current_pose_.position.x = current_pose_.position.x + 0.00001;
 
+  geometry_msgs::Wrench current_wrench;
+  port_current_wrench_.read(current_wrench);
+  // w pierwszej kolejnosci zwiekszam to co krok na x o wartość 0.0001 - dzialalo
+  //current_pose_.position.x = current_pose_.position.x + 0.00001;
+  // prosty regulator na osi z czujnika
+ // current_pose_.position.x = current_pose_.position.x + 0.00001*current_wrench.force.z;
   port_output_pose_.write(current_pose_);
 
 
-/*
-  if (port_joint_position_.read(joint_position_) == RTT::NewData) {
-
-    Eigen::Affine3d trans;
-    geometry_msgs::Pose pos;
-
-    direct_kinematics_transform(joint_position_, &trans);
-
-    tf::poseEigenToMsg(trans, pos);
-    port_output_pose_.write(pos);
-  }
-  */
 }
 
 
