@@ -5,7 +5,7 @@ public:
   Regulator();
   ~Regulator();
 
-  int doServo(int, int);
+  int doServo(double, int);
   void reset();
   void setParam(double a, double b0, double b1);
 private:

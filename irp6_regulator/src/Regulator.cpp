@@ -20,7 +20,7 @@ Regulator::~Regulator()
 
 }
 
-int Regulator::doServo(int step_new, int pos_inc)
+int Regulator::doServo(double step_new, int pos_inc)
 {
 
   // algorytm regulacji dla serwomechanizmu
