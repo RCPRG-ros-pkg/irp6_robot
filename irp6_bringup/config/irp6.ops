@@ -65,6 +65,7 @@ SplineTrajectoryGeneratorJoint.rosparam.getAll();
 
 connect("trans.JointPosition","SplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
 connect("SplineTrajectoryGeneratorJoint.JointPositionCommand","transInv.JointPosition", ConnPolicy())
+
 SplineTrajectoryGeneratorJoint.configure()
 
 loadComponent("SplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
@@ -135,6 +136,7 @@ SplineTrajectoryActionJoint.actionlib.connect("/irp6p_arm/spline_trajectory_acti
 
 connect("SplineTrajectoryActionJoint.trajectoryPtr","SplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
 connect("trans.JointPosition","SplineTrajectoryActionJoint.JointPosition", ConnPolicy())
+connect("SplineTrajectoryGeneratorJoint.JointPositionCommand","SplineTrajectoryActionJoint.JointPositionCommand", ConnPolicy())
 
 
 SplineTrajectoryActionJoint.configure()
