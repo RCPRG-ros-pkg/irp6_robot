@@ -6,6 +6,7 @@ ros.import("rtt_sensor_msgs")
 ros.import("rtt_actionlib_msgs")
 ros.import("rtt_trajectory_msgs")
 ros.import("rtt_control_msgs")
+ros.import("rtt_cartesian_trajectory_msgs")
 
 ros.import("conman");
 ros.import("conman_ros");
@@ -16,6 +17,9 @@ ros.import("internal_space_spline_trajectory_action")
 ros.import("internal_space_spline_trajectory_generator")
 ros.import("irp6p_kinematic")
 ros.import("controller_common");
+ros.import("force_contol");
+ros.import("ati6284");
+
 
 //------------------------------------------------------------------------------
 //-- Controller manager
@@ -80,12 +84,24 @@ connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","HardwareInterface
 
 SplineTrajectoryGeneratorMotor.configure()
 
-loadComponent("PoseInt", "CartesianInterpolator");
+loadComponent("PoseInt", "CartesianInterpolator")
 
-connect("ForwardKinematic.OutputPose", "PoseInt.CartesianPosition", ConnPolicy());
-connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputPose", ConnPolicy());
+connect("ForwardKinematic.OutputPose", "PoseInt.CartesianPosition", ConnPolicy())
+connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputPose", ConnPolicy())
 
 PoseInt.configure();
+
+loadComponent("ForceControlLaw", "ForceControlLaw")
+ForceControlLaw.configure()
+
+loadComponent("ATI6284", "ATI6284")
+ATI6284.configure()
+
+
+
+connect("ForceControlLaw.OutputPose", "InverseKinematic.InputPose", ConnPolicy())
+connect("ForceControlLaw.CurrentPose", "ForwardKinematic.OutputPose", ConnPolicy())
+connect("ForceControlLaw.CurrentWrench", "ATI6284.Wrench", ConnPolicy())
 
 
 ## Connect
@@ -101,9 +117,12 @@ addPeer("scheme", "trans");
 addPeer("scheme", "ForwardKinematic");
 addPeer("scheme", "InverseKinematic");
 addPeer("scheme", "transInv");
+addPeer("scheme", "ForceControlLaw");
+addPeer("scheme", "ATI6284");
 addPeer("scheme", "SplineTrajectoryGeneratorJoint");
 addPeer("scheme", "SplineTrajectoryGeneratorMotor");
 addPeer("scheme", "PoseInt");
+
 
 
 
@@ -115,6 +134,8 @@ scheme.addBlock("ForwardKinematic");
 scheme.addBlock("InverseKinematic");
 scheme.latchConnections("HardwareInterface", "trans", true);
 scheme.addBlock("transInv");
+scheme.addBlock("ForceControlLaw");
+scheme.addBlock("ATI6284");
 scheme.addBlock("SplineTrajectoryGeneratorJoint");
 scheme.addBlock("SplineTrajectoryGeneratorMotor");
 scheme.latchConnections("HardwareInterface", "SplineTrajectoryGeneratorMotor", true);
@@ -157,8 +178,23 @@ SplineTrajectoryActionMotor.actionlib.connect("/irp6p_arm/spline_trajectory_acti
 connect("SplineTrajectoryActionMotor.trajectoryPtr","SplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
 connect("trans.JointPosition","SplineTrajectoryActionMotor.JointPosition", ConnPolicy())
 
-
 SplineTrajectoryActionMotor.configure()
+
+//
+//
+//
+
+loadComponent("CartesianTrajectoryAction", "CartesianTrajectoryAction")
+setActivity("CartesianTrajectoryAction",0.01 ,2 ,ORO_SCHED_RT)
+
+CartesianTrajectoryAction.configure()
+
+CartesianTrajectoryAction.loadService("actionlib")
+CartesianTrajectoryAction.actionlib.connect("/irp6p_arm/cartesian_trajectory")
+
+connect("CartesianTrajectoryAction.CartesianTrajectoryCommand","PoseInt.CartesianTrajectoryCommand", ConnPolicy())
+//connect("CartesianTrajectoryAction.trajectoryPtr","PoseInt.CartesianPiositionCommand", ConnPolicy())
+//connect("CartesianTrajectoryAction.trajectoryPtr","ForwardKinematic.OutputPose", ConnPolicy())
 
 
 // joint states
@@ -176,6 +212,7 @@ stream("JntPub.joint_state", ros.comm.topic("/joint_states"));
 JntPub.configure()
 
 stream("ForwardKinematic.OutputPose", ros.comm.topic("/cartesian_position"))
+#stream("ATI6284.Wrench", ros.comm.topic("/ati_wrench"))
 
 ## Start it
 scheme.start()
@@ -185,9 +222,12 @@ trans.start()
 ForwardKinematic.start()
 InverseKinematic.start()
 transInv.start()
+#ForceControlLaw.start()
+ATI6284.start()
 JntPub.start()
 SplineTrajectoryActionJoint.start()
 SplineTrajectoryActionMotor.start()
+CartesianTrajectoryAction.start()
 
 
 

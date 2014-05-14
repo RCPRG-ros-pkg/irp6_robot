@@ -38,7 +38,7 @@ from diagnostic_msgs.msg import *
 from geometry_msgs.msg import *
 from trajectory_msgs.msg import *
 from control_msgs.msg import *
-
+from cartesian_trajectory_msgs.msg import *
 
 from tf.transformations import *
 
@@ -91,7 +91,25 @@ if __name__ == '__main__':
   joint_client.wait_for_result()
   command_result = joint_client.get_result()
   
-  conmanSwitch([], ['SplineTrajectoryGeneratorJoint'], True)
+  conmanSwitch(['PoseInt'], ['SplineTrajectoryGeneratorJoint'], True)
+  
+  joint_client = actionlib.SimpleActionClient('/irp6p_arm/cartesian_trajectory', CartesianTrajectoryAction)
+  joint_client.wait_for_server()
+  
+  print 'server ok'
+  
+  goal = CartesianTrajectoryGoal()
+  
+  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(10.0), Pose(Point(0.705438961242, -0.1208864692291, 0.231029263241), Quaternion(0.675351045979, 0.0892025112399, 0.698321120995, 0.219753244928)), Twist()))
+  goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+  
+  joint_client.send_goal(goal)
+
+  joint_client.wait_for_result()
+  command_result = joint_client.get_result()
+  
+  conmanSwitch([], ['PoseInt'], True)
+  
   
   print 'finish'
   
