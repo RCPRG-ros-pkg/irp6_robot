@@ -19,7 +19,6 @@ class ForceControlLaw : public RTT::TaskContext {
 
  private:
 
-
   RTT::InputPort<geometry_msgs::Pose> port_current_pose_;
   RTT::OutputPort<geometry_msgs::Pose> port_output_pose_;
 
