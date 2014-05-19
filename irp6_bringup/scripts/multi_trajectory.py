@@ -42,8 +42,9 @@ from cartesian_trajectory_msgs.msg import *
 
 from tf.transformations import *
 
-from PyKDL import Rotation
-
+#from PyKDL import *
+import PyKDL
+import tf_conversions.posemath as pm
 
 if __name__ == '__main__':
   rospy.init_node('multi_trajectory')
@@ -100,7 +101,12 @@ if __name__ == '__main__':
   
   goal = CartesianTrajectoryGoal()
   
+  rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.0, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 0.231029263241))
+  
   goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(10.0), Pose(Point(0.705438961242, -0.1208864692291, 0.231029263241), Quaternion(0.675351045979, 0.0892025112399, 0.698321120995, 0.219753244928)), Twist()))
+  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(15.0), pm.toMsg(rot), Twist()))
+  rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.3, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 0.231029263241))
+  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(20.0), pm.toMsg(rot), Twist()))
   goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
   
   joint_client.send_goal(goal)
