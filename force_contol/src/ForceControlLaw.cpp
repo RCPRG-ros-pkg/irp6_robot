@@ -36,7 +36,7 @@ void ForceControlLaw::updateHook() {
   // w pierwszej kolejnosci zwiekszam to co krok na x o wartość 0.0001 - dzialalo
   //current_pose_.position.x = current_pose_.position.x + 0.00001;
   // prosty regulator na osi z czujnika
-  // current_pose_.position.x = current_pose_.position.x + 0.00001*current_wrench.force.z;
+  current_pose_.position.x = current_pose_.position.x + 0.00001*current_wrench.force.z;
   port_output_pose_.write(current_pose_);
 
 }

@@ -83,6 +83,8 @@ connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","HardwareInterface
 
 SplineTrajectoryGeneratorMotor.configure()
 
+// PoseInt
+
 loadComponent("PoseInt", "CartesianInterpolator")
 
 connect("ForwardKinematic.OutputPose", "PoseInt.CartesianPosition", ConnPolicy())
@@ -90,11 +92,22 @@ connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputPose", ConnPo
 
 PoseInt.configure();
 
+// ToolInt
+
+loadComponent("ToolInt", "CartesianInterpolator")
+ToolInt.configure();
+ToolInt.loadService("rosparam");
+ToolInt.rosparam.getAll();
+
+// ForceControlLaw
+
+
 loadComponent("ForceControlLaw", "ForceControlLaw")
 ForceControlLaw.configure()
 
 loadComponent("ATI6284", "ATI6284")
 ATI6284.configure()
+
 
 
 
@@ -179,7 +192,7 @@ connect("trans.JointPosition","SplineTrajectoryActionMotor.JointPosition", ConnP
 SplineTrajectoryActionMotor.configure()
 
 //
-//
+// CartesianTrajectoryAction
 //
 
 loadComponent("CartesianTrajectoryAction", "CartesianTrajectoryAction")
