@@ -134,6 +134,7 @@ addPeer("scheme", "ATI6284");
 addPeer("scheme", "SplineTrajectoryGeneratorJoint");
 addPeer("scheme", "SplineTrajectoryGeneratorMotor");
 addPeer("scheme", "PoseInt");
+addPeer("scheme", "ToolInt");
 
 
 
@@ -152,6 +153,7 @@ scheme.addBlock("SplineTrajectoryGeneratorJoint");
 scheme.addBlock("SplineTrajectoryGeneratorMotor");
 scheme.latchConnections("HardwareInterface", "SplineTrajectoryGeneratorMotor", true);
 scheme.addBlock("PoseInt");
+scheme.addBlock("ToolInt");
 
 // ROS Interface
 
@@ -195,17 +197,31 @@ SplineTrajectoryActionMotor.configure()
 // CartesianTrajectoryAction
 //
 
-loadComponent("CartesianTrajectoryAction", "CartesianTrajectoryAction")
-setActivity("CartesianTrajectoryAction",0.01 ,2 ,ORO_SCHED_RT)
+loadComponent("PoseIntAction", "CartesianTrajectoryAction")
+setActivity("PoseIntAction",0.01 ,2 ,ORO_SCHED_RT)
 
-CartesianTrajectoryAction.configure()
+PoseIntAction.configure()
 
-CartesianTrajectoryAction.loadService("actionlib")
-CartesianTrajectoryAction.actionlib.connect("/irp6p_arm/cartesian_trajectory")
+PoseIntAction.loadService("actionlib")
+PoseIntAction.actionlib.connect("/irp6p_arm/pose_trajectory")
 
-connect("CartesianTrajectoryAction.CartesianTrajectoryCommand","PoseInt.CartesianTrajectoryCommand", ConnPolicy())
-//connect("CartesianTrajectoryAction.trajectoryPtr","PoseInt.CartesianPiositionCommand", ConnPolicy())
-//connect("CartesianTrajectoryAction.trajectoryPtr","ForwardKinematic.OutputPose", ConnPolicy())
+connect("PoseIntAction.CartesianTrajectoryCommand","PoseInt.CartesianTrajectoryCommand", ConnPolicy())
+
+
+//
+// ToolIntAction
+//
+
+loadComponent("ToolIntAction", "CartesianTrajectoryAction")
+setActivity("ToolIntAction",0.01 ,2 ,ORO_SCHED_RT)
+
+ToolIntAction.configure()
+
+ToolIntAction.loadService("actionlib")
+ToolIntAction.actionlib.connect("/irp6p_arm/tool_trajectory")
+
+connect("ToolIntAction.CartesianTrajectoryCommand","ToolInt.CartesianTrajectoryCommand", ConnPolicy())
+
 
 
 // joint states
@@ -238,7 +254,9 @@ ATI6284.start()
 JntPub.start()
 SplineTrajectoryActionJoint.start()
 SplineTrajectoryActionMotor.start()
-CartesianTrajectoryAction.start()
+PoseIntAction.start()
+ToolIntAction.start()
+ToolInt.start()
 
 
 
