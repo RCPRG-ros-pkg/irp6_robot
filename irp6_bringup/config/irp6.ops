@@ -87,7 +87,7 @@ SplineTrajectoryGeneratorMotor.configure()
 
 loadComponent("PoseInt", "CartesianInterpolator")
 
-connect("ForwardKinematic.OutputPose", "PoseInt.CartesianPosition", ConnPolicy())
+connect("ForwardKinematic.WristOutputPose", "PoseInt.CartesianPosition", ConnPolicy())
 connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputPose", ConnPolicy())
 
 PoseInt.configure();
@@ -98,6 +98,8 @@ loadComponent("ToolInt", "CartesianInterpolator")
 ToolInt.configure();
 ToolInt.loadService("rosparam");
 ToolInt.rosparam.getAll();
+
+connect("ToolInt.CartesianPositionCommand", "ForwardKinematic.Tool", ConnPolicy())
 
 // ForceControlLaw
 
@@ -112,7 +114,7 @@ ATI6284.configure()
 
 
 connect("ForceControlLaw.OutputPose", "InverseKinematic.InputPose", ConnPolicy())
-connect("ForceControlLaw.CurrentPose", "ForwardKinematic.OutputPose", ConnPolicy())
+connect("ForceControlLaw.CurrentPose", "ForwardKinematic.WristOutputPose", ConnPolicy())
 connect("ForceControlLaw.CurrentWrench", "ATI6284.Wrench", ConnPolicy())
 
 
@@ -238,7 +240,7 @@ stream("JntPub.joint_state", ros.comm.topic("/joint_states"));
 
 JntPub.configure()
 
-stream("ForwardKinematic.OutputPose", ros.comm.topic("/cartesian_position"))
+stream("ForwardKinematic.WristOutputPose", ros.comm.topic("/cartesian_position"))
 #stream("ATI6284.Wrench", ros.comm.topic("/ati_wrench"))
 
 ## Start it
