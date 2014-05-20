@@ -27,9 +27,9 @@ class Irp6pInverseKinematic : public RTT::TaskContext {
 
   RTT::InputPort<Eigen::VectorXd> port_current_joint_position_;
   RTT::OutputPort<Eigen::VectorXd> port_output_joint_position_;
-  RTT::InputPort<geometry_msgs::Pose> port_input_pose_;
+  RTT::InputPort<geometry_msgs::Pose> port_input_wrist_pose_;
 
-  geometry_msgs::Pose pos;
+  geometry_msgs::Pose wrist_pose_;
 
   //! D-H kinematic parameters - length of 2nd segment.
   double a2;

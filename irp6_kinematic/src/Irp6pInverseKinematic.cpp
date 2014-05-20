@@ -8,7 +8,7 @@ Irp6pInverseKinematic::Irp6pInverseKinematic(const std::string& name)
 
   this->ports()->addPort("CurrentJointPosition", port_current_joint_position_);
   this->ports()->addPort("OutputJointPosition", port_output_joint_position_);
-  this->ports()->addPort("InputPose", port_input_pose_);
+  this->ports()->addPort("InputWristPose", port_input_wrist_pose_);
 
 }
 
@@ -36,10 +36,10 @@ bool Irp6pInverseKinematic::configureHook() {
 
 void Irp6pInverseKinematic::updateHook() {
 
-  if (port_input_pose_.read(pos) == RTT::NewData) {
+  if (port_input_wrist_pose_.read(wrist_pose_) == RTT::NewData) {
 
     Eigen::Affine3d trans;
-    tf::poseMsgToEigen(pos, trans);
+    tf::poseMsgToEigen(wrist_pose_, trans);
 
     port_current_joint_position_.read(local_current_joints_);
 

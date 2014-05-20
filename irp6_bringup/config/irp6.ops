@@ -88,7 +88,7 @@ SplineTrajectoryGeneratorMotor.configure()
 loadComponent("PoseInt", "CartesianInterpolator")
 
 connect("ForwardKinematic.WristOutputPose", "PoseInt.CartesianPosition", ConnPolicy())
-connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputPose", ConnPolicy())
+connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputWristPose", ConnPolicy())
 
 PoseInt.configure();
 
@@ -113,7 +113,7 @@ ATI6284.configure()
 
 
 
-connect("ForceControlLaw.OutputPose", "InverseKinematic.InputPose", ConnPolicy())
+connect("ForceControlLaw.OutputPose", "InverseKinematic.InputWristPose", ConnPolicy())
 connect("ForceControlLaw.CurrentPose", "ForwardKinematic.WristOutputPose", ConnPolicy())
 connect("ForceControlLaw.CurrentWrench", "ATI6284.Wrench", ConnPolicy())
 
