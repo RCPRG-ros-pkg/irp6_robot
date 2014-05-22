@@ -125,7 +125,78 @@ if __name__ == '__main__':
   command_result = pose_client.get_result()
   
   conmanSwitch([], ['PoseInt'], True)
-    
+  
+  #
+  # Tool motion
+  #
+  
+  tool_client = actionlib.SimpleActionClient('/irp6p_arm/tool_trajectory', CartesianTrajectoryAction)
+  tool_client.wait_for_server()
+  
+  print 'server ok'
+     
+  goal = CartesianTrajectoryGoal()
+  
+  
+  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(0.1), Pose(Point(0.0, 0.0, 0.0), Quaternion(0.0, 0.0, 0.0, 1.0)), Twist()))
+  goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.1)
+  
+  tool_client.send_goal(goal)
+
+  tool_client.wait_for_result()
+  command_result = tool_client.get_result()
+  
+  
+  
+  #
+  # Cartesian coordinates motion
+  #
+  
+  conmanSwitch(['PoseInt'], [], True)
+  
+  pose_client = actionlib.SimpleActionClient('/irp6p_arm/pose_trajectory', CartesianTrajectoryAction)
+  pose_client.wait_for_server()
+  
+  print 'server ok'
+     
+  goal = CartesianTrajectoryGoal()
+  
+  rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.0, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 0.231029263241))
+  
+  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(5.0), Pose(Point(0.705438961242, -0.1208864692291, 0.231029263241), Quaternion(0.675351045979, 0.0892025112399, 0.698321120995, 0.219753244928)), Twist()))
+  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(10.0), pm.toMsg(rot), Twist()))
+  rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.3, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 0.231029263241))
+  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(15.0), pm.toMsg(rot), Twist()))
+  goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+  
+  pose_client.send_goal(goal)
+
+  pose_client.wait_for_result()
+  command_result = pose_client.get_result()
+  
+  conmanSwitch([], ['PoseInt'], True)
+  
+  #
+  # Tool motion
+  #
+  
+  tool_client = actionlib.SimpleActionClient('/irp6p_arm/tool_trajectory', CartesianTrajectoryAction)
+  tool_client.wait_for_server()
+  
+  print 'server ok'
+     
+  goal = CartesianTrajectoryGoal()
+  
+  
+  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(0.1), Pose(Point(0.0, 0.0, 0.25), Quaternion(0.0, 0.0, 0.0, 1.0)), Twist()))
+  goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.1)
+  
+  tool_client.send_goal(goal)
+
+  tool_client.wait_for_result()
+  command_result = tool_client.get_result()
+  
+  
   
   
   print 'finish'

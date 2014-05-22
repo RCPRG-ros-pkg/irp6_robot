@@ -87,8 +87,8 @@ SplineTrajectoryGeneratorMotor.configure()
 
 loadComponent("PoseInt", "CartesianInterpolator")
 
-connect("ForwardKinematic.WristOutputPose", "PoseInt.CartesianPosition", ConnPolicy())
-connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputWristPose", ConnPolicy())
+connect("ForwardKinematic.EndEffectorOutputPose", "PoseInt.CartesianPosition", ConnPolicy())
+connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputEndEffectorPose", ConnPolicy())
 
 PoseInt.configure();
 
@@ -100,6 +100,7 @@ ToolInt.loadService("rosparam");
 ToolInt.rosparam.getAll();
 
 connect("ToolInt.CartesianPositionCommand", "ForwardKinematic.Tool", ConnPolicy())
+connect("ToolInt.CartesianPositionCommand", "InverseKinematic.Tool", ConnPolicy())
 
 // ForceControlLaw
 
