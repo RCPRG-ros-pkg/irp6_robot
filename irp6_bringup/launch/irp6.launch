@@ -23,6 +23,18 @@
         number_of_joints: 6
       SplineTrajectoryActionMotor:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
+      ToolInt:
+        activate_pose_init: true
+        init_setpoint:
+          orientation:
+            w: 1.0 
+            x: 0.0
+            y: 0.0
+            z: 0.0
+          position:
+            x: 0.0
+            y: 0.0
+            z: 0.25
     </rosparam>
 </group>
 

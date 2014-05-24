@@ -83,12 +83,27 @@ connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","HardwareInterface
 
 SplineTrajectoryGeneratorMotor.configure()
 
+// PoseInt
+
 loadComponent("PoseInt", "CartesianInterpolator")
 
-connect("ForwardKinematic.OutputPose", "PoseInt.CartesianPosition", ConnPolicy())
-connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputPose", ConnPolicy())
+connect("ForwardKinematic.EndEffectorOutputPose", "PoseInt.CartesianPosition", ConnPolicy())
+connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputEndEffectorPose", ConnPolicy())
 
 PoseInt.configure();
+
+// ToolInt
+
+loadComponent("ToolInt", "CartesianInterpolator")
+ToolInt.configure();
+ToolInt.loadService("rosparam");
+ToolInt.rosparam.getAll();
+
+connect("ToolInt.CartesianPositionCommand", "ForwardKinematic.Tool", ConnPolicy())
+connect("ToolInt.CartesianPositionCommand", "InverseKinematic.Tool", ConnPolicy())
+
+// ForceControlLaw
+
 
 loadComponent("ForceControlLaw", "ForceControlLaw")
 ForceControlLaw.configure()
@@ -98,8 +113,9 @@ ATI6284.configure()
 
 
 
-connect("ForceControlLaw.OutputPose", "InverseKinematic.InputPose", ConnPolicy())
-connect("ForceControlLaw.CurrentPose", "ForwardKinematic.OutputPose", ConnPolicy())
+
+connect("ForceControlLaw.OutputPose", "InverseKinematic.InputWristPose", ConnPolicy())
+connect("ForceControlLaw.CurrentPose", "ForwardKinematic.WristOutputPose", ConnPolicy())
 connect("ForceControlLaw.CurrentWrench", "ATI6284.Wrench", ConnPolicy())
 
 
@@ -121,6 +137,7 @@ addPeer("scheme", "ATI6284");
 addPeer("scheme", "SplineTrajectoryGeneratorJoint");
 addPeer("scheme", "SplineTrajectoryGeneratorMotor");
 addPeer("scheme", "PoseInt");
+addPeer("scheme", "ToolInt");
 
 
 
@@ -139,6 +156,7 @@ scheme.addBlock("SplineTrajectoryGeneratorJoint");
 scheme.addBlock("SplineTrajectoryGeneratorMotor");
 scheme.latchConnections("HardwareInterface", "SplineTrajectoryGeneratorMotor", true);
 scheme.addBlock("PoseInt");
+scheme.addBlock("ToolInt");
 
 // ROS Interface
 
@@ -179,20 +197,34 @@ connect("trans.JointPosition","SplineTrajectoryActionMotor.JointPosition", ConnP
 SplineTrajectoryActionMotor.configure()
 
 //
+// CartesianTrajectoryAction
 //
+
+loadComponent("PoseIntAction", "CartesianTrajectoryAction")
+setActivity("PoseIntAction",0.01 ,2 ,ORO_SCHED_RT)
+
+PoseIntAction.configure()
+
+PoseIntAction.loadService("actionlib")
+PoseIntAction.actionlib.connect("/irp6p_arm/pose_trajectory")
+
+connect("PoseIntAction.CartesianTrajectoryCommand","PoseInt.CartesianTrajectoryCommand", ConnPolicy())
+
+
+//
+// ToolIntAction
 //
 
-loadComponent("CartesianTrajectoryAction", "CartesianTrajectoryAction")
-setActivity("CartesianTrajectoryAction",0.01 ,2 ,ORO_SCHED_RT)
+loadComponent("ToolIntAction", "CartesianTrajectoryAction")
+setActivity("ToolIntAction",0.01 ,2 ,ORO_SCHED_RT)
 
-CartesianTrajectoryAction.configure()
+ToolIntAction.configure()
 
-CartesianTrajectoryAction.loadService("actionlib")
-CartesianTrajectoryAction.actionlib.connect("/irp6p_arm/cartesian_trajectory")
+ToolIntAction.loadService("actionlib")
+ToolIntAction.actionlib.connect("/irp6p_arm/tool_trajectory")
 
-connect("CartesianTrajectoryAction.CartesianTrajectoryCommand","PoseInt.CartesianTrajectoryCommand", ConnPolicy())
-//connect("CartesianTrajectoryAction.trajectoryPtr","PoseInt.CartesianPiositionCommand", ConnPolicy())
-//connect("CartesianTrajectoryAction.trajectoryPtr","ForwardKinematic.OutputPose", ConnPolicy())
+connect("ToolIntAction.CartesianTrajectoryCommand","ToolInt.CartesianTrajectoryCommand", ConnPolicy())
+
 
 
 // joint states
@@ -209,7 +241,7 @@ stream("JntPub.joint_state", ros.comm.topic("/joint_states"));
 
 JntPub.configure()
 
-stream("ForwardKinematic.OutputPose", ros.comm.topic("/cartesian_position"))
+stream("ForwardKinematic.WristOutputPose", ros.comm.topic("/cartesian_position"))
 #stream("ATI6284.Wrench", ros.comm.topic("/ati_wrench"))
 
 ## Start it
@@ -225,7 +257,9 @@ ATI6284.start()
 JntPub.start()
 SplineTrajectoryActionJoint.start()
 SplineTrajectoryActionMotor.start()
-CartesianTrajectoryAction.start()
+PoseIntAction.start()
+ToolIntAction.start()
+ToolInt.start()
 
 
 
