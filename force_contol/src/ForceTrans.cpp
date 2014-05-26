@@ -20,10 +20,10 @@ ForceTrans::ForceTrans(const short l_force_sensor_name,
 
   tool_weight = weight;
   gravity_arm_in_wrist = point_of_gravity;
-/* Temporary removal
- // synchro(init_frame);
- // defineTool(init_frame, weight, point_of_gravity);
-  */
+  synchro(init_frame);
+  /* Temporary removal
+   // defineTool(init_frame, weight, point_of_gravity);
+   */
 
   initialized = true;
 
@@ -84,12 +84,12 @@ ForceTrans::ForceTrans(const short l_force_sensor_name,
  }
  return 0;
  }
-
- void ForceTrans::synchro(const lib::Homog_matrix & init_frame)
- {
- //initialisation_frame = init_frame;
- if (initialized)
- defineTool(init_frame, tool_weight, gravity_arm_in_wrist);
- }
-
  */
+void ForceTrans::synchro(const KDL::Frame & init_frame) {
+  if (initialized) {
+    /* Temporary removal
+    defineTool(init_frame, tool_weight, gravity_arm_in_wrist);
+    */
+  }
+}
+

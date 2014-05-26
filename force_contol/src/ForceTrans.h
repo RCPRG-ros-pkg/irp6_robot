@@ -27,9 +27,10 @@ protected:
 
 public:
 	ForceTrans(const short l_force_sensor_name, const KDL::Frame & init_frame, const KDL::Frame & s_frame, const double weight, const KDL::Vector & point_of_gravity, bool _is_right_turn_frame);
+  void synchro(const KDL::Frame & init_frame);
+
 	/*
 	void defineTool(const lib::Homog_matrix & init_frame, const double weight, const lib::K_vector & point_of_gravity);
-	void synchro(const lib::Homog_matrix & init_frame);
 	lib::Ft_vector getForce(const lib::Ft_vector _inputForceTorque, const lib::Homog_matrix curr_frame);
 
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
