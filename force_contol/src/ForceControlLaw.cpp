@@ -43,7 +43,7 @@ void ForceControlLaw::updateHook() {
       + 0.00001 * current_wrench.force.z;
 */
   current_pose_.position.x = current_pose_.position.x
-      + 0.00001 * current_wrench.force.x;
+      + 0.00001 * (-current_wrench.force.x);
 
   port_output_pose_.write(current_pose_);
 
