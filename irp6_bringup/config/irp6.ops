@@ -117,7 +117,7 @@ ForceTransformation.configure()
 connect("ForceTransformation.Tool", "ToolInt.CartesianPositionCommand", ConnPolicy())
 connect("ForceTransformation.CurrentWristPose", "ForwardKinematic.WristOutputPose", ConnPolicy())
 connect("ForceTransformation.CurrentWrench", "ATI6284.Wrench", ConnPolicy())
-connect("ForceTransformation.OutputWrench", "ForceControlLaw.CurrentWrench", ConnPolicy())
+
 
 // ForceControlLaw
 
@@ -126,6 +126,7 @@ ForceControlLaw.configure()
 
 connect("ForceControlLaw.OutputPose", "InverseKinematic.InputWristPose", ConnPolicy())
 connect("ForceControlLaw.CurrentPose", "ForwardKinematic.WristOutputPose", ConnPolicy())
+connect("ForceTransformation.OutputWrench", "ForceControlLaw.CurrentWrench", ConnPolicy())
 
 
 ## Connect
