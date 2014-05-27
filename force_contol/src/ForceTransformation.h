@@ -51,8 +51,6 @@ class ForceTransformation : public RTT::TaskContext {
   // ft_table used in get_reading and get_particualr_reading
   KDL::Wrench ft_table;
 
-  KDL::Wrench force_constraints;
-
   KDL::Wrench force_offset;
 
   KDL::Frame tool_mass_center_translation;

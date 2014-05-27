@@ -40,74 +40,46 @@ bool ForceTransformation::startHook() {
   if (!force_sensor_test_mode) {
     // read current force
     geometry_msgs::Wrench current_wrench;
-    port_current_wrench_.read(current_wrench);
+    if (port_current_wrench_.read(current_wrench) == RTT::NoData) {
+      return false;
+    }
 
     tf::wrenchMsgToKDL(current_wrench, force_offset);
 
   }
-  /*
-   // polozenie kisci bez narzedzia wzgledem bazy
-   lib::Homog_matrix current_frame =
-   master.servo_current_frame_wo_tool_dp.read();  // FORCE Transformation by Slawomir Bazant
 
-   if (!gravity_transformation)  // nie powolano jeszcze obiektu
-   {
+  // polozenie nadgarstka narzedzia wzgledem bazy
+  if (port_current_wrist_pose_.read(current_wrist_pose_) == RTT::NoData) {
+    return false;
+  }
 
-   // zczytanie sil maksymalnych
-   if (master.config.exists("force_constraints")) {
-   char *tmp = strdup(
-   master.config.value < std::string > ("force_constraints").c_str());
-   char* toDel = tmp;
-   for (int i = 0; i < 6; i++) {
-   force_constraints[i] = strtod(tmp, &tmp);
-   }
-   free(toDel);
-   }
+  KDL::Frame current_frame;
 
-   lib::Xyz_Angle_Axis_vector tab;
-   //zczytanie polozenia czujnika sily wzgledem nadgarstka
-   if (master.config.exists("force_sensor_in_wrist")) {
-   char *tmp = strdup(
-   master.config.value < std::string
-   > ("force_sensor_in_wrist").c_str());
-   char* toDel = tmp;
-   for (int i = 0; i < 6; i++) {
-   tab[i] = strtod(tmp, &tmp);
-   }
-   force_sensor_frame = lib::Homog_matrix(tab);
-   free(toDel);
-   }
+  tf::poseMsgToKDL(current_wrist_pose_, current_frame);
 
-   // zczytanie ciezaru narzedzia
-   double weight = master.config.value<double>("weight");
+  if (!gravity_transformation)  // nie powolano jeszcze obiektu
+  {
+    //   irp6 postument force sensor physical parameters
+    //   force_sensor_in_wrist=0.0 0.0 0.09 0.0 0.0 3.14159
+    //   default_mass_center_in_wrist=0.004 0.0 0.156
+    //   weight=10.8
 
-   next_force_tool_weight = weight;
+    force_sensor_frame = KDL::Frame(KDL::Rotation::RotZ(M_PI),
+                                    KDL::Vector(0.0, 0.0, 0.09));
 
-   // polozenie srodka ciezkosci narzedzia wzgledem nadgarstka
-   double point[3];
-   char *tmp = strdup(
-   master.config.value < std::string
-   > ("default_mass_center_in_wrist").c_str());
-   char* toDel = tmp;
-   for (int i = 0; i < 3; i++)
-   point[i] = strtod(tmp, &tmp);
-   free(toDel);
+    double weight = 10.8;
 
-   lib::K_vector pointofgravity(point);
+    KDL::Vector pointofgravity(0.004, 0.0, 0.156);
 
-   tool_mass_center_translation = lib::Homog_matrix(point[0], point[1],
-   point[2]);
+    tool_mass_center_translation = KDL::Frame(pointofgravity);
 
-   gravity_transformation = new lib::ForceTrans(force_sensor_name,
-   current_frame,
-   force_sensor_frame, weight,
-   pointofgravity,
-   is_right_turn_frame);
-   } else {
-   gravity_transformation->synchro(current_frame);
-   }
+    gravity_transformation = new ForceTrans(current_frame, force_sensor_frame,
+                                            weight, pointofgravity,
+                                            is_right_turn_frame);
 
-   */
+  } else {
+    gravity_transformation->synchro(current_frame);
+  }
 
   return true;
 }

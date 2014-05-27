@@ -6,9 +6,6 @@
 class ForceTrans {
 
  protected:
-
-  const short force_sensor_name;
-
   bool initialized;
   double tool_weight;
 
@@ -25,15 +22,15 @@ class ForceTrans {
   bool is_right_turn_frame;
 
  public:
-  ForceTrans(const short l_force_sensor_name, const KDL::Frame & init_frame,
-             const KDL::Frame & s_frame, const double weight,
-             const KDL::Vector & point_of_gravity, bool _is_right_turn_frame);
+  ForceTrans(const KDL::Frame & init_frame, const KDL::Frame & s_frame,
+             const double weight, const KDL::Vector & point_of_gravity,
+             bool _is_right_turn_frame);
   void synchro(const KDL::Frame & init_frame);
   void defineTool(const KDL::Frame & init_frame, const double weight,
                   const KDL::Vector & point_of_gravity);
 
   KDL::Wrench getForce(const KDL::Wrench _inputForceTorque,
-                          const KDL::Frame curr_frame);
+                       const KDL::Frame curr_frame);
 
 };
 

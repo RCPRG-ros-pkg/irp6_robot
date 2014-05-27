@@ -1,12 +1,10 @@
 #include "ForceTrans.h"
 
-ForceTrans::ForceTrans(const short l_force_sensor_name,
-                       const KDL::Frame & init_frame,
+ForceTrans::ForceTrans(const KDL::Frame & init_frame,
                        const KDL::Frame & s_frame, const double weight,
                        const KDL::Vector & point_of_gravity,
                        bool _is_right_turn_frame)
-    : force_sensor_name(l_force_sensor_name),
-      initialized(false),
+    : initialized(false),
       is_right_turn_frame(true) {
 
 // ustalenie skretnosci wektora z odczytami z czujnika
