@@ -86,9 +86,27 @@ bool ForceTransformation::startHook() {
 
 void ForceTransformation::updateHook() {
 
+  port_current_wrist_pose_.read(current_wrist_pose_);
+  KDL::Frame current_frame;
+  tf::poseMsgToKDL(current_wrist_pose_, current_frame);
+
+  // odczyt sily
   geometry_msgs::Wrench current_wrench;
   port_current_wrench_.read(current_wrench);
-  port_output_wrench_.write(current_wrench);
+
+  KDL::Wrench input_force;
+  tf::wrenchMsgToKDL(current_wrench, input_force);
+
+  // offset level removal
+  KDL::Wrench biased_force = input_force - force_offset;
+
+  //sily przechowujemy w zerowej orientacji bazowej w ukladzie nadgarstka
+  KDL::Wrench computed_force = gravity_transformation->getForce(biased_force,
+                                                                current_frame);
+  geometry_msgs::Wrench output_wrench;
+  tf::wrenchKDLToMsg(computed_force, output_wrench);
+
+  port_output_wrench_.write(output_wrench);
 
 }
 
