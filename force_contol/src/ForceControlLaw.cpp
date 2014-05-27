@@ -51,10 +51,19 @@ void ForceControlLaw::updateHook() {
    */
 
   double kl = -0.000005;
+  double kr = -0.0001;
 
-  current_pose_kdl.p[0] = current_pose_kdl.p.x() + kl * input_force.force.x();
-  current_pose_kdl.p[1] = current_pose_kdl.p.y() + kl * input_force.force.y();
-  current_pose_kdl.p[2] = current_pose_kdl.p.z() + kl * input_force.force.z();
+  KDL::Twist target_vel;
+
+  target_vel.vel[0] = kl * input_force.force.x();
+  target_vel.vel[1] = kl * input_force.force.y();
+  target_vel.vel[2] = kl * input_force.force.z();
+
+  target_vel.rot[0] = kr * input_force.torque.x();
+  target_vel.rot[1] = kr * input_force.torque.y();
+  target_vel.rot[2] = kr * input_force.torque.z();
+
+  current_pose_kdl = KDL::addDelta(current_pose_kdl, target_vel, 1.0);
 
   tf::poseKDLToMsg(current_pose_kdl, current_pose_);
 
