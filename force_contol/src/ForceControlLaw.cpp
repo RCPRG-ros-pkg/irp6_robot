@@ -4,7 +4,8 @@
 #include "eigen_conversions/eigen_msg.h"
 
 ForceControlLaw::ForceControlLaw(const std::string& name)
-    : RTT::TaskContext(name, PreOperational) {
+    : RTT::TaskContext(name, PreOperational)
+{
 
   this->ports()->addPort("CurrentPose", port_current_pose_);
   this->ports()->addPort("OutputPose", port_output_pose_);
@@ -36,7 +37,8 @@ void ForceControlLaw::updateHook() {
   // w pierwszej kolejnosci zwiekszam to co krok na x o wartość 0.0001 - dzialalo
   //current_pose_.position.x = current_pose_.position.x + 0.00001;
   // prosty regulator na osi z czujnika
-  current_pose_.position.x = current_pose_.position.x + 0.00001*current_wrench.force.z;
+  current_pose_.position.x = current_pose_.position.x
+      + 0.00001 * current_wrench.force.z;
   port_output_pose_.write(current_pose_);
 
 }

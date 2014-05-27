@@ -4,7 +4,12 @@
 #include "eigen_conversions/eigen_msg.h"
 
 ForceTransformation::ForceTransformation(const std::string& name)
-    : RTT::TaskContext(name, PreOperational) {
+    : RTT::TaskContext(name, PreOperational),
+      force_sensor_test_mode(false),
+      is_reading_ready(false),
+      is_right_turn_frame(true),
+      gravity_transformation(NULL),
+      is_sensor_configured(false) {
 
   this->ports()->addPort("CurrentPose", port_current_pose_);
   this->ports()->addPort("Tool", port_tool_);
