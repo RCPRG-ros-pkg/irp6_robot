@@ -13,7 +13,6 @@ ForceTransformation::ForceTransformation(const std::string& name)
       is_sensor_configured(false) {
 
   this->ports()->addPort("CurrentWristPose", port_current_wrist_pose_);
-  this->ports()->addPort("Tool", port_tool_);
 
   this->ports()->addPort("CurrentWrench", port_current_wrench_);
   this->ports()->addPort("OutputWrench", port_output_wrench_);

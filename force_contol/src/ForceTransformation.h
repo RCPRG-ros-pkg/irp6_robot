@@ -22,7 +22,6 @@ class ForceTransformation : public RTT::TaskContext {
  private:
 
   RTT::InputPort<geometry_msgs::Pose> port_current_wrist_pose_;
-  RTT::InputPort<geometry_msgs::Pose> port_tool_;
 
   RTT::InputPort<geometry_msgs::Wrench> port_current_wrench_;
   RTT::OutputPort<geometry_msgs::Wrench> port_output_wrench_;
