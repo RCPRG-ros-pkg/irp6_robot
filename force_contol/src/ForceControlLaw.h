@@ -7,6 +7,7 @@
 #include "geometry_msgs/Wrench.h"
 
 #include <Eigen/Dense>
+#include "kdl/frames.hpp"
 
 class ForceControlLaw : public RTT::TaskContext {
  public:
@@ -26,6 +27,7 @@ class ForceControlLaw : public RTT::TaskContext {
   RTT::InputPort<geometry_msgs::Pose> port_tool_;
 
   geometry_msgs::Pose current_pose_;
+  KDL::Frame current_pose_kdl;
 
 };
 
