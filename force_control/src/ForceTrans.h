@@ -6,7 +6,6 @@
 class ForceTrans {
 
  protected:
-  bool initialized_;
   double tool_weight_;
 
   KDL::Wrench gravity_force_torque_in_base_;
