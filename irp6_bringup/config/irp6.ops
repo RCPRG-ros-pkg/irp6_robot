@@ -124,7 +124,7 @@ ForceControlLaw.configure()
 
 connect("ForceControlLaw.Tool", "ToolInt.CartesianPositionCommand", ConnPolicy())
 connect("ForceControlLaw.OutputEndEffectorPose", "InverseKinematic.InputEndEffectorPose", ConnPolicy())
-connect("ForceControlLaw.CurrentWristPose", "ForwardKinematic.WristOutputPose", ConnPolicy())
+connect("ForceControlLaw.CurrentEndEffectorPose", "ForwardKinematic.EndEffectorOutputPose", ConnPolicy())
 connect("ForceTransformation.OutputEndEffectorWrench", "ForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
 
 
