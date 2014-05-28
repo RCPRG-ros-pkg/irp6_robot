@@ -10,9 +10,9 @@ ForceTransformation::ForceTransformation(const std::string& name)
 
   this->ports()->addPort("CurrentWristPose", port_current_wrist_pose_);
 
-  this->ports()->addPort("CurrentWrench", port_current_wrench_);
-  this->ports()->addPort("OutputWrench", port_output_wrench_);
-
+  this->ports()->addPort("CurrentSensorWrench", port_current_sensor_wrench_);
+  this->ports()->addPort("OutputWristWrench", port_output_wrist_wrench_);
+  this->ports()->addPort("Tool", port_tool_);
 }
 
 ForceTransformation::~ForceTransformation() {
@@ -31,7 +31,7 @@ bool ForceTransformation::startHook() {
 
   // read current force
   geometry_msgs::Wrench current_wrench;
-  if (port_current_wrench_.read(current_wrench) == RTT::NoData) {
+  if (port_current_sensor_wrench_.read(current_wrench) == RTT::NoData) {
     return false;
   }
 
@@ -73,7 +73,7 @@ void ForceTransformation::updateHook() {
 
   // odczyt sily
   geometry_msgs::Wrench current_wrench;
-  port_current_wrench_.read(current_wrench);
+  port_current_sensor_wrench_.read(current_wrench);
 
   KDL::Wrench input_force;
   tf::wrenchMsgToKDL(current_wrench, input_force);
@@ -87,7 +87,7 @@ void ForceTransformation::updateHook() {
   geometry_msgs::Wrench output_wrench;
   tf::wrenchKDLToMsg(computed_force, output_wrench);
 
-  port_output_wrench_.write(output_wrench);
+  port_output_wrist_wrench_.write(output_wrench);
 
 }
 
