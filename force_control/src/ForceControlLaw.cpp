@@ -10,7 +10,8 @@ ForceControlLaw::ForceControlLaw(const std::string& name)
   this->ports()->addPort("CurrentWristPose", port_current_wrist_pose_);
   this->ports()->addPort("OutputWristPose", port_output_wrist_pose_);
 
-  this->ports()->addPort("CurrentWristWrench", port_current_wrist_wrench_);
+  this->ports()->addPort("CurrentEndEffectorWrench",
+                         port_current_end_effector_wrench_);
   this->ports()->addPort("Tool", port_tool_);
 
 }
@@ -47,10 +48,10 @@ bool ForceControlLaw::startHook() {
 void ForceControlLaw::updateHook() {
 
   // current wrench determination
-  geometry_msgs::Wrench current_wrist_wrench;
-  port_current_wrist_wrench_.read(current_wrist_wrench);
+  geometry_msgs::Wrench current_end_effector_wrench;
+  port_current_end_effector_wrench_.read(current_end_effector_wrench);
   KDL::Wrench input_force;
-  tf::wrenchMsgToKDL(current_wrist_wrench, input_force);
+  tf::wrenchMsgToKDL(current_end_effector_wrench, input_force);
 
   //tool determination
   geometry_msgs::Pose tool_msgs;
@@ -74,29 +75,24 @@ void ForceControlLaw::updateHook() {
    * current_force);
    */
 
-  ef_force = tool_kdl.Inverse() * (current_wrist_pose_kdl.M.Inverse()
-      * input_force);
-
   double kl = -0.000005;
   double kr = -0.0001;
 
   KDL::Twist target_vel;
 
-  target_vel.vel[0] = kl * ef_force.force.x();
-  target_vel.vel[1] = kl * ef_force.force.y();
-  target_vel.vel[2] = kl * ef_force.force.z();
+  target_vel.vel[0] = kl * input_force.force.x();
+  target_vel.vel[1] = kl * input_force.force.y();
+  target_vel.vel[2] = kl * input_force.force.z();
 
-  target_vel.rot[0] = kr * ef_force.torque.x();
-  target_vel.rot[1] = kr * ef_force.torque.y();
-  target_vel.rot[2] = kr * ef_force.torque.z();
+  target_vel.rot[0] = kr * input_force.torque.x();
+  target_vel.rot[1] = kr * input_force.torque.y();
+  target_vel.rot[2] = kr * input_force.torque.z();
 
   target_vel = cl_ef_pose_kdl_.M * target_vel;
 
   cl_ef_pose_kdl_ = KDL::addDelta(cl_ef_pose_kdl_, target_vel, 1.0);
 
-
   KDL::Frame cl_wrist_pose_kdl = cl_ef_pose_kdl_ * tool_kdl.Inverse();
-
 
   geometry_msgs::Pose cl_wrist_pose;
 

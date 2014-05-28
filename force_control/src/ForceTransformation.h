@@ -25,13 +25,12 @@ class ForceTransformation : public RTT::TaskContext {
 
   RTT::InputPort<geometry_msgs::Wrench> port_current_sensor_wrench_;
   RTT::OutputPort<geometry_msgs::Wrench> port_output_wrist_wrench_;
+  RTT::OutputPort<geometry_msgs::Wrench> port_output_end_effector_wrench_;
   RTT::InputPort<geometry_msgs::Pose> port_tool_;
 
-  geometry_msgs::Pose current_wrist_pose_;
+  ForceTrans *gravity_transformation_;  // klasa likwidujaca wplyw grawitacji na czujnik
 
-  ForceTrans *gravity_transformation;  // klasa likwidujaca wplyw grawitacji na czujnik
-
-  KDL::Wrench force_offset;
+  KDL::Wrench force_offset_;
 
 };
 
