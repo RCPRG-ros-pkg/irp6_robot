@@ -7,10 +7,10 @@
 ForceControlLaw::ForceControlLaw(const std::string& name)
     : RTT::TaskContext(name, PreOperational) {
 
-  this->ports()->addPort("CurrentPose", port_current_pose_);
-  this->ports()->addPort("OutputPose", port_output_pose_);
+  this->ports()->addPort("CurrentWristPose", port_current_wrist_pose_);
+  this->ports()->addPort("OutputWristPose", port_output_wrist_pose_);
 
-  this->ports()->addPort("CurrentWrench", port_current_wrench_);
+  this->ports()->addPort("CurrentWristWrench", port_current_wrist_wrench_);
   this->ports()->addPort("Tool", port_tool_);
 
 }
@@ -25,30 +25,36 @@ bool ForceControlLaw::configureHook() {
 }
 
 bool ForceControlLaw::startHook() {
-  if (port_current_pose_.read(current_pose_) == RTT::NoData) {
+  if (port_current_wrist_pose_.read(cl_wrist_pose_) == RTT::NoData) {
     return false;
   }
 
-  tf::poseMsgToKDL(current_pose_, current_pose_kdl);
+  tf::poseMsgToKDL(cl_wrist_pose_, cl_wrist_pose_kdl_);
 
   return true;
 }
 
 void ForceControlLaw::updateHook() {
 
-  geometry_msgs::Wrench current_wrench;
-  port_current_wrench_.read(current_wrench);
-
+  // current wrench determination
+  geometry_msgs::Wrench current_wrist_wrench;
+  port_current_wrist_wrench_.read(current_wrist_wrench);
   KDL::Wrench input_force;
-  tf::wrenchMsgToKDL(current_wrench, input_force);
+  tf::wrenchMsgToKDL(current_wrist_wrench, input_force);
 
-  // w pierwszej kolejnosci zwiekszam to co krok na x o wartość 0.0001 - dzialalo
-  //current_pose_.position.x = current_pose_.position.x + 0.00001;
-  // prosty regulator na osi z czujnika
-  /*
-   current_pose_.position.x = current_pose_.position.x
-   + 0.00001 * current_wrench.force.z;
-   */
+  //tool determination
+  geometry_msgs::Pose tool_msgs;
+  port_tool_.read(tool_msgs);
+  KDL::Frame tool_kdl;
+  tf::poseMsgToKDL(tool_msgs, tool_kdl);
+
+  // current wrist pose determination
+  geometry_msgs::Pose current_wrist_pose;
+  port_current_wrist_pose_.read(current_wrist_pose);
+  KDL::Frame current_wrist_pose_kdl;
+  tf::poseMsgToKDL(current_wrist_pose, current_wrist_pose_kdl);
+
+  //conversion of wrist wrench to the end effector
 
   double kl = -0.000005;
   double kr = -0.0001;
@@ -63,11 +69,11 @@ void ForceControlLaw::updateHook() {
   target_vel.rot[1] = kr * input_force.torque.y();
   target_vel.rot[2] = kr * input_force.torque.z();
 
-  current_pose_kdl = KDL::addDelta(current_pose_kdl, target_vel, 1.0);
+  cl_wrist_pose_kdl_ = KDL::addDelta(cl_wrist_pose_kdl_, target_vel, 1.0);
 
-  tf::poseKDLToMsg(current_pose_kdl, current_pose_);
+  tf::poseKDLToMsg(cl_wrist_pose_kdl_, cl_wrist_pose_);
 
-  port_output_pose_.write(current_pose_);
+  port_output_wrist_pose_.write(cl_wrist_pose_);
 
 }
 

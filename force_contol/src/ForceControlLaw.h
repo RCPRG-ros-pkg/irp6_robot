@@ -20,14 +20,14 @@ class ForceControlLaw : public RTT::TaskContext {
 
  private:
 
-  RTT::InputPort<geometry_msgs::Pose> port_current_pose_;
-  RTT::OutputPort<geometry_msgs::Pose> port_output_pose_;
+  RTT::InputPort<geometry_msgs::Pose> port_current_wrist_pose_;
+  RTT::OutputPort<geometry_msgs::Pose> port_output_wrist_pose_;
 
-  RTT::InputPort<geometry_msgs::Wrench> port_current_wrench_;
+  RTT::InputPort<geometry_msgs::Wrench> port_current_wrist_wrench_;
   RTT::InputPort<geometry_msgs::Pose> port_tool_;
 
-  geometry_msgs::Pose current_pose_;
-  KDL::Frame current_pose_kdl;
+  geometry_msgs::Pose cl_wrist_pose_;
+  KDL::Frame cl_wrist_pose_kdl_;
 
 };
 

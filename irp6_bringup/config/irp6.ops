@@ -124,9 +124,9 @@ loadComponent("ForceControlLaw", "ForceControlLaw")
 ForceControlLaw.configure()
 
 connect("ForceControlLaw.Tool", "ToolInt.CartesianPositionCommand", ConnPolicy())
-connect("ForceControlLaw.OutputPose", "InverseKinematic.InputWristPose", ConnPolicy())
-connect("ForceControlLaw.CurrentPose", "ForwardKinematic.WristOutputPose", ConnPolicy())
-connect("ForceTransformation.OutputWrench", "ForceControlLaw.CurrentWrench", ConnPolicy())
+connect("ForceControlLaw.OutputWristPose", "InverseKinematic.InputWristPose", ConnPolicy())
+connect("ForceControlLaw.CurrentWristPose", "ForwardKinematic.WristOutputPose", ConnPolicy())
+connect("ForceTransformation.OutputWrench", "ForceControlLaw.CurrentWristWrench", ConnPolicy())
 
 
 ## Connect
