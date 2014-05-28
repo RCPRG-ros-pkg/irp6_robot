@@ -15,9 +15,7 @@ class ForceTrans {
 
   KDL::Frame sensor_frame;
 
-  KDL::Frame ft_tool_mass_center_translation;
-
-  KDL::Frame ft_tr_sensor_in_wrist;
+  KDL::Frame tool_mass_center_translation;
 
   bool is_right_turn_frame;
 

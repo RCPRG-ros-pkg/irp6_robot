@@ -13,9 +13,6 @@ ForceTrans::ForceTrans(const KDL::Frame & init_frame,
   // polozenie czujnika wzgledem nadgarstka
   sensor_frame = s_frame;
 
-//  ft_tr_sensor_in_wrist = lib::Xi_f(sensor_frame);
-  ft_tr_sensor_in_wrist = sensor_frame;
-
   tool_weight = weight;
   gravity_arm_in_wrist = point_of_gravity;
   synchro(init_frame);
@@ -42,12 +39,10 @@ void ForceTrans::defineTool(const KDL::Frame & init_frame, const double weight,
       * gravity_force_torque_in_base;
 
 // macierz narzedzia wzgledem nadgarstka
-  KDL::Frame tool_mass_center_translation(KDL::Rotation(), point_of_gravity);
-
-  ft_tool_mass_center_translation = tool_mass_center_translation;
+  tool_mass_center_translation = KDL::Frame(KDL::Rotation(), point_of_gravity);
 
 // sila reakcji w ukladzie nadgarstka z orientacja bazy
-  reaction_force_torque_in_wrist = -(ft_tool_mass_center_translation
+  reaction_force_torque_in_wrist = -(tool_mass_center_translation
       * gravity_force_torque_in_sensor);
 
 }
@@ -67,7 +62,7 @@ KDL::Wrench ForceTrans::getForce(const KDL::Wrench _inputForceTorque,
   if (initialized) {
 
     // sprowadzenie wejsciowych, zmierzonych sil i momentow sil z ukladu czujnika do ukladu nadgarstka
-    KDL::Wrench input_force_torque = ft_tr_sensor_in_wrist * inputForceTorque;
+    KDL::Wrench input_force_torque = sensor_frame * inputForceTorque;
 
     // sprowadzenie odczytow sil do ukladu czujnika przy zalozeniu ze uklad chwytaka ma te sama orientacje
     // co uklad narzedzia
@@ -76,7 +71,7 @@ KDL::Wrench ForceTrans::getForce(const KDL::Wrench _inputForceTorque,
 
     // finalne przeksztalcenie (3.30 z doktoratu TW)
     KDL::Wrench output_force_torque = input_force_torque
-        - ft_tool_mass_center_translation * gravity_force_torque_in_sensor
+        - tool_mass_center_translation * gravity_force_torque_in_sensor
         - reaction_force_torque_in_wrist;
 
     // sprowadzenie sily w ukladzie nadgarstka do orientacji ukladu bazowego
