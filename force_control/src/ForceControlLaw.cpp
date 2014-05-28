@@ -8,7 +8,8 @@ ForceControlLaw::ForceControlLaw(const std::string& name)
     : RTT::TaskContext(name, PreOperational) {
 
   this->ports()->addPort("CurrentWristPose", port_current_wrist_pose_);
-  this->ports()->addPort("OutputWristPose", port_output_wrist_pose_);
+  this->ports()->addPort("OutputEndEffectorPose",
+                         port_output_end_effector_pose_);
 
   this->ports()->addPort("CurrentEndEffectorWrench",
                          port_current_end_effector_wrench_);
@@ -92,13 +93,11 @@ void ForceControlLaw::updateHook() {
 
   cl_ef_pose_kdl_ = KDL::addDelta(cl_ef_pose_kdl_, target_vel, 1.0);
 
-  KDL::Frame cl_wrist_pose_kdl = cl_ef_pose_kdl_ * tool_kdl.Inverse();
+  geometry_msgs::Pose cl_ef_pose;
 
-  geometry_msgs::Pose cl_wrist_pose;
+  tf::poseKDLToMsg(cl_ef_pose_kdl_, cl_ef_pose);
 
-  tf::poseKDLToMsg(cl_wrist_pose_kdl, cl_wrist_pose);
-
-  port_output_wrist_pose_.write(cl_wrist_pose);
+  port_output_end_effector_pose_.write(cl_ef_pose);
 
 }
 

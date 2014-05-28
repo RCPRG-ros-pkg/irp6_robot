@@ -21,7 +21,7 @@ class ForceControlLaw : public RTT::TaskContext {
  private:
 
   RTT::InputPort<geometry_msgs::Pose> port_current_wrist_pose_;
-  RTT::OutputPort<geometry_msgs::Pose> port_output_wrist_pose_;
+  RTT::OutputPort<geometry_msgs::Pose> port_output_end_effector_pose_;
 
   RTT::InputPort<geometry_msgs::Wrench> port_current_end_effector_wrench_;
   RTT::InputPort<geometry_msgs::Pose> port_tool_;

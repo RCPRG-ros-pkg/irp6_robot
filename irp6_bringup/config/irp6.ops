@@ -110,7 +110,6 @@ ATI6284.configure()
 
 
 // ForceTransformation
-
 loadComponent("ForceTransformation", "ForceTransformation")
 ForceTransformation.configure()
 
@@ -124,7 +123,7 @@ loadComponent("ForceControlLaw", "ForceControlLaw")
 ForceControlLaw.configure()
 
 connect("ForceControlLaw.Tool", "ToolInt.CartesianPositionCommand", ConnPolicy())
-connect("ForceControlLaw.OutputWristPose", "InverseKinematic.InputWristPose", ConnPolicy())
+connect("ForceControlLaw.OutputEndEffectorPose", "InverseKinematic.InputEndEffectorPose", ConnPolicy())
 connect("ForceControlLaw.CurrentWristPose", "ForwardKinematic.WristOutputPose", ConnPolicy())
 connect("ForceTransformation.OutputEndEffectorWrench", "ForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
 
