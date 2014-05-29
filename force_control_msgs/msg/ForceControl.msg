@@ -1,4 +1,4 @@
-ReciprocalDamping damping
+ReciprocalDamping reciprocaldamping
 Inertia inertia
 geometry_msgs/Wrench wrench
 geometry_msgs/Twist twist
