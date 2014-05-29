@@ -59,19 +59,15 @@ void ForceControlLaw::updateHook() {
   force_control_msgs::ForceControl fcl_param;
   port_current_fcl_param_.read(fcl_param);
 
-
-  double kl = 0.000005;
-  double kr = 0.0001;
-
   KDL::Twist target_vel;
 
-  target_vel.vel[0] = kl * (-input_force.force.x());
-  target_vel.vel[1] = kl * (-input_force.force.y());
-  target_vel.vel[2] = kl * (-input_force.force.z());
+  target_vel.vel[0] = fcl_param.reciprocaldamping.translation.x * (-input_force.force.x());
+  target_vel.vel[1] = fcl_param.reciprocaldamping.translation.y * (-input_force.force.y());
+  target_vel.vel[2] = fcl_param.reciprocaldamping.translation.z * (-input_force.force.z());
 
-  target_vel.rot[0] = kr * (-input_force.torque.x());
-  target_vel.rot[1] = kr * (-input_force.torque.y());
-  target_vel.rot[2] = kr * (-input_force.torque.z());
+  target_vel.rot[0] = fcl_param.reciprocaldamping.rotation.x * (-input_force.torque.x());
+  target_vel.rot[1] = fcl_param.reciprocaldamping.rotation.y * (-input_force.torque.y());
+  target_vel.rot[2] = fcl_param.reciprocaldamping.rotation.z * (-input_force.torque.z());
 
   target_vel = cl_ef_pose_kdl_.M * target_vel;
 

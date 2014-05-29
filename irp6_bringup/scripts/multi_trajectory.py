@@ -196,25 +196,6 @@ if __name__ == '__main__':
   tool_client.wait_for_result()
   command_result = tool_client.get_result()
   
-  # 
-  # Force controller parameters
-  #
-  
-  pub = rospy.Publisher('/irp6p_arm/fcl_param', ForceControl)
-  
-  rospy.sleep(0.2)
-  
-  goal = ForceControl()
-  
-  goal.inertia = Inertia(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
-  goal.reciprocaldamping = ReciprocalDamping(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
-  goal.wrench = Wrench(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
-  goal.twist = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
-  
-  pub.publish(goal)
-  
-  rospy.sleep(0.2)
-  
   print 'finish'
   
   
