@@ -11,9 +11,10 @@ ForceControlLaw::ForceControlLaw(const std::string& name)
                          port_current_end_effector_pose_);
   this->ports()->addPort("OutputEndEffectorPose",
                          port_output_end_effector_pose_);
-
   this->ports()->addPort("CurrentEndEffectorWrench",
                          port_current_end_effector_wrench_);
+  this->ports()->addPort("CurrentFclParam",
+                         port_current_fcl_param_);
 
 }
 
@@ -37,6 +38,13 @@ bool ForceControlLaw::startHook() {
 
   tf::poseMsgToKDL(cl_ef_pose, cl_ef_pose_kdl_);
 
+  force_control_msgs::ForceControl fcl_param;
+ //controller parameters have to be set before the component is started
+  if (port_current_fcl_param_.read(fcl_param) == RTT::NoData) {
+    return false;
+  }
+
+
   return true;
 }
 
@@ -48,18 +56,22 @@ void ForceControlLaw::updateHook() {
   KDL::Wrench input_force;
   tf::wrenchMsgToKDL(current_end_effector_wrench, input_force);
 
-  double kl = -0.000005;
-  double kr = -0.0001;
+  force_control_msgs::ForceControl fcl_param;
+  port_current_fcl_param_.read(fcl_param);
+
+
+  double kl = 0.000005;
+  double kr = 0.0001;
 
   KDL::Twist target_vel;
 
-  target_vel.vel[0] = kl * input_force.force.x();
-  target_vel.vel[1] = kl * input_force.force.y();
-  target_vel.vel[2] = kl * input_force.force.z();
+  target_vel.vel[0] = kl * (-input_force.force.x());
+  target_vel.vel[1] = kl * (-input_force.force.y());
+  target_vel.vel[2] = kl * (-input_force.force.z());
 
-  target_vel.rot[0] = kr * input_force.torque.x();
-  target_vel.rot[1] = kr * input_force.torque.y();
-  target_vel.rot[2] = kr * input_force.torque.z();
+  target_vel.rot[0] = kr * (-input_force.torque.x());
+  target_vel.rot[1] = kr * (-input_force.torque.y());
+  target_vel.rot[2] = kr * (-input_force.torque.z());
 
   target_vel = cl_ef_pose_kdl_.M * target_vel;
 

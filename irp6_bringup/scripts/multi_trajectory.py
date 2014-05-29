@@ -39,7 +39,7 @@ from geometry_msgs.msg import *
 from trajectory_msgs.msg import *
 from control_msgs.msg import *
 from cartesian_trajectory_msgs.msg import *
-
+from force_control_msgs.msg import *
 from tf.transformations import *
 
 #from PyKDL import *
@@ -73,7 +73,7 @@ if __name__ == '__main__':
   motor_client.wait_for_result()
   command_result = motor_client.get_result()
   
-  
+    
   #
   # Joint coordinates motion
   #
@@ -196,8 +196,21 @@ if __name__ == '__main__':
   tool_client.wait_for_result()
   command_result = tool_client.get_result()
   
+  #
   
+  pub = rospy.Publisher('/irp6p_arm/fcl_param', ForceControl)
   
+  rospy.sleep(0.2)
+  
+  goal = ForceControl()
+  
+  goal.inertia = Inertia(Vector3(0.0, 0.1, 0.2), Vector3(0.0, 0.0, 0.0))
+  
+  goal.inertia.translation.x = 1.0
+  
+  pub.publish(goal)
+  
+  rospy.sleep(0.2)
   
   print 'finish'
   

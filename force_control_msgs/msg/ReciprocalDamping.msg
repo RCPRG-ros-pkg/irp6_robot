@@ -1,2 +1,2 @@
-geometry_msgs/Vector3 translational
-geometry_msgs/Vector3 rotational
+geometry_msgs/Vector3 translation
+geometry_msgs/Vector3 rotation

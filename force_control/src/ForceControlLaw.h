@@ -4,10 +4,11 @@
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
 #include <geometry_msgs/Pose.h>
-#include "geometry_msgs/Wrench.h"
+#include <geometry_msgs/Wrench.h>
 
 #include <Eigen/Dense>
-#include "kdl/frames.hpp"
+#include <kdl/frames.hpp>
+#include <force_control_msgs/ForceControl.h>
 
 class ForceControlLaw : public RTT::TaskContext {
  public:
@@ -24,6 +25,8 @@ class ForceControlLaw : public RTT::TaskContext {
   RTT::OutputPort<geometry_msgs::Pose> port_output_end_effector_pose_;
 
   RTT::InputPort<geometry_msgs::Wrench> port_current_end_effector_wrench_;
+
+  RTT::InputPort<force_control_msgs::ForceControl> port_current_fcl_param_;
 
   KDL::Frame cl_ef_pose_kdl_;
 

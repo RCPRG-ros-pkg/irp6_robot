@@ -7,6 +7,7 @@ ros.import("rtt_actionlib_msgs")
 ros.import("rtt_trajectory_msgs")
 ros.import("rtt_control_msgs")
 ros.import("rtt_cartesian_trajectory_msgs")
+ros.import("rtt_force_control_msgs")
 
 ros.import("conman");
 ros.import("conman_ros");
@@ -127,6 +128,7 @@ connect("ForceControlLaw.OutputEndEffectorPose", "InverseKinematic.InputEndEffec
 connect("ForceControlLaw.CurrentEndEffectorPose", "ForwardKinematic.EndEffectorOutputPose", ConnPolicy())
 connect("ForceTransformation.OutputEndEffectorWrench", "ForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
 
+stream("ForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6p_arm/fcl_param"))
 
 ## Connect
 connect("HardwareInterface.computedPwm_in","IRp6Regulator.computedPwm_out", ConnPolicy())
