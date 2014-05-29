@@ -33,6 +33,7 @@ class ForceControlLaw : public RTT::TaskContext {
 
   KDL::Frame cl_ef_pose_kdl_;
   KDL::Twist p_vel;
+  double step_duration;
 
 };
 

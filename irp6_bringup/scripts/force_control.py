@@ -61,7 +61,7 @@ if __name__ == '__main__':
   
   goal = ForceControl()
   goal.inertia = Inertia(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
-  goal.reciprocaldamping = ReciprocalDamping(Vector3(0.000005, 0.000005, 0.000005), Vector3(0.0001, 0.0001, 0.0001))
+  goal.reciprocaldamping = ReciprocalDamping(Vector3(0.002, 0.002, 0.002), Vector3(0.05, 0.05, 0.05))
   goal.wrench = Wrench(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
   goal.twist = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
   

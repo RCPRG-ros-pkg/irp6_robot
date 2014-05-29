@@ -5,7 +5,8 @@
 #include "kdl_conversions/kdl_msg.h"
 
 ForceControlLaw::ForceControlLaw(const std::string& name)
-    : RTT::TaskContext(name, PreOperational) {
+    : RTT::TaskContext(name, PreOperational),
+      step_duration(0.002) {
 
   this->ports()->addPort("CurrentEndEffectorPose",
                          port_current_end_effector_pose_);
@@ -74,27 +75,26 @@ void ForceControlLaw::updateHook() {
                           input_force.force.z(), fcl_param.wrench.force.z,
                           fcl_param.twist.linear.z, p_vel.vel[2]);
 
-
   target_vel.rot[0] = fcl(fcl_param.reciprocaldamping.rotation.x,
-                          fcl_param.inertia.rotation.x,
-                          input_force.torque.x(), fcl_param.wrench.torque.x,
-                          fcl_param.twist.angular.x, p_vel.rot[0]);
+                          fcl_param.inertia.rotation.x, input_force.torque.x(),
+                          fcl_param.wrench.torque.x, fcl_param.twist.angular.x,
+                          p_vel.rot[0]);
 
   target_vel.rot[1] = fcl(fcl_param.reciprocaldamping.rotation.y,
-                          fcl_param.inertia.rotation.y,
-                          input_force.torque.y(), fcl_param.wrench.torque.y,
-                          fcl_param.twist.angular.y, p_vel.rot[1]);
+                          fcl_param.inertia.rotation.y, input_force.torque.y(),
+                          fcl_param.wrench.torque.y, fcl_param.twist.angular.y,
+                          p_vel.rot[1]);
 
   target_vel.rot[2] = fcl(fcl_param.reciprocaldamping.rotation.z,
-                          fcl_param.inertia.rotation.z,
-                          input_force.torque.z(), fcl_param.wrench.torque.z,
-                          fcl_param.twist.angular.z, p_vel.rot[2]);
+                          fcl_param.inertia.rotation.z, input_force.torque.z(),
+                          fcl_param.wrench.torque.z, fcl_param.twist.angular.z,
+                          p_vel.rot[2]);
 
   p_vel = target_vel;
 
   target_vel = cl_ef_pose_kdl_.M * target_vel;
 
-  cl_ef_pose_kdl_ = KDL::addDelta(cl_ef_pose_kdl_, target_vel, 1.0);
+  cl_ef_pose_kdl_ = KDL::addDelta(cl_ef_pose_kdl_, target_vel, step_duration);
 
   geometry_msgs::Pose cl_ef_pose;
 
@@ -108,10 +108,8 @@ double ForceControlLaw::fcl(const double & rdam, const double & inertia,
                             const double & fm, const double & fd,
                             const double & dvel, const double & pvel) {
 
-  double step = 0.002;
-
-  return ((rdam * (fd - fm) + dvel) * step + rdam * inertia * pvel)
-      / (step + rdam * inertia);
+  return ((rdam * (fd - fm) + dvel) * step_duration + rdam * inertia * pvel)
+      / (step_duration + rdam * inertia);
 }
 
 ORO_CREATE_COMPONENT(ForceControlLaw)
