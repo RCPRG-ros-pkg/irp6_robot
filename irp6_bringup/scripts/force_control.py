@@ -65,6 +65,9 @@ if __name__ == '__main__':
   goal.wrench = Wrench(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
   goal.twist = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
   
+  
+  
+  
   pub.publish(goal)
   
   #rospy.sleep(1.0)
