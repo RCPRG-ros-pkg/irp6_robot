@@ -35,7 +35,6 @@ scheme.configure();
 loadComponent("HardwareInterface","HardwareInterface")
 //setActivity("HardwareInterface", 0.002, 5, ORO_SCHED_RT)
 HardwareInterface.number_of_drives = 6;
-HardwareInterface.configure()
 
 loadComponent("IRp6Regulator","IRp6Regulator")
 //setActivity("IRp6Regulator", 0, 5, ORO_SCHED_RT)
@@ -177,6 +176,7 @@ SplineTrajectoryActionMotor.actionlib.connect("/irp6p_arm/spline_trajectory_acti
 
 connect("SplineTrajectoryActionMotor.trajectoryPtr","SplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
 connect("trans.JointPosition","SplineTrajectoryActionMotor.JointPosition", ConnPolicy())
+connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","SplineTrajectoryActionMotor.JointPositionCommand", ConnPolicy())
 
 SplineTrajectoryActionMotor.configure()
 
