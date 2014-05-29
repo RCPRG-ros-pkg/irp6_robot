@@ -20,11 +20,15 @@ class Irp6pForwardKinematic : public RTT::TaskContext {
       Eigen::Affine3d* local_current_end_effector_frame);
 
   RTT::InputPort<Eigen::VectorXd> port_joint_position_;
-  RTT::OutputPort<geometry_msgs::Pose> port_output_pose_;
+
+  RTT::InputPort<geometry_msgs::Pose> port_tool_;
+  RTT::OutputPort<geometry_msgs::Pose> port_output_wrist_pose_;
+  RTT::OutputPort<geometry_msgs::Pose> port_output_end_effector_pose_;
 
   Eigen::VectorXd joint_position_;
   Eigen::VectorXd local_current_joints_tmp_;
 
+  geometry_msgs::Pose tool_msgs_;
 
   //! D-H kinematic parameters - length of 2nd segment.
   double a2;

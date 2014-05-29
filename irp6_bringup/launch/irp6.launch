@@ -27,6 +27,18 @@
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
         lower_limits: [-470.0, -110.0, -80.0, -70.0, -80.0, -1000.0]
         upper_limits: [450.0, 100.0, 100.0, 380.0, 490.0, 3000.0]
+      ToolInt:
+        activate_pose_init: true
+        init_setpoint:
+          orientation:
+            w: 1.0 
+            x: 0.0
+            y: 0.0
+            z: 0.0
+          position:
+            x: 0.0
+            y: 0.0
+            z: 0.25
     </rosparam>
 </group>
 
