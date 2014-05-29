@@ -32,8 +32,8 @@ class ForceControlLaw : public RTT::TaskContext {
   RTT::InputPort<force_control_msgs::ForceControl> port_current_fcl_param_;
 
   KDL::Frame cl_ef_pose_kdl_;
-  KDL::Twist p_vel;
-  double step_duration;
+  KDL::Twist p_vel_;
+  double step_duration_;
 
 };
 
