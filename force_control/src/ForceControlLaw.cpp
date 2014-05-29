@@ -13,8 +13,7 @@ ForceControlLaw::ForceControlLaw(const std::string& name)
                          port_output_end_effector_pose_);
   this->ports()->addPort("CurrentEndEffectorWrench",
                          port_current_end_effector_wrench_);
-  this->ports()->addPort("CurrentFclParam",
-                         port_current_fcl_param_);
+  this->ports()->addPort("CurrentFclParam", port_current_fcl_param_);
 
 }
 
@@ -39,11 +38,10 @@ bool ForceControlLaw::startHook() {
   tf::poseMsgToKDL(cl_ef_pose, cl_ef_pose_kdl_);
 
   force_control_msgs::ForceControl fcl_param;
- //controller parameters have to be set before the component is started
+  //controller parameters have to be set before the component is started
   if (port_current_fcl_param_.read(fcl_param) == RTT::NoData) {
     return false;
   }
-
 
   return true;
 }
@@ -61,13 +59,21 @@ void ForceControlLaw::updateHook() {
 
   KDL::Twist target_vel;
 
-  target_vel.vel[0] = fcl_param.reciprocaldamping.translation.x * (-input_force.force.x());
-  target_vel.vel[1] = fcl_param.reciprocaldamping.translation.y * (-input_force.force.y());
-  target_vel.vel[2] = fcl_param.reciprocaldamping.translation.z * (-input_force.force.z());
+  target_vel.vel[0] = fcl(fcl_param.reciprocaldamping.translation.x,
+                          fcl_param.inertia.translation.x,
+                          input_force.force.x(), fcl_param.wrench.force.x,
+                          fcl_param.twist.linear.x);
+  target_vel.vel[1] = fcl_param.reciprocaldamping.translation.y
+      * (-input_force.force.y());
+  target_vel.vel[2] = fcl_param.reciprocaldamping.translation.z
+      * (-input_force.force.z());
 
-  target_vel.rot[0] = fcl_param.reciprocaldamping.rotation.x * (-input_force.torque.x());
-  target_vel.rot[1] = fcl_param.reciprocaldamping.rotation.y * (-input_force.torque.y());
-  target_vel.rot[2] = fcl_param.reciprocaldamping.rotation.z * (-input_force.torque.z());
+  target_vel.rot[0] = fcl_param.reciprocaldamping.rotation.x
+      * (-input_force.torque.x());
+  target_vel.rot[1] = fcl_param.reciprocaldamping.rotation.y
+      * (-input_force.torque.y());
+  target_vel.rot[2] = fcl_param.reciprocaldamping.rotation.z
+      * (-input_force.torque.z());
 
   target_vel = cl_ef_pose_kdl_.M * target_vel;
 
@@ -79,6 +85,12 @@ void ForceControlLaw::updateHook() {
 
   port_output_end_effector_pose_.write(cl_ef_pose);
 
+}
+
+double ForceControlLaw::fcl(const double & rdam, const double & inertia,
+                            const double & fm, const double & fd,
+                            const double & vel) {
+  return (rdam * (-fm));
 }
 
 ORO_CREATE_COMPONENT(ForceControlLaw)

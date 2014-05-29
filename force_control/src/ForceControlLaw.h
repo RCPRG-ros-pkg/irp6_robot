@@ -19,6 +19,9 @@ class ForceControlLaw : public RTT::TaskContext {
   virtual bool startHook();
   void updateHook();
 
+  double fcl(const double & rdam, const double & inertia, const double & fm,
+             const double & fd, const double & vel);
+
  private:
 
   RTT::InputPort<geometry_msgs::Pose> port_current_end_effector_pose_;
