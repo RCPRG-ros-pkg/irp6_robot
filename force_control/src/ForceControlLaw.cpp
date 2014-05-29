@@ -62,18 +62,35 @@ void ForceControlLaw::updateHook() {
   target_vel.vel[0] = fcl(fcl_param.reciprocaldamping.translation.x,
                           fcl_param.inertia.translation.x,
                           input_force.force.x(), fcl_param.wrench.force.x,
-                          fcl_param.twist.linear.x);
-  target_vel.vel[1] = fcl_param.reciprocaldamping.translation.y
-      * (-input_force.force.y());
-  target_vel.vel[2] = fcl_param.reciprocaldamping.translation.z
-      * (-input_force.force.z());
+                          fcl_param.twist.linear.x, p_vel.vel[0]);
 
-  target_vel.rot[0] = fcl_param.reciprocaldamping.rotation.x
-      * (-input_force.torque.x());
-  target_vel.rot[1] = fcl_param.reciprocaldamping.rotation.y
-      * (-input_force.torque.y());
-  target_vel.rot[2] = fcl_param.reciprocaldamping.rotation.z
-      * (-input_force.torque.z());
+  target_vel.vel[1] = fcl(fcl_param.reciprocaldamping.translation.y,
+                          fcl_param.inertia.translation.y,
+                          input_force.force.y(), fcl_param.wrench.force.y,
+                          fcl_param.twist.linear.y, p_vel.vel[1]);
+
+  target_vel.vel[2] = fcl(fcl_param.reciprocaldamping.translation.z,
+                          fcl_param.inertia.translation.z,
+                          input_force.force.z(), fcl_param.wrench.force.z,
+                          fcl_param.twist.linear.z, p_vel.vel[2]);
+
+
+  target_vel.rot[0] = fcl(fcl_param.reciprocaldamping.rotation.x,
+                          fcl_param.inertia.rotation.x,
+                          input_force.torque.x(), fcl_param.wrench.torque.x,
+                          fcl_param.twist.angular.x, p_vel.rot[0]);
+
+  target_vel.rot[1] = fcl(fcl_param.reciprocaldamping.rotation.y,
+                          fcl_param.inertia.rotation.y,
+                          input_force.torque.y(), fcl_param.wrench.torque.y,
+                          fcl_param.twist.angular.y, p_vel.rot[1]);
+
+  target_vel.rot[2] = fcl(fcl_param.reciprocaldamping.rotation.z,
+                          fcl_param.inertia.rotation.z,
+                          input_force.torque.z(), fcl_param.wrench.torque.z,
+                          fcl_param.twist.angular.z, p_vel.rot[2]);
+
+  p_vel = target_vel;
 
   target_vel = cl_ef_pose_kdl_.M * target_vel;
 
@@ -89,8 +106,12 @@ void ForceControlLaw::updateHook() {
 
 double ForceControlLaw::fcl(const double & rdam, const double & inertia,
                             const double & fm, const double & fd,
-                            const double & vel) {
-  return (rdam * (-fm));
+                            const double & dvel, const double & pvel) {
+
+  double step = 0.002;
+
+  return ((rdam * (fd - fm) + dvel) * step + rdam * inertia * pvel)
+      / (step + rdam * inertia);
 }
 
 ORO_CREATE_COMPONENT(ForceControlLaw)

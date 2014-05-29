@@ -20,7 +20,7 @@ class ForceControlLaw : public RTT::TaskContext {
   void updateHook();
 
   double fcl(const double & rdam, const double & inertia, const double & fm,
-             const double & fd, const double & vel);
+             const double & fd, const double & dvel, const double & pvel);
 
  private:
 
@@ -32,6 +32,7 @@ class ForceControlLaw : public RTT::TaskContext {
   RTT::InputPort<force_control_msgs::ForceControl> port_current_fcl_param_;
 
   KDL::Frame cl_ef_pose_kdl_;
+  KDL::Twist p_vel;
 
 };
 
