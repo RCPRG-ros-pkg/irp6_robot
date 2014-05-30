@@ -26,8 +26,6 @@ class ForceTransformation : public RTT::TaskContext {
   RTT::OutputPort<geometry_msgs::Wrench> port_output_end_effector_wrench_;
   RTT::InputPort<geometry_msgs::Pose> port_tool_;
 
-  bool first_run_;
-
   KDL::Wrench force_offset_;
 
   // ForceTrans
@@ -44,8 +42,7 @@ class ForceTransformation : public RTT::TaskContext {
   bool is_right_turn_frame_;
 
   void synchro(const KDL::Frame & init_frame);
-  void defineTool(const KDL::Frame & init_frame, const double weight,
-                  const KDL::Vector & point_of_gravity);
+  void defineTool(const KDL::Frame & init_frame);
 
   KDL::Wrench getForce(const KDL::Wrench _inputForceTorque,
                        const KDL::Frame curr_frame);

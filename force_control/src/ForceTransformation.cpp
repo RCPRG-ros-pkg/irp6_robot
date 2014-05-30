@@ -4,8 +4,7 @@
 #include "eigen_conversions/eigen_msg.h"
 
 ForceTransformation::ForceTransformation(const std::string& name)
-    : RTT::TaskContext(name, PreOperational),
-      first_run_(true) {
+    : RTT::TaskContext(name, PreOperational) {
 
   this->ports()->addPort("CurrentWristPose", port_current_wrist_pose_);
 
@@ -14,6 +13,7 @@ ForceTransformation::ForceTransformation(const std::string& name)
   this->ports()->addPort("OutputEndEffectorWrench",
                          port_output_end_effector_wrench_);
   this->ports()->addPort("Tool", port_tool_);
+
 }
 
 ForceTransformation::~ForceTransformation() {
@@ -21,6 +21,13 @@ ForceTransformation::~ForceTransformation() {
 }
 
 bool ForceTransformation::configureHook() {
+
+  // docelowo odczyt z konfiguracji
+  sensor_frame_ = KDL::Frame(KDL::Rotation::RotZ(M_PI),
+                             KDL::Vector(0.0, 0.0, 0.09));
+
+  // ustalenie skretnosci wektora z odczytami z czujnika
+  is_right_turn_frame_ = true;
 
   return true;
 }
@@ -45,23 +52,11 @@ bool ForceTransformation::startHook() {
 
   tf::poseMsgToKDL(current_wrist_pose, current_frame);
 
-  if (first_run_) {
+  tool_weight_ = 10.8;
 
-    sensor_frame_ = KDL::Frame(KDL::Rotation::RotZ(M_PI),
-                               KDL::Vector(0.0, 0.0, 0.09));
-    tool_weight_ = 10.8;
+  gravity_arm_in_wrist_ = KDL::Vector(0.004, 0.0, 0.156);
 
-    gravity_arm_in_wrist_ = KDL::Vector(0.004, 0.0, 0.156);
-
-    // ustalenie skretnosci wektora z odczytami z czujnika
-    is_right_turn_frame_ = true;
-
-    defineTool(current_frame, tool_weight_, gravity_arm_in_wrist_);
-    first_run_ = false;
-  } else {
-    synchro(current_frame);
-  }
-
+  defineTool(current_frame);
   return true;
 }
 
@@ -103,12 +98,7 @@ void ForceTransformation::updateHook() {
 
 }
 
-void ForceTransformation::defineTool(const KDL::Frame & init_frame,
-                                     const double weight,
-                                     const KDL::Vector & point_of_gravity) {
-
-  tool_weight_ = weight;
-  gravity_arm_in_wrist_ = point_of_gravity;
+void ForceTransformation::defineTool(const KDL::Frame & init_frame) {
 
   gravity_force_torque_in_base_ = KDL::Wrench(
       KDL::Vector(0.0, 0.0, -tool_weight_), KDL::Vector(0.0, 0.0, 0.0));
@@ -121,7 +111,8 @@ void ForceTransformation::defineTool(const KDL::Frame & init_frame,
       * gravity_force_torque_in_base_;
 
 // macierz narzedzia wzgledem nadgarstka
-  tool_mass_center_translation_ = KDL::Frame(KDL::Rotation(), point_of_gravity);
+  tool_mass_center_translation_ = KDL::Frame(KDL::Rotation(),
+                                             gravity_arm_in_wrist_);
 
 // sila reakcji w ukladzie nadgarstka z orientacja bazy
   reaction_force_torque_in_wrist_ = -(tool_mass_center_translation_
@@ -162,7 +153,7 @@ KDL::Wrench ForceTransformation::getForce(const KDL::Wrench _inputForceTorque,
 }
 
 void ForceTransformation::synchro(const KDL::Frame & init_frame) {
-  defineTool(init_frame, tool_weight_, gravity_arm_in_wrist_);
+  defineTool(init_frame);
 }
 
 ORO_CREATE_COMPONENT(ForceTransformation)
