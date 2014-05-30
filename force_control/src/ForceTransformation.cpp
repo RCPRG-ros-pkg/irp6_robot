@@ -27,9 +27,6 @@ bool ForceTransformation::configureHook() {
 
   tf::poseMsgToKDL(sensor_frame_property_, sensor_frame_kdl_);
 
-  // ustalenie skretnosci wektora z odczytami z czujnika
-  is_right_turn_frame_property_ = true;
-
   return true;
 }
 
