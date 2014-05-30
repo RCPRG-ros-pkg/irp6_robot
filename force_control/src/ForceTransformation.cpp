@@ -60,7 +60,6 @@ bool ForceTransformation::startHook() {
 
   tf::poseMsgToKDL(current_wrist_pose, current_frame);
 
-
 // sila reakcji w ukladzie czujnika z orientacja bazy
   KDL::Wrench gravity_force_torque_in_sensor = current_frame.M.Inverse()
       * gravity_force_torque_in_base_;
@@ -91,8 +90,28 @@ void ForceTransformation::updateHook() {
   // offset level removal
   KDL::Wrench biased_force = input_force - force_offset_;
 
-  //sily przechowujemy w zerowej orientacji bazowej w ukladzie nadgarstka
-  KDL::Wrench computed_force = getForce(biased_force, current_wrist_pose_kdl);
+  if (!is_right_turn_frame_) {
+
+    biased_force[2] = -biased_force[2];
+    biased_force[5] = -biased_force[5];
+  }
+
+  // sprowadzenie wejsciowych, zmierzonych sil i momentow sil z ukladu czujnika do ukladu nadgarstka
+  biased_force = sensor_frame_ * biased_force;
+
+  // sprowadzenie odczytow sil do ukladu czujnika przy zalozeniu ze uklad chwytaka ma te sama orientacje
+  // co uklad narzedzia
+  KDL::Wrench gravity_force_torque_in_sensor =
+      (current_wrist_pose_kdl.Inverse()).M * gravity_force_torque_in_base_;
+
+  // finalne przeksztalcenie (3.30 z doktoratu TW)
+  KDL::Wrench computed_force = biased_force
+      - tool_mass_center_translation_ * gravity_force_torque_in_sensor
+      - reaction_force_torque_in_wrist_;
+
+  // sprowadzenie sily w ukladzie nadgarstka do orientacji ukladu bazowego
+  computed_force = current_wrist_pose_kdl.M * (-computed_force);
+
   geometry_msgs::Wrench output_wrist_wrench;
   tf::wrenchKDLToMsg(computed_force, output_wrist_wrench);
 
@@ -111,38 +130,6 @@ void ForceTransformation::updateHook() {
   tf::wrenchKDLToMsg(computed_ef_force, output_end_effector_wrench);
 
   port_output_end_effector_wrench_.write(output_end_effector_wrench);
-
-}
-
-// zwraca sily i momenty sil w w ukladzie z orientacja koncowki manipulatory bez narzedzia
-KDL::Wrench ForceTransformation::getForce(const KDL::Wrench _inputForceTorque,
-                                          const KDL::Frame curr_frame) {
-
-  KDL::Wrench inputForceTorque = _inputForceTorque;
-
-  if (!is_right_turn_frame_) {
-
-    inputForceTorque[2] = -inputForceTorque[2];
-    inputForceTorque[5] = -inputForceTorque[5];
-  }
-
-  // sprowadzenie wejsciowych, zmierzonych sil i momentow sil z ukladu czujnika do ukladu nadgarstka
-  KDL::Wrench input_force_torque = sensor_frame_ * inputForceTorque;
-
-  // sprowadzenie odczytow sil do ukladu czujnika przy zalozeniu ze uklad chwytaka ma te sama orientacje
-  // co uklad narzedzia
-  KDL::Wrench gravity_force_torque_in_sensor = (curr_frame.Inverse()).M
-      * gravity_force_torque_in_base_;
-
-  // finalne przeksztalcenie (3.30 z doktoratu TW)
-  KDL::Wrench output_force_torque = input_force_torque
-      - tool_mass_center_translation_ * gravity_force_torque_in_sensor
-      - reaction_force_torque_in_wrist_;
-
-  // sprowadzenie sily w ukladzie nadgarstka do orientacji ukladu bazowego
-  output_force_torque = curr_frame.M * (-output_force_torque);
-
-  return output_force_torque;
 
 }
 
