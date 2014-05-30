@@ -3,7 +3,6 @@
 #include "ForceTransformation.h"
 #include "eigen_conversions/eigen_msg.h"
 
-
 ForceTransformation::ForceTransformation(const std::string& name)
     : RTT::TaskContext(name, PreOperational),
       first_run_(true) {
@@ -48,22 +47,17 @@ bool ForceTransformation::startHook() {
 
   if (first_run_) {
 
-    KDL::Frame force_sensor_frame = KDL::Frame(KDL::Rotation::RotZ(M_PI),
-                                               KDL::Vector(0.0, 0.0, 0.09));
-    double weight = 10.8;
+    sensor_frame_ = KDL::Frame(KDL::Rotation::RotZ(M_PI),
+                               KDL::Vector(0.0, 0.0, 0.09));
+    tool_weight_ = 10.8;
 
-    KDL::Vector pointofgravity(0.004, 0.0, 0.156);
+    gravity_arm_in_wrist_ = KDL::Vector(0.004, 0.0, 0.156);
 
     // ustalenie skretnosci wektora z odczytami z czujnika
     is_right_turn_frame_ = true;
 
-    // polozenie czujnika wzgledem nadgarstka
-    sensor_frame_ = force_sensor_frame;
-
-    tool_weight_ = weight;
-    gravity_arm_in_wrist_ = pointofgravity;
-    defineTool(current_frame, weight, pointofgravity);
-
+    defineTool(current_frame, tool_weight_, gravity_arm_in_wrist_);
+    first_run_ = false;
   } else {
     synchro(current_frame);
   }
