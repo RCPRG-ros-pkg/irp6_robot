@@ -138,7 +138,7 @@ if __name__ == '__main__':
   goal = CartesianTrajectoryGoal()
   
   
-  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(0.002), Pose(Point(0.0, 0.0, 0.0), Quaternion(0.0, 0.0, 0.0, 1.0)), Twist()))
+  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(0.01), Pose(Point(0.0, 0.0, 0.0), Quaternion(0.0, 0.0, 0.0, 1.0)), Twist()))
   goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.1)
   
   tool_client.send_goal(goal)
@@ -188,7 +188,7 @@ if __name__ == '__main__':
   goal = CartesianTrajectoryGoal()
   
   
-  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(0.002), Pose(Point(0.0, 0.0, 0.25), Quaternion(0.0, 0.0, 0.0, 1.0)), Twist()))
+  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(0.01), Pose(Point(0.0, 0.0, 0.25), Quaternion(0.0, 0.0, 0.0, 1.0)), Twist()))
   goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.1)
   
   tool_client.send_goal(goal)

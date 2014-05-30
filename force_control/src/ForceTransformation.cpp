@@ -27,10 +27,7 @@ bool ForceTransformation::configureHook() {
 }
 
 bool ForceTransformation::startHook() {
-  geometry_msgs::Pose current_wrist_pose;
-  if (port_current_wrist_pose_.read(current_wrist_pose) == RTT::NoData) {
-    return false;
-  }
+
 
   // read current force
   geometry_msgs::Wrench current_wrench;
@@ -40,7 +37,8 @@ bool ForceTransformation::startHook() {
 
   tf::wrenchMsgToKDL(current_wrench, force_offset_);
 
-  // polozenie nadgarstka narzedzia wzgledem bazy
+  // read current wrist pose
+  geometry_msgs::Pose current_wrist_pose;
   if (port_current_wrist_pose_.read(current_wrist_pose) == RTT::NoData) {
     return false;
   }
