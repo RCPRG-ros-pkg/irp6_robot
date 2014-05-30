@@ -13,6 +13,7 @@ ForceTransformation::ForceTransformation(const std::string& name)
   this->ports()->addPort("OutputEndEffectorWrench",
                          port_output_end_effector_wrench_);
   this->ports()->addPort("Tool", port_tool_);
+  this->ports()->addPort("ToolGravityParam", port_current_tool_gravity_param_);
 
   this->addProperty("sensor_frame", sensor_frame_property_);
   this->addProperty("is_right_turn_frame", is_right_turn_frame_property_);
@@ -49,10 +50,14 @@ bool ForceTransformation::startHook() {
     return false;
   }
 
-  // TODO set tool weight and center point from input ports
-
-
-
+  //  set tool weight and center point from input ports
+  force_control_msgs::ToolGravityParam tg_param;
+  if (port_current_tool_gravity_param_.read(tg_param) == RTT::NewData) {
+    tool_weight_property_ = tg_param.weight;
+    geometry_msgs::Vector3 gravity_arm_in_wrist_property_ = tg_param.mass_center;
+    tf::vectorMsgToKDL(gravity_arm_in_wrist_property_,
+                       gravity_arm_in_wrist_kdl_);
+  }
   // compute reaction force
 
   gravity_force_torque_in_base_ = KDL::Wrench(

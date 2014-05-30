@@ -7,6 +7,7 @@
 #include "geometry_msgs/Wrench.h"
 #include "kdl_conversions/kdl_msg.h"
 #include <Eigen/Dense>
+#include <force_control_msgs/ToolGravityParam.h>
 
 class ForceTransformation : public RTT::TaskContext {
  public:
@@ -25,6 +26,8 @@ class ForceTransformation : public RTT::TaskContext {
   RTT::OutputPort<geometry_msgs::Wrench> port_output_wrist_wrench_;
   RTT::OutputPort<geometry_msgs::Wrench> port_output_end_effector_wrench_;
   RTT::InputPort<geometry_msgs::Pose> port_tool_;
+
+  RTT::InputPort<force_control_msgs::ToolGravityParam> port_current_tool_gravity_param_;
 
   KDL::Wrench force_offset_;
 

@@ -51,6 +51,7 @@ add_message_files(
    Inertia.msg
    ReciprocalDamping.msg
    ForceControl.msg
+   ToolGravityParam.msg
  )
 
 ## Generate services in the 'srv' folder
