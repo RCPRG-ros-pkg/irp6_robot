@@ -122,6 +122,8 @@ connect("ForceTransformation.CurrentWristPose", "ForwardKinematic.WristOutputPos
 connect("ForceTransformation.CurrentSensorWrench", "ATI6284.Wrench", ConnPolicy())
 connect("ForceTransformation.Tool", "ToolInt.CartesianPositionCommand", ConnPolicy())
 
+stream("ForceTransformation.ToolGravityParam", ros.comm.topic("/irp6p_arm/tg_param"))
+
 // ForceControlLaw
 
 loadComponent("ForceControlLaw", "ForceControlLaw")

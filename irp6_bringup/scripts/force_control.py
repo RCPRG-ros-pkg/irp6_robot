@@ -65,13 +65,22 @@ if __name__ == '__main__':
   goal.wrench = Wrench(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
   goal.twist = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
   
-  
-  
-  
   pub.publish(goal)
   
-  #rospy.sleep(1.0)
+  #
+  # standard tool gravity param
+  #
   
+  pubtg = rospy.Publisher('/irp6p_arm/tg_param', ToolGravityParam)
+  rospy.sleep(0.5)
+  
+  tg_goal = ToolGravityParam()
+  tg_goal.weight = 10.8
+  tg_goal.mass_center = Vector3(0.004, 0.0, 0.156)
+
+ 
+  pubtg.publish(tg_goal)
+   
   print 'finish'
   
   
