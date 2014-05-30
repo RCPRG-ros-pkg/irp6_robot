@@ -29,11 +29,12 @@ class ForceTransformation : public RTT::TaskContext {
   KDL::Wrench force_offset_;
 
   // ForceTrans
-  double tool_weight_;
+  double tool_weight_property_;
+  geometry_msgs::Vector3 gravity_arm_in_wrist_property_;
 
   KDL::Wrench gravity_force_torque_in_base_;
   KDL::Wrench reaction_force_torque_in_wrist_;
-  KDL::Vector gravity_arm_in_wrist_;
+  KDL::Vector gravity_arm_in_wrist_kdl_;
   KDL::Frame tool_mass_center_translation_;
 
   geometry_msgs::Pose sensor_frame_property_;

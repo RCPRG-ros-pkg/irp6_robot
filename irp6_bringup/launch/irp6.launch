@@ -37,6 +37,11 @@
             z: 0.25
       ForceTransformation:
         is_right_turn_frame: true
+        tool_weight: 10.8
+        gravity_arm_in_wrist:
+          x: 0.004
+          y: 0.0
+          z: 0.156
         sensor_frame:
           orientation:
             w: 0.0 

@@ -17,6 +17,8 @@ ForceTransformation::ForceTransformation(const std::string& name)
   this->addProperty("sensor_frame", sensor_frame_property_);
   this->addProperty("is_right_turn_frame", is_right_turn_frame_property_);
 
+  this->addProperty("tool_weight", tool_weight_property_);
+  this->addProperty("gravity_arm_in_wrist", gravity_arm_in_wrist_property_);
 }
 
 ForceTransformation::~ForceTransformation() {
@@ -26,6 +28,7 @@ ForceTransformation::~ForceTransformation() {
 bool ForceTransformation::configureHook() {
 
   tf::poseMsgToKDL(sensor_frame_property_, sensor_frame_kdl_);
+  tf::vectorMsgToKDL(gravity_arm_in_wrist_property_, gravity_arm_in_wrist_kdl_);
 
   return true;
 }
@@ -46,14 +49,15 @@ bool ForceTransformation::startHook() {
     return false;
   }
 
-  // set tool and compute reaction force
-  //TODO from ros msgs
-  tool_weight_ = 10.8;
+  // TODO set tool weight and center point from input ports
 
-  gravity_arm_in_wrist_ = KDL::Vector(0.004, 0.0, 0.156);
+
+
+  // compute reaction force
 
   gravity_force_torque_in_base_ = KDL::Wrench(
-      KDL::Vector(0.0, 0.0, -tool_weight_), KDL::Vector(0.0, 0.0, 0.0));
+      KDL::Vector(0.0, 0.0, -tool_weight_property_),
+      KDL::Vector(0.0, 0.0, 0.0));
 
   KDL::Frame current_frame;
 
@@ -65,7 +69,7 @@ bool ForceTransformation::startHook() {
 
 // macierz narzedzia wzgledem nadgarstka
   tool_mass_center_translation_ = KDL::Frame(KDL::Rotation(),
-                                             gravity_arm_in_wrist_);
+                                             gravity_arm_in_wrist_kdl_);
 
 // sila reakcji w ukladzie nadgarstka z orientacja bazy
   reaction_force_torque_in_wrist_ = -(tool_mass_center_translation_
