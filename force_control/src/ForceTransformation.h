@@ -5,10 +5,8 @@
 #include <rtt/Port.hpp>
 #include <geometry_msgs/Pose.h>
 #include "geometry_msgs/Wrench.h"
-
+#include "kdl_conversions/kdl_msg.h"
 #include <Eigen/Dense>
-
-#include "ForceTrans.h"
 
 class ForceTransformation : public RTT::TaskContext {
  public:
@@ -28,9 +26,29 @@ class ForceTransformation : public RTT::TaskContext {
   RTT::OutputPort<geometry_msgs::Wrench> port_output_end_effector_wrench_;
   RTT::InputPort<geometry_msgs::Pose> port_tool_;
 
-  ForceTrans *gravity_transformation_;  // klasa likwidujaca wplyw grawitacji na czujnik
+  bool first_run_;
 
   KDL::Wrench force_offset_;
+
+  // ForceTrans
+  double tool_weight_;
+
+  KDL::Wrench gravity_force_torque_in_base_;
+  KDL::Wrench reaction_force_torque_in_wrist_;
+  KDL::Vector gravity_arm_in_wrist_;
+
+  KDL::Frame sensor_frame_;
+
+  KDL::Frame tool_mass_center_translation_;
+
+  bool is_right_turn_frame_;
+
+  void synchro(const KDL::Frame & init_frame);
+  void defineTool(const KDL::Frame & init_frame, const double weight,
+                  const KDL::Vector & point_of_gravity);
+
+  KDL::Wrench getForce(const KDL::Wrench _inputForceTorque,
+                       const KDL::Frame curr_frame);
 
 };
 

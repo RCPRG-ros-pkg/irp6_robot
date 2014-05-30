@@ -13,7 +13,7 @@ include_directories(${catkin_INCLUDE_DIRS}  ${Eigen_INCLUDE_DIRS})
 orocos_component(force_control_law src/ForceControlLaw.cpp)
 target_link_libraries(force_control_law ${catkin_LIBRARIES} ${orocos_kdl_LIBRARIES})
 
-orocos_component(force_transformation src/ForceTrans.cpp src/ForceTransformation.cpp)
+orocos_component(force_transformation src/ForceTransformation.cpp)
 target_link_libraries(force_transformation ${catkin_LIBRARIES})
 
 orocos_generate_package()
