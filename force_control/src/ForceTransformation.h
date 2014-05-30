@@ -41,9 +41,6 @@ class ForceTransformation : public RTT::TaskContext {
 
   bool is_right_turn_frame_;
 
-  void synchro(const KDL::Frame & init_frame);
-  void defineTool(const KDL::Frame & init_frame);
-
   KDL::Wrench getForce(const KDL::Wrench _inputForceTorque,
                        const KDL::Frame curr_frame);
 

@@ -34,7 +34,7 @@ bool ForceTransformation::configureHook() {
 
 bool ForceTransformation::startHook() {
 
-  // read current force
+  // read current force ad set as an offset force
   geometry_msgs::Wrench current_wrench;
   if (port_current_sensor_wrench_.read(current_wrench) == RTT::NoData) {
     return false;
@@ -48,15 +48,31 @@ bool ForceTransformation::startHook() {
     return false;
   }
 
-  KDL::Frame current_frame;
-
-  tf::poseMsgToKDL(current_wrist_pose, current_frame);
-
+  // set tool and compute reaction force
   tool_weight_ = 10.8;
 
   gravity_arm_in_wrist_ = KDL::Vector(0.004, 0.0, 0.156);
 
-  defineTool(current_frame);
+  gravity_force_torque_in_base_ = KDL::Wrench(
+      KDL::Vector(0.0, 0.0, -tool_weight_), KDL::Vector(0.0, 0.0, 0.0));
+
+  KDL::Frame current_frame;
+
+  tf::poseMsgToKDL(current_wrist_pose, current_frame);
+
+
+// sila reakcji w ukladzie czujnika z orientacja bazy
+  KDL::Wrench gravity_force_torque_in_sensor = current_frame.M.Inverse()
+      * gravity_force_torque_in_base_;
+
+// macierz narzedzia wzgledem nadgarstka
+  tool_mass_center_translation_ = KDL::Frame(KDL::Rotation(),
+                                             gravity_arm_in_wrist_);
+
+// sila reakcji w ukladzie nadgarstka z orientacja bazy
+  reaction_force_torque_in_wrist_ = -(tool_mass_center_translation_
+      * gravity_force_torque_in_sensor);
+
   return true;
 }
 
@@ -98,28 +114,6 @@ void ForceTransformation::updateHook() {
 
 }
 
-void ForceTransformation::defineTool(const KDL::Frame & init_frame) {
-
-  gravity_force_torque_in_base_ = KDL::Wrench(
-      KDL::Vector(0.0, 0.0, -tool_weight_), KDL::Vector(0.0, 0.0, 0.0));
-
-// orientacja koncowki manipulatora bez narzedzia
-  KDL::Frame current_orientation(init_frame.M, KDL::Vector(0.0, 0.0, 0.0));
-
-// sila reakcji w ukladzie czujnika z orientacja bazy
-  KDL::Wrench gravity_force_torque_in_sensor = current_orientation.Inverse()
-      * gravity_force_torque_in_base_;
-
-// macierz narzedzia wzgledem nadgarstka
-  tool_mass_center_translation_ = KDL::Frame(KDL::Rotation(),
-                                             gravity_arm_in_wrist_);
-
-// sila reakcji w ukladzie nadgarstka z orientacja bazy
-  reaction_force_torque_in_wrist_ = -(tool_mass_center_translation_
-      * gravity_force_torque_in_sensor);
-
-}
-
 // zwraca sily i momenty sil w w ukladzie z orientacja koncowki manipulatory bez narzedzia
 KDL::Wrench ForceTransformation::getForce(const KDL::Wrench _inputForceTorque,
                                           const KDL::Frame curr_frame) {
@@ -150,10 +144,6 @@ KDL::Wrench ForceTransformation::getForce(const KDL::Wrench _inputForceTorque,
 
   return output_force_torque;
 
-}
-
-void ForceTransformation::synchro(const KDL::Frame & init_frame) {
-  defineTool(init_frame);
 }
 
 ORO_CREATE_COMPONENT(ForceTransformation)
