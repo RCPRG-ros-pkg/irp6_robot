@@ -96,9 +96,10 @@ PoseInt.configure();
 // ToolInt
 
 loadComponent("ToolInt", "CartesianInterpolator")
-ToolInt.configure();
 ToolInt.loadService("rosparam");
 ToolInt.rosparam.getAll();
+ToolInt.configure();
+
 
 connect("ToolInt.CartesianPositionCommand", "ForwardKinematic.Tool", ConnPolicy())
 connect("ToolInt.CartesianPositionCommand", "InverseKinematic.Tool", ConnPolicy())
@@ -112,7 +113,10 @@ ATI6284.configure()
 
 // ForceTransformation
 loadComponent("ForceTransformation", "ForceTransformation")
+ForceTransformation.loadService("rosparam");
+ForceTransformation.rosparam.getAll();
 ForceTransformation.configure()
+
 
 connect("ForceTransformation.CurrentWristPose", "ForwardKinematic.WristOutputPose", ConnPolicy())
 connect("ForceTransformation.CurrentSensorWrench", "ATI6284.Wrench", ConnPolicy())
@@ -123,7 +127,6 @@ connect("ForceTransformation.Tool", "ToolInt.CartesianPositionCommand", ConnPoli
 loadComponent("ForceControlLaw", "ForceControlLaw")
 ForceControlLaw.configure()
 
-connect("ForceControlLaw.Tool", "ToolInt.CartesianPositionCommand", ConnPolicy())
 connect("ForceControlLaw.OutputEndEffectorPose", "InverseKinematic.InputEndEffectorPose", ConnPolicy())
 connect("ForceControlLaw.CurrentEndEffectorPose", "ForwardKinematic.EndEffectorOutputPose", ConnPolicy())
 connect("ForceTransformation.OutputEndEffectorWrench", "ForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())

@@ -35,6 +35,18 @@
             x: 0.0
             y: 0.0
             z: 0.25
+      ForceTransformation:
+        is_right_turn_frame: true
+        sensor_frame:
+          orientation:
+            w: 0.0 
+            x: 0.0
+            y: 0.0
+            z: -1.0
+          position:
+            x: 0.0
+            y: 0.0
+            z: 0.09 
     </rosparam>
 </group>
 

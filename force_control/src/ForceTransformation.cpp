@@ -14,6 +14,9 @@ ForceTransformation::ForceTransformation(const std::string& name)
                          port_output_end_effector_wrench_);
   this->ports()->addPort("Tool", port_tool_);
 
+  this->addProperty("sensor_frame", sensor_frame_property_);
+  this->addProperty("is_right_turn_frame", is_right_turn_frame_property_);
+
 }
 
 ForceTransformation::~ForceTransformation() {
@@ -22,12 +25,10 @@ ForceTransformation::~ForceTransformation() {
 
 bool ForceTransformation::configureHook() {
 
-  // docelowo odczyt z konfiguracji
-  sensor_frame_ = KDL::Frame(KDL::Rotation::RotZ(M_PI),
-                             KDL::Vector(0.0, 0.0, 0.09));
+  tf::poseMsgToKDL(sensor_frame_property_, sensor_frame_kdl_);
 
   // ustalenie skretnosci wektora z odczytami z czujnika
-  is_right_turn_frame_ = true;
+  is_right_turn_frame_property_ = true;
 
   return true;
 }
@@ -49,6 +50,7 @@ bool ForceTransformation::startHook() {
   }
 
   // set tool and compute reaction force
+  //TODO from ros msgs
   tool_weight_ = 10.8;
 
   gravity_arm_in_wrist_ = KDL::Vector(0.004, 0.0, 0.156);
@@ -90,14 +92,14 @@ void ForceTransformation::updateHook() {
   // offset level removal
   KDL::Wrench biased_force = input_force - force_offset_;
 
-  if (!is_right_turn_frame_) {
+  if (!is_right_turn_frame_property_) {
 
     biased_force[2] = -biased_force[2];
     biased_force[5] = -biased_force[5];
   }
 
   // sprowadzenie wejsciowych, zmierzonych sil i momentow sil z ukladu czujnika do ukladu nadgarstka
-  biased_force = sensor_frame_ * biased_force;
+  biased_force = sensor_frame_kdl_ * biased_force;
 
   // sprowadzenie odczytow sil do ukladu czujnika przy zalozeniu ze uklad chwytaka ma te sama orientacje
   // co uklad narzedzia
