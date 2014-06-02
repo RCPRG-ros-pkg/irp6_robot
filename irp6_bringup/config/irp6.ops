@@ -104,6 +104,8 @@ ToolInt.configure();
 connect("ToolInt.CartesianPositionCommand", "ForwardKinematic.Tool", ConnPolicy())
 connect("ToolInt.CartesianPositionCommand", "InverseKinematic.Tool", ConnPolicy())
 
+#stream("ToolInt.CartesianPositionCommand", ros.comm.topic("/irp6p_arm/tool"))
+
 // ATI6284
 
 loadComponent("ATI6284", "ATI6284")
