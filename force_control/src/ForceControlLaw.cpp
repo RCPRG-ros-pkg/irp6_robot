@@ -1,3 +1,4 @@
+// Copyright WUT 2014
 #include <rtt/Component.hpp>
 
 #include "ForceControlLaw.h"
@@ -15,22 +16,17 @@ ForceControlLaw::ForceControlLaw(const std::string& name)
   this->ports()->addPort("CurrentEndEffectorWrench",
                          port_current_end_effector_wrench_);
   this->ports()->addPort("CurrentFclParam", port_current_fcl_param_);
-
 }
 
 ForceControlLaw::~ForceControlLaw() {
-
 }
 
 bool ForceControlLaw::configureHook() {
-
   return true;
 }
 
 bool ForceControlLaw::startHook() {
-
-  //tool determination
-
+  // tool determination
   geometry_msgs::Pose cl_ef_pose;
   if (port_current_end_effector_pose_.read(cl_ef_pose) == RTT::NoData) {
     return false;
@@ -39,7 +35,7 @@ bool ForceControlLaw::startHook() {
   tf::poseMsgToKDL(cl_ef_pose, cl_ef_pose_kdl_);
 
   force_control_msgs::ForceControl fcl_param;
-  //controller parameters have to be set before the component is started
+  // controller parameters have to be set before the component is started
   if (port_current_fcl_param_.read(fcl_param) == RTT::NoData) {
     return false;
   }
@@ -48,7 +44,6 @@ bool ForceControlLaw::startHook() {
 }
 
 void ForceControlLaw::updateHook() {
-
   // current wrench determination
   geometry_msgs::Wrench current_end_effector_wrench;
   port_current_end_effector_wrench_.read(current_end_effector_wrench);
@@ -101,13 +96,11 @@ void ForceControlLaw::updateHook() {
   tf::poseKDLToMsg(cl_ef_pose_kdl_, cl_ef_pose);
 
   port_output_end_effector_pose_.write(cl_ef_pose);
-
 }
 
 double ForceControlLaw::fcl(const double & rdam, const double & inertia,
                             const double & fm, const double & fd,
                             const double & dvel, const double & pvel) {
-
   return ((rdam * (fd - fm) + dvel) * step_duration_ + rdam * inertia * pvel)
       / (step_duration_ + rdam * inertia);
 }

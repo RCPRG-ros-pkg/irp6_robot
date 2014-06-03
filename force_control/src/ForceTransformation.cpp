@@ -1,3 +1,4 @@
+// Copyright WUT 2014
 #include <rtt/Component.hpp>
 
 #include "ForceTransformation.h"
@@ -23,11 +24,9 @@ ForceTransformation::ForceTransformation(const std::string& name)
 }
 
 ForceTransformation::~ForceTransformation() {
-
 }
 
 bool ForceTransformation::configureHook() {
-
   tf::poseMsgToKDL(sensor_frame_property_, sensor_frame_kdl_);
   tf::vectorMsgToKDL(gravity_arm_in_wrist_property_, gravity_arm_in_wrist_kdl_);
 
@@ -35,7 +34,6 @@ bool ForceTransformation::configureHook() {
 }
 
 bool ForceTransformation::startHook() {
-
   // read current force ad set as an offset force
   geometry_msgs::Wrench current_wrench;
   if (port_current_sensor_wrench_.read(current_wrench) == RTT::NoData) {
@@ -99,7 +97,6 @@ void ForceTransformation::updateHook() {
   KDL::Wrench biased_force = input_force - force_offset_;
 
   if (!is_right_turn_frame_property_) {
-
     biased_force[2] = -biased_force[2];
     biased_force[5] = -biased_force[5];
   }
@@ -125,7 +122,7 @@ void ForceTransformation::updateHook() {
 
   port_output_wrist_wrench_.write(output_wrist_wrench);
 
-  //tool determination
+  // tool determination
   geometry_msgs::Pose tool_msgs;
   port_tool_.read(tool_msgs);
   KDL::Frame tool_kdl;
@@ -138,7 +135,6 @@ void ForceTransformation::updateHook() {
   tf::wrenchKDLToMsg(computed_ef_force, output_end_effector_wrench);
 
   port_output_end_effector_wrench_.write(output_end_effector_wrench);
-
 }
 
 ORO_CREATE_COMPONENT(ForceTransformation)

@@ -1,5 +1,6 @@
-#ifndef ForceControlLaw_H_
-#define ForceControlLaw_H_
+// Copyright WUT 2014
+#ifndef FORCECONTROLLAW_H_
+#define FORCECONTROLLAW_H_
 
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
@@ -12,7 +13,7 @@
 
 class ForceControlLaw : public RTT::TaskContext {
  public:
-  ForceControlLaw(const std::string& name);
+  explicit ForceControlLaw(const std::string& name);
   virtual ~ForceControlLaw();
 
   virtual bool configureHook();
@@ -23,7 +24,6 @@ class ForceControlLaw : public RTT::TaskContext {
              const double & fd, const double & dvel, const double & pvel);
 
  private:
-
   RTT::InputPort<geometry_msgs::Pose> port_current_end_effector_pose_;
   RTT::OutputPort<geometry_msgs::Pose> port_output_end_effector_pose_;
 
@@ -34,7 +34,6 @@ class ForceControlLaw : public RTT::TaskContext {
   KDL::Frame cl_ef_pose_kdl_;
   KDL::Twist p_vel_;
   double step_duration_;
-
 };
 
-#endif /* ForceControlLaw */
+#endif  // FORCECONTROLLAW_H_

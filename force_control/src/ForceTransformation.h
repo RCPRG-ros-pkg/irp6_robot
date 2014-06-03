@@ -1,5 +1,6 @@
-#ifndef ForceTransformation_H_
-#define ForceTransformation_H_
+// Copyright WUT 2014
+#ifndef FORCETRANSFORMATION_H_
+#define FORCETRANSFORMATION_H_
 
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
@@ -11,7 +12,7 @@
 
 class ForceTransformation : public RTT::TaskContext {
  public:
-  ForceTransformation(const std::string& name);
+  explicit ForceTransformation(const std::string& name);
   virtual ~ForceTransformation();
 
   virtual bool configureHook();
@@ -19,7 +20,6 @@ class ForceTransformation : public RTT::TaskContext {
   void updateHook();
 
  private:
-
   RTT::InputPort<geometry_msgs::Pose> port_current_wrist_pose_;
 
   RTT::InputPort<geometry_msgs::Wrench> port_current_sensor_wrench_;
@@ -44,7 +44,6 @@ class ForceTransformation : public RTT::TaskContext {
   bool is_right_turn_frame_property_;
 
   KDL::Frame sensor_frame_kdl_;
-
 };
 
-#endif /* ForceTransformation_H_ */
+#endif  // FORCETRANSFORMATION_H_
