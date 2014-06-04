@@ -194,6 +194,7 @@ SplineTrajectoryActionJoint.actionlib.connect("/irp6p_arm/spline_trajectory_acti
 
 connect("SplineTrajectoryActionJoint.trajectoryPtr","SplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
 connect("trans.JointPosition","SplineTrajectoryActionJoint.JointPosition", ConnPolicy())
+connect("SplineTrajectoryGeneratorJoint.JointPositionCommand","SplineTrajectoryActionJoint.JointPositionCommand", ConnPolicy())
 
 
 SplineTrajectoryActionJoint.configure()
@@ -213,6 +214,9 @@ SplineTrajectoryActionMotor.actionlib.connect("/irp6p_arm/spline_trajectory_acti
 
 connect("SplineTrajectoryActionMotor.trajectoryPtr","SplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
 connect("trans.JointPosition","SplineTrajectoryActionMotor.JointPosition", ConnPolicy())
+connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","SplineTrajectoryActionMotor.JointPositionCommand", ConnPolicy())
+
+ 
 
 SplineTrajectoryActionMotor.configure()
 
