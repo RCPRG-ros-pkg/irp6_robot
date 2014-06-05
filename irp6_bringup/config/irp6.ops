@@ -7,6 +7,7 @@ ros.import("rtt_actionlib_msgs")
 ros.import("rtt_trajectory_msgs")
 ros.import("rtt_control_msgs")
 ros.import("rtt_cartesian_trajectory_msgs")
+ros.import("rtt_force_control_msgs")
 
 ros.import("conman");
 ros.import("conman_ros");
@@ -34,8 +35,8 @@ scheme.configure();
 //------------------------------------------------------------------------------
 loadComponent("HardwareInterface","HardwareInterface")
 //setActivity("HardwareInterface", 0.002, 5, ORO_SCHED_RT)
-HardwareInterface.number_of_drives = 6;
-HardwareInterface.configure();
+HardwareInterface.number_of_drives = 6
+HardwareInterface.configure()
 
 loadComponent("IRp6Regulator","IRp6Regulator")
 //setActivity("IRp6Regulator", 0, 5, ORO_SCHED_RT)
@@ -69,7 +70,6 @@ SplineTrajectoryGeneratorJoint.rosparam.getAll();
 
 connect("trans.JointPosition","SplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
 connect("SplineTrajectoryGeneratorJoint.JointPositionCommand","transInv.JointPosition", ConnPolicy())
-
 SplineTrajectoryGeneratorJoint.configure()
 
 loadComponent("SplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
@@ -103,22 +103,38 @@ ToolInt.rosparam.getAll();
 connect("ToolInt.CartesianPositionCommand", "ForwardKinematic.Tool", ConnPolicy())
 connect("ToolInt.CartesianPositionCommand", "InverseKinematic.Tool", ConnPolicy())
 
-// ForceControlLaw
+#stream("ToolInt.CartesianPositionCommand", ros.comm.topic("/irp6p_arm/tool"))
 
-
-loadComponent("ForceControlLaw", "ForceControlLaw")
-ForceControlLaw.configure()
+// ATI6284
 
 loadComponent("ATI6284", "ATI6284")
 ATI6284.configure()
 
 
 
+// ForceTransformation
+loadComponent("ForceTransformation", "ForceTransformation")
+ForceTransformation.loadService("rosparam");
+ForceTransformation.rosparam.getAll();
+ForceTransformation.configure()
 
-connect("ForceControlLaw.OutputPose", "InverseKinematic.InputWristPose", ConnPolicy())
-connect("ForceControlLaw.CurrentPose", "ForwardKinematic.WristOutputPose", ConnPolicy())
-connect("ForceControlLaw.CurrentWrench", "ATI6284.Wrench", ConnPolicy())
 
+connect("ForceTransformation.CurrentWristPose", "ForwardKinematic.WristOutputPose", ConnPolicy())
+connect("ForceTransformation.CurrentSensorWrench", "ATI6284.Wrench", ConnPolicy())
+connect("ForceTransformation.Tool", "ToolInt.CartesianPositionCommand", ConnPolicy())
+
+stream("ForceTransformation.ToolGravityParam", ros.comm.topic("/irp6p_arm/tg_param"))
+
+// ForceControlLaw
+
+loadComponent("ForceControlLaw", "ForceControlLaw")
+ForceControlLaw.configure()
+
+connect("ForceControlLaw.OutputEndEffectorPose", "InverseKinematic.InputEndEffectorPose", ConnPolicy())
+connect("ForceControlLaw.CurrentEndEffectorPose", "ForwardKinematic.EndEffectorOutputPose", ConnPolicy())
+connect("ForceTransformation.OutputEndEffectorWrench", "ForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
+
+stream("ForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6p_arm/fcl_param"))
 
 ## Connect
 connect("HardwareInterface.computedPwm_in","IRp6Regulator.computedPwm_out", ConnPolicy())
