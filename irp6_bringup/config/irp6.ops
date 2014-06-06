@@ -35,6 +35,8 @@ scheme.configure();
 //------------------------------------------------------------------------------
 loadComponent("HardwareInterface","HardwareInterface")
 //setActivity("HardwareInterface", 0.002, 5, ORO_SCHED_RT)
+HardwareInterface.loadService("rosparam");
+HardwareInterface.rosparam.getAll();
 HardwareInterface.number_of_drives = 6
 HardwareInterface.configure()
 
