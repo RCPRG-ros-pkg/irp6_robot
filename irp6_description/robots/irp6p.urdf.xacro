@@ -47,7 +47,7 @@
   </link>
   
   <joint name="joint1" type="revolute">
-    <origin rpy="0 0 0" xyz="0.0 0.0 0.3"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.55"/>
     <axis xyz="0 0 1"/>
     <limit lower="-2.96705973" upper="2.96705973" effort="10.0" velocity="10.0" />
     <parent link="base_link"/>
@@ -107,7 +107,7 @@
   </link>
 
   <joint name="joint3" type="revolute">
-    <origin rpy="0 0 0.0" xyz="0.45 0.0 0.0"/>
+    <origin rpy="0 0 0.0" xyz="0.455 0.0 0.0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-0.3" upper="0.5" effort="10.0" velocity="10.0" />
     <parent link="link2"/>
@@ -197,7 +197,7 @@
   </link>
 
   <joint name="joint6" type="revolute">
-    <origin rpy="${0.5 * M_PI} 0 0" xyz="0.0 -0.15 0.19"/>
+    <origin rpy="${0.5 * M_PI} 0 0" xyz="0.0 0.0 0.19"/>
     <axis xyz="0 0 1"/>
     <limit lower="-3.0" upper="2.9" effort="10.0" velocity="10.0" />
     <parent link="link5"/>
@@ -212,7 +212,7 @@
     </inertial>
 
     <visual>
-      <origin rpy="0 0 0.0" xyz="0 0.0 0.0"/>
+      <origin rpy="0 0 0.0" xyz="0 0.0 0.15"/>
       <geometry>
          <mesh filename="package://irp6_description/meshes/link6.3ds" />
       </geometry>
@@ -227,7 +227,7 @@
   </link>
 
   <joint name="gripper_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.0 0.0 0.06"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.21"/>
     <parent link="link6"/>
     <child link="griper_link"/>
   </joint>

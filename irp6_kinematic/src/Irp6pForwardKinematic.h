@@ -1,3 +1,4 @@
+// Copyright WUT 2014
 #ifndef Irp6pForwardKinematic_H_
 #define Irp6pForwardKinematic_H_
 
@@ -6,6 +7,7 @@
 #include <geometry_msgs/Pose.h>
 
 #include <Eigen/Dense>
+#include "Irp6pKinematic.h"
 
 class Irp6pForwardKinematic : public RTT::TaskContext {
  public:
@@ -44,7 +46,6 @@ class Irp6pForwardKinematic : public RTT::TaskContext {
 
   //! D-H kinematic parameters - length of 6th segment.
   double d7;
-
 
 };
 

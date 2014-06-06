@@ -1,3 +1,4 @@
+// Copyright WUT 2014
 #include <rtt/Component.hpp>
 
 #include "Irp6pInverseKinematic.h"
@@ -25,11 +26,11 @@ bool Irp6pInverseKinematic::configureHook() {
   /* -----------------------------------------------------------------------
    Dlugosci czlonow robota [m].
    ------------------------------------------------------------------------- */
-  a2 = 0.455;
-  a3 = 0.67;
-  d5 = 0.19;
-  d6 = 0.095;
-  d7 = 0.20;
+  a2 = a2_const;
+  a3 = a3_const;
+  d5 = d5_const;
+  d6 = d6_const;
+  d7 = d7_const;
 
   local_desired_joints_.resize(6);
   local_current_joints_.resize(6);
@@ -58,7 +59,8 @@ void Irp6pInverseKinematic::updateHook() {
 
     port_output_joint_position_.write(local_desired_joints_);
 
-  } else if (port_input_end_effector_pose_.read(end_effector_pose_) == RTT::NewData) {
+  } else if (port_input_end_effector_pose_.read(end_effector_pose_)
+      == RTT::NewData) {
 
     port_tool_.read(tool_msgs_);
 
@@ -68,9 +70,7 @@ void Irp6pInverseKinematic::updateHook() {
     tf::poseMsgToEigen(end_effector_pose_, trans);
     tf::poseMsgToEigen(tool_msgs_, tool);
 
-
     wrist_pose = trans * tool.inverse();
-
 
     port_current_joint_position_.read(local_current_joints_);
 
@@ -115,7 +115,7 @@ void Irp6pInverseKinematic::inverse_kinematics_single_iteration(
   Az = local_desired_end_effector_frame(2, 2);
   Px = local_desired_end_effector_frame(0, 3);
   Py = local_desired_end_effector_frame(1, 3);
-  Pz = local_desired_end_effector_frame(2, 3);
+  Pz = local_desired_end_effector_frame(2, 3) - z_offset_const;
 
   //  Wyliczenie Theta1.
   (*local_desired_joints)[0] = (atan2(Py, Px));
