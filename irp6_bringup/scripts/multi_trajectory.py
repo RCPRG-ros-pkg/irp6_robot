@@ -111,11 +111,11 @@ if __name__ == '__main__':
      
   goal = CartesianTrajectoryGoal()
   
-  rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.0, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 0.231029263241))
+  rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.0, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 1.18029263241))
   
-  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(3.0), Pose(Point(0.705438961242, -0.1208864692291, 0.231029263241), Quaternion(0.675351045979, 0.0892025112399, 0.698321120995, 0.219753244928)), Twist()))
+  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(3.0), Pose(Point(0.705438961242, -0.1208864692291, 1.181029263241), Quaternion(0.675351045979, 0.0892025112399, 0.698321120995, 0.219753244928)), Twist()))
   goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(6.0), pm.toMsg(rot), Twist()))
-  rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.3, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 0.231029263241))
+  rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.3, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 1.181029263241))
   goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(9.0), pm.toMsg(rot), Twist()))
   goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
   
@@ -160,11 +160,11 @@ if __name__ == '__main__':
      
   goal = CartesianTrajectoryGoal()
   
-  rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.0, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 0.231029263241))
+  rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.0, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 1.181029263241))
   
-  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(3.0), Pose(Point(0.705438961242, -0.1208864692291, 0.231029263241), Quaternion(0.675351045979, 0.0892025112399, 0.698321120995, 0.219753244928)), Twist()))
+  goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(3.0), Pose(Point(0.705438961242, -0.1208864692291, 1.181029263241), Quaternion(0.675351045979, 0.0892025112399, 0.698321120995, 0.219753244928)), Twist()))
   goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(6.0), pm.toMsg(rot), Twist()))
-  rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.3, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 0.231029263241))
+  rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.3, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 1.181029263241))
   goal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(9.0), pm.toMsg(rot), Twist()))
   goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
   

@@ -110,7 +110,8 @@ void Irp6pForwardKinematic::direct_kinematics_transform(
   (*local_current_end_effector_frame)(2, 0) = c4 * c5 * c6 - s4 * s6;  //NZ
   (*local_current_end_effector_frame)(2, 1) = -c4 * c5 * s6 - s4 * c6;  //OZ
   (*local_current_end_effector_frame)(2, 2) = c4 * s5;  //AZ
-  (*local_current_end_effector_frame)(2, 3) = -a2 * s2 - a3 * s3 - d5 * s4;  //PZ
+  (*local_current_end_effector_frame)(2, 3) = -a2 * s2 - a3 * s3 - d5 * s4
+      + z_offset;  //PZ
 
 }
 

@@ -47,7 +47,7 @@
   </link>
   
   <joint name="joint1" type="revolute">
-    <origin rpy="0 0 0" xyz="0.0 0.0 0.3"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.55"/>
     <axis xyz="0 0 1"/>
     <limit lower="-2.96705973" upper="2.96705973" effort="10.0" velocity="10.0" />
     <parent link="base_link"/>

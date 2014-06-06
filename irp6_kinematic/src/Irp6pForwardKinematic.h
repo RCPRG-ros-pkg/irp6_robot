@@ -6,6 +6,7 @@
 #include <geometry_msgs/Pose.h>
 
 #include <Eigen/Dense>
+#include "Irp6pKinematic.h"
 
 class Irp6pForwardKinematic : public RTT::TaskContext {
  public:

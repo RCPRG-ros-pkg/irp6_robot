@@ -115,7 +115,7 @@ void Irp6pInverseKinematic::inverse_kinematics_single_iteration(
   Az = local_desired_end_effector_frame(2, 2);
   Px = local_desired_end_effector_frame(0, 3);
   Py = local_desired_end_effector_frame(1, 3);
-  Pz = local_desired_end_effector_frame(2, 3);
+  Pz = local_desired_end_effector_frame(2, 3)-z_offset;
 
   //  Wyliczenie Theta1.
   (*local_desired_joints)[0] = (atan2(Py, Px));
