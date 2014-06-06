@@ -1,3 +1,4 @@
+// Copyright WUT 2014
 #ifndef Irp6pInverseKinematic_H_
 #define Irp6pInverseKinematic_H_
 

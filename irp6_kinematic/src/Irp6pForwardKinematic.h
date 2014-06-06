@@ -1,3 +1,4 @@
+// Copyright WUT 2014
 #ifndef Irp6pForwardKinematic_H_
 #define Irp6pForwardKinematic_H_
 
@@ -45,7 +46,6 @@ class Irp6pForwardKinematic : public RTT::TaskContext {
 
   //! D-H kinematic parameters - length of 6th segment.
   double d7;
-
 
 };
 

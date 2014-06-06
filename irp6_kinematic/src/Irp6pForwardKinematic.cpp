@@ -1,3 +1,4 @@
+// Copyright WUT 2014
 #include <rtt/Component.hpp>
 
 #include "Irp6pForwardKinematic.h"
@@ -24,11 +25,11 @@ bool Irp6pForwardKinematic::configureHook() {
   /* -----------------------------------------------------------------------
    Dlugosci czlonow robota [m].
    ------------------------------------------------------------------------- */
-  a2 = 0.455;
-  a3 = 0.67;
-  d5 = 0.19;
-  d6 = 0.095;
-  d7 = 0.20;
+  a2 = a2_const;
+  a3 = a3_const;
+  d5 = d5_const;
+  d6 = d6_const;
+  d7 = d7_const;
 
   joint_position_.resize(6);
   local_current_joints_tmp_.resize(6);
@@ -111,7 +112,7 @@ void Irp6pForwardKinematic::direct_kinematics_transform(
   (*local_current_end_effector_frame)(2, 1) = -c4 * c5 * s6 - s4 * c6;  //OZ
   (*local_current_end_effector_frame)(2, 2) = c4 * s5;  //AZ
   (*local_current_end_effector_frame)(2, 3) = -a2 * s2 - a3 * s3 - d5 * s4
-      + z_offset;  //PZ
+      + z_offset_const;  //PZ
 
 }
 
