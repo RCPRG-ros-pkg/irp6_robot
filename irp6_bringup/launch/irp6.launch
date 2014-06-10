@@ -13,6 +13,16 @@
 
   <group ns="ROS_OROCOS_ROBOT">
     <rosparam>
+      HardwareInterface:
+        auto_synchronize: true
+        ports_adresses: [/dev/ttyMI8, /dev/ttyMI9, /dev/ttyMI10, /dev/ttyMI11, /dev/ttyMI12, /dev/ttyMI13]
+        max_current: [25000, 18000, 15000, 17000, 10000, 2000]
+        max_increment: [1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]
+        card_indexes: [0, 1, 2, 3, 4, 5]
+        tx_prefix_len: 0
+        enc_res: [4000, 4000, 4000, 4000, 4000, 2000]
+        synchro_step_coarse: [-0.03, -0.03, -0.03, -0.03, -0.03, -0.05]
+        synchro_step_fine: [0.007, 0.007, 0.007, 0.007, 0.007, 0.05]
       JntPub:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
       SplineTrajectoryGeneratorJoint:

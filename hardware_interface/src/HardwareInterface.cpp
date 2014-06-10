@@ -4,345 +4,265 @@
 
 #include <Eigen/Dense>
 
-#include "hi_moxa.h"
+#include "HardwareInterface.h"
 
-//IRP6
+HardwareInterface::HardwareInterface(const std::string& name)
+    : TaskContext(name, PreOperational),
+      servo_stop_iter_(0) {
+  this->addPort("computedPwm_in", computedPwm_in_).doc(
+      "Receiving a value of computed PWM.");
+  this->addPort("posInc_out", posInc_out_).doc(
+      "Sends out a value of expected position increment.");
+  this->addPort("deltaInc_out", deltaInc_out_).doc(
+      "Sends out a value increment increase in cycle.");
 
-const int NUMBER_OF_DRIVES = 6;
-const int16_t MAX_CURRENT[] = { 25000, 18000, 15000, 17000, 10000, 2000 };
-const double MAX_INCREMENT[] = { 1000, 1000, 1000, 1000, 1000, 1000 };
-const unsigned int CARD_ADDRESSES[] = { 0, 1, 2, 3, 4, 5 };
-const int TX_PREFIX_LEN = 0;
+  this->ports()->addPort("MotorPosition", port_motor_position_);
+  this->ports()->addPort("MotorPositionCommand", port_motor_position_command_);
 
-const double GEAR[6] = { -158.0, 2 * M_PI / 5.0, 2 * M_PI / 5.0, -128.0, -128.0
-    * 0.6, 288.8845 };
-const double THETA[6] = { 0.0, 2.203374e+02, 1.838348e+02, 1.570796e+00, 0.0,
-    0.0 };
+  this->addProperty("number_of_drives", number_of_drives_).doc(
+      "Number of drives in robot");
+  this->addProperty("auto_synchronize", auto_synchronize_).doc("");
+  this->addProperty("ports_adresses", ports_adresses_).doc("");
+  this->addProperty("card_indexes", card_indexes_).doc("");
+  this->addProperty("max_increment", max_increment_).doc("");
+  this->addProperty("max_current", max_current_).doc("");
+  this->addProperty("tx_prefix_len", tx_prefix_len_).doc("");
+  this->addProperty("enc_res", enc_res_).doc("");
+  this->addProperty("synchro_step_coarse", synchro_step_coarse_).doc("");
+  this->addProperty("synchro_step_fine", synchro_step_fine_).doc("");
+}
 
-const double SYNCHRO_MOTOR_POSITION[6] = { -15.9, -5.0, -8.527, 151.31, 432.25,
-    791.0 };
-const double SYNCHRO_JOINT_POSITION[6] = { SYNCHRO_MOTOR_POSITION[0]
-    - GEAR[0] * THETA[0], SYNCHRO_MOTOR_POSITION[1] - GEAR[1] * THETA[1],
-    SYNCHRO_MOTOR_POSITION[2] - GEAR[2] * THETA[2], SYNCHRO_MOTOR_POSITION[3]
-        - GEAR[3] * THETA[3], SYNCHRO_MOTOR_POSITION[4] - GEAR[4] * THETA[4]
-        - SYNCHRO_MOTOR_POSITION[3], SYNCHRO_MOTOR_POSITION[5]
-        - GEAR[5] * THETA[5] };
+HardwareInterface::~HardwareInterface() {
+}
 
-const int ENC_RES[6] = { 4000, 4000, 4000, 4000, 4000, 2000 };
-const double SYNCHRO_STEP_COARSE[6] =
-    { -0.03, -0.03, -0.03, -0.03, -0.03, -0.05 };
-const double SYNCHRO_STEP_FINE[6] = { 0.007, 0.007, 0.007, 0.007, 0.007, 0.05 };
-
-using namespace RTT;
-
-typedef enum {
-  NOT_SYNCHRONIZED,
-  SERVOING,
-  SYNCHRONIZING
-} State;
-typedef enum {
-  MOVE_TO_SYNCHRO_AREA,
-  STOP,
-  MOVE_FROM_SYNCHRO_AREA,
-  WAIT_FOR_IMPULSE,
-  SYNCHRO_END
-} SynchroState;
-
-class HardwareInterface : public RTT::TaskContext {
-
- private:
-
-  InputPort<std::vector<double> > computedPwm_in;
-
-  OutputPort<std::vector<double> > posInc_out;
-  OutputPort<std::vector<int> > deltaInc_out;
-
-  OutputPort<Eigen::VectorXd> port_motor_position_;
-  InputPort<Eigen::VectorXd> port_motor_position_command_;
-
-  Eigen::VectorXd motor_position_, motor_position_command_,
-      motor_position_command_old_;
-
-  int number_of_drives;
-  bool auto_synchronize;
-
-  double counter;
-
-  State state;
-  SynchroState synchro_state;
-  int synchro_drive;
-
-  std::vector<double> pos_inc;
-
-  std::vector<int> increment;
-  std::vector<double> motor_pos;
-  std::vector<double> pwm;
-
-  hi_moxa::HI_moxa hi_;
-
-  int servo_stop_iter_;
-
-  bool debug;
-
- public:
-
-  HardwareInterface(const std::string& name)
-      : TaskContext(name, PreOperational),
-        hi_(NUMBER_OF_DRIVES - 1, CARD_ADDRESSES, MAX_INCREMENT, TX_PREFIX_LEN),
-        servo_stop_iter_(0) {
-    this->addPort("computedPwm_in", computedPwm_in).doc(
-        "Receiving a value of computed PWM.");
-    this->addPort("posInc_out", posInc_out).doc(
-        "Sends out a value of expected position increment.");
-    this->addPort("deltaInc_out", deltaInc_out).doc(
-        "Sends out a value increment increase in cycle.");
-
-    this->ports()->addPort("MotorPosition", port_motor_position_);
-    this->ports()->addPort("MotorPositionCommand",
-                           port_motor_position_command_);
-
-    this->addProperty("number_of_drives", number_of_drives).doc(
-        "Number of drives in robot");
+bool HardwareInterface::configureHook() {
+  if (ports_adresses_.size() != number_of_drives_
+      || max_increment_.size() != number_of_drives_
+      || max_current_.size() != number_of_drives_
+      || enc_res_.size() != number_of_drives_
+      || synchro_step_coarse_.size() != number_of_drives_
+      || synchro_step_fine_.size() != number_of_drives_
+      || card_indexes_.size() != number_of_drives_) {
+    log(Error) << "Size of parameters is different than number of drives"
+               << endlog();
+    return false;
   }
 
-  ~HardwareInterface() {
+  hi_ = new hi_moxa::HI_moxa(number_of_drives_ - 1, card_indexes_,
+                             max_increment_, tx_prefix_len_),
+
+  counter_ = 0.0;
+  auto_synchronize_ = true;
+
+  increment_.resize(number_of_drives_);
+  pos_inc_.resize(number_of_drives_);
+  pwm_.resize(number_of_drives_);
+
+  for (int i = 0; i < number_of_drives_; i++) {
+    increment_[i] = 0;
+    pwm_[0] = 0;
   }
 
- private:
-
-  bool configureHook() {
-
-    counter = 0.0;
-    debug = true;
-    auto_synchronize = true;
-
-    increment.resize(number_of_drives);
-    pos_inc.resize(number_of_drives);
-    pwm.resize(number_of_drives);
-
-    for (int i = 0; i < number_of_drives; i++) {
-      increment[i] = 0;
-      pos_inc[i] = 0;
-      pwm[0] = 0;
+  try {
+    hi_->init(ports_adresses_);
+    for (int i = 0; i < number_of_drives_; i++) {
+      hi_->set_parameter_now(i, NF_COMMAND_SetDrivesMaxCurrent,
+                             max_current_[i]);
+      hi_->set_pwm_mode(i);
     }
+  } catch (std::exception& e) {
+    log(Info) << e.what() << endlog();
+    return false;
+  }
 
-    std::vector<std::string> ports;
+  motor_position_.resize(number_of_drives_);
+  motor_position_command_.resize(number_of_drives_);
+  motor_position_command_old_.resize(number_of_drives_);
 
-    //irp6
+  return true;
+}
 
-    ports.push_back("/dev/ttyMI8");
-    ports.push_back("/dev/ttyMI9");
-    ports.push_back("/dev/ttyMI10");
-    ports.push_back("/dev/ttyMI11");
-    ports.push_back("/dev/ttyMI12");
-    ports.push_back("/dev/ttyMI13");
+bool HardwareInterface::startHook() {
+  try {
+    hi_->HI_read_write_hardware();
 
-    try {
-      hi_.init(ports);
-      for (int i = 0; i < number_of_drives; i++) {
-        hi_.set_parameter_now(i, NF_COMMAND_SetDrivesMaxCurrent,
-                              MAX_CURRENT[i]);
-        hi_.set_pwm_mode(i);
+    if (!hi_->robot_synchronized()) {
+      RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
+      if (auto_synchronize_) {
+        RTT::log(RTT::Info) << "Auto synchronize" << RTT::endlog();
+        state_ = SYNCHRONIZING;
+        synchro_state_ = MOVE_TO_SYNCHRO_AREA;
+        synchro_drive_ = 0;
+      } else
+        state_ = NOT_SYNCHRONIZED;
+    } else {
+      RTT::log(RTT::Info) << "Robot synchronized" << RTT::endlog();
+
+      for (int i = 0; i < number_of_drives_; i++) {
+        motor_position_command_(i) = (double) hi_->get_position(i)
+            * ((2.0 * M_PI) / enc_res_[i]);
+        motor_position_command_old_(i) = motor_position_command_(i);
       }
-    } catch (std::exception& e) {
-      log(Info) << e.what() << endlog();
-      return false;
+
+      state_ = SERVOING;
     }
-
-    motor_position_.resize(number_of_drives);
-    motor_position_command_.resize(number_of_drives);
-    motor_position_command_old_.resize(number_of_drives);
-
-    return true;
-
+  } catch (const std::exception& e) {
+    RTT::log(RTT::Error) << e.what() << RTT::endlog();
+    return false;
   }
 
-  bool startHook() {
-    try {
-      hi_.HI_read_write_hardware();
+  for (int i = 0; i < number_of_drives_; i++) {
+    pos_inc_[i] = 0.0;
+  }
 
-      if (!hi_.robot_synchronized()) {
-        RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
-        if (auto_synchronize) {
-          RTT::log(RTT::Info) << "Auto synchronize" << RTT::endlog();
-          state = SYNCHRONIZING;
-          synchro_state = MOVE_TO_SYNCHRO_AREA;
-          synchro_drive = 0;
-        } else
-          state = NOT_SYNCHRONIZED;
+  return true;
+}
 
-      } else {
-        RTT::log(RTT::Info) << "Robot synchronized" << RTT::endlog();
+void HardwareInterface::updateHook() {
+  if (NewData != computedPwm_in_.read(pwm_)) {
+    RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
+  }
 
-        for (int i = 0; i < number_of_drives; i++) {
-          motor_position_command_(i) = (double) hi_.get_position(i)
-              * ((2.0 * M_PI) / ENC_RES[i]);
+  for (int i = 0; i < number_of_drives_; i++) {
+    hi_->set_pwm(i, pwm_[i]);
+  }
+
+  hi_->HI_read_write_hardware();
+
+  switch (state_) {
+    case NOT_SYNCHRONIZED:
+
+      for (int i = 0; i < number_of_drives_; i++) {
+        pos_inc_[i] = 0.0;
+      }
+      break;
+
+    case SERVOING:
+      if (port_motor_position_command_.read(motor_position_command_)
+          == RTT::NewData) {
+        for (int i = 0; i < number_of_drives_; i++) {
+          pos_inc_[i] = (motor_position_command_(i)
+              - motor_position_command_old_(i)) * (enc_res_[i] / (2.0 * M_PI));
           motor_position_command_old_(i) = motor_position_command_(i);
         }
-
-        state = SERVOING;
+      } else {
+        for (int i = 0; i < number_of_drives_; i++) {
+          pos_inc_[i] = 0.0;
+        }
       }
-    } catch (const std::exception& e) {
-      RTT::log(RTT::Error) << e.what() << RTT::endlog();
-      return false;
-    }
 
-    for (int i = 0; i < number_of_drives; i++) {
-      pos_inc[i] = 0.0;
-    }
+      for (int i = 0; i < number_of_drives_; i++) {
+        motor_position_(i) = (double) hi_->get_position(i)
+            * ((2.0 * M_PI) / enc_res_[i]);
+      }
+      port_motor_position_.write(motor_position_);
+      break;
 
-    return true;
+    case SYNCHRONIZING:
+      switch (synchro_state_) {
+        case MOVE_TO_SYNCHRO_AREA:
+          servo_stop_iter_ = 1000;
+          if (hi_->in_synchro_area(synchro_drive_)) {
+            RTT::log(RTT::Debug) << "[servo " << synchro_drive_
+                                 << " ] MOVE_TO_SYNCHRO_AREA ended"
+                                 << RTT::endlog();
+            pos_inc_[synchro_drive_] = 0.0;
+            synchro_state_ = STOP;
+          } else {
+            // ruszam powoli w stronę synchro area
+            RTT::log(RTT::Debug) << "[servo " << synchro_drive_
+                                 << " ] MOVE_TO_SYNCHRO_AREA" << RTT::endlog();
+            pos_inc_[synchro_drive_] = synchro_step_coarse_[synchro_drive_]
+                * (enc_res_[synchro_drive_] / (2.0 * M_PI));
+          }
+          break;
+
+        case STOP:
+          hi_->start_synchro(synchro_drive_);
+          synchro_state_ = MOVE_FROM_SYNCHRO_AREA;
+
+          break;
+
+        case MOVE_FROM_SYNCHRO_AREA:
+          if (!hi_->in_synchro_area(synchro_drive_)) {
+            RTT::log(RTT::Debug) << "[servo " << synchro_drive_
+                                 << " ] MOVE_FROM_SYNCHRO_AREA ended"
+                                 << RTT::endlog();
+
+            synchro_state_ = WAIT_FOR_IMPULSE;
+          } else {
+            RTT::log(RTT::Debug) << "[servo " << synchro_drive_
+                                 << " ] MOVE_FROM_SYNCHRO_AREA"
+                                 << RTT::endlog();
+            pos_inc_[synchro_drive_] = synchro_step_fine_[synchro_drive_]
+                * (enc_res_[synchro_drive_] / (2.0 * M_PI));
+          }
+          break;
+
+        case WAIT_FOR_IMPULSE:
+          if (hi_->drive_synchronized(synchro_drive_)) {
+            RTT::log(RTT::Debug) << "[servo " << synchro_drive_
+                                 << " ] WAIT_FOR_IMPULSE ended"
+                                 << RTT::endlog();
+
+            for (int i = 0; i < number_of_drives_; i++) {
+              pos_inc_[i] = 0.0;
+            }
+
+            hi_->finish_synchro(synchro_drive_);
+            hi_->reset_position(synchro_drive_);
+
+            motor_position_command_(synchro_drive_) =
+                (double) hi_->get_position(synchro_drive_)
+                    * ((2.0 * M_PI) / enc_res_[synchro_drive_]);
+            motor_position_command_old_(synchro_drive_) =
+                motor_position_command_(synchro_drive_);
+            if (++synchro_drive_ < number_of_drives_) {
+              synchro_state_ = MOVE_TO_SYNCHRO_AREA;
+            } else {
+              synchro_state_ = SYNCHRO_END;
+            }
+
+          } else {
+            RTT::log(RTT::Debug) << "[servo " << synchro_drive_
+                                 << " ] WAIT_FOR_IMPULSE" << RTT::endlog();
+            pos_inc_[synchro_drive_] = synchro_step_fine_[synchro_drive_]
+                * (enc_res_[synchro_drive_] / (2.0 * M_PI));
+          }
+          break;
+
+        case SYNCHRO_END:
+
+          for (int i = 0; i < number_of_drives_; i++) {
+            motor_position_command_(i) = motor_position_command_old_(i) = hi_
+                ->get_position(i) * (2.0 * M_PI) / enc_res_[i];
+          }
+
+          if ((servo_stop_iter_--) <= 0) {
+            state_ = SERVOING;
+            RTT::log(RTT::Debug) << "[servo " << synchro_drive_
+                                 << " ] SYNCHRONIZING ended" << RTT::endlog();
+            std::cout << "synchro finished" << std::endl;
+          }
+          break;
+      }
+      break;
   }
 
-  void updateHook() {
+  for (int i = 0; i < number_of_drives_; i++) {
+    increment_[i] = hi_->get_increment(i);
 
-    if (NewData != computedPwm_in.read(pwm)) {
-      RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
+    if (abs(increment_[i]) > 400) {
+      increment_[i] = 0;
     }
 
-    for (int i = 0; i < number_of_drives; i++) {
-      hi_.set_pwm(i, pwm[i]);
+    if (fabs(pos_inc_[i]) > 400) {
+      pos_inc_[i] = 0;
     }
-
-    hi_.HI_read_write_hardware();
-
-    switch (state) {
-      case NOT_SYNCHRONIZED:
-
-        for (int i = 0; i < number_of_drives; i++) {
-          pos_inc[i] = 0.0;
-        }
-        break;
-
-      case SERVOING:
-        if (port_motor_position_command_.read(motor_position_command_)
-            == RTT::NewData) {
-          for (int i = 0; i < number_of_drives; i++) {
-            pos_inc[i] = (motor_position_command_(i)
-                - motor_position_command_old_(i)) * (ENC_RES[i] / (2.0 * M_PI));
-            motor_position_command_old_(i) = motor_position_command_(i);
-          }
-        } else {
-          for (int i = 0; i < number_of_drives; i++) {
-            pos_inc[i] = 0.0;
-          }
-        }
-
-        for (int i = 0; i < number_of_drives; i++) {
-          motor_position_(i) = (double) hi_.get_position(i)
-              * ((2.0 * M_PI) / ENC_RES[i]);
-        }
-        port_motor_position_.write(motor_position_);
-        break;
-
-      case SYNCHRONIZING:
-        switch (synchro_state) {
-          case MOVE_TO_SYNCHRO_AREA:
-            servo_stop_iter_ = 1000;
-            if (hi_.in_synchro_area(synchro_drive)) {
-              RTT::log(RTT::Debug) << "[servo " << synchro_drive
-                                   << " ] MOVE_TO_SYNCHRO_AREA ended"
-                                   << RTT::endlog();
-              pos_inc[synchro_drive] = 0.0;
-              synchro_state = STOP;
-            } else {
-              //ruszam powoli w stronę synchro area
-              RTT::log(RTT::Debug) << "[servo " << synchro_drive
-                                   << " ] MOVE_TO_SYNCHRO_AREA"
-                                   << RTT::endlog();
-              pos_inc[synchro_drive] = SYNCHRO_STEP_COARSE[synchro_drive]
-                  * (ENC_RES[synchro_drive] / (2.0 * M_PI));
-            }
-            break;
-
-          case STOP:
-            //tutaj jakis timeout
-            hi_.start_synchro(synchro_drive);
-            synchro_state = MOVE_FROM_SYNCHRO_AREA;
-
-            break;
-
-          case MOVE_FROM_SYNCHRO_AREA:
-            if (!hi_.in_synchro_area(synchro_drive)) {
-              RTT::log(RTT::Debug) << "[servo " << synchro_drive
-                                   << " ] MOVE_FROM_SYNCHRO_AREA ended"
-                                   << RTT::endlog();
-
-              synchro_state = WAIT_FOR_IMPULSE;
-            } else {
-              RTT::log(RTT::Debug) << "[servo " << synchro_drive
-                                   << " ] MOVE_FROM_SYNCHRO_AREA"
-                                   << RTT::endlog();
-              pos_inc[synchro_drive] = SYNCHRO_STEP_FINE[synchro_drive]
-                  * (ENC_RES[synchro_drive] / (2.0 * M_PI));
-            }
-            break;
-
-          case WAIT_FOR_IMPULSE:
-            if (hi_.drive_synchronized(synchro_drive)) {
-              RTT::log(RTT::Debug) << "[servo " << synchro_drive
-                                   << " ] WAIT_FOR_IMPULSE ended"
-                                   << RTT::endlog();
-
-              for (int i = 0; i < number_of_drives; i++) {
-                pos_inc[i] = 0.0;
-              }
-
-              hi_.finish_synchro(synchro_drive);
-              hi_.reset_position(synchro_drive);
-
-              motor_position_command_(synchro_drive) =
-                  (double) hi_.get_position(synchro_drive)
-                      * ((2.0 * M_PI) / ENC_RES[synchro_drive]);
-              motor_position_command_old_(synchro_drive) =
-                  motor_position_command_(synchro_drive);
-              if (++synchro_drive < number_of_drives) {
-                synchro_state = MOVE_TO_SYNCHRO_AREA;
-              } else {
-                synchro_state = SYNCHRO_END;
-              }
-
-            } else {
-              RTT::log(RTT::Debug) << "[servo " << synchro_drive
-                                   << " ] WAIT_FOR_IMPULSE" << RTT::endlog();
-              pos_inc[synchro_drive] = SYNCHRO_STEP_FINE[synchro_drive]
-                  * (ENC_RES[synchro_drive] / (2.0 * M_PI));
-            }
-            break;
-
-          case SYNCHRO_END:
-
-            for (int i = 0; i < number_of_drives; i++) {
-              motor_position_command_(i) = motor_position_command_old_(i) = hi_
-                  .get_position(i) * (2.0 * M_PI) / ENC_RES[i];
-            }
-
-            if ((servo_stop_iter_--) <= 0) {
-              state = SERVOING;
-              RTT::log(RTT::Debug) << "[servo " << synchro_drive
-                                   << " ] SYNCHRONIZING ended" << RTT::endlog();
-              std::cout << "synchro finished" << std::endl;
-            }
-            break;
-        }
-        break;
-    }
-
-    for (int i = 0; i < number_of_drives; i++) {
-      increment[i] = hi_.get_increment(i);
-
-      if (abs(increment[i]) > 400) {
-        increment[i] = 0;
-      }
-
-      if (fabs(pos_inc[i]) > 400) {
-        pos_inc[i] = 0;
-      }
-    }
-
-    deltaInc_out.write(increment);
-    posInc_out.write(pos_inc);
   }
 
-};
+  deltaInc_out_.write(increment_);
+  posInc_out_.write(pos_inc_);
+}
+
 ORO_CREATE_COMPONENT(HardwareInterface)

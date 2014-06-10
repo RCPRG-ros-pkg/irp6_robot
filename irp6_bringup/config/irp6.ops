@@ -35,7 +35,9 @@ scheme.configure();
 //------------------------------------------------------------------------------
 loadComponent("HardwareInterface","HardwareInterface")
 //setActivity("HardwareInterface", 0.002, 5, ORO_SCHED_RT)
-HardwareInterface.number_of_drives = 6;
+HardwareInterface.loadService("rosparam");
+HardwareInterface.rosparam.getAll();
+HardwareInterface.number_of_drives = 6
 HardwareInterface.configure()
 
 loadComponent("IRp6Regulator","IRp6Regulator")
@@ -96,10 +98,9 @@ PoseInt.configure();
 // ToolInt
 
 loadComponent("ToolInt", "CartesianInterpolator")
+ToolInt.configure();
 ToolInt.loadService("rosparam");
 ToolInt.rosparam.getAll();
-ToolInt.configure();
-
 
 connect("ToolInt.CartesianPositionCommand", "ForwardKinematic.Tool", ConnPolicy())
 connect("ToolInt.CartesianPositionCommand", "InverseKinematic.Tool", ConnPolicy())
@@ -151,7 +152,6 @@ addPeer("scheme", "ForwardKinematic");
 addPeer("scheme", "InverseKinematic");
 addPeer("scheme", "transInv");
 addPeer("scheme", "ForceControlLaw");
-addPeer("scheme", "ForceTransformation");
 addPeer("scheme", "ATI6284");
 addPeer("scheme", "SplineTrajectoryGeneratorJoint");
 addPeer("scheme", "SplineTrajectoryGeneratorMotor");
@@ -170,7 +170,6 @@ scheme.addBlock("InverseKinematic");
 scheme.latchConnections("HardwareInterface", "trans", true);
 scheme.addBlock("transInv");
 scheme.addBlock("ForceControlLaw");
-scheme.addBlock("ForceTransformation");
 scheme.addBlock("ATI6284");
 scheme.addBlock("SplineTrajectoryGeneratorJoint");
 scheme.addBlock("SplineTrajectoryGeneratorMotor");
@@ -215,8 +214,6 @@ SplineTrajectoryActionMotor.actionlib.connect("/irp6p_arm/spline_trajectory_acti
 connect("SplineTrajectoryActionMotor.trajectoryPtr","SplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
 connect("trans.JointPosition","SplineTrajectoryActionMotor.JointPosition", ConnPolicy())
 connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","SplineTrajectoryActionMotor.JointPositionCommand", ConnPolicy())
-
- 
 
 SplineTrajectoryActionMotor.configure()
 
