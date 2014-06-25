@@ -30,6 +30,7 @@ bool IRp6Regulator::configureHook() {
 		regulator[i].reset();
 		regulator[i].setParam(A[i], BB0[i], BB1[i]);
 	}
+	return true;
 }
 
 void IRp6Regulator::updateHook() {
