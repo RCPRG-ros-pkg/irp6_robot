@@ -11,8 +11,6 @@ const double BB0[6] = { 2.594932 * 0.6, 1.030178 * 0.6, 1.997464 * 0.6, 1.576266
 const double BB1[6] = { 2.504769 * 0.6, 0.986142 * 0.6, 1.904138 * 0.6, 1.468599
 		* 0.4, 1.021348 * 0.4, 1.264 * 0.4 };
 
-const int ENC_RES[] = { 4000, 4000, 4000, 4000, 4000, 2000 };
-
 using namespace RTT;
 
 class IRp6Regulator: public RTT::TaskContext {
