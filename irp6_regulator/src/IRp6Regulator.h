@@ -9,21 +9,20 @@ class IRp6Regulator : public RTT::TaskContext {
 
  private:
 
-  InputPort<std::vector<double> > posInc_in;
-  InputPort<std::vector<int> > deltaInc_in;
+  InputPort<double> posInc_in;
+  InputPort<int> deltaInc_in;
 
-  OutputPort<std::vector<double> > computedPwm_out;
+  OutputPort<double> computedPwm_out;
 
-  std::vector<double> posIncData;
-  std::vector<int> deltaIncData;
+  double posIncData;
+  int deltaIncData;
 
-  Regulator regulator[6];
+  Regulator regulator;
 
   // Properties
-  int number_of_drives_;
-  std::vector<double> A_;
-  std::vector<double> BB0_;
-  std::vector<double> BB1_;
+  double A_;
+  double BB0_;
+  double BB1_;
 
  public:
 
@@ -34,8 +33,7 @@ class IRp6Regulator : public RTT::TaskContext {
 
   bool configureHook();
   void updateHook();
-  std::vector<double> computePwmValue(const std::vector<double>& posInc,
-                                      const std::vector<int>& deltaInc);
+  double computePwmValue(const double& posInc, const int& deltaInc);
 
 };
 #endif
