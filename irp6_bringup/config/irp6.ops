@@ -39,10 +39,39 @@ HardwareInterface.loadService("rosparam")
 HardwareInterface.rosparam.getAll()
 HardwareInterface.configure()
 
-loadComponent("IRp6Regulator","IRp6Regulator")
-IRp6Regulator.loadService("rosparam")
-IRp6Regulator.rosparam.getAll()
-IRp6Regulator.configure()
+// Motors Regulators
+
+loadComponent("IRp6Regulator_0","IRp6Regulator")
+IRp6Regulator_0.loadService("rosparam")
+IRp6Regulator_0.rosparam.getAll()
+IRp6Regulator_0.configure()
+
+loadComponent("IRp6Regulator_1","IRp6Regulator")
+IRp6Regulator_1.loadService("rosparam")
+IRp6Regulator_1.rosparam.getAll()
+IRp6Regulator_1.configure()
+
+loadComponent("IRp6Regulator_2","IRp6Regulator")
+IRp6Regulator_2.loadService("rosparam")
+IRp6Regulator_2.rosparam.getAll()
+IRp6Regulator_2.configure()
+
+loadComponent("IRp6Regulator_3","IRp6Regulator")
+IRp6Regulator_3.loadService("rosparam")
+IRp6Regulator_3.rosparam.getAll()
+IRp6Regulator_3.configure()
+
+loadComponent("IRp6Regulator_4","IRp6Regulator")
+IRp6Regulator_4.loadService("rosparam")
+IRp6Regulator_4.rosparam.getAll()
+IRp6Regulator_4.configure()
+
+loadComponent("IRp6Regulator_5","IRp6Regulator")
+IRp6Regulator_5.loadService("rosparam")
+IRp6Regulator_5.rosparam.getAll()
+IRp6Regulator_5.configure()
+
+
 
 loadComponent("trans","IRP6PTransmission")
 //setActivity("trans", 0.02, 5, ORO_SCHED_RT)
@@ -138,14 +167,41 @@ connect("ForceTransformation.OutputEndEffectorWrench", "ForceControlLaw.CurrentE
 stream("ForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6p_arm/fcl_param"))
 
 ## Connect
-connect("HardwareInterface.computedPwm_in","IRp6Regulator.computedPwm_out", ConnPolicy())
+connect("HardwareInterface.computedPwm_in0","IRp6Regulator_0.computedPwm_out", ConnPolicy())
+connect("IRp6Regulator_0.posInc_in","HardwareInterface.posInc_out0", ConnPolicy())
+connect("IRp6Regulator_0.deltaInc_in","HardwareInterface.deltaInc_out0", ConnPolicy())
+
+connect("HardwareInterface.computedPwm_in1","IRp6Regulator_1.computedPwm_out", ConnPolicy())
+connect("IRp6Regulator_1.posInc_in","HardwareInterface.posInc_out1", ConnPolicy())
+connect("IRp6Regulator_1.deltaInc_in","HardwareInterface.deltaInc_out1", ConnPolicy())
+
+connect("HardwareInterface.computedPwm_in2","IRp6Regulator_2.computedPwm_out", ConnPolicy())
+connect("IRp6Regulator_2.posInc_in","HardwareInterface.posInc_out2", ConnPolicy())
+connect("IRp6Regulator_2.deltaInc_in","HardwareInterface.deltaInc_out2", ConnPolicy())
+
+connect("HardwareInterface.computedPwm_in3","IRp6Regulator_3.computedPwm_out", ConnPolicy())
+connect("IRp6Regulator_3.posInc_in","HardwareInterface.posInc_out3", ConnPolicy())
+connect("IRp6Regulator_3.deltaInc_in","HardwareInterface.deltaInc_out3", ConnPolicy())
+
+connect("HardwareInterface.computedPwm_in4","IRp6Regulator_4.computedPwm_out", ConnPolicy())
+connect("IRp6Regulator_4.posInc_in","HardwareInterface.posInc_out4", ConnPolicy())
+connect("IRp6Regulator_4.deltaInc_in","HardwareInterface.deltaInc_out4", ConnPolicy())
+
+connect("HardwareInterface.computedPwm_in5","IRp6Regulator_5.computedPwm_out", ConnPolicy())
+connect("IRp6Regulator_5.posInc_in","HardwareInterface.posInc_out5", ConnPolicy())
+connect("IRp6Regulator_5.deltaInc_in","HardwareInterface.deltaInc_out5", ConnPolicy())
+
 connect("HardwareInterface.MotorPosition","trans.MotorPosition", ConnPolicy())
 connect("transInv.MotorPosition", "HardwareInterface.MotorPositionCommand", ConnPolicy())
-connect("IRp6Regulator.posInc_in","HardwareInterface.posInc_out", ConnPolicy())
-connect("IRp6Regulator.deltaInc_in","HardwareInterface.deltaInc_out", ConnPolicy())
+
 
 addPeer("scheme", "HardwareInterface");
-addPeer("scheme", "IRp6Regulator");
+addPeer("scheme", "IRp6Regulator_0")
+addPeer("scheme", "IRp6Regulator_1")
+addPeer("scheme", "IRp6Regulator_2")
+addPeer("scheme", "IRp6Regulator_3")
+addPeer("scheme", "IRp6Regulator_4")
+addPeer("scheme", "IRp6Regulator_5")
 addPeer("scheme", "trans");
 addPeer("scheme", "ForwardKinematic");
 addPeer("scheme", "InverseKinematic");
@@ -162,8 +218,19 @@ addPeer("scheme", "ToolInt");
 
 
 scheme.addBlock("HardwareInterface");
-scheme.addBlock("IRp6Regulator");
-scheme.latchConnections("HardwareInterface", "IRp6Regulator", true);
+scheme.addBlock("IRp6Regulator_0")
+scheme.addBlock("IRp6Regulator_1")
+scheme.addBlock("IRp6Regulator_2")
+scheme.addBlock("IRp6Regulator_3")
+scheme.addBlock("IRp6Regulator_4")
+scheme.addBlock("IRp6Regulator_5")
+scheme.latchConnections("HardwareInterface", "IRp6Regulator_0", true);
+scheme.latchConnections("HardwareInterface", "IRp6Regulator_1", true);
+scheme.latchConnections("HardwareInterface", "IRp6Regulator_2", true);
+scheme.latchConnections("HardwareInterface", "IRp6Regulator_3", true);
+scheme.latchConnections("HardwareInterface", "IRp6Regulator_4", true);
+scheme.latchConnections("HardwareInterface", "IRp6Regulator_5", true);
+
 scheme.addBlock("trans");
 scheme.addBlock("ForwardKinematic");
 scheme.addBlock("InverseKinematic");
@@ -268,7 +335,12 @@ stream("ForwardKinematic.WristOutputPose", ros.comm.topic("/cartesian_position")
 
 ## Start it
 scheme.start()
-IRp6Regulator.start()
+IRp6Regulator_0.start()
+IRp6Regulator_1.start()
+IRp6Regulator_2.start()
+IRp6Regulator_3.start()
+IRp6Regulator_4.start()
+IRp6Regulator_5.start()
 HardwareInterface.start()
 trans.start()
 ForwardKinematic.start()
