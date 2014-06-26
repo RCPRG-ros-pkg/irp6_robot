@@ -1,41 +1,60 @@
 #ifndef IRP6REGULATOR_H_
 #define IRP6REGULATOR_H_
 
-#include "Regulator.h"
-
 using namespace RTT;
 
 class IRp6Regulator : public RTT::TaskContext {
 
  private:
 
-  InputPort<std::vector<double> > posInc_in;
-  InputPort<std::vector<int> > deltaInc_in;
+  InputPort<double> posInc_in;
+  InputPort<int> deltaInc_in;
 
-  OutputPort<std::vector<double> > computedPwm_out;
+  OutputPort<double> computedPwm_out;
 
-  std::vector<double> posIncData;
-  std::vector<int> deltaIncData;
-
-  Regulator regulator[6];
+  double posIncData;
+  int deltaIncData;
 
   // Properties
-  int number_of_drives_;
-  std::vector<double> A_;
-  std::vector<double> BB0_;
-  std::vector<double> BB1_;
+  double A_;
+  double BB0_;
+  double BB1_;
 
  public:
 
   IRp6Regulator(const std::string& name);
   ~IRp6Regulator();
 
+  int doServo(double, int);
+  void reset();
+
  private:
 
   bool configureHook();
   void updateHook();
-  std::vector<double> computePwmValue(const std::vector<double>& posInc,
-                                      const std::vector<int>& deltaInc);
+
+
+  double position_increment_old;  // przedosatnio odczytany przyrost polozenie (delta y[k-2]
+  // -- mierzone w impulsach)
+  double position_increment_new;  // ostatnio odczytany przyrost polozenie (delta y[k-1]
+  // -- mierzone w impulsach)
+  double step_old_pulse;  // poprzednia wartosc zadana dla jednego kroku regulacji
+  // (przyrost wartosci zadanej polozenia -- delta r[k-2]
+  // -- mierzone w radianach)
+  double step_new;  // nastepna wartosc zadana dla jednego kroku regulacji
+  // (przyrost wartosci zadanej polozenia -- delta r[k-1]
+  // -- mierzone w radianach)
+  double step_old;  // poprzednia wartosc zadana dla jednego kroku regulacji
+  // (przyrost wartosci zadanej polozenia -- delta r[k-1]
+  // -- mierzone w radianach)
+
+  double set_value_new;  // wielkosc kroku do realizacji przez HI (wypelnienie PWM -- u[k])
+  double set_value_old;  // wielkosc kroku do realizacji przez HI (wypelnienie PWM -- u[k-1])
+  double set_value_very_old;  // wielkosc kroku do realizacji przez HI (wypelnienie PWM -- u[k-2])
+  double delta_eint;  // przyrost calki uchybu
+  double delta_eint_old;  // przyrost calki uchybu w poprzednim kroku
+
+  double a_, b0_, b1_;
 
 };
 #endif
