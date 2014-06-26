@@ -48,6 +48,29 @@ bool HardwareInterface::configureHook() {
     return false;
   }
 
+  // dynamic ports list initialization
+
+  for (size_t i = 0; i < number_of_drives_; i++) {
+    char computedPwm_in_port_name[16];
+    snprintf(computedPwm_in_port_name, sizeof(computedPwm_in_port_name),
+             "computedPwm_in%zu", i);
+    computedPwm_in_list_[i] = new typeof(*computedPwm_in_list_[i]);
+    this->ports()->addPort(computedPwm_in_port_name, *computedPwm_in_list_[i]);
+
+    char posInc_out_port_name[16];
+    snprintf(posInc_out_port_name, sizeof(posInc_out_port_name),
+             "posInc_out_list_%zu", i);
+    posInc_out_list_[i] = new typeof(*posInc_out_list_[i]);
+    this->ports()->addPort(posInc_out_port_name, *posInc_out_list_[i]);
+
+    char deltaInc_out_port_name[16];
+    snprintf(deltaInc_out_port_name, sizeof(deltaInc_out_port_name),
+             "deltaInc_out_list_%zu", i);
+    deltaInc_out_list_[i] = new typeof(*deltaInc_out_list_[i]);
+    this->ports()->addPort(deltaInc_out_port_name, *deltaInc_out_list_[i]);
+
+  }
+
   hi_ = new hi_moxa::HI_moxa(number_of_drives_ - 1, card_indexes_,
                              max_increment_, tx_prefix_len_),
 
