@@ -9,12 +9,14 @@
 HardwareInterface::HardwareInterface(const std::string& name)
     : TaskContext(name, PreOperational),
       servo_stop_iter_(0) {
-  this->addPort("computedPwm_in", computedPwm_in_).doc(
-      "Receiving a value of computed PWM.");
-  this->addPort("posInc_out", posInc_out_).doc(
-      "Sends out a value of expected position increment.");
-  this->addPort("deltaInc_out", deltaInc_out_).doc(
-      "Sends out a value increment increase in cycle.");
+  /*
+   this->addPort("computedPwm_in", computedPwm_in_).doc(
+   "Receiving a value of computed PWM.");
+   this->addPort("posInc_out", posInc_out_).doc(
+   "Sends out a value of expected position increment.");
+   this->addPort("deltaInc_out", deltaInc_out_).doc(
+   "Sends out a value increment increase in cycle.");
+   */
 
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("MotorPositionCommand", port_motor_position_command_);
@@ -142,11 +144,20 @@ bool HardwareInterface::startHook() {
 }
 
 void HardwareInterface::updateHook() {
-  if (NewData != computedPwm_in_.read(pwm_)) {
-    RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
-  }
+  /*
+   if (NewData != computedPwm_in_.read(pwm_)) {
+   RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
+   }
+
+   for (int i = 0; i < number_of_drives_; i++) {
+   hi_->set_pwm(i, pwm_[i]);
+   }
+   */
 
   for (int i = 0; i < number_of_drives_; i++) {
+    if (NewData != computedPwm_in_list_[i]->read(pwm_[i])) {
+      RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
+    }
     hi_->set_pwm(i, pwm_[i]);
   }
 
@@ -282,8 +293,17 @@ void HardwareInterface::updateHook() {
     }
   }
 
-  deltaInc_out_.write(increment_);
-  posInc_out_.write(pos_inc_);
+  /*
+   deltaInc_out_.write(increment_);
+   posInc_out_.write(pos_inc_);
+   */
+
+  for (int i = 0; i < number_of_drives_; i++) {
+    hi_->set_pwm(i, pwm_[i]);
+    deltaInc_out_list_[i]->write(increment_[i]);
+    posInc_out_list_[i]->write(pos_inc_[i]);
+  }
+
 }
 
 ORO_CREATE_COMPONENT(HardwareInterface)
