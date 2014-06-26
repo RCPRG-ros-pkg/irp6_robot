@@ -51,6 +51,7 @@ if __name__ == '__main__':
   rospy.wait_for_service('/controller_manager/switch_controller')
   conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
     
+     
   # 
   # Force controller parameters
   #
@@ -67,6 +68,9 @@ if __name__ == '__main__':
   
   pub.publish(goal)
   
+  
+  # conmanSwitch([], ['ForceTransformation','ForceControlLaw'], True)
+  
   #
   # standard tool gravity param
   #
@@ -80,6 +84,8 @@ if __name__ == '__main__':
 
  
   pubtg.publish(tg_goal)
+   
+  # conmanSwitch(['ForceTransformation','ForceControlLaw'], [], True)
    
   print 'finish'
   
