@@ -52,6 +52,10 @@ bool HardwareInterface::configureHook() {
 
   // dynamic ports list initialization
 
+  computedPwm_in_list_.resize(number_of_drives_);
+  posInc_out_list_.resize(number_of_drives_);
+  deltaInc_out_list_.resize(number_of_drives_);
+
   for (size_t i = 0; i < number_of_drives_; i++) {
     char computedPwm_in_port_name[16];
     snprintf(computedPwm_in_port_name, sizeof(computedPwm_in_port_name),
@@ -61,13 +65,13 @@ bool HardwareInterface::configureHook() {
 
     char posInc_out_port_name[16];
     snprintf(posInc_out_port_name, sizeof(posInc_out_port_name),
-             "posInc_out_list_%zu", i);
+             "posInc_out%zu", i);
     posInc_out_list_[i] = new typeof(*posInc_out_list_[i]);
     this->ports()->addPort(posInc_out_port_name, *posInc_out_list_[i]);
 
     char deltaInc_out_port_name[16];
     snprintf(deltaInc_out_port_name, sizeof(deltaInc_out_port_name),
-             "deltaInc_out_list_%zu", i);
+             "deltaInc_out%zu", i);
     deltaInc_out_list_[i] = new typeof(*deltaInc_out_list_[i]);
     this->ports()->addPort(deltaInc_out_port_name, *deltaInc_out_list_[i]);
 
