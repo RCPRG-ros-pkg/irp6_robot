@@ -212,11 +212,6 @@ void HardwareInterface::updateHook() {
             hi_->finish_synchro(synchro_drive_);
             hi_->reset_position(synchro_drive_);
 
-            motor_position_command_(synchro_drive_) =
-                (double) hi_->get_position(synchro_drive_)
-                    * ((2.0 * M_PI) / enc_res_[synchro_drive_]);
-            motor_position_command_old_(synchro_drive_) =
-                motor_position_command_(synchro_drive_);
             if (++synchro_drive_ < number_of_drives_) {
               synchro_state_ = MOVE_TO_SYNCHRO_AREA;
             } else {
@@ -233,12 +228,13 @@ void HardwareInterface::updateHook() {
 
         case SYNCHRO_END:
 
-          for (int i = 0; i < number_of_drives_; i++) {
-            motor_position_command_(i) = motor_position_command_old_(i) = hi_
-                ->get_position(i) * (2.0 * M_PI) / enc_res_[i];
-          }
-
           if ((servo_stop_iter_--) <= 0) {
+
+            for (int i = 0; i < number_of_drives_; i++) {
+              motor_position_command_(i) = motor_position_command_old_(i) = hi_
+                  ->get_position(i) * (2.0 * M_PI) / enc_res_[i];
+            }
+
             state_ = SERVOING;
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
                                  << " ] SYNCHRONIZING ended" << RTT::endlog();
@@ -254,12 +250,12 @@ void HardwareInterface::updateHook() {
 
     if (abs(increment_[i]) > 400) {
       increment_[i] = 0;
-      std::cout << "very high increment_"<< std::endl;
+      std::cout << "very high increment_" << std::endl;
     }
 
     if (fabs(pos_inc_[i]) > 400) {
       pos_inc_[i] = 0;
-      std::cout << "very high pos_inc_"<< std::endl;
+      std::cout << "very high pos_inc_" << std::endl;
     }
   }
 
