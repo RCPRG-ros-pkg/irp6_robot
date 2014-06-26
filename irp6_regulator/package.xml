@@ -2,14 +2,14 @@
   <name>irp6_regulator</name>
   <version>2.6.0</version>
   <description>Regulator serwomechanizmu</description>
-  <maintainer email="tomek.pokorski@gmail.com">Tomasz Pokorski</maintainer>
+  <maintainer email="tmwiniarski@gmail.com">Tomasz Winiarski</maintainer>
 
   <license>BSD</license>
 
   <url type="website"></url>
   <!-- <url type="bugtracker"></url> -->
 
-  <author email="tomek.pokorski@gmail.com">Tomasz Pokorski</author>
+  <author email="tmwiniarski@gmail.com">Tomasz Winiarski</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 

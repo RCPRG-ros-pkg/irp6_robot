@@ -12,7 +12,7 @@ catkin_package(
   CATKIN_DEPENDS rtt_ros 
 )
 
-orocos_component(${PROJECT_NAME} src/IRp6Regulator.cpp src/Regulator.cpp)
+orocos_component(${PROJECT_NAME} src/IRp6Regulator.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 orocos_generate_package()

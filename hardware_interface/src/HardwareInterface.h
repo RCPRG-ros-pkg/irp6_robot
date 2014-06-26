@@ -20,12 +20,7 @@ typedef enum {
 
 class HardwareInterface : public RTT::TaskContext {
  private:
-  /*
-   InputPort<std::vector<double> > computedPwm_in_;
 
-   OutputPort<std::vector<double> > posInc_out_;
-   OutputPort<std::vector<int> > deltaInc_out_;
-   */
   std::vector<InputPort<double>*> computedPwm_in_list_;
 
   std::vector<OutputPort<double>*> posInc_out_list_;
