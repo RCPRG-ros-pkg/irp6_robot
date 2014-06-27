@@ -80,7 +80,6 @@ PortDoubleSplit_hw_cp.loadService("rosparam")
 PortDoubleSplit_hw_cp.rosparam.getAll()
 PortDoubleSplit_hw_cp.configure()
 
-
 connect("PortDoubleSplit_hw_cp.OutputPort_0","HardwareInterface.MotorPositionCommand_0", ConnPolicy())
 connect("PortDoubleSplit_hw_cp.OutputPort_1","HardwareInterface.MotorPositionCommand_1", ConnPolicy())
 connect("PortDoubleSplit_hw_cp.OutputPort_2","HardwareInterface.MotorPositionCommand_2", ConnPolicy())
@@ -88,6 +87,19 @@ connect("PortDoubleSplit_hw_cp.OutputPort_3","HardwareInterface.MotorPositionCom
 connect("PortDoubleSplit_hw_cp.OutputPort_4","HardwareInterface.MotorPositionCommand_4", ConnPolicy())
 connect("PortDoubleSplit_hw_cp.OutputPort_5","HardwareInterface.MotorPositionCommand_5", ConnPolicy())
 
+// double port aggregate
+
+loadComponent("PortDoubleAggregate_hw_p","PortDoubleAggregate")
+PortDoubleAggregate_hw_p.loadService("rosparam")
+PortDoubleAggregate_hw_p.rosparam.getAll()
+PortDoubleAggregate_hw_p.configure()
+
+connect("PortDoubleAggregate_hw_p.InputPort_0","HardwareInterface.MotorPosition_0", ConnPolicy())
+connect("PortDoubleAggregate_hw_p.InputPort_1","HardwareInterface.MotorPosition_1", ConnPolicy())
+connect("PortDoubleAggregate_hw_p.InputPort_2","HardwareInterface.MotorPosition_2", ConnPolicy())
+connect("PortDoubleAggregate_hw_p.InputPort_3","HardwareInterface.MotorPosition_3", ConnPolicy())
+connect("PortDoubleAggregate_hw_p.InputPort_4","HardwareInterface.MotorPosition_4", ConnPolicy())
+connect("PortDoubleAggregate_hw_p.InputPort_5","HardwareInterface.MotorPosition_5", ConnPolicy())
 
 loadComponent("trans","IRP6PTransmission")
 //setActivity("trans", 0.02, 5, ORO_SCHED_RT)
@@ -124,7 +136,7 @@ SplineTrajectoryGeneratorMotor.loadService("rosparam");
 SplineTrajectoryGeneratorMotor.rosparam.getAll();
 
 
-connect("HardwareInterface.MotorPosition","SplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
+connect("PortDoubleAggregate_hw_p.OutputPort","SplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
 connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","PortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
 
@@ -207,7 +219,7 @@ connect("HardwareInterface.computedPwm_in5","IRp6Regulator_5.computedPwm_out", C
 connect("IRp6Regulator_5.posInc_in","HardwareInterface.posInc_out5", ConnPolicy())
 connect("IRp6Regulator_5.deltaInc_in","HardwareInterface.deltaInc_out5", ConnPolicy())
 
-connect("HardwareInterface.MotorPosition","trans.MotorPosition", ConnPolicy())
+connect("PortDoubleAggregate_hw_p.OutputPort","trans.MotorPosition", ConnPolicy())
 connect("transInv.MotorPosition", "PortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
 
@@ -219,6 +231,7 @@ addPeer("scheme", "IRp6Regulator_3")
 addPeer("scheme", "IRp6Regulator_4")
 addPeer("scheme", "IRp6Regulator_5")
 addPeer("scheme", "PortDoubleSplit_hw_cp")
+addPeer("scheme", "PortDoubleAggregate_hw_p")
 addPeer("scheme", "trans");
 addPeer("scheme", "ForwardKinematic");
 addPeer("scheme", "InverseKinematic");
@@ -242,6 +255,7 @@ scheme.addBlock("IRp6Regulator_3")
 scheme.addBlock("IRp6Regulator_4")
 scheme.addBlock("IRp6Regulator_5")
 scheme.addBlock("PortDoubleSplit_hw_cp")
+scheme.addBlock("PortDoubleAggregate_hw_p")
 scheme.latchConnections("HardwareInterface", "IRp6Regulator_0", true);
 scheme.latchConnections("HardwareInterface", "IRp6Regulator_1", true);
 scheme.latchConnections("HardwareInterface", "IRp6Regulator_2", true);
@@ -359,6 +373,7 @@ IRp6Regulator_3.start()
 IRp6Regulator_4.start()
 IRp6Regulator_5.start()
 PortDoubleSplit_hw_cp.start()
+PortDoubleAggregate_hw_p.start()
 HardwareInterface.start()
 trans.start()
 ForwardKinematic.start()

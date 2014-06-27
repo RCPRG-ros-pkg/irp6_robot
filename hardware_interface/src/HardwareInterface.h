@@ -26,7 +26,8 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<OutputPort<double>*> posInc_out_list_;
   std::vector<OutputPort<int>*> deltaInc_out_list_;
 
-  OutputPort<Eigen::VectorXd> port_motor_position_;
+  std::vector<OutputPort<double>*> port_motor_position_list_;
+
   std::vector<InputPort<double>*> port_motor_position_command_list_;
 
   Eigen::VectorXd motor_position_, motor_position_command_,
