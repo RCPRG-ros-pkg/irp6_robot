@@ -7,7 +7,7 @@ find_package(catkin REQUIRED COMPONENTS rtt_ros geometry_msgs eigen_conversions)
 find_package(OROCOS-RTT REQUIRED)
 find_package(Eigen REQUIRED)
 
-include_directories(${catkin_INCLUDE_DIRS}  ${Eigen_INCLUDE_DIRS})
+include_directories(${catkin_INCLUDE_DIRS} ${Eigen_INCLUDE_DIRS})
 
 orocos_component(irp6p_forward_kinematic src/Irp6pForwardKinematic.cpp)
 target_link_libraries(irp6p_forward_kinematic ${catkin_LIBRARIES})

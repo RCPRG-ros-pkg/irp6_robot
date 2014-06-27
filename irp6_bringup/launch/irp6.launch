@@ -62,6 +62,8 @@
         A: 0.3
         BB0: 0.5456
         BB1: 0.5056
+      PortDoubleSplit_hw_cp:
+        number_of_ports: 6
       ToolInt:
         activate_pose_init: true
         init_setpoint:
