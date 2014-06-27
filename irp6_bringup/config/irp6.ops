@@ -20,6 +20,8 @@ ros.import("irp6p_kinematic")
 ros.import("controller_common");
 ros.import("force_contol");
 ros.import("ati6284");
+ros.import("port_split");
+
 
 
 //------------------------------------------------------------------------------
@@ -71,6 +73,20 @@ IRp6Regulator_5.loadService("rosparam")
 IRp6Regulator_5.rosparam.getAll()
 IRp6Regulator_5.configure()
 
+// double port spliter
+
+loadComponent("PortDoubleSplit_hw_cp","PortDoubleSplit")
+PortDoubleSplit_hw_cp.loadService("rosparam")
+PortDoubleSplit_hw_cp.rosparam.getAll()
+PortDoubleSplit_hw_cp.configure()
+
+
+connect("PortDoubleSplit_hw_cp.OutputPort_0","HardwareInterface.MotorPositionCommand_0", ConnPolicy())
+connect("PortDoubleSplit_hw_cp.OutputPort_1","HardwareInterface.MotorPositionCommand_1", ConnPolicy())
+connect("PortDoubleSplit_hw_cp.OutputPort_2","HardwareInterface.MotorPositionCommand_2", ConnPolicy())
+connect("PortDoubleSplit_hw_cp.OutputPort_3","HardwareInterface.MotorPositionCommand_3", ConnPolicy())
+connect("PortDoubleSplit_hw_cp.OutputPort_4","HardwareInterface.MotorPositionCommand_4", ConnPolicy())
+connect("PortDoubleSplit_hw_cp.OutputPort_5","HardwareInterface.MotorPositionCommand_5", ConnPolicy())
 
 
 loadComponent("trans","IRP6PTransmission")
@@ -109,7 +125,7 @@ SplineTrajectoryGeneratorMotor.rosparam.getAll();
 
 
 connect("HardwareInterface.MotorPosition","SplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
-connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","HardwareInterface.MotorPositionCommand", ConnPolicy())
+connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","PortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
 
 SplineTrajectoryGeneratorMotor.configure()
@@ -192,7 +208,7 @@ connect("IRp6Regulator_5.posInc_in","HardwareInterface.posInc_out5", ConnPolicy(
 connect("IRp6Regulator_5.deltaInc_in","HardwareInterface.deltaInc_out5", ConnPolicy())
 
 connect("HardwareInterface.MotorPosition","trans.MotorPosition", ConnPolicy())
-connect("transInv.MotorPosition", "HardwareInterface.MotorPositionCommand", ConnPolicy())
+connect("transInv.MotorPosition", "PortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
 
 addPeer("scheme", "HardwareInterface");
@@ -202,6 +218,7 @@ addPeer("scheme", "IRp6Regulator_2")
 addPeer("scheme", "IRp6Regulator_3")
 addPeer("scheme", "IRp6Regulator_4")
 addPeer("scheme", "IRp6Regulator_5")
+addPeer("scheme", "PortDoubleSplit_hw_cp")
 addPeer("scheme", "trans");
 addPeer("scheme", "ForwardKinematic");
 addPeer("scheme", "InverseKinematic");
@@ -224,6 +241,7 @@ scheme.addBlock("IRp6Regulator_2")
 scheme.addBlock("IRp6Regulator_3")
 scheme.addBlock("IRp6Regulator_4")
 scheme.addBlock("IRp6Regulator_5")
+scheme.addBlock("PortDoubleSplit_hw_cp")
 scheme.latchConnections("HardwareInterface", "IRp6Regulator_0", true);
 scheme.latchConnections("HardwareInterface", "IRp6Regulator_1", true);
 scheme.latchConnections("HardwareInterface", "IRp6Regulator_2", true);
@@ -234,14 +252,13 @@ scheme.latchConnections("HardwareInterface", "IRp6Regulator_5", true);
 scheme.addBlock("trans");
 scheme.addBlock("ForwardKinematic");
 scheme.addBlock("InverseKinematic");
-scheme.latchConnections("HardwareInterface", "trans", true);
+scheme.latchConnections("PortDoubleSplit_hw_cp", "HardwareInterface", true);
 scheme.addBlock("transInv");
 scheme.addBlock("ForceControlLaw");
 scheme.addBlock("ForceTransformation");
 scheme.addBlock("ATI6284");
 scheme.addBlock("SplineTrajectoryGeneratorJoint");
 scheme.addBlock("SplineTrajectoryGeneratorMotor");
-scheme.latchConnections("HardwareInterface", "SplineTrajectoryGeneratorMotor", true);
 scheme.addBlock("PoseInt");
 scheme.addBlock("ToolInt");
 
@@ -341,6 +358,7 @@ IRp6Regulator_2.start()
 IRp6Regulator_3.start()
 IRp6Regulator_4.start()
 IRp6Regulator_5.start()
+PortDoubleSplit_hw_cp.start()
 HardwareInterface.start()
 trans.start()
 ForwardKinematic.start()

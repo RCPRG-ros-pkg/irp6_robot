@@ -11,7 +11,7 @@ HardwareInterface::HardwareInterface(const std::string& name)
       servo_stop_iter_(0) {
 
   this->ports()->addPort("MotorPosition", port_motor_position_);
-  this->ports()->addPort("MotorPositionCommand", port_motor_position_command_);
+  // this->ports()->addPort("MotorPositionCommand", port_motor_position_command_);
 
   this->addProperty("number_of_drives", number_of_drives_).doc(
       "Number of drives in robot");
@@ -47,6 +47,7 @@ bool HardwareInterface::configureHook() {
   computedPwm_in_list_.resize(number_of_drives_);
   posInc_out_list_.resize(number_of_drives_);
   deltaInc_out_list_.resize(number_of_drives_);
+  port_motor_position_command_list_.resize(number_of_drives_);
 
   for (size_t i = 0; i < number_of_drives_; i++) {
     char computedPwm_in_port_name[16];
@@ -66,6 +67,15 @@ bool HardwareInterface::configureHook() {
              "deltaInc_out%zu", i);
     deltaInc_out_list_[i] = new typeof(*deltaInc_out_list_[i]);
     this->ports()->addPort(deltaInc_out_port_name, *deltaInc_out_list_[i]);
+
+    char MotorPositionCommand_port_name[32];
+    snprintf(MotorPositionCommand_port_name,
+             sizeof(MotorPositionCommand_port_name), "MotorPositionCommand_%zu",
+             i);
+    port_motor_position_command_list_[i] =
+        new typeof(*port_motor_position_command_list_[i]);
+    this->ports()->addPort(MotorPositionCommand_port_name,
+                           *port_motor_position_command_list_[i]);
 
   }
 
@@ -159,15 +169,30 @@ void HardwareInterface::updateHook() {
       break;
 
     case SERVOING:
-      if (port_motor_position_command_.read(motor_position_command_)
-          == RTT::NewData) {
-        for (int i = 0; i < number_of_drives_; i++) {
+
+      /*
+       if (port_motor_position_command_.read(motor_position_command_)
+       == RTT::NewData) {
+       for (int i = 0; i < number_of_drives_; i++) {
+       pos_inc_[i] = (motor_position_command_(i)
+       - motor_position_command_old_(i)) * (enc_res_[i] / (2.0 * M_PI));
+       motor_position_command_old_(i) = motor_position_command_(i);
+       }
+       } else {
+       for (int i = 0; i < number_of_drives_; i++) {
+       pos_inc_[i] = 0.0;
+       }
+       }
+       */
+
+      for (int i = 0; i < number_of_drives_; i++) {
+        if (port_motor_position_command_list_[i]->read(
+            motor_position_command_[i]) == RTT::NewData) {
           pos_inc_[i] = (motor_position_command_(i)
               - motor_position_command_old_(i)) * (enc_res_[i] / (2.0 * M_PI));
           motor_position_command_old_(i) = motor_position_command_(i);
-        }
-      } else {
-        for (int i = 0; i < number_of_drives_; i++) {
+
+        } else {
           pos_inc_[i] = 0.0;
         }
       }
