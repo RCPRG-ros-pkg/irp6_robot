@@ -10,7 +10,7 @@ HardwareInterface::HardwareInterface(const std::string& name)
     : TaskContext(name, PreOperational),
       servo_stop_iter_(0) {
 
-  this->ports()->addPort("MotorPosition", port_motor_position_);
+  // this->ports()->addPort("MotorPosition", port_motor_position_);
   // this->ports()->addPort("MotorPositionCommand", port_motor_position_command_);
 
   this->addProperty("number_of_drives", number_of_drives_).doc(
@@ -48,6 +48,7 @@ bool HardwareInterface::configureHook() {
   posInc_out_list_.resize(number_of_drives_);
   deltaInc_out_list_.resize(number_of_drives_);
   port_motor_position_command_list_.resize(number_of_drives_);
+  port_motor_position_list_.resize(number_of_drives_);
 
   for (size_t i = 0; i < number_of_drives_; i++) {
     char computedPwm_in_port_name[16];
@@ -76,6 +77,13 @@ bool HardwareInterface::configureHook() {
         new typeof(*port_motor_position_command_list_[i]);
     this->ports()->addPort(MotorPositionCommand_port_name,
                            *port_motor_position_command_list_[i]);
+
+    char MotorPosition_port_name[32];
+    snprintf(MotorPosition_port_name, sizeof(MotorPosition_port_name),
+             "MotorPosition_%zu", i);
+    port_motor_position_list_[i] = new typeof(*port_motor_position_list_[i]);
+    this->ports()->addPort(MotorPosition_port_name,
+                           *port_motor_position_list_[i]);
 
   }
 
@@ -170,21 +178,6 @@ void HardwareInterface::updateHook() {
 
     case SERVOING:
 
-      /*
-       if (port_motor_position_command_.read(motor_position_command_)
-       == RTT::NewData) {
-       for (int i = 0; i < number_of_drives_; i++) {
-       pos_inc_[i] = (motor_position_command_(i)
-       - motor_position_command_old_(i)) * (enc_res_[i] / (2.0 * M_PI));
-       motor_position_command_old_(i) = motor_position_command_(i);
-       }
-       } else {
-       for (int i = 0; i < number_of_drives_; i++) {
-       pos_inc_[i] = 0.0;
-       }
-       }
-       */
-
       for (int i = 0; i < number_of_drives_; i++) {
         if (port_motor_position_command_list_[i]->read(
             motor_position_command_[i]) == RTT::NewData) {
@@ -201,7 +194,12 @@ void HardwareInterface::updateHook() {
         motor_position_(i) = (double) hi_->get_position(i)
             * ((2.0 * M_PI) / enc_res_[i]);
       }
-      port_motor_position_.write(motor_position_);
+      // port_motor_position_.write(motor_position_);
+
+      for (int i = 0; i < number_of_drives_; i++) {
+        port_motor_position_list_[i]->write(motor_position_[i]);
+      }
+
       break;
 
     case SYNCHRONIZING:
