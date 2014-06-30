@@ -24,7 +24,7 @@
         enc_res: [4000, 4000, 4000, 4000, 4000, 2000]
         synchro_step_coarse: [-0.03, -0.03, -0.03, -0.03, -0.03, -0.05]
         synchro_step_fine: [0.007, 0.007, 0.007, 0.007, 0.007, 0.05]
-        current_mode: [true, false, false, false, false, false]
+        current_mode: [true, true, true, true, false, false]
       JntPub:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
       SplineTrajectoryGeneratorJoint:
@@ -50,21 +50,21 @@
         A: 0.655629139073
         BB0: 0.6181068
         BB1: 0.5916852
-        current_mode: false
+        current_mode: true
         current_reg_kp: 150.0
         max_output_current: 15000.0
       IRp6Regulator_2:
         A: 0.315789473684
         BB0: 1.1984784
         BB1: 1.1424828
-        current_mode: false
+        current_mode: true
         current_reg_kp: 180.0
         max_output_current: 15000.0
       IRp6Regulator_3:
         A: 0.548946716233
         BB0: 0.6305064
         BB1: 0.5874396
-        current_mode: false
+        current_mode: true
         current_reg_kp: 170.0
         max_output_current: 15000.0
       IRp6Regulator_4:
