@@ -5,21 +5,6 @@ using namespace RTT;
 
 class IRp6Regulator : public RTT::TaskContext {
 
- private:
-
-  InputPort<double> posInc_in;
-  InputPort<int> deltaInc_in;
-
-  OutputPort<double> computedPwm_out;
-
-  double posIncData;
-  int deltaIncData;
-
-  // Properties
-  double A_;
-  double BB0_;
-  double BB1_;
-
  public:
 
   IRp6Regulator(const std::string& name);
@@ -33,6 +18,21 @@ class IRp6Regulator : public RTT::TaskContext {
   bool configureHook();
   void updateHook();
 
+  InputPort<double> posInc_in;
+  InputPort<int> deltaInc_in;
+
+  OutputPort<double> computedPwm_out;
+
+  double posIncData;
+  int deltaIncData;
+
+  // Properties
+  double A_;
+  double BB0_;
+  double BB1_;
+  bool current_mode_;
+  double max_output_current_;
+  double current_reg_kp_;
 
   double position_increment_old;  // przedosatnio odczytany przyrost polozenie (delta y[k-2]
   // -- mierzone w impulsach)

@@ -23,6 +23,9 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addProperty("A", A_).doc("");
   this->addProperty("BB0", BB0_).doc("");
   this->addProperty("BB1", BB1_).doc("");
+  this->addProperty("current_mode", current_mode_).doc("");
+  this->addProperty("max_output_current", max_output_current_).doc("");
+  this->addProperty("current_reg_kp", current_reg_kp_).doc("");
 }
 
 IRp6Regulator::~IRp6Regulator() {
