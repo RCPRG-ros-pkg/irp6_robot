@@ -105,7 +105,7 @@ bool HardwareInterface::configureHook() {
     hi_->init(ports_adresses_);
     for (int i = 0; i < number_of_drives_; i++) {
       hi_->set_parameter_now(i, NF_COMMAND_SetDrivesMaxCurrent,
-                             max_current_[i]);
+                             (int16_t) max_current_[i]);
       if (current_mode_[i]) {
         hi_->set_current_mode(i);
       } else {
