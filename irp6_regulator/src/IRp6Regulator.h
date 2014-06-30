@@ -54,6 +54,8 @@ class IRp6Regulator : public RTT::TaskContext {
   double delta_eint;  // przyrost calki uchybu
   double delta_eint_old;  // przyrost calki uchybu w poprzednim kroku
 
+  double output_value;
+
   double a_, b0_, b1_;
 
 };
