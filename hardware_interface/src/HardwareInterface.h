@@ -21,7 +21,7 @@ typedef enum {
 class HardwareInterface : public RTT::TaskContext {
  private:
 
-  std::vector<InputPort<double>*> computedPwm_in_list_;
+  std::vector<InputPort<double>*> computedReg_in_list_;
 
   std::vector<OutputPort<double>*> posInc_out_list_;
   std::vector<OutputPort<int>*> deltaInc_out_list_;
@@ -45,6 +45,7 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<int> enc_res_;
   std::vector<double> synchro_step_coarse_;
   std::vector<double> synchro_step_fine_;
+  std::vector<bool> current_mode_;
 
   int servo_stop_iter_;
 

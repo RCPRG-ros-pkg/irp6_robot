@@ -195,27 +195,27 @@ connect("ForceTransformation.OutputEndEffectorWrench", "ForceControlLaw.CurrentE
 stream("ForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6p_arm/fcl_param"))
 
 ## Connect
-connect("HardwareInterface.computedPwm_in0","IRp6Regulator_0.computedPwm_out", ConnPolicy())
+connect("HardwareInterface.computedReg_in_0","IRp6Regulator_0.computedPwm_out", ConnPolicy())
 connect("IRp6Regulator_0.posInc_in","HardwareInterface.posInc_out0", ConnPolicy())
 connect("IRp6Regulator_0.deltaInc_in","HardwareInterface.deltaInc_out0", ConnPolicy())
 
-connect("HardwareInterface.computedPwm_in1","IRp6Regulator_1.computedPwm_out", ConnPolicy())
+connect("HardwareInterface.computedReg_in_1","IRp6Regulator_1.computedPwm_out", ConnPolicy())
 connect("IRp6Regulator_1.posInc_in","HardwareInterface.posInc_out1", ConnPolicy())
 connect("IRp6Regulator_1.deltaInc_in","HardwareInterface.deltaInc_out1", ConnPolicy())
 
-connect("HardwareInterface.computedPwm_in2","IRp6Regulator_2.computedPwm_out", ConnPolicy())
+connect("HardwareInterface.computedReg_in_2","IRp6Regulator_2.computedPwm_out", ConnPolicy())
 connect("IRp6Regulator_2.posInc_in","HardwareInterface.posInc_out2", ConnPolicy())
 connect("IRp6Regulator_2.deltaInc_in","HardwareInterface.deltaInc_out2", ConnPolicy())
 
-connect("HardwareInterface.computedPwm_in3","IRp6Regulator_3.computedPwm_out", ConnPolicy())
+connect("HardwareInterface.computedReg_in_3","IRp6Regulator_3.computedPwm_out", ConnPolicy())
 connect("IRp6Regulator_3.posInc_in","HardwareInterface.posInc_out3", ConnPolicy())
 connect("IRp6Regulator_3.deltaInc_in","HardwareInterface.deltaInc_out3", ConnPolicy())
 
-connect("HardwareInterface.computedPwm_in4","IRp6Regulator_4.computedPwm_out", ConnPolicy())
+connect("HardwareInterface.computedReg_in_4","IRp6Regulator_4.computedPwm_out", ConnPolicy())
 connect("IRp6Regulator_4.posInc_in","HardwareInterface.posInc_out4", ConnPolicy())
 connect("IRp6Regulator_4.deltaInc_in","HardwareInterface.deltaInc_out4", ConnPolicy())
 
-connect("HardwareInterface.computedPwm_in5","IRp6Regulator_5.computedPwm_out", ConnPolicy())
+connect("HardwareInterface.computedReg_in_5","IRp6Regulator_5.computedPwm_out", ConnPolicy())
 connect("IRp6Regulator_5.posInc_in","HardwareInterface.posInc_out5", ConnPolicy())
 connect("IRp6Regulator_5.deltaInc_in","HardwareInterface.deltaInc_out5", ConnPolicy())
 

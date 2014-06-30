@@ -10,9 +10,6 @@ HardwareInterface::HardwareInterface(const std::string& name)
     : TaskContext(name, PreOperational),
       servo_stop_iter_(0) {
 
-  // this->ports()->addPort("MotorPosition", port_motor_position_);
-  // this->ports()->addPort("MotorPositionCommand", port_motor_position_command_);
-
   this->addProperty("number_of_drives", number_of_drives_).doc(
       "Number of drives in robot");
   this->addProperty("auto_synchronize", auto_synchronize_).doc("");
@@ -24,6 +21,7 @@ HardwareInterface::HardwareInterface(const std::string& name)
   this->addProperty("enc_res", enc_res_).doc("");
   this->addProperty("synchro_step_coarse", synchro_step_coarse_).doc("");
   this->addProperty("synchro_step_fine", synchro_step_fine_).doc("");
+  this->addProperty("current_mode", current_mode_).doc("");
 }
 
 HardwareInterface::~HardwareInterface() {
@@ -36,7 +34,8 @@ bool HardwareInterface::configureHook() {
       || enc_res_.size() != number_of_drives_
       || synchro_step_coarse_.size() != number_of_drives_
       || synchro_step_fine_.size() != number_of_drives_
-      || card_indexes_.size() != number_of_drives_) {
+      || card_indexes_.size() != number_of_drives_
+      || current_mode_.size() != number_of_drives_) {
     log(Error) << "Size of parameters is different than number of drives"
                << endlog();
     return false;
@@ -44,26 +43,26 @@ bool HardwareInterface::configureHook() {
 
   // dynamic ports list initialization
 
-  computedPwm_in_list_.resize(number_of_drives_);
+  computedReg_in_list_.resize(number_of_drives_);
   posInc_out_list_.resize(number_of_drives_);
   deltaInc_out_list_.resize(number_of_drives_);
   port_motor_position_command_list_.resize(number_of_drives_);
   port_motor_position_list_.resize(number_of_drives_);
 
   for (size_t i = 0; i < number_of_drives_; i++) {
-    char computedPwm_in_port_name[16];
-    snprintf(computedPwm_in_port_name, sizeof(computedPwm_in_port_name),
-             "computedPwm_in%zu", i);
-    computedPwm_in_list_[i] = new typeof(*computedPwm_in_list_[i]);
-    this->ports()->addPort(computedPwm_in_port_name, *computedPwm_in_list_[i]);
+    char computedReg_in_port_name[32];
+    snprintf(computedReg_in_port_name, sizeof(computedReg_in_port_name),
+             "computedReg_in_%zu", i);
+    computedReg_in_list_[i] = new typeof(*computedReg_in_list_[i]);
+    this->ports()->addPort(computedReg_in_port_name, *computedReg_in_list_[i]);
 
-    char posInc_out_port_name[16];
+    char posInc_out_port_name[32];
     snprintf(posInc_out_port_name, sizeof(posInc_out_port_name),
              "posInc_out%zu", i);
     posInc_out_list_[i] = new typeof(*posInc_out_list_[i]);
     this->ports()->addPort(posInc_out_port_name, *posInc_out_list_[i]);
 
-    char deltaInc_out_port_name[16];
+    char deltaInc_out_port_name[32];
     snprintf(deltaInc_out_port_name, sizeof(deltaInc_out_port_name),
              "deltaInc_out%zu", i);
     deltaInc_out_list_[i] = new typeof(*deltaInc_out_list_[i]);
@@ -107,7 +106,12 @@ bool HardwareInterface::configureHook() {
     for (int i = 0; i < number_of_drives_; i++) {
       hi_->set_parameter_now(i, NF_COMMAND_SetDrivesMaxCurrent,
                              max_current_[i]);
-      hi_->set_pwm_mode(i);
+      if (current_mode_[i]) {
+        hi_->set_current_mode(i);
+      } else {
+        hi_->set_pwm_mode(i);
+
+      }
     }
   } catch (std::exception& e) {
     log(Info) << e.what() << endlog();
@@ -160,10 +164,15 @@ bool HardwareInterface::startHook() {
 void HardwareInterface::updateHook() {
 
   for (int i = 0; i < number_of_drives_; i++) {
-    if (NewData != computedPwm_in_list_[i]->read(pwm_[i])) {
+    if (NewData != computedReg_in_list_[i]->read(pwm_[i])) {
       RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
     }
-    hi_->set_pwm(i, pwm_[i]);
+    if (current_mode_[i]) {
+      hi_->set_current(i, pwm_[i]);
+    } else {
+      hi_->set_pwm(i, pwm_[i]);
+    }
+
   }
 
   hi_->HI_read_write_hardware();

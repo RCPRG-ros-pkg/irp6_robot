@@ -23,6 +23,9 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addProperty("A", A_).doc("");
   this->addProperty("BB0", BB0_).doc("");
   this->addProperty("BB1", BB1_).doc("");
+  this->addProperty("current_mode", current_mode_).doc("");
+  this->addProperty("max_output_current", max_output_current_).doc("");
+  this->addProperty("current_reg_kp", current_reg_kp_).doc("");
 }
 
 IRp6Regulator::~IRp6Regulator() {
@@ -108,7 +111,18 @@ int IRp6Regulator::doServo(double step_new, int pos_inc) {
   set_value_very_old = set_value_old;
   set_value_old = set_value_new;
 
-  return ((int) set_value_new);
+  if (current_mode_) {
+    output_value = set_value_new * current_reg_kp_;
+    if (output_value > max_output_current_) {
+      output_value = max_output_current_;
+    } else if (output_value < -max_output_current_) {
+      output_value = -max_output_current_;
+    }
+  } else {
+    output_value = set_value_new;
+  }
+
+  return ((int) output_value);
 }
 
 void IRp6Regulator::reset() {
