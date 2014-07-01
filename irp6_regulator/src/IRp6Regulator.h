@@ -27,6 +27,8 @@ class IRp6Regulator : public RTT::TaskContext {
   int deltaIncData;
 
   // Properties
+  int reg_number_;
+  bool debug_;
   double A_;
   double BB0_;
   double BB1_;
