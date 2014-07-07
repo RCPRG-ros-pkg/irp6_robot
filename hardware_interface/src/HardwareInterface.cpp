@@ -230,6 +230,7 @@ void HardwareInterface::updateHook() {
 
       if ((synchro_start_iter_--) <= 0) {
         state_ = SYNCHRONIZING;
+        std::cout << "Synchronization started" << std::endl;
       }
       break;
 
