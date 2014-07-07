@@ -35,6 +35,7 @@ class IRp6Regulator : public RTT::TaskContext {
   bool current_mode_;
   double max_output_current_;
   double current_reg_kp_;
+  double eint_dif_;
 
   double position_increment_old;  // przedosatnio odczytany przyrost polozenie (delta y[k-2]
   // -- mierzone w impulsach)

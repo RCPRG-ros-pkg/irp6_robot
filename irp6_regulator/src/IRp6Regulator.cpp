@@ -28,6 +28,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addProperty("current_reg_kp", current_reg_kp_).doc("");
   this->addProperty("reg_number", reg_number_).doc("");
   this->addProperty("debug", debug_).doc("");
+  this->addProperty("eint_dif", eint_dif_).doc("");
 
 }
 
@@ -79,21 +80,10 @@ int IRp6Regulator::doServo(double step_new, int pos_inc) {
 
   // Przyrost calki uchybu
   delta_eint = delta_eint_old
-      + 1.010 * (step_new_pulse - position_increment_new)
-      - 0.990 * (step_old_pulse - position_increment_old);
+      + (1.0 + eint_dif_) * (step_new_pulse - position_increment_new)
+      - (1.0 - eint_dif_) * (step_old_pulse - position_increment_old);
 
   //std::cout << "POS INCREMENT NEW: " << position_increment_new <<  std::endl;
-
-  //  double a = 0.548946716233 / 2;
-  //  double b0 = 1.576266 / 2; //9.244959545156;
-  //  double b1 = 1.468599 / 2; //8.613484947882;
-
-  /*double kp = 1;
-   double ki = 0.05;
-
-   a_ = 0;
-   b0_ = kp * (1 + ki);
-   b1_ = kp;*/
 
   // obliczenie nowej wartosci wypelnienia PWM algorytm PD + I
   set_value_new = (1 + a_) * set_value_old - a_ * set_value_very_old
@@ -106,13 +96,6 @@ int IRp6Regulator::doServo(double step_new, int pos_inc) {
     set_value_new = MAX_PWM;
   if (set_value_new < -MAX_PWM)
     set_value_new = -MAX_PWM;
-
-  // przepisanie nowych wartosci zmiennych do zmiennych przechowujacych wartosci poprzednie
-  position_increment_old = position_increment_new;
-  delta_eint_old = delta_eint;
-  step_old_pulse = step_new_pulse;
-  set_value_very_old = set_value_old;
-  set_value_old = set_value_new;
 
   if (current_mode_) {
     output_value = set_value_new * current_reg_kp_;
@@ -128,6 +111,13 @@ int IRp6Regulator::doServo(double step_new, int pos_inc) {
   if (debug_) {
     std::cout << "output_value: " << output_value << std::endl;
   }
+
+  // przepisanie nowych wartosci zmiennych do zmiennych przechowujacych wartosci poprzednie
+  position_increment_old = position_increment_new;
+  delta_eint_old = delta_eint;
+  step_old_pulse = step_new_pulse;
+  set_value_very_old = set_value_old;
+  set_value_old = set_value_new;
 
   return ((int) output_value);
 }
