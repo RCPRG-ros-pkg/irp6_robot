@@ -102,17 +102,25 @@ bool HardwareInterface::configureHook() {
   }
 
   try {
+    struct timespec delay;
     hi_->init(ports_adresses_);
     for (int i = 0; i < number_of_drives_; i++) {
       hi_->set_parameter_now(i, NF_COMMAND_SetDrivesMaxCurrent,
                              (int16_t) max_current_[i]);
+    }
+
+    delay.tv_nsec = 10000000;
+    delay.tv_sec = 0;
+    nanosleep(&delay, NULL);
+
+    for (int i = 0; i < number_of_drives_; i++) {
       if (current_mode_[i]) {
         hi_->set_current_mode(i);
       } else {
         hi_->set_pwm_mode(i);
-
       }
     }
+    nanosleep(&delay, NULL);
   } catch (std::exception& e) {
     log(Info) << e.what() << endlog();
     return false;
@@ -214,8 +222,7 @@ void HardwareInterface::updateHook() {
     case SYNCHRONIZING:
       switch (synchro_state_) {
         case MOVE_TO_SYNCHRO_AREA:
-          servo_stop_iter_ = 1000;
-          if (hi_->in_synchro_area(synchro_drive_)) {
+           if (hi_->in_synchro_area(synchro_drive_)) {
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
                                  << " ] MOVE_TO_SYNCHRO_AREA ended"
                                  << RTT::endlog();
