@@ -1,46 +1,32 @@
 #include <rtt/Component.hpp>
 
-#include "irp6p_transmission.h"
+#include "Irp6pmM2J.h"
+#include "Irp6pmTransmission.h"
 
-const double GEAR[6] = {-158.0, 2*M_PI/5.0, 2*M_PI/5.0, -128.0, -128.0*0.6, 288.8845};
-const double SYNCHRO_MOTOR_POSITION[6] = {-15.9, -5.0, -8.527, 151.31, 432.25, 791.0};
-const double THETA[6] = {0.0, 2.203374e+02, 1.838348e+02, 1.570796e+00, 0.0, 0.0};
 
-const double 	SYNCHRO_JOINT_POSITION[6] = { SYNCHRO_MOTOR_POSITION[0] - GEAR[0] * THETA[0],
-                                            SYNCHRO_MOTOR_POSITION[1] - GEAR[1] * THETA[1],
-	                                          SYNCHRO_MOTOR_POSITION[2] - GEAR[2] * THETA[2],
-	                                          SYNCHRO_MOTOR_POSITION[3] - GEAR[3] * THETA[3],
-	                                          SYNCHRO_MOTOR_POSITION[4] - GEAR[4] * THETA[4] - SYNCHRO_MOTOR_POSITION[3],
-	                                          SYNCHRO_MOTOR_POSITION[5] - GEAR[5] * THETA[5] };
-
-const int ENC_RES[6] = {4000, 4000, 4000, 4000, 4000, 2000};
-
-const double LOWER_MOTOR_LIMIT[6] = { -470, -110, -80, -70, -80, -1000};
-const double UPPER_MOTOR_LIMIT[6] = { 450, 100, 100, 380, 490, 3000};
-
-IRP6PTransmission::IRP6PTransmission(const std::string& name) : RTT::TaskContext(name, PreOperational) {
+Irp6pmM2J::Irp6pmM2J(const std::string& name) : RTT::TaskContext(name, PreOperational) {
 
 	this->ports()->addPort("MotorPosition", port_motor_position_);
 	this->ports()->addPort("JointPosition", port_joint_position_);
 }
 
-IRP6PTransmission::~IRP6PTransmission() {
+Irp6pmM2J::~Irp6pmM2J() {
 
 }
 
-bool IRP6PTransmission::configureHook() {
+bool Irp6pmM2J::configureHook() {
 	motor_position_.resize(6);
 	joint_position_.resize(6);
 	return true;
 }
 
-void IRP6PTransmission::updateHook() {
+void Irp6pmM2J::updateHook() {
 	port_motor_position_.read(motor_position_);
 	mp2i(&motor_position_(0), &joint_position_(0));	
 	port_joint_position_.write(joint_position_);
 }
 
-void IRP6PTransmission::mp2i(const double* motors, double* joints)
+void Irp6pmM2J::mp2i(const double* motors, double* joints)
 {
   // zmienne pomocnicze
   double c, d, l;
@@ -96,5 +82,5 @@ void IRP6PTransmission::mp2i(const double* motors, double* joints)
 
 }
 
-ORO_CREATE_COMPONENT(IRP6PTransmission)
+ORO_CREATE_COMPONENT(Irp6pmM2J)
 

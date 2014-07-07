@@ -1,14 +1,14 @@
-#ifndef IRP6PTransmission_H_
-#define IRP6PTransmission_H_
+#ifndef Irp6pmJ2M_H_
+#define Irp6pmJ2M_H_
 
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
 #include <Eigen/Dense>
 
-class IRP6PTransmissionInv: public RTT::TaskContext {
+class Irp6pmJ2M: public RTT::TaskContext {
 public:
-	IRP6PTransmissionInv(const std::string& name);
-	virtual ~IRP6PTransmissionInv();
+  Irp6pmJ2M(const std::string& name);
+	virtual ~Irp6pmJ2M();
 
 	bool configureHook();
 	void updateHook();
@@ -21,4 +21,4 @@ private:
 	Eigen::VectorXd motor_position_, joint_position_;
 };
 
-#endif /* IRP6PTransmission_H_ */
+#endif /* Irp6pmJ2M_H_ */

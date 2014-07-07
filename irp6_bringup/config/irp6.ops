@@ -101,24 +101,24 @@ connect("PortDoubleAggregate_hw_p.InputPort_3","HardwareInterface.MotorPosition_
 connect("PortDoubleAggregate_hw_p.InputPort_4","HardwareInterface.MotorPosition_4", ConnPolicy())
 connect("PortDoubleAggregate_hw_p.InputPort_5","HardwareInterface.MotorPosition_5", ConnPolicy())
 
-loadComponent("trans","IRP6PTransmission")
-//setActivity("trans", 0.02, 5, ORO_SCHED_RT)
-trans.configure()
+loadComponent("Irp6pmM2J","Irp6pmM2J")
+//setActivity("Irp6pmM2J", 0.02, 5, ORO_SCHED_RT)
+Irp6pmM2J.configure()
 
 loadComponent("ForwardKinematic","Irp6pForwardKinematic")
 ForwardKinematic.configure()
 
-connect("trans.JointPosition","ForwardKinematic.JointPosition", ConnPolicy())
+connect("Irp6pmM2J.JointPosition","ForwardKinematic.JointPosition", ConnPolicy())
 
 loadComponent("InverseKinematic","Irp6pInverseKinematic")
 InverseKinematic.configure()
 
-connect("trans.JointPosition","InverseKinematic.CurrentJointPosition", ConnPolicy())
+connect("Irp6pmM2J.JointPosition","InverseKinematic.CurrentJointPosition", ConnPolicy())
 
-loadComponent("transInv","IRP6PTransmissionInv")
-transInv.configure()
+loadComponent("Irp6pmJ2M","Irp6pmJ2M")
+Irp6pmJ2M.configure()
 
-connect("transInv.JointPosition","InverseKinematic.OutputJointPosition", ConnPolicy())
+connect("Irp6pmJ2M.JointPosition","InverseKinematic.OutputJointPosition", ConnPolicy())
 
 loadComponent("SplineTrajectoryGeneratorJoint", "InternalSpaceSplineTrajectoryGenerator")
 
@@ -126,8 +126,8 @@ SplineTrajectoryGeneratorJoint.loadService("rosparam");
 SplineTrajectoryGeneratorJoint.rosparam.getAll();
 
 
-connect("trans.JointPosition","SplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
-connect("SplineTrajectoryGeneratorJoint.JointPositionCommand","transInv.JointPosition", ConnPolicy())
+connect("Irp6pmM2J.JointPosition","SplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
+connect("SplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6pmJ2M.JointPosition", ConnPolicy())
 SplineTrajectoryGeneratorJoint.configure()
 
 loadComponent("SplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
@@ -219,8 +219,8 @@ connect("HardwareInterface.computedReg_in_5","IRp6Regulator_5.computedPwm_out", 
 connect("IRp6Regulator_5.posInc_in","HardwareInterface.posInc_out5", ConnPolicy())
 connect("IRp6Regulator_5.deltaInc_in","HardwareInterface.deltaInc_out5", ConnPolicy())
 
-connect("PortDoubleAggregate_hw_p.OutputPort","trans.MotorPosition", ConnPolicy())
-connect("transInv.MotorPosition", "PortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+connect("PortDoubleAggregate_hw_p.OutputPort","Irp6pmM2J.MotorPosition", ConnPolicy())
+connect("Irp6pmJ2M.MotorPosition", "PortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
 
 addPeer("scheme", "HardwareInterface");
@@ -232,10 +232,10 @@ addPeer("scheme", "IRp6Regulator_4")
 addPeer("scheme", "IRp6Regulator_5")
 addPeer("scheme", "PortDoubleSplit_hw_cp")
 addPeer("scheme", "PortDoubleAggregate_hw_p")
-addPeer("scheme", "trans");
+addPeer("scheme", "Irp6pmM2J");
 addPeer("scheme", "ForwardKinematic");
 addPeer("scheme", "InverseKinematic");
-addPeer("scheme", "transInv");
+addPeer("scheme", "Irp6pmJ2M");
 addPeer("scheme", "ForceControlLaw");
 addPeer("scheme", "ForceTransformation");
 addPeer("scheme", "ATI6284");
@@ -263,11 +263,11 @@ scheme.latchConnections("HardwareInterface", "IRp6Regulator_3", true);
 scheme.latchConnections("HardwareInterface", "IRp6Regulator_4", true);
 scheme.latchConnections("HardwareInterface", "IRp6Regulator_5", true);
 
-scheme.addBlock("trans");
+scheme.addBlock("Irp6pmM2J");
 scheme.addBlock("ForwardKinematic");
 scheme.addBlock("InverseKinematic");
 scheme.latchConnections("PortDoubleSplit_hw_cp", "HardwareInterface", true);
-scheme.addBlock("transInv");
+scheme.addBlock("Irp6pmJ2M");
 scheme.addBlock("ForceControlLaw");
 scheme.addBlock("ForceTransformation");
 scheme.addBlock("ATI6284");
@@ -291,7 +291,7 @@ SplineTrajectoryActionJoint.loadService("actionlib")
 SplineTrajectoryActionJoint.actionlib.connect("/irp6p_arm/spline_trajectory_action_joint")
 
 connect("SplineTrajectoryActionJoint.trajectoryPtr","SplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
-connect("trans.JointPosition","SplineTrajectoryActionJoint.JointPosition", ConnPolicy())
+connect("Irp6pmM2J.JointPosition","SplineTrajectoryActionJoint.JointPosition", ConnPolicy())
 connect("SplineTrajectoryGeneratorJoint.JointPositionCommand","SplineTrajectoryActionJoint.JointPositionCommand", ConnPolicy())
 
 
@@ -311,7 +311,7 @@ SplineTrajectoryActionMotor.loadService("actionlib")
 SplineTrajectoryActionMotor.actionlib.connect("/irp6p_arm/spline_trajectory_action_motor")
 
 connect("SplineTrajectoryActionMotor.trajectoryPtr","SplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
-connect("trans.JointPosition","SplineTrajectoryActionMotor.JointPosition", ConnPolicy())
+connect("Irp6pmM2J.JointPosition","SplineTrajectoryActionMotor.JointPosition", ConnPolicy())
 connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","SplineTrajectoryActionMotor.JointPositionCommand", ConnPolicy())
 
 SplineTrajectoryActionMotor.configure()
@@ -353,9 +353,9 @@ setActivity("JntPub", 0.01, 2, ORO_SCHED_RT);
 JntPub.loadService("rosparam");
 JntPub.rosparam.getAll();
 
-connect("trans.JointPosition", "JntPub.JointPosition", ConnPolicy());
-connect("trans.JointPosition", "JntPub.JointVelocity", ConnPolicy());
-connect("trans.JointPosition", "JntPub.JointEffort", ConnPolicy());
+connect("Irp6pmM2J.JointPosition", "JntPub.JointPosition", ConnPolicy());
+connect("Irp6pmM2J.JointPosition", "JntPub.JointVelocity", ConnPolicy());
+connect("Irp6pmM2J.JointPosition", "JntPub.JointEffort", ConnPolicy());
 
 stream("JntPub.joint_state", ros.comm.topic("/joint_states"));
 
@@ -375,10 +375,10 @@ IRp6Regulator_5.start()
 PortDoubleSplit_hw_cp.start()
 PortDoubleAggregate_hw_p.start()
 HardwareInterface.start()
-trans.start()
+Irp6pmM2J.start()
 ForwardKinematic.start()
 InverseKinematic.start()
-transInv.start()
+Irp6pmJ2M.start()
 #ForceControlLaw.start()
 ATI6284.start()
 JntPub.start()

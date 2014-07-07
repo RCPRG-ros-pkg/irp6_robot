@@ -42,6 +42,7 @@
       IRp6Regulator_0:
         reg_number: 0
         debug: false
+        eint_dif: 0.01
         A: 0.412429378531
         BB0: 1.5569592
         BB1: 1.5028614
@@ -51,6 +52,7 @@
       IRp6Regulator_1:
         reg_number: 1
         debug: false
+        eint_dif: 0.008
         A: 0.655629139073
         BB0: 0.6181068
         BB1: 0.5916852
@@ -60,6 +62,7 @@
       IRp6Regulator_2:
         reg_number: 2
         debug: false
+        eint_dif: 0.008
         A: 0.315789473684
         BB0: 1.1984784
         BB1: 1.1424828
@@ -69,6 +72,7 @@
       IRp6Regulator_3:
         reg_number: 3
         debug: false
+        eint_dif: 0.01
         A: 0.548946716233
         BB0: 0.6305064
         BB1: 0.5874396
@@ -78,6 +82,7 @@
       IRp6Regulator_4:
         reg_number: 4
         debug: false
+        eint_dif: 0.02
         A: 0.391982182628
         BB0: 0.4458592
         BB1: 0.4085392
@@ -87,6 +92,7 @@
       IRp6Regulator_5:
         reg_number: 5
         debug: false
+        eint_dif: 0.005
         A: 0.3
         BB0: 0.5456
         BB1: 0.5056

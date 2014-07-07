@@ -8,7 +8,8 @@
 
 HardwareInterface::HardwareInterface(const std::string& name)
     : TaskContext(name, PreOperational),
-      servo_stop_iter_(0) {
+      synchro_start_iter_(0),
+      synchro_stop_iter_(0) {
 
   this->addProperty("number_of_drives", number_of_drives_).doc(
       "Number of drives in robot");
@@ -141,9 +142,12 @@ bool HardwareInterface::startHook() {
       RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
       if (auto_synchronize_) {
         RTT::log(RTT::Info) << "Auto synchronize" << RTT::endlog();
-        state_ = SYNCHRONIZING;
+        state_ = PRE_SYNCHRONIZING;
+        synchro_start_iter_ = 500;
+        synchro_stop_iter_ = 1000;
         synchro_state_ = MOVE_TO_SYNCHRO_AREA;
         synchro_drive_ = 0;
+        std::cout << "Auto synchronize" << std::endl;
       } else
         state_ = NOT_SYNCHRONIZED;
     } else {
@@ -219,10 +223,22 @@ void HardwareInterface::updateHook() {
 
       break;
 
+    case PRE_SYNCHRONIZING:
+      for (int i = 0; i < number_of_drives_; i++) {
+        pos_inc_[i] = 0.0;
+      }
+
+      if ((synchro_start_iter_--) <= 0) {
+        state_ = SYNCHRONIZING;
+        std::cout << "Synchronization started" << std::endl;
+      }
+      break;
+
     case SYNCHRONIZING:
+
       switch (synchro_state_) {
         case MOVE_TO_SYNCHRO_AREA:
-           if (hi_->in_synchro_area(synchro_drive_)) {
+          if (hi_->in_synchro_area(synchro_drive_)) {
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
                                  << " ] MOVE_TO_SYNCHRO_AREA ended"
                                  << RTT::endlog();
@@ -288,7 +304,7 @@ void HardwareInterface::updateHook() {
 
         case SYNCHRO_END:
 
-          if ((servo_stop_iter_--) <= 0) {
+          if ((synchro_stop_iter_--) <= 0) {
 
             for (int i = 0; i < number_of_drives_; i++) {
               motor_position_command_(i) = motor_position_command_old_(i) = hi_
