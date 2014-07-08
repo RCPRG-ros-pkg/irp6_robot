@@ -19,12 +19,12 @@ class IRp6Regulator : public RTT::TaskContext {
   void updateHook();
 
   InputPort<double> posInc_in;
-  InputPort<int> deltaInc_in;
+  InputPort<double> deltaInc_in;
 
   OutputPort<double> computedPwm_out;
 
   double posIncData;
-  int deltaIncData;
+  double deltaIncData;
 
   // Properties
   int reg_number_;

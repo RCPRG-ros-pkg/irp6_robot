@@ -25,7 +25,7 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<InputPort<double>*> computedReg_in_list_;
 
   std::vector<OutputPort<double>*> posInc_out_list_;
-  std::vector<OutputPort<int>*> deltaInc_out_list_;
+  std::vector<OutputPort<double>*> deltaInc_out_list_;
 
   std::vector<OutputPort<double>*> port_motor_position_list_;
 
@@ -43,7 +43,7 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<double> max_increment_;
   std::vector<unsigned int> card_indexes_;
   int tx_prefix_len_;
-  std::vector<int> enc_res_;
+  std::vector<double> enc_res_;
   std::vector<double> synchro_step_coarse_;
   std::vector<double> synchro_step_fine_;
   std::vector<bool> current_mode_;
@@ -59,7 +59,7 @@ class HardwareInterface : public RTT::TaskContext {
 
   std::vector<double> pos_inc_;
 
-  std::vector<int> increment_;
+  std::vector<double> increment_;
   std::vector<double> motor_pos_;
   std::vector<double> pwm_;
 
