@@ -109,11 +109,11 @@ bool HardwareInterface::configureHook() {
       hi_->set_parameter_now(i, NF_COMMAND_SetDrivesMaxCurrent,
                              (int16_t) max_current_[i]);
     }
-
-    delay.tv_nsec = 10000000;
-    delay.tv_sec = 0;
-    nanosleep(&delay, NULL);
-
+    /*
+     delay.tv_nsec = 10000000;
+     delay.tv_sec = 0;
+     nanosleep(&delay, NULL);
+     */
     for (int i = 0; i < number_of_drives_; i++) {
       if (current_mode_[i]) {
         hi_->set_current_mode(i);
@@ -121,7 +121,9 @@ bool HardwareInterface::configureHook() {
         hi_->set_pwm_mode(i);
       }
     }
-    nanosleep(&delay, NULL);
+    /*
+     nanosleep(&delay, NULL);
+     */
   } catch (std::exception& e) {
     log(Info) << e.what() << endlog();
     return false;
@@ -130,7 +132,7 @@ bool HardwareInterface::configureHook() {
   motor_position_.resize(number_of_drives_);
   motor_position_command_.resize(number_of_drives_);
   motor_position_command_old_.resize(number_of_drives_);
-
+  // hi_->HI_read_write_hardware();
   return true;
 }
 
@@ -184,7 +186,9 @@ void HardwareInterface::updateHook() {
     } else {
       hi_->set_pwm(i, pwm_[i]);
     }
-
+    if (i < 3) {
+   //   std::cout << pwm_[i] << " ";
+    }
   }
 
   hi_->HI_read_write_hardware();
@@ -335,13 +339,17 @@ void HardwareInterface::updateHook() {
       pos_inc_[i] = 0;
     }
   }
+ // std::cout << "ip: ";
 
   for (int i = 0; i < number_of_drives_; i++) {
-    hi_->set_pwm(i, pwm_[i]);
     deltaInc_out_list_[i]->write(increment_[i]);
     posInc_out_list_[i]->write(pos_inc_[i]);
-  }
+    if (i < 3) {
+  //    std::cout << increment_[i] << " " << pos_inc_[i] << " ";
+    }
 
+  }
+//  std::cout << std::endl;
 }
 
 ORO_CREATE_COMPONENT(HardwareInterface)

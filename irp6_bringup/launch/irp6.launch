@@ -21,7 +21,7 @@
         max_increment: [1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]
         card_indexes: [0, 1, 2, 3, 4, 5]
         tx_prefix_len: 0
-        enc_res: [4000, 4000, 4000, 4000, 4000, 2000]
+        enc_res: [4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 2000.0]
         synchro_step_coarse: [-0.03, -0.03, -0.03, -0.03, -0.03, -0.05]
         synchro_step_fine: [0.007, 0.007, 0.007, 0.007, 0.007, 0.05]
         current_mode: [true, true, true, true, false, false]
