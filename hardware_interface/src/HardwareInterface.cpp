@@ -109,6 +109,19 @@ bool HardwareInterface::configureHook() {
       hi_->set_parameter_now(i, NF_COMMAND_SetDrivesMaxCurrent,
                              (int16_t) max_current_[i]);
     }
+/*
+    NF_STRUCT_Regulator tmpReg = { convert_to_115(0.0600), convert_to_115(
+        0.0500), convert_to_115(0.0), 0 };
+
+    hi_->set_pwm_mode(0);
+    hi_->set_parameter_now(0, NF_COMMAND_SetCurrentRegulator, tmpReg);
+
+    hi_->set_pwm_mode(1);
+    hi_->set_parameter_now(1, NF_COMMAND_SetCurrentRegulator, tmpReg);
+
+    hi_->set_pwm_mode(2);
+    hi_->set_parameter_now(2, NF_COMMAND_SetCurrentRegulator, tmpReg);
+*/
     /*
      delay.tv_nsec = 10000000;
      delay.tv_sec = 0;
@@ -134,6 +147,26 @@ bool HardwareInterface::configureHook() {
   motor_position_command_old_.resize(number_of_drives_);
   // hi_->HI_read_write_hardware();
   return true;
+}
+
+uint16_t HardwareInterface::convert_to_115(float input) {
+  uint16_t output;
+
+  if (input >= 1.0) {
+    printf("convert_to_115 input bigger or equal then 1.0\n");
+    return 0;
+  } else if (input < -1.0) {
+    printf("convert_to_115 input lower then -1.0\n");
+    return 0;
+  } else if (input < 0.0) {
+    output = 65535 + (int) (input * 32768.0);
+  } else if (input >= 0.0) {
+    output = (uint16_t) (input * 32768.0);
+  }
+
+//  printf("convert_to_115 i: %f, o: %x\n",input, output);
+
+  return output;
 }
 
 bool HardwareInterface::startHook() {
@@ -187,7 +220,7 @@ void HardwareInterface::updateHook() {
       hi_->set_pwm(i, pwm_[i]);
     }
     if (i < 3) {
-   //   std::cout << pwm_[i] << " ";
+      //   std::cout << pwm_[i] << " ";
     }
   }
 
@@ -339,13 +372,13 @@ void HardwareInterface::updateHook() {
       pos_inc_[i] = 0;
     }
   }
- // std::cout << "ip: ";
+  // std::cout << "ip: ";
 
   for (int i = 0; i < number_of_drives_; i++) {
     deltaInc_out_list_[i]->write(increment_[i]);
     posInc_out_list_[i]->write(pos_inc_[i]);
     if (i < 3) {
-  //    std::cout << increment_[i] << " " << pos_inc_[i] << " ";
+      //    std::cout << increment_[i] << " " << pos_inc_[i] << " ";
     }
 
   }

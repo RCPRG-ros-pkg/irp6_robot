@@ -22,6 +22,21 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
       drives_addresses(card_addresses),
       ridiculous_increment(max_increments),
       hardware_panic(false) {
+
+  for (unsigned int drive_number = 0; drive_number <= last_drive_number;
+      drive_number++) {
+
+    memset(servo_data + drive_number, 0, sizeof(servo_St));
+    memset(oldtio + drive_number, 0, sizeof(termios));
+    //clear_buffer(drive_number);
+  }
+  memset(&NFComBuf, sizeof(NF_STRUCT_ComBuf), 0);
+  memset(txBuf, 0, 256);
+  txCnt = 0;
+  memset(rxBuf, 0, 256);
+  rxCnt = 0;
+  memset(rxCommandArray, 0, 256);
+  rxCommandCnt = 0;
 }
 
 HI_moxa::~HI_moxa() {
@@ -221,6 +236,19 @@ uint64_t HI_moxa::HI_read_write_hardware(void) {
       SerialPort[drive_number]->write(
           servo_data[drive_number].txBuf,
           servo_data[drive_number].txCnt + howMuchItSucks);
+#define SPN
+#ifdef SPN
+      static int rwhprints = 18;
+      if(rwhprints){
+        rwhprints --;
+        std::cout << "RWH: ";
+        for(int i=0; i< servo_data[drive_number].txCnt + howMuchItSucks; i++){
+          std::cout << std::hex << (unsigned int) servo_data[drive_number].txBuf[i];
+          std::cout << " ";
+        }
+        std::cout << std::endl;
+      }
+#endif
     }
   }
 
@@ -476,6 +504,16 @@ int HI_moxa::set_parameter_now(int drive_number, const int parameter, ...) {
       param_set_attempt++) {
     // Send command frame
     SerialPort[drive_number]->write(txBuf, txCnt + 5);
+
+#define SPN
+#ifdef SPN
+    std::cout << "SPN: ";
+    for(int i=0; i< txCnt + 5; i++){
+      std::cout << std::hex << (unsigned int) txBuf[i];
+      std::cout << " ";
+    }
+    std::cout << std::endl;
+#endif
 
     // hardware panic; do not print error information; do not wait for response
     if (parameter == NF_COMMAND_SetDrivesMode
