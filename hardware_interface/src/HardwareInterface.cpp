@@ -161,7 +161,7 @@ uint16_t HardwareInterface::convert_to_115(float input) {
 
 bool HardwareInterface::startHook() {
   try {
-    hi_->HI_read_write_hardware();
+    hi_->read_write_hardware();
 
     if (!hi_->robot_synchronized()) {
       RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
@@ -214,7 +214,7 @@ void HardwareInterface::updateHook() {
     }
   }
 
-  hi_->HI_read_write_hardware();
+  hi_->read_write_hardware();
 
   switch (state_) {
     case NOT_SYNCHRONIZED:
