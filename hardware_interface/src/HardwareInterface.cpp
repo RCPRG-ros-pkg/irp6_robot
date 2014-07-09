@@ -195,10 +195,15 @@ bool HardwareInterface::startHook() {
     pos_inc_[i] = 0.0;
   }
 
+  hi_->write_hardware();
+
   return true;
 }
 
 void HardwareInterface::updateHook() {
+
+
+  hi_->read_hardware();
 
   for (int i = 0; i < number_of_drives_; i++) {
     if (NewData != computedReg_in_list_[i]->read(pwm_[i])) {
@@ -213,8 +218,6 @@ void HardwareInterface::updateHook() {
       //   std::cout << pwm_[i] << " ";
     }
   }
-
-  hi_->read_write_hardware();
 
   switch (state_) {
     case NOT_SYNCHRONIZED:
@@ -373,6 +376,8 @@ void HardwareInterface::updateHook() {
 
   }
 //  std::cout << std::endl;
+
+  hi_->write_hardware();
 }
 
 ORO_CREATE_COMPONENT(HardwareInterface)
