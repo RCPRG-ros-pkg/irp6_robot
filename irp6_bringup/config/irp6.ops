@@ -16,7 +16,7 @@ ros.import("irp6_regulator")
 ros.import("oro_joint_state_publisher")
 ros.import("internal_space_spline_trajectory_action")
 ros.import("internal_space_spline_trajectory_generator")
-ros.import("irp6p_kinematic")
+ros.import("irp6pm_kinematic")
 ros.import("controller_common");
 ros.import("force_contol");
 ros.import("ati6284");
@@ -105,20 +105,20 @@ loadComponent("Irp6pmM2J","Irp6pmM2J")
 //setActivity("Irp6pmM2J", 0.02, 5, ORO_SCHED_RT)
 Irp6pmM2J.configure()
 
-loadComponent("ForwardKinematic","Irp6pForwardKinematic")
-ForwardKinematic.configure()
+loadComponent("Irp6pmForwardKinematic","Irp6pmForwardKinematic")
+Irp6pmForwardKinematic.configure()
 
-connect("Irp6pmM2J.JointPosition","ForwardKinematic.JointPosition", ConnPolicy())
+connect("Irp6pmM2J.JointPosition","Irp6pmForwardKinematic.JointPosition", ConnPolicy())
 
-loadComponent("InverseKinematic","Irp6pInverseKinematic")
-InverseKinematic.configure()
+loadComponent("Irp6pmInverseKinematic","Irp6pmInverseKinematic")
+Irp6pmInverseKinematic.configure()
 
-connect("Irp6pmM2J.JointPosition","InverseKinematic.CurrentJointPosition", ConnPolicy())
+connect("Irp6pmM2J.JointPosition","Irp6pmInverseKinematic.CurrentJointPosition", ConnPolicy())
 
 loadComponent("Irp6pmJ2M","Irp6pmJ2M")
 Irp6pmJ2M.configure()
 
-connect("Irp6pmJ2M.JointPosition","InverseKinematic.OutputJointPosition", ConnPolicy())
+connect("Irp6pmJ2M.JointPosition","Irp6pmInverseKinematic.OutputJointPosition", ConnPolicy())
 
 loadComponent("SplineTrajectoryGeneratorJoint", "InternalSpaceSplineTrajectoryGenerator")
 
@@ -146,8 +146,8 @@ SplineTrajectoryGeneratorMotor.configure()
 
 loadComponent("PoseInt", "CartesianInterpolator")
 
-connect("ForwardKinematic.EndEffectorOutputPose", "PoseInt.CartesianPosition", ConnPolicy())
-connect("PoseInt.CartesianPositionCommand", "InverseKinematic.InputEndEffectorPose", ConnPolicy())
+connect("Irp6pmForwardKinematic.EndEffectorOutputPose", "PoseInt.CartesianPosition", ConnPolicy())
+connect("PoseInt.CartesianPositionCommand", "Irp6pmInverseKinematic.InputEndEffectorPose", ConnPolicy())
 
 PoseInt.configure();
 
@@ -158,8 +158,8 @@ ToolInt.configure();
 ToolInt.loadService("rosparam");
 ToolInt.rosparam.getAll();
 
-connect("ToolInt.CartesianPositionCommand", "ForwardKinematic.Tool", ConnPolicy())
-connect("ToolInt.CartesianPositionCommand", "InverseKinematic.Tool", ConnPolicy())
+connect("ToolInt.CartesianPositionCommand", "Irp6pmForwardKinematic.Tool", ConnPolicy())
+connect("ToolInt.CartesianPositionCommand", "Irp6pmInverseKinematic.Tool", ConnPolicy())
 
 #stream("ToolInt.CartesianPositionCommand", ros.comm.topic("/irp6p_arm/tool"))
 
@@ -177,7 +177,7 @@ ForceTransformation.rosparam.getAll();
 ForceTransformation.configure()
 
 
-connect("ForceTransformation.CurrentWristPose", "ForwardKinematic.WristOutputPose", ConnPolicy())
+connect("ForceTransformation.CurrentWristPose", "Irp6pmForwardKinematic.WristOutputPose", ConnPolicy())
 connect("ForceTransformation.CurrentSensorWrench", "ATI6284.Wrench", ConnPolicy())
 connect("ForceTransformation.Tool", "ToolInt.CartesianPositionCommand", ConnPolicy())
 
@@ -188,8 +188,8 @@ stream("ForceTransformation.ToolGravityParam", ros.comm.topic("/irp6p_arm/tg_par
 loadComponent("ForceControlLaw", "ForceControlLaw")
 ForceControlLaw.configure()
 
-connect("ForceControlLaw.OutputEndEffectorPose", "InverseKinematic.InputEndEffectorPose", ConnPolicy())
-connect("ForceControlLaw.CurrentEndEffectorPose", "ForwardKinematic.EndEffectorOutputPose", ConnPolicy())
+connect("ForceControlLaw.OutputEndEffectorPose", "Irp6pmInverseKinematic.InputEndEffectorPose", ConnPolicy())
+connect("ForceControlLaw.CurrentEndEffectorPose", "Irp6pmForwardKinematic.EndEffectorOutputPose", ConnPolicy())
 connect("ForceTransformation.OutputEndEffectorWrench", "ForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
 
 stream("ForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6p_arm/fcl_param"))
@@ -233,8 +233,8 @@ addPeer("scheme", "IRp6Regulator_5")
 addPeer("scheme", "PortDoubleSplit_hw_cp")
 addPeer("scheme", "PortDoubleAggregate_hw_p")
 addPeer("scheme", "Irp6pmM2J");
-addPeer("scheme", "ForwardKinematic");
-addPeer("scheme", "InverseKinematic");
+addPeer("scheme", "Irp6pmForwardKinematic");
+addPeer("scheme", "Irp6pmInverseKinematic");
 addPeer("scheme", "Irp6pmJ2M");
 addPeer("scheme", "ForceControlLaw");
 addPeer("scheme", "ForceTransformation");
@@ -264,8 +264,8 @@ scheme.latchConnections("HardwareInterface", "IRp6Regulator_4", true);
 scheme.latchConnections("HardwareInterface", "IRp6Regulator_5", true);
 
 scheme.addBlock("Irp6pmM2J");
-scheme.addBlock("ForwardKinematic");
-scheme.addBlock("InverseKinematic");
+scheme.addBlock("Irp6pmForwardKinematic");
+scheme.addBlock("Irp6pmInverseKinematic");
 scheme.latchConnections("PortDoubleSplit_hw_cp", "HardwareInterface", true);
 scheme.addBlock("Irp6pmJ2M");
 scheme.addBlock("ForceControlLaw");
@@ -361,7 +361,7 @@ stream("JntPub.joint_state", ros.comm.topic("/joint_states"));
 
 JntPub.configure()
 
-stream("ForwardKinematic.WristOutputPose", ros.comm.topic("/cartesian_position"))
+stream("Irp6pmForwardKinematic.WristOutputPose", ros.comm.topic("/cartesian_position"))
 #stream("ATI6284.Wrench", ros.comm.topic("/ati_wrench"))
 
 ## Start it
@@ -376,8 +376,8 @@ PortDoubleSplit_hw_cp.start()
 PortDoubleAggregate_hw_p.start()
 HardwareInterface.start()
 Irp6pmM2J.start()
-ForwardKinematic.start()
-InverseKinematic.start()
+Irp6pmForwardKinematic.start()
+Irp6pmInverseKinematic.start()
 Irp6pmJ2M.start()
 #ForceControlLaw.start()
 ATI6284.start()
