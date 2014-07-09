@@ -115,12 +115,6 @@ bool HardwareInterface::configureHook() {
 
     hi_->set_pwm_mode(0);
     hi_->set_parameter_now(0, NF_COMMAND_SetCurrentRegulator, tmpReg);
-
-    hi_->set_pwm_mode(1);
-    hi_->set_parameter_now(1, NF_COMMAND_SetCurrentRegulator, tmpReg);
-
-    hi_->set_pwm_mode(2);
-    hi_->set_parameter_now(2, NF_COMMAND_SetCurrentRegulator, tmpReg);
 */
     /*
      delay.tv_nsec = 10000000;
@@ -134,9 +128,6 @@ bool HardwareInterface::configureHook() {
         hi_->set_pwm_mode(i);
       }
     }
-    /*
-     nanosleep(&delay, NULL);
-     */
   } catch (std::exception& e) {
     log(Info) << e.what() << endlog();
     return false;
@@ -145,7 +136,6 @@ bool HardwareInterface::configureHook() {
   motor_position_.resize(number_of_drives_);
   motor_position_command_.resize(number_of_drives_);
   motor_position_command_old_.resize(number_of_drives_);
-  // hi_->HI_read_write_hardware();
   return true;
 }
 

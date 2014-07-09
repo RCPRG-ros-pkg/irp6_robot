@@ -112,7 +112,7 @@ void HI_moxa::init(std::vector<std::string> ports) {
 }
 
 void HI_moxa::reset_counters(void) {
-  for (int i = 0; i < MOXA_SERVOS_NR; i++) {
+  for (int i = 0; i < last_drive_number; i++) {
     servo_data[i].current_absolute_position = 0L;
     servo_data[i].previous_absolute_position = 0L;
     servo_data[i].current_position_inc = 0.0;
@@ -171,9 +171,12 @@ uint64_t HI_moxa::HI_read_write_hardware(void) {
   static int error_msg_power_stage = 0;
   static int error_msg_hardware_panic = 0;
   static int error_msg_overcurrent = 0;
-  static int last_synchro_state[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-  static int comm_timeouts[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-  static int synchro_switch_filter[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+  static int last_synchro_state[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0 };
+  static int comm_timeouts[] =
+      { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  static int synchro_switch_filter[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0 };
   const int synchro_switch_filter_th = 2;
   bool robot_synchronized = true;
   bool power_fault;
@@ -239,11 +242,13 @@ uint64_t HI_moxa::HI_read_write_hardware(void) {
 #define SPN
 #ifdef SPN
       static int rwhprints = 18;
-      if(rwhprints){
-        rwhprints --;
+      if (rwhprints) {
+        rwhprints--;
         std::cout << "RWH: ";
-        for(int i=0; i< servo_data[drive_number].txCnt + howMuchItSucks; i++){
-          std::cout << std::hex << (unsigned int) servo_data[drive_number].txBuf[i];
+        for (int i = 0; i < servo_data[drive_number].txCnt + howMuchItSucks;
+            i++) {
+          std::cout << std::hex
+                    << (unsigned int) servo_data[drive_number].txBuf[i];
           std::cout << " ";
         }
         std::cout << std::endl;
@@ -508,7 +513,7 @@ int HI_moxa::set_parameter_now(int drive_number, const int parameter, ...) {
 #define SPN
 #ifdef SPN
     std::cout << "SPN: ";
-    for(int i=0; i< txCnt + 5; i++){
+    for (int i = 0; i < txCnt + 5; i++) {
       std::cout << std::hex << (unsigned int) txBuf[i];
       std::cout << " ";
     }
