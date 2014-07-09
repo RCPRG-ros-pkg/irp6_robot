@@ -90,7 +90,7 @@ class HI_moxa {
   /// tab of max allowed motor position increments
   std::vector<double> ridiculous_increment;
 
-  int fd[MOXA_SERVOS_NR];
+ // int fd[MOXA_SERVOS_NR];
 
   /// tab of comunication class instances
   SerialComm* SerialPort[MOXA_SERVOS_NR];
