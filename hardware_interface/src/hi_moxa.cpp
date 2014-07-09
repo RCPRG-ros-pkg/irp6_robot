@@ -458,7 +458,7 @@ uint64_t HI_moxa::write_hardware(void) {
 }
 
 // do communication cycle
-uint64_t HI_moxa::read_write_hardware(void) {
+uint64_t HI_moxa::write_read_hardware(void) {
 
   uint64_t ret;
   if ((ret = write_hardware()) != 0) {
