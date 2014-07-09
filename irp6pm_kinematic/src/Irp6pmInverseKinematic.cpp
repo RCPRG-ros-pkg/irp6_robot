@@ -1,10 +1,10 @@
 // Copyright WUT 2014
 #include <rtt/Component.hpp>
 
-#include "Irp6pInverseKinematic.h"
+#include "Irp6pmInverseKinematic.h"
 #include "eigen_conversions/eigen_msg.h"
 
-Irp6pInverseKinematic::Irp6pInverseKinematic(const std::string& name)
+Irp6pmInverseKinematic::Irp6pmInverseKinematic(const std::string& name)
     : RTT::TaskContext(name, PreOperational) {
 
   this->ports()->addPort("CurrentJointPosition", port_current_joint_position_);
@@ -17,11 +17,11 @@ Irp6pInverseKinematic::Irp6pInverseKinematic(const std::string& name)
 
 }
 
-Irp6pInverseKinematic::~Irp6pInverseKinematic() {
+Irp6pmInverseKinematic::~Irp6pmInverseKinematic() {
 
 }
 
-bool Irp6pInverseKinematic::configureHook() {
+bool Irp6pmInverseKinematic::configureHook() {
 
   /* -----------------------------------------------------------------------
    Dlugosci czlonow robota [m].
@@ -45,7 +45,7 @@ bool Irp6pInverseKinematic::configureHook() {
   return true;
 }
 
-void Irp6pInverseKinematic::updateHook() {
+void Irp6pmInverseKinematic::updateHook() {
 
   if (port_input_wrist_pose_.read(wrist_pose_) == RTT::NewData) {
 
@@ -81,7 +81,7 @@ void Irp6pInverseKinematic::updateHook() {
   }
 }
 
-void Irp6pInverseKinematic::inverse_kinematics_single_iteration(
+void Irp6pmInverseKinematic::inverse_kinematics_single_iteration(
     const Eigen::VectorXd& local_current_joints,
     const Eigen::Affine3d& local_desired_end_effector_frame,
     Eigen::VectorXd* local_desired_joints) {
@@ -261,5 +261,5 @@ void Irp6pInverseKinematic::inverse_kinematics_single_iteration(
 
 }
 
-ORO_CREATE_COMPONENT(Irp6pInverseKinematic)
+ORO_CREATE_COMPONENT(Irp6pmInverseKinematic)
 

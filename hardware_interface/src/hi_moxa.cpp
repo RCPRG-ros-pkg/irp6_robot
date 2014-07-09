@@ -112,7 +112,7 @@ void HI_moxa::init(std::vector<std::string> ports) {
 }
 
 void HI_moxa::reset_counters(void) {
-  for (int i = 0; i < MOXA_SERVOS_NR; i++) {
+  for (int i = 0; i < last_drive_number; i++) {
     servo_data[i].current_absolute_position = 0L;
     servo_data[i].previous_absolute_position = 0L;
     servo_data[i].current_position_inc = 0.0;
@@ -164,16 +164,18 @@ void HI_moxa::set_current(int drive_number, double set_value) {
   NF_COMMAND_SetDrivesCurrent;
 }
 
-// do communication cycle
-uint64_t HI_moxa::HI_read_write_hardware(void) {
+uint64_t HI_moxa::read_hardware(void) {
   static int64_t receive_attempts = 0;
   // UNUSED: static int64_t receive_timeouts = 0;
   static int error_msg_power_stage = 0;
-  static int error_msg_hardware_panic = 0;
+
   static int error_msg_overcurrent = 0;
-  static int last_synchro_state[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-  static int comm_timeouts[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-  static int synchro_switch_filter[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+  static int last_synchro_state[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0 };
+  static int comm_timeouts[] =
+      { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  static int synchro_switch_filter[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0 };
   const int synchro_switch_filter_th = 2;
   bool robot_synchronized = true;
   bool power_fault;
@@ -183,82 +185,7 @@ uint64_t HI_moxa::HI_read_write_hardware(void) {
   static int status_disp_cnt = 0;
   static std::stringstream temp_message;
 
-  // If Hardware Panic, send PARAM_DRIVER_MODE_ERROR to motor drivers
-  if (hardware_panic) {
-    for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
-      // only set error parameter, do not wait for answer
-      servo_data[drive_number].commandCnt = 0;
-      NFComBuf.SetDrivesMode.data[drive_number] = NF_DrivesMode_ERROR;
-      servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
-      NF_COMMAND_SetDrivesMode;
-      txCnt = NF_MakeCommandFrame(
-          &NFComBuf, txBuf + 5,
-          (const uint8_t*) servo_data[drive_number].commandArray,
-          servo_data[drive_number].commandCnt, drives_addresses[drive_number]);
-      // Clear communication request
-      servo_data[drive_number].commandCnt = 0;
-      // Send command frame
-      SerialPort[drive_number]->write(txBuf, txCnt + 5);
-    }
-    if (error_msg_hardware_panic == 0) {
-      std::cout << "[error] hardware panic" << std::endl;
-      error_msg_hardware_panic++;
-    }
-    std::cout << temp_message.str() << std::endl;
-
-    struct timespec delay;
-    delay.tv_nsec = 2000000;
-    delay.tv_sec = 0;
-
-    nanosleep(&delay, NULL);
-
-    return ret;
-  } else {
-    // Make command frames and send them to drives
-    for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
-      // Set communication requests
-      servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
-      NF_COMMAND_ReadDrivesPosition;
-      servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
-      NF_COMMAND_ReadDrivesCurrent;
-      servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
-      NF_COMMAND_ReadDrivesStatus;
-      // Make command frame
-      servo_data[drive_number].txCnt = NF_MakeCommandFrame(
-          &NFComBuf, servo_data[drive_number].txBuf + howMuchItSucks,
-          (const uint8_t*) servo_data[drive_number].commandArray,
-          servo_data[drive_number].commandCnt, drives_addresses[drive_number]);
-      // Clear communication requests
-      servo_data[drive_number].commandCnt = 0;
-    }
-    for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
-      // Send command frame
-      SerialPort[drive_number]->write(
-          servo_data[drive_number].txBuf,
-          servo_data[drive_number].txCnt + howMuchItSucks);
-#define SPN
-#ifdef SPN
-      static int rwhprints = 18;
-      if(rwhprints){
-        rwhprints --;
-        std::cout << "RWH: ";
-        for(int i=0; i< servo_data[drive_number].txCnt + howMuchItSucks; i++){
-          std::cout << std::hex << (unsigned int) servo_data[drive_number].txBuf[i];
-          std::cout << " ";
-        }
-        std::cout << std::endl;
-      }
-#endif
-    }
-  }
-
   receive_attempts++;
-
-  struct timespec delay;
-  delay.tv_nsec = 1500000;
-  delay.tv_sec = 0;
-
-  nanosleep(&delay, NULL);
 
   // Tu kiedys byl SELECT
 
@@ -290,12 +217,13 @@ uint64_t HI_moxa::HI_read_write_hardware(void) {
 
   // If Hardware Panic, after receiving data, wait till the end of comm cycle and return.
   if (hardware_panic) {
-    struct timespec delay;
-    delay.tv_nsec = 2000000;
-    delay.tv_sec = 0;
+    /*
+     struct timespec delay;
+     delay.tv_nsec = 2000000;
+     delay.tv_sec = 0;
 
-    nanosleep(&delay, NULL);
-
+     nanosleep(&delay, NULL);
+     */
     return ret;
   }
 
@@ -444,6 +372,104 @@ uint64_t HI_moxa::HI_read_write_hardware(void) {
     status_disp_cnt = 0;
   }
   return ret;
+
+}
+
+uint64_t HI_moxa::write_hardware(void) {
+
+  static int error_msg_hardware_panic = 0;
+  uint64_t ret = 0;
+  uint8_t drive_number;
+  static std::stringstream temp_message;
+
+  // If Hardware Panic, send PARAM_DRIVER_MODE_ERROR to motor drivers
+  if (hardware_panic) {
+    for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
+      // only set error parameter, do not wait for answer
+      servo_data[drive_number].commandCnt = 0;
+      NFComBuf.SetDrivesMode.data[drive_number] = NF_DrivesMode_ERROR;
+      servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
+      NF_COMMAND_SetDrivesMode;
+      txCnt = NF_MakeCommandFrame(
+          &NFComBuf, txBuf + 5,
+          (const uint8_t*) servo_data[drive_number].commandArray,
+          servo_data[drive_number].commandCnt, drives_addresses[drive_number]);
+      // Clear communication request
+      servo_data[drive_number].commandCnt = 0;
+      // Send command frame
+      SerialPort[drive_number]->write(txBuf, txCnt + 5);
+    }
+    if (error_msg_hardware_panic == 0) {
+      std::cout << "[error] hardware panic" << std::endl;
+      error_msg_hardware_panic++;
+    }
+    std::cout << temp_message.str() << std::endl;
+    /*
+     struct timespec delay;
+     delay.tv_nsec = 2000000;
+     delay.tv_sec = 0;
+
+     nanosleep(&delay, NULL);
+     */
+    return ret;
+  } else {
+    // Make command frames and send them to drives
+    for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
+      // Set communication requests
+      servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
+      NF_COMMAND_ReadDrivesPosition;
+      servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
+      NF_COMMAND_ReadDrivesCurrent;
+      servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
+      NF_COMMAND_ReadDrivesStatus;
+      // Make command frame
+      servo_data[drive_number].txCnt = NF_MakeCommandFrame(
+          &NFComBuf, servo_data[drive_number].txBuf + howMuchItSucks,
+          (const uint8_t*) servo_data[drive_number].commandArray,
+          servo_data[drive_number].commandCnt, drives_addresses[drive_number]);
+      // Clear communication requests
+      servo_data[drive_number].commandCnt = 0;
+    }
+    for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
+      // Send command frame
+      SerialPort[drive_number]->write(
+          servo_data[drive_number].txBuf,
+          servo_data[drive_number].txCnt + howMuchItSucks);
+#define SPN
+#ifdef SPN
+      static int rwhprints = 18;
+      if (rwhprints) {
+        rwhprints--;
+        std::cout << "RWH: ";
+        for (int i = 0; i < servo_data[drive_number].txCnt + howMuchItSucks;
+            i++) {
+          std::cout << std::hex
+                    << (unsigned int) servo_data[drive_number].txBuf[i];
+          std::cout << " ";
+        }
+        std::cout << std::endl;
+      }
+#endif
+    }
+  }
+
+  ret = 1;
+  return ret;
+}
+
+// do communication cycle
+uint64_t HI_moxa::write_read_hardware(void) {
+
+  uint64_t ret;
+  if ((ret = write_hardware()) != 0) {
+    struct timespec delay;
+    delay.tv_nsec = 1500000;
+    delay.tv_sec = 0;
+
+    nanosleep(&delay, NULL);
+    ret = read_hardware();
+  }
+  return ret;
 }
 
 // send parameter to motor driver
@@ -508,7 +534,7 @@ int HI_moxa::set_parameter_now(int drive_number, const int parameter, ...) {
 #define SPN
 #ifdef SPN
     std::cout << "SPN: ";
-    for(int i=0; i< txCnt + 5; i++){
+    for (int i = 0; i < txCnt + 5; i++) {
       std::cout << std::hex << (unsigned int) txBuf[i];
       std::cout << " ";
     }

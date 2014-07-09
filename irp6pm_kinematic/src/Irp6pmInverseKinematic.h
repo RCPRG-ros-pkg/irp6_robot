@@ -7,12 +7,12 @@
 #include <geometry_msgs/Pose.h>
 
 #include <Eigen/Dense>
-#include "Irp6pKinematic.h"
+#include "Irp6pmKinematic.h"
 
-class Irp6pInverseKinematic : public RTT::TaskContext {
+class Irp6pmInverseKinematic : public RTT::TaskContext {
  public:
-  Irp6pInverseKinematic(const std::string& name);
-  virtual ~Irp6pInverseKinematic();
+  Irp6pmInverseKinematic(const std::string& name);
+  virtual ~Irp6pmInverseKinematic();
 
   bool configureHook();
   void updateHook();

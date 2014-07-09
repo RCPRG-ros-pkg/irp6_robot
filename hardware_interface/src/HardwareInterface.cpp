@@ -95,11 +95,11 @@ bool HardwareInterface::configureHook() {
 
   increment_.resize(number_of_drives_);
   pos_inc_.resize(number_of_drives_);
-  pwm_.resize(number_of_drives_);
+  pwm_or_current_.resize(number_of_drives_);
 
   for (int i = 0; i < number_of_drives_; i++) {
     increment_[i] = 0;
-    pwm_[0] = 0;
+    pwm_or_current_[0] = 0;
   }
 
   try {
@@ -115,18 +115,8 @@ bool HardwareInterface::configureHook() {
 
     hi_->set_pwm_mode(0);
     hi_->set_parameter_now(0, NF_COMMAND_SetCurrentRegulator, tmpReg);
-
-    hi_->set_pwm_mode(1);
-    hi_->set_parameter_now(1, NF_COMMAND_SetCurrentRegulator, tmpReg);
-
-    hi_->set_pwm_mode(2);
-    hi_->set_parameter_now(2, NF_COMMAND_SetCurrentRegulator, tmpReg);
 */
-    /*
-     delay.tv_nsec = 10000000;
-     delay.tv_sec = 0;
-     nanosleep(&delay, NULL);
-     */
+
     for (int i = 0; i < number_of_drives_; i++) {
       if (current_mode_[i]) {
         hi_->set_current_mode(i);
@@ -134,9 +124,6 @@ bool HardwareInterface::configureHook() {
         hi_->set_pwm_mode(i);
       }
     }
-    /*
-     nanosleep(&delay, NULL);
-     */
   } catch (std::exception& e) {
     log(Info) << e.what() << endlog();
     return false;
@@ -145,7 +132,6 @@ bool HardwareInterface::configureHook() {
   motor_position_.resize(number_of_drives_);
   motor_position_command_.resize(number_of_drives_);
   motor_position_command_old_.resize(number_of_drives_);
-  // hi_->HI_read_write_hardware();
   return true;
 }
 
@@ -171,7 +157,7 @@ uint16_t HardwareInterface::convert_to_115(float input) {
 
 bool HardwareInterface::startHook() {
   try {
-    hi_->HI_read_write_hardware();
+    hi_->write_read_hardware();
 
     if (!hi_->robot_synchronized()) {
       RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
@@ -205,26 +191,28 @@ bool HardwareInterface::startHook() {
     pos_inc_[i] = 0.0;
   }
 
+//  hi_->write_hardware();
+
   return true;
 }
 
 void HardwareInterface::updateHook() {
 
+
+ // hi_->read_hardware();
+
   for (int i = 0; i < number_of_drives_; i++) {
-    if (NewData != computedReg_in_list_[i]->read(pwm_[i])) {
+    if (NewData != computedReg_in_list_[i]->read(pwm_or_current_[i])) {
       RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
     }
     if (current_mode_[i]) {
-      hi_->set_current(i, pwm_[i]);
+      hi_->set_current(i, pwm_or_current_[i]);
     } else {
-      hi_->set_pwm(i, pwm_[i]);
-    }
-    if (i < 3) {
-      //   std::cout << pwm_[i] << " ";
+      hi_->set_pwm(i, pwm_or_current_[i]);
     }
   }
 
-  hi_->HI_read_write_hardware();
+  hi_->write_read_hardware();
 
   switch (state_) {
     case NOT_SYNCHRONIZED:
@@ -372,17 +360,15 @@ void HardwareInterface::updateHook() {
       pos_inc_[i] = 0;
     }
   }
-  // std::cout << "ip: ";
 
   for (int i = 0; i < number_of_drives_; i++) {
     deltaInc_out_list_[i]->write(increment_[i]);
     posInc_out_list_[i]->write(pos_inc_[i]);
-    if (i < 3) {
-      //    std::cout << increment_[i] << " " << pos_inc_[i] << " ";
-    }
+
 
   }
-//  std::cout << std::endl;
+
+//  hi_->write_hardware();
 }
 
 ORO_CREATE_COMPONENT(HardwareInterface)

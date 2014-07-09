@@ -61,7 +61,7 @@ class HardwareInterface : public RTT::TaskContext {
 
   std::vector<double> increment_;
   std::vector<double> motor_pos_;
-  std::vector<double> pwm_;
+  std::vector<double> pwm_or_current_;
 
   hi_moxa::HI_moxa *hi_;
 

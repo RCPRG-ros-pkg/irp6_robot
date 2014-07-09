@@ -1,10 +1,10 @@
 // Copyright WUT 2014
 #include <rtt/Component.hpp>
 
-#include "Irp6pForwardKinematic.h"
+#include "Irp6pmForwardKinematic.h"
 #include "eigen_conversions/eigen_msg.h"
 
-Irp6pForwardKinematic::Irp6pForwardKinematic(const std::string& name)
+Irp6pmForwardKinematic::Irp6pmForwardKinematic(const std::string& name)
     : RTT::TaskContext(name, PreOperational) {
 
   this->ports()->addPort("JointPosition", port_joint_position_);
@@ -16,11 +16,11 @@ Irp6pForwardKinematic::Irp6pForwardKinematic(const std::string& name)
 
 }
 
-Irp6pForwardKinematic::~Irp6pForwardKinematic() {
+Irp6pmForwardKinematic::~Irp6pmForwardKinematic() {
 
 }
 
-bool Irp6pForwardKinematic::configureHook() {
+bool Irp6pmForwardKinematic::configureHook() {
 
   /* -----------------------------------------------------------------------
    Dlugosci czlonow robota [m].
@@ -43,7 +43,7 @@ bool Irp6pForwardKinematic::configureHook() {
   return true;
 }
 
-void Irp6pForwardKinematic::updateHook() {
+void Irp6pmForwardKinematic::updateHook() {
 
   if (port_joint_position_.read(joint_position_) == RTT::NewData) {
 
@@ -69,7 +69,7 @@ void Irp6pForwardKinematic::updateHook() {
   }
 }
 
-void Irp6pForwardKinematic::direct_kinematics_transform(
+void Irp6pmForwardKinematic::direct_kinematics_transform(
     const Eigen::VectorXd& local_current_joints,
     Eigen::Affine3d* local_current_end_effector_frame) {
 
@@ -116,5 +116,5 @@ void Irp6pForwardKinematic::direct_kinematics_transform(
 
 }
 
-ORO_CREATE_COMPONENT(Irp6pForwardKinematic)
+ORO_CREATE_COMPONENT(Irp6pmForwardKinematic)
 

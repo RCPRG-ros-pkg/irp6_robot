@@ -17,7 +17,7 @@
 
 namespace hi_moxa {
 
-const std::size_t MOXA_SERVOS_NR = 6;
+const std::size_t MOXA_SERVOS_NR = 16;
 const int MAX_PARAM_SET_ATTEMPTS = 3;
 const int MAX_COMM_TIMEOUTS = 3;
 const std::size_t FIRST_HARDWARE_READS_WITH_ZERO_INCREMENT = 4;
@@ -35,7 +35,10 @@ class HI_moxa {
   void init(std::vector<std::string> ports);
 
   // do communication cycle
-  uint64_t HI_read_write_hardware(void);
+  uint64_t write_read_hardware(void);
+
+  uint64_t read_hardware(void);
+  uint64_t write_hardware(void);
 
   // set parameter
   void set_parameter(int drive_number, const int parameter, ...);
@@ -89,8 +92,6 @@ class HI_moxa {
   std::vector<unsigned int> drives_addresses;
   /// tab of max allowed motor position increments
   std::vector<double> ridiculous_increment;
-
- // int fd[MOXA_SERVOS_NR];
 
   /// tab of comunication class instances
   SerialComm* SerialPort[MOXA_SERVOS_NR];
