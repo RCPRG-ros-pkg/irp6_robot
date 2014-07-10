@@ -63,6 +63,8 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<double> motor_pos_;
   std::vector<double> pwm_or_current_;
 
+  std::vector<RTT::TaskContext*> servo_list_;
+
   hi_moxa::HI_moxa *hi_;
 
   uint16_t convert_to_115(float input);
