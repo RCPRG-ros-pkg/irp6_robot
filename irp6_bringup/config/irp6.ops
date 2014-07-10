@@ -164,6 +164,7 @@ connect("ToolInt.CartesianPositionCommand", "Irp6pmInverseKinematic.Tool", ConnP
 // ATI6284
 
 loadComponent("ATI6284", "ATI6284")
+setActivity("ATI6284", 0.002, 5, ORO_SCHED_RT)
 ATI6284.configure()
 
 
@@ -204,7 +205,7 @@ addPeer("scheme", "Irp6pmInverseKinematic");
 addPeer("scheme", "Irp6pmJ2M");
 addPeer("scheme", "ForceControlLaw");
 addPeer("scheme", "ForceTransformation");
-addPeer("scheme", "ATI6284");
+#addPeer("scheme", "ATI6284");
 addPeer("scheme", "SplineTrajectoryGeneratorJoint");
 addPeer("scheme", "SplineTrajectoryGeneratorMotor");
 addPeer("scheme", "PoseInt");
@@ -270,7 +271,7 @@ scheme.latchConnections("PortDoubleSplit_hw_cp", "HardwareInterface", true);
 scheme.addBlock("Irp6pmJ2M");
 scheme.addBlock("ForceControlLaw");
 scheme.addBlock("ForceTransformation");
-scheme.addBlock("ATI6284");
+#scheme.addBlock("ATI6284");
 scheme.addBlock("SplineTrajectoryGeneratorJoint");
 scheme.addBlock("SplineTrajectoryGeneratorMotor");
 scheme.addBlock("PoseInt");
