@@ -39,7 +39,7 @@
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
         lower_limits: [-470.0, -110.0, -80.0, -70.0, -80.0, -1000.0]
         upper_limits: [450.0, 100.0, 100.0, 380.0, 490.0, 3000.0]
-      IRp6Regulator_0:
+      IRp6pmRegulator_0:
         reg_number: 0
         debug: false
         eint_dif: 0.01
@@ -49,7 +49,7 @@
         current_mode: true
         current_reg_kp: 200.0
         max_output_current: 20000.0
-      IRp6Regulator_1:
+      IRp6pmRegulator_1:
         reg_number: 1
         debug: false
         eint_dif: 0.008
@@ -59,7 +59,7 @@
         current_mode: true
         current_reg_kp: 150.0
         max_output_current: 15000.0
-      IRp6Regulator_2:
+      IRp6pmRegulator_2:
         reg_number: 2
         debug: false
         eint_dif: 0.008
@@ -69,7 +69,7 @@
         current_mode: true
         current_reg_kp: 180.0
         max_output_current: 15000.0
-      IRp6Regulator_3:
+      IRp6pmRegulator_3:
         reg_number: 3
         debug: false
         eint_dif: 0.01
@@ -79,7 +79,7 @@
         current_mode: true
         current_reg_kp: 170.0
         max_output_current: 15000.0
-      IRp6Regulator_4:
+      IRp6pmRegulator_4:
         reg_number: 4
         debug: false
         eint_dif: 0.02
@@ -89,7 +89,7 @@
         current_mode: false
         current_reg_kp: 110.0
         max_output_current: 8000.0
-      IRp6Regulator_5:
+      IRp6pmRegulator_5:
         reg_number: 5
         debug: false
         eint_dif: 0.005
