@@ -107,7 +107,7 @@
         BB0: 15.984375
         BB1: 15.784375
         current_mode: true
-        current_reg_kp: 3.0
+        current_reg_kp: 0.33
         max_output_current: 80.0
       PortDoubleSplit_hw_cp:
         number_of_ports: 6
