@@ -111,13 +111,13 @@ bool HardwareInterface::configureHook() {
       hi_->set_parameter_now(i, NF_COMMAND_SetDrivesMaxCurrent,
                              (int16_t) max_current_[i]);
     }
-/*
-    NF_STRUCT_Regulator tmpReg = { convert_to_115(0.0600), convert_to_115(
-        0.0500), convert_to_115(0.0), 0 };
+    /*
+     NF_STRUCT_Regulator tmpReg = { convert_to_115(0.0600), convert_to_115(
+     0.0500), convert_to_115(0.0), 0 };
 
-    hi_->set_pwm_mode(0);
-    hi_->set_parameter_now(0, NF_COMMAND_SetCurrentRegulator, tmpReg);
-*/
+     hi_->set_pwm_mode(0);
+     hi_->set_parameter_now(0, NF_COMMAND_SetCurrentRegulator, tmpReg);
+     */
 
     for (int i = 0; i < number_of_drives_; i++) {
       if (current_mode_[i]) {
@@ -143,9 +143,8 @@ bool HardwareInterface::configureHook() {
     std::cout << plist[i] << std::endl;
     servo_list_.push_back(this->getPeer(plist[i]));
     servo_list_[i]->setActivity(
-          new RTT::extras::SlaveActivity(
-              this->getActivity(),
-              servo_list_[i]->engine()));
+        new RTT::extras::SlaveActivity(this->getActivity(),
+                                       servo_list_[i]->engine()));
   }
 
   return true;
@@ -205,30 +204,17 @@ bool HardwareInterface::startHook() {
 
   for (int i = 0; i < number_of_drives_; i++) {
     pos_inc_[i] = 0.0;
-  }
 
-//  hi_->write_hardware();
+    motor_position_(i) = (double) hi_->get_position(i)
+        * ((2.0 * M_PI) / enc_res_[i]);
+
+    port_motor_position_list_[i]->write(motor_position_[i]);
+  }
 
   return true;
 }
 
 void HardwareInterface::updateHook() {
-
-
- // hi_->read_hardware();
-
-  for (int i = 0; i < number_of_drives_; i++) {
-    if (NewData != computedReg_in_list_[i]->read(pwm_or_current_[i])) {
-      RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
-    }
-    if (current_mode_[i]) {
-      hi_->set_current(i, pwm_or_current_[i]);
-    } else {
-      hi_->set_pwm(i, pwm_or_current_[i]);
-    }
-  }
-
-  hi_->write_read_hardware();
 
   switch (state_) {
     case NOT_SYNCHRONIZED:
@@ -250,16 +236,6 @@ void HardwareInterface::updateHook() {
         } else {
           pos_inc_[i] = 0.0;
         }
-      }
-
-      for (int i = 0; i < number_of_drives_; i++) {
-        motor_position_(i) = (double) hi_->get_position(i)
-            * ((2.0 * M_PI) / enc_res_[i]);
-      }
-      // port_motor_position_.write(motor_position_);
-
-      for (int i = 0; i < number_of_drives_; i++) {
-        port_motor_position_list_[i]->write(motor_position_[i]);
       }
 
       break;
@@ -381,15 +357,36 @@ void HardwareInterface::updateHook() {
     deltaInc_out_list_[i]->write(increment_[i]);
     posInc_out_list_[i]->write(pos_inc_[i]);
 
-
   }
-
-//  hi_->write_hardware();
 
   for (size_t i = 0; i < servo_list_.size(); i++) {
     //std::cout << "servo update" << std::endl;
     servo_list_[i]->update();
   }
+
+  for (int i = 0; i < number_of_drives_; i++) {
+    if (NewData != computedReg_in_list_[i]->read(pwm_or_current_[i])) {
+      RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
+    }
+    if (current_mode_[i]) {
+      hi_->set_current(i, pwm_or_current_[i]);
+    } else {
+      hi_->set_pwm(i, pwm_or_current_[i]);
+    }
+  }
+
+  hi_->write_read_hardware();
+
+  if (state_ == SERVOING) {
+
+    for (int i = 0; i < number_of_drives_; i++) {
+      motor_position_(i) = (double) hi_->get_position(i)
+          * ((2.0 * M_PI) / enc_res_[i]);
+
+      port_motor_position_list_[i]->write(motor_position_[i]);
+    }
+  }
+
 }
 
 ORO_CREATE_COMPONENT(HardwareInterface)
