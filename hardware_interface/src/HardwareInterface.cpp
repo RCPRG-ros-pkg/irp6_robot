@@ -2,6 +2,8 @@
 #include <rtt/Port.hpp>
 #include <rtt/Component.hpp>
 
+#include <rtt/extras/SlaveActivity.hpp>
+
 #include <Eigen/Dense>
 
 #include "HardwareInterface.h"
@@ -132,6 +134,20 @@ bool HardwareInterface::configureHook() {
   motor_position_.resize(number_of_drives_);
   motor_position_command_.resize(number_of_drives_);
   motor_position_command_old_.resize(number_of_drives_);
+
+  PeerList plist;
+
+  plist = this->getPeerList();
+
+  for (size_t i = 0; i < plist.size(); i++) {
+    std::cout << plist[i] << std::endl;
+    servo_list_.push_back(this->getPeer(plist[i]));
+    servo_list_[i]->setActivity(
+          new RTT::extras::SlaveActivity(
+              this->getActivity(),
+              servo_list_[i]->engine()));
+  }
+
   return true;
 }
 
@@ -369,6 +385,11 @@ void HardwareInterface::updateHook() {
   }
 
 //  hi_->write_hardware();
+
+  for (size_t i = 0; i < servo_list_.size(); i++) {
+    //std::cout << "servo update" << std::endl;
+    servo_list_[i]->update();
+  }
 }
 
 ORO_CREATE_COMPONENT(HardwareInterface)
