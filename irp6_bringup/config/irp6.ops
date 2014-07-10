@@ -33,7 +33,7 @@ scheme.loadService("conman_ros");
 scheme.configure();
 
 //------------------------------------------------------------------------------
-//-- Controller
+//-- HardwareInterface
 //------------------------------------------------------------------------------
 loadComponent("HardwareInterface","HardwareInterface")
 //setActivity("HardwareInterface", 0.002, 5, ORO_SCHED_RT)
@@ -43,43 +43,49 @@ HardwareInterface.rosparam.getAll()
 
 // Motors Regulators
 
-loadComponent("IRp6Regulator_0","IRp6Regulator")
-IRp6Regulator_0.loadService("rosparam")
-IRp6Regulator_0.rosparam.getAll()
-IRp6Regulator_0.configure()
+loadComponent("IRp6pmRegulator_0","IRp6Regulator")
+IRp6pmRegulator_0.loadService("rosparam")
+IRp6pmRegulator_0.rosparam.getAll()
+IRp6pmRegulator_0.configure()
 
-loadComponent("IRp6Regulator_1","IRp6Regulator")
-IRp6Regulator_1.loadService("rosparam")
-IRp6Regulator_1.rosparam.getAll()
-IRp6Regulator_1.configure()
+loadComponent("IRp6pmRegulator_1","IRp6Regulator")
+IRp6pmRegulator_1.loadService("rosparam")
+IRp6pmRegulator_1.rosparam.getAll()
+IRp6pmRegulator_1.configure()
 
-loadComponent("IRp6Regulator_2","IRp6Regulator")
-IRp6Regulator_2.loadService("rosparam")
-IRp6Regulator_2.rosparam.getAll()
-IRp6Regulator_2.configure()
+loadComponent("IRp6pmRegulator_2","IRp6Regulator")
+IRp6pmRegulator_2.loadService("rosparam")
+IRp6pmRegulator_2.rosparam.getAll()
+IRp6pmRegulator_2.configure()
 
-loadComponent("IRp6Regulator_3","IRp6Regulator")
-IRp6Regulator_3.loadService("rosparam")
-IRp6Regulator_3.rosparam.getAll()
-IRp6Regulator_3.configure()
+loadComponent("IRp6pmRegulator_3","IRp6Regulator")
+IRp6pmRegulator_3.loadService("rosparam")
+IRp6pmRegulator_3.rosparam.getAll()
+IRp6pmRegulator_3.configure()
 
-loadComponent("IRp6Regulator_4","IRp6Regulator")
-IRp6Regulator_4.loadService("rosparam")
-IRp6Regulator_4.rosparam.getAll()
-IRp6Regulator_4.configure()
+loadComponent("IRp6pmRegulator_4","IRp6Regulator")
+IRp6pmRegulator_4.loadService("rosparam")
+IRp6pmRegulator_4.rosparam.getAll()
+IRp6pmRegulator_4.configure()
 
-loadComponent("IRp6Regulator_5","IRp6Regulator")
-IRp6Regulator_5.loadService("rosparam")
-IRp6Regulator_5.rosparam.getAll()
-IRp6Regulator_5.configure()
+loadComponent("IRp6pmRegulator_5","IRp6Regulator")
+IRp6pmRegulator_5.loadService("rosparam")
+IRp6pmRegulator_5.rosparam.getAll()
+IRp6pmRegulator_5.configure()
 
-addPeer("HardwareInterface", "IRp6Regulator_0")
-addPeer("HardwareInterface", "IRp6Regulator_1")
-addPeer("HardwareInterface", "IRp6Regulator_2")
-addPeer("HardwareInterface", "IRp6Regulator_3")
-addPeer("HardwareInterface", "IRp6Regulator_4")
-addPeer("HardwareInterface", "IRp6Regulator_5")
+loadComponent("Irp6ptfgRegulator","IRp6Regulator")
+Irp6ptfgRegulator.loadService("rosparam")
+Irp6ptfgRegulator.rosparam.getAll()
+Irp6ptfgRegulator.configure()
 
+addPeer("HardwareInterface", "IRp6pmRegulator_0")
+addPeer("HardwareInterface", "IRp6pmRegulator_1")
+addPeer("HardwareInterface", "IRp6pmRegulator_2")
+addPeer("HardwareInterface", "IRp6pmRegulator_3")
+addPeer("HardwareInterface", "IRp6pmRegulator_4")
+addPeer("HardwareInterface", "IRp6pmRegulator_5")
+
+addPeer("HardwareInterface", "Irp6ptfgRegulator")
 
 //HardwareInterface.configure()
 
@@ -219,29 +225,35 @@ scheme.addBlock("HardwareInterface");
 HardwareInterface.configure();
 
 ## Connect
-connect("HardwareInterface.computedReg_in_0","IRp6Regulator_0.computedPwm_out", ConnPolicy())
-connect("IRp6Regulator_0.posInc_in","HardwareInterface.posInc_out0", ConnPolicy())
-connect("IRp6Regulator_0.deltaInc_in","HardwareInterface.deltaInc_out0", ConnPolicy())
+connect("HardwareInterface.computedReg_in_0","IRp6pmRegulator_0.computedPwm_out", ConnPolicy())
+connect("IRp6pmRegulator_0.posInc_in","HardwareInterface.posInc_out0", ConnPolicy())
+connect("IRp6pmRegulator_0.deltaInc_in","HardwareInterface.deltaInc_out0", ConnPolicy())
 
-connect("HardwareInterface.computedReg_in_1","IRp6Regulator_1.computedPwm_out", ConnPolicy())
-connect("IRp6Regulator_1.posInc_in","HardwareInterface.posInc_out1", ConnPolicy())
-connect("IRp6Regulator_1.deltaInc_in","HardwareInterface.deltaInc_out1", ConnPolicy())
+connect("HardwareInterface.computedReg_in_1","IRp6pmRegulator_1.computedPwm_out", ConnPolicy())
+connect("IRp6pmRegulator_1.posInc_in","HardwareInterface.posInc_out1", ConnPolicy())
+connect("IRp6pmRegulator_1.deltaInc_in","HardwareInterface.deltaInc_out1", ConnPolicy())
 
-connect("HardwareInterface.computedReg_in_2","IRp6Regulator_2.computedPwm_out", ConnPolicy())
-connect("IRp6Regulator_2.posInc_in","HardwareInterface.posInc_out2", ConnPolicy())
-connect("IRp6Regulator_2.deltaInc_in","HardwareInterface.deltaInc_out2", ConnPolicy())
+connect("HardwareInterface.computedReg_in_2","IRp6pmRegulator_2.computedPwm_out", ConnPolicy())
+connect("IRp6pmRegulator_2.posInc_in","HardwareInterface.posInc_out2", ConnPolicy())
+connect("IRp6pmRegulator_2.deltaInc_in","HardwareInterface.deltaInc_out2", ConnPolicy())
 
-connect("HardwareInterface.computedReg_in_3","IRp6Regulator_3.computedPwm_out", ConnPolicy())
-connect("IRp6Regulator_3.posInc_in","HardwareInterface.posInc_out3", ConnPolicy())
-connect("IRp6Regulator_3.deltaInc_in","HardwareInterface.deltaInc_out3", ConnPolicy())
+connect("HardwareInterface.computedReg_in_3","IRp6pmRegulator_3.computedPwm_out", ConnPolicy())
+connect("IRp6pmRegulator_3.posInc_in","HardwareInterface.posInc_out3", ConnPolicy())
+connect("IRp6pmRegulator_3.deltaInc_in","HardwareInterface.deltaInc_out3", ConnPolicy())
 
-connect("HardwareInterface.computedReg_in_4","IRp6Regulator_4.computedPwm_out", ConnPolicy())
-connect("IRp6Regulator_4.posInc_in","HardwareInterface.posInc_out4", ConnPolicy())
-connect("IRp6Regulator_4.deltaInc_in","HardwareInterface.deltaInc_out4", ConnPolicy())
+connect("HardwareInterface.computedReg_in_4","IRp6pmRegulator_4.computedPwm_out", ConnPolicy())
+connect("IRp6pmRegulator_4.posInc_in","HardwareInterface.posInc_out4", ConnPolicy())
+connect("IRp6pmRegulator_4.deltaInc_in","HardwareInterface.deltaInc_out4", ConnPolicy())
 
-connect("HardwareInterface.computedReg_in_5","IRp6Regulator_5.computedPwm_out", ConnPolicy())
-connect("IRp6Regulator_5.posInc_in","HardwareInterface.posInc_out5", ConnPolicy())
-connect("IRp6Regulator_5.deltaInc_in","HardwareInterface.deltaInc_out5", ConnPolicy())
+connect("HardwareInterface.computedReg_in_5","IRp6pmRegulator_5.computedPwm_out", ConnPolicy())
+connect("IRp6pmRegulator_5.posInc_in","HardwareInterface.posInc_out5", ConnPolicy())
+connect("IRp6pmRegulator_5.deltaInc_in","HardwareInterface.deltaInc_out5", ConnPolicy())
+
+connect("HardwareInterface.computedReg_in_6","Irp6ptfgRegulator.computedPwm_out", ConnPolicy())
+connect("Irp6ptfgRegulator.posInc_in","HardwareInterface.posInc_out6", ConnPolicy())
+connect("Irp6ptfgRegulator.deltaInc_in","HardwareInterface.deltaInc_out6", ConnPolicy())
+
+
 
 connect("PortDoubleAggregate_hw_p.OutputPort","Irp6pmM2J.MotorPosition", ConnPolicy())
 connect("Irp6pmJ2M.MotorPosition", "PortDoubleSplit_hw_cp.InputPort", ConnPolicy())
@@ -368,12 +380,13 @@ stream("Irp6pmForwardKinematic.WristOutputPose", ros.comm.topic("/cartesian_posi
 ## Start it
 scheme.start()
 HardwareInterface.start()
-IRp6Regulator_0.start()
-IRp6Regulator_1.start()
-IRp6Regulator_2.start()
-IRp6Regulator_3.start()
-IRp6Regulator_4.start()
-IRp6Regulator_5.start()
+IRp6pmRegulator_0.start()
+IRp6pmRegulator_1.start()
+IRp6pmRegulator_2.start()
+IRp6pmRegulator_3.start()
+IRp6pmRegulator_4.start()
+IRp6pmRegulator_5.start()
+Irp6ptfgRegulator.start()
 PortDoubleSplit_hw_cp.start()
 PortDoubleAggregate_hw_p.start()
 Irp6pmM2J.start()

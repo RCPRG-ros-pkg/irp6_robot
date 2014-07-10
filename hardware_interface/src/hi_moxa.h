@@ -14,10 +14,11 @@
 #include "nf/nfv2.h"
 
 #define STATUS_DISP_T 100
+#define BUFF_SIZE 256
 
 namespace hi_moxa {
 
-const std::size_t MOXA_SERVOS_NR = 16;
+const std::size_t MOXA_SERVOS_NR = NF_BUFSZ_NumberOfDrives;
 const int MAX_PARAM_SET_ATTEMPTS = 3;
 const int MAX_COMM_TIMEOUTS = 3;
 const std::size_t FIRST_HARDWARE_READS_WITH_ZERO_INCREMENT = 4;
@@ -105,11 +106,11 @@ class HI_moxa {
 
   /// comunication buffer
   NF_STRUCT_ComBuf NFComBuf;
-  uint8_t txBuf[256];
+  uint8_t txBuf[BUFF_SIZE];
   uint8_t txCnt;
-  uint8_t rxBuf[256];
+  uint8_t rxBuf[BUFF_SIZE];
   uint8_t rxCnt;
-  uint8_t rxCommandArray[256];
+  uint8_t rxCommandArray[BUFF_SIZE];
   uint8_t rxCommandCnt;
 };
 
