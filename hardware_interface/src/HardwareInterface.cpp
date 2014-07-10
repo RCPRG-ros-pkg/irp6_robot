@@ -93,7 +93,6 @@ bool HardwareInterface::configureHook() {
                              max_increment_, tx_prefix_len_),
 
   counter_ = 0.0;
-  auto_synchronize_ = true;
 
   increment_.resize(number_of_drives_);
   pos_inc_.resize(number_of_drives_);
@@ -374,6 +373,8 @@ void HardwareInterface::updateHook() {
       hi_->set_pwm(i, pwm_or_current_[i]);
     }
   }
+
+ // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
 
   hi_->write_read_hardware();
 

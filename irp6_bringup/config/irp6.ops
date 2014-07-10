@@ -33,7 +33,7 @@ scheme.loadService("conman_ros");
 scheme.configure();
 
 //------------------------------------------------------------------------------
-//-- Controller
+//-- HardwareInterface
 //------------------------------------------------------------------------------
 loadComponent("HardwareInterface","HardwareInterface")
 //setActivity("HardwareInterface", 0.002, 5, ORO_SCHED_RT)
@@ -73,6 +73,11 @@ IRp6pmRegulator_5.loadService("rosparam")
 IRp6pmRegulator_5.rosparam.getAll()
 IRp6pmRegulator_5.configure()
 
+loadComponent("Irp6ptfgRegulator","IRp6Regulator")
+Irp6ptfgRegulator.loadService("rosparam")
+Irp6ptfgRegulator.rosparam.getAll()
+Irp6ptfgRegulator.configure()
+
 addPeer("HardwareInterface", "IRp6pmRegulator_0")
 addPeer("HardwareInterface", "IRp6pmRegulator_1")
 addPeer("HardwareInterface", "IRp6pmRegulator_2")
@@ -80,6 +85,7 @@ addPeer("HardwareInterface", "IRp6pmRegulator_3")
 addPeer("HardwareInterface", "IRp6pmRegulator_4")
 addPeer("HardwareInterface", "IRp6pmRegulator_5")
 
+addPeer("HardwareInterface", "Irp6ptfgRegulator")
 
 //HardwareInterface.configure()
 
@@ -243,6 +249,12 @@ connect("HardwareInterface.computedReg_in_5","IRp6pmRegulator_5.computedPwm_out"
 connect("IRp6pmRegulator_5.posInc_in","HardwareInterface.posInc_out5", ConnPolicy())
 connect("IRp6pmRegulator_5.deltaInc_in","HardwareInterface.deltaInc_out5", ConnPolicy())
 
+connect("HardwareInterface.computedReg_in_6","Irp6ptfgRegulator.computedPwm_out", ConnPolicy())
+connect("Irp6ptfgRegulator.posInc_in","HardwareInterface.posInc_out6", ConnPolicy())
+connect("Irp6ptfgRegulator.deltaInc_in","HardwareInterface.deltaInc_out6", ConnPolicy())
+
+
+
 connect("PortDoubleAggregate_hw_p.OutputPort","Irp6pmM2J.MotorPosition", ConnPolicy())
 connect("Irp6pmJ2M.MotorPosition", "PortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
@@ -374,6 +386,7 @@ IRp6pmRegulator_2.start()
 IRp6pmRegulator_3.start()
 IRp6pmRegulator_4.start()
 IRp6pmRegulator_5.start()
+Irp6ptfgRegulator.start()
 PortDoubleSplit_hw_cp.start()
 PortDoubleAggregate_hw_p.start()
 Irp6pmM2J.start()

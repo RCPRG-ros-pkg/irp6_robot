@@ -14,17 +14,17 @@
   <group ns="ROS_OROCOS_ROBOT">
     <rosparam>
       HardwareInterface:
-        number_of_drives: 6
+        number_of_drives: 7
         auto_synchronize: true
-        ports_adresses: [/dev/ttyMI8, /dev/ttyMI9, /dev/ttyMI10, /dev/ttyMI11, /dev/ttyMI12, /dev/ttyMI13]
-        max_current: [25000, 18000, 15000, 17000, 10000, 2000]
-        max_increment: [1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]
-        card_indexes: [0, 1, 2, 3, 4, 5]
+        ports_adresses: [/dev/ttyMI8, /dev/ttyMI9, /dev/ttyMI10, /dev/ttyMI11, /dev/ttyMI12, /dev/ttyMI13, /dev/ttyMI14]
+        max_current: [25000, 18000, 15000, 17000, 10000, 2000, 200]
+        max_increment: [1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]
+        card_indexes: [0, 1, 2, 3, 4, 5, 6]
         tx_prefix_len: 0
-        enc_res: [4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 2000.0]
-        synchro_step_coarse: [-0.03, -0.03, -0.03, -0.03, -0.03, -0.05]
-        synchro_step_fine: [0.007, 0.007, 0.007, 0.007, 0.007, 0.05]
-        current_mode: [true, true, true, true, false, false]
+        enc_res: [4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 2000.0, 128.0]
+        synchro_step_coarse: [-0.03, -0.03, -0.03, -0.03, -0.03, -0.05, -0.5]
+        synchro_step_fine: [0.007, 0.007, 0.007, 0.007, 0.007, 0.05, 0.2]
+        current_mode: [true, true, true, true, false, false, true]
       JntPub:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
       SplineTrajectoryGeneratorJoint:
@@ -99,6 +99,16 @@
         current_mode: false
         current_reg_kp: 11.0
         max_output_current: 1000.0
+      Irp6ptfgRegulator:
+        reg_number: 6
+        debug: false
+        eint_dif: 0.02
+        A: 0.2
+        BB0: 15.984375
+        BB1: 15.784375
+        current_mode: true
+        current_reg_kp: 3.0
+        max_output_current: 80.0
       PortDoubleSplit_hw_cp:
         number_of_ports: 6
       PortDoubleAggregate_hw_p:

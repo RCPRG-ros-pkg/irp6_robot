@@ -13,7 +13,9 @@
  * to be supported by module:
  */
 
-#define NF_BUFSZ_NumberOfDrives 6
+
+
+#define NF_BUFSZ_NumberOfDrives 16
 
 #define NF_BUFSZ_ReadDeviceStatus	NF_BUFSZ_NumberOfDrives
 #define NF_BUFSZ_ReadDeviceVitals	NF_BUFSZ_NumberOfDrives

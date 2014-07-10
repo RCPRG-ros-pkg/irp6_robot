@@ -31,11 +31,11 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
     //clear_buffer(drive_number);
   }
   memset(&NFComBuf, 0, sizeof(NF_STRUCT_ComBuf));
-  memset(txBuf, 0, 256);
+  memset(txBuf, 0, BUFF_SIZE);
   txCnt = 0;
-  memset(rxBuf, 0, 256);
+  memset(rxBuf, 0, BUFF_SIZE);
   rxCnt = 0;
-  memset(rxCommandArray, 0, 256);
+  memset(rxCommandArray, 0, BUFF_SIZE);
   rxCommandCnt = 0;
 }
 
@@ -93,14 +93,15 @@ void HI_moxa::init(std::vector<std::string> ports) {
 
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
+
     SerialPort[drive_number] = new SerialComm(port_names[drive_number].c_str(),
                                               BAUD);
     if (SerialPort[drive_number]->isConnected()) {
       std::cout << "[info] Połączono (port [" << drive_number << "]: "
-                << port_names[drive_number] << std::endl;
+                << port_names[drive_number] << ")" << std::endl;
     } else {
       std::cout << std::endl << "[error] Nie wykryto sprzetu! (port ["
-                << drive_number << "]: " << port_names[drive_number]
+                << drive_number << "]: " << port_names[drive_number] << ")"
                 << std::endl;
       throw(std::runtime_error("unable to open device!!!"));
     }
@@ -416,6 +417,8 @@ uint64_t HI_moxa::write_hardware(void) {
     // Make command frames and send them to drives
     for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
       // Set communication requests
+   //   std::cout << "write drive_number: " << drive_number ;
+
       servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
       NF_COMMAND_ReadDrivesPosition;
       servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
@@ -430,7 +433,10 @@ uint64_t HI_moxa::write_hardware(void) {
       // Clear communication requests
       servo_data[drive_number].commandCnt = 0;
     }
+
+   // std::cout << std::endl;
     for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
+     // std::cout << "write 2 drive_number: " << drive_number ;
       // Send command frame
       SerialPort[drive_number]->write(
           servo_data[drive_number].txBuf,
@@ -451,6 +457,7 @@ uint64_t HI_moxa::write_hardware(void) {
       }
 #endif
     }
+ //   std::cout << std::endl;
   }
 
   ret = 1;
@@ -469,6 +476,9 @@ uint64_t HI_moxa::write_read_hardware(void) {
     nanosleep(&delay, NULL);
     ret = read_hardware();
   }
+
+  // std::cout <<"write_read_hardware ret: " << ret << std::endl;
+
   return ret;
 }
 
