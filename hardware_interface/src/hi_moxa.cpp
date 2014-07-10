@@ -30,7 +30,7 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
     memset(oldtio + drive_number, 0, sizeof(termios));
     //clear_buffer(drive_number);
   }
-  memset(&NFComBuf, sizeof(NF_STRUCT_ComBuf), 0);
+  memset(&NFComBuf, 0, sizeof(NF_STRUCT_ComBuf));
   memset(txBuf, 0, 256);
   txCnt = 0;
   memset(rxBuf, 0, 256);
@@ -463,7 +463,7 @@ uint64_t HI_moxa::write_read_hardware(void) {
   uint64_t ret;
   if ((ret = write_hardware()) != 0) {
     struct timespec delay;
-    delay.tv_nsec = 1500000;
+    delay.tv_nsec = 1000000;
     delay.tv_sec = 0;
 
     nanosleep(&delay, NULL);
