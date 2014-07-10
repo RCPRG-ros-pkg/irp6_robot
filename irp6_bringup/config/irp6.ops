@@ -39,7 +39,7 @@ loadComponent("HardwareInterface","HardwareInterface")
 //setActivity("HardwareInterface", 0.002, 5, ORO_SCHED_RT)
 HardwareInterface.loadService("rosparam")
 HardwareInterface.rosparam.getAll()
-HardwareInterface.configure()
+//HardwareInterface.configure()
 
 // Motors Regulators
 
@@ -73,6 +73,16 @@ IRp6Regulator_5.loadService("rosparam")
 IRp6Regulator_5.rosparam.getAll()
 IRp6Regulator_5.configure()
 
+addPeer("HardwareInterface", "IRp6Regulator_0")
+addPeer("HardwareInterface", "IRp6Regulator_1")
+addPeer("HardwareInterface", "IRp6Regulator_2")
+addPeer("HardwareInterface", "IRp6Regulator_3")
+addPeer("HardwareInterface", "IRp6Regulator_4")
+addPeer("HardwareInterface", "IRp6Regulator_5")
+
+
+//HardwareInterface.configure()
+
 // double port spliter
 
 loadComponent("PortDoubleSplit_hw_cp","PortDoubleSplit")
@@ -80,12 +90,6 @@ PortDoubleSplit_hw_cp.loadService("rosparam")
 PortDoubleSplit_hw_cp.rosparam.getAll()
 PortDoubleSplit_hw_cp.configure()
 
-connect("PortDoubleSplit_hw_cp.OutputPort_0","HardwareInterface.MotorPositionCommand_0", ConnPolicy())
-connect("PortDoubleSplit_hw_cp.OutputPort_1","HardwareInterface.MotorPositionCommand_1", ConnPolicy())
-connect("PortDoubleSplit_hw_cp.OutputPort_2","HardwareInterface.MotorPositionCommand_2", ConnPolicy())
-connect("PortDoubleSplit_hw_cp.OutputPort_3","HardwareInterface.MotorPositionCommand_3", ConnPolicy())
-connect("PortDoubleSplit_hw_cp.OutputPort_4","HardwareInterface.MotorPositionCommand_4", ConnPolicy())
-connect("PortDoubleSplit_hw_cp.OutputPort_5","HardwareInterface.MotorPositionCommand_5", ConnPolicy())
 
 // double port aggregate
 
@@ -94,12 +98,6 @@ PortDoubleAggregate_hw_p.loadService("rosparam")
 PortDoubleAggregate_hw_p.rosparam.getAll()
 PortDoubleAggregate_hw_p.configure()
 
-connect("PortDoubleAggregate_hw_p.InputPort_0","HardwareInterface.MotorPosition_0", ConnPolicy())
-connect("PortDoubleAggregate_hw_p.InputPort_1","HardwareInterface.MotorPosition_1", ConnPolicy())
-connect("PortDoubleAggregate_hw_p.InputPort_2","HardwareInterface.MotorPosition_2", ConnPolicy())
-connect("PortDoubleAggregate_hw_p.InputPort_3","HardwareInterface.MotorPosition_3", ConnPolicy())
-connect("PortDoubleAggregate_hw_p.InputPort_4","HardwareInterface.MotorPosition_4", ConnPolicy())
-connect("PortDoubleAggregate_hw_p.InputPort_5","HardwareInterface.MotorPosition_5", ConnPolicy())
 
 loadComponent("Irp6pmM2J","Irp6pmM2J")
 //setActivity("Irp6pmM2J", 0.02, 5, ORO_SCHED_RT)
@@ -166,6 +164,7 @@ connect("ToolInt.CartesianPositionCommand", "Irp6pmInverseKinematic.Tool", ConnP
 // ATI6284
 
 loadComponent("ATI6284", "ATI6284")
+setActivity("ATI6284", 0.002, 5, ORO_SCHED_RT)
 ATI6284.configure()
 
 
@@ -193,6 +192,31 @@ connect("ForceControlLaw.CurrentEndEffectorPose", "Irp6pmForwardKinematic.EndEff
 connect("ForceTransformation.OutputEndEffectorWrench", "ForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
 
 stream("ForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6p_arm/fcl_param"))
+
+
+
+
+addPeer("scheme", "HardwareInterface");
+addPeer("scheme", "PortDoubleSplit_hw_cp")
+addPeer("scheme", "PortDoubleAggregate_hw_p")
+addPeer("scheme", "Irp6pmM2J");
+addPeer("scheme", "Irp6pmForwardKinematic");
+addPeer("scheme", "Irp6pmInverseKinematic");
+addPeer("scheme", "Irp6pmJ2M");
+addPeer("scheme", "ForceControlLaw");
+addPeer("scheme", "ForceTransformation");
+#addPeer("scheme", "ATI6284");
+addPeer("scheme", "SplineTrajectoryGeneratorJoint");
+addPeer("scheme", "SplineTrajectoryGeneratorMotor");
+addPeer("scheme", "PoseInt");
+addPeer("scheme", "ToolInt");
+
+
+
+
+scheme.addBlock("HardwareInterface");
+
+HardwareInterface.configure();
 
 ## Connect
 connect("HardwareInterface.computedReg_in_0","IRp6Regulator_0.computedPwm_out", ConnPolicy())
@@ -222,46 +246,23 @@ connect("IRp6Regulator_5.deltaInc_in","HardwareInterface.deltaInc_out5", ConnPol
 connect("PortDoubleAggregate_hw_p.OutputPort","Irp6pmM2J.MotorPosition", ConnPolicy())
 connect("Irp6pmJ2M.MotorPosition", "PortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
+connect("PortDoubleSplit_hw_cp.OutputPort_0","HardwareInterface.MotorPositionCommand_0", ConnPolicy())
+connect("PortDoubleSplit_hw_cp.OutputPort_1","HardwareInterface.MotorPositionCommand_1", ConnPolicy())
+connect("PortDoubleSplit_hw_cp.OutputPort_2","HardwareInterface.MotorPositionCommand_2", ConnPolicy())
+connect("PortDoubleSplit_hw_cp.OutputPort_3","HardwareInterface.MotorPositionCommand_3", ConnPolicy())
+connect("PortDoubleSplit_hw_cp.OutputPort_4","HardwareInterface.MotorPositionCommand_4", ConnPolicy())
+connect("PortDoubleSplit_hw_cp.OutputPort_5","HardwareInterface.MotorPositionCommand_5", ConnPolicy())
 
-addPeer("scheme", "HardwareInterface");
-addPeer("scheme", "IRp6Regulator_0")
-addPeer("scheme", "IRp6Regulator_1")
-addPeer("scheme", "IRp6Regulator_2")
-addPeer("scheme", "IRp6Regulator_3")
-addPeer("scheme", "IRp6Regulator_4")
-addPeer("scheme", "IRp6Regulator_5")
-addPeer("scheme", "PortDoubleSplit_hw_cp")
-addPeer("scheme", "PortDoubleAggregate_hw_p")
-addPeer("scheme", "Irp6pmM2J");
-addPeer("scheme", "Irp6pmForwardKinematic");
-addPeer("scheme", "Irp6pmInverseKinematic");
-addPeer("scheme", "Irp6pmJ2M");
-addPeer("scheme", "ForceControlLaw");
-addPeer("scheme", "ForceTransformation");
-addPeer("scheme", "ATI6284");
-addPeer("scheme", "SplineTrajectoryGeneratorJoint");
-addPeer("scheme", "SplineTrajectoryGeneratorMotor");
-addPeer("scheme", "PoseInt");
-addPeer("scheme", "ToolInt");
+connect("PortDoubleAggregate_hw_p.InputPort_0","HardwareInterface.MotorPosition_0", ConnPolicy())
+connect("PortDoubleAggregate_hw_p.InputPort_1","HardwareInterface.MotorPosition_1", ConnPolicy())
+connect("PortDoubleAggregate_hw_p.InputPort_2","HardwareInterface.MotorPosition_2", ConnPolicy())
+connect("PortDoubleAggregate_hw_p.InputPort_3","HardwareInterface.MotorPosition_3", ConnPolicy())
+connect("PortDoubleAggregate_hw_p.InputPort_4","HardwareInterface.MotorPosition_4", ConnPolicy())
+connect("PortDoubleAggregate_hw_p.InputPort_5","HardwareInterface.MotorPosition_5", ConnPolicy())
 
-
-
-
-scheme.addBlock("HardwareInterface");
-scheme.addBlock("IRp6Regulator_0")
-scheme.addBlock("IRp6Regulator_1")
-scheme.addBlock("IRp6Regulator_2")
-scheme.addBlock("IRp6Regulator_3")
-scheme.addBlock("IRp6Regulator_4")
-scheme.addBlock("IRp6Regulator_5")
 scheme.addBlock("PortDoubleSplit_hw_cp")
 scheme.addBlock("PortDoubleAggregate_hw_p")
-scheme.latchConnections("HardwareInterface", "IRp6Regulator_0", true);
-scheme.latchConnections("HardwareInterface", "IRp6Regulator_1", true);
-scheme.latchConnections("HardwareInterface", "IRp6Regulator_2", true);
-scheme.latchConnections("HardwareInterface", "IRp6Regulator_3", true);
-scheme.latchConnections("HardwareInterface", "IRp6Regulator_4", true);
-scheme.latchConnections("HardwareInterface", "IRp6Regulator_5", true);
+
 
 scheme.addBlock("Irp6pmM2J");
 scheme.addBlock("Irp6pmForwardKinematic");
@@ -270,7 +271,7 @@ scheme.latchConnections("PortDoubleSplit_hw_cp", "HardwareInterface", true);
 scheme.addBlock("Irp6pmJ2M");
 scheme.addBlock("ForceControlLaw");
 scheme.addBlock("ForceTransformation");
-scheme.addBlock("ATI6284");
+#scheme.addBlock("ATI6284");
 scheme.addBlock("SplineTrajectoryGeneratorJoint");
 scheme.addBlock("SplineTrajectoryGeneratorMotor");
 scheme.addBlock("PoseInt");
@@ -366,6 +367,7 @@ stream("Irp6pmForwardKinematic.WristOutputPose", ros.comm.topic("/cartesian_posi
 
 ## Start it
 scheme.start()
+HardwareInterface.start()
 IRp6Regulator_0.start()
 IRp6Regulator_1.start()
 IRp6Regulator_2.start()
@@ -374,7 +376,6 @@ IRp6Regulator_4.start()
 IRp6Regulator_5.start()
 PortDoubleSplit_hw_cp.start()
 PortDoubleAggregate_hw_p.start()
-HardwareInterface.start()
 Irp6pmM2J.start()
 Irp6pmForwardKinematic.start()
 Irp6pmInverseKinematic.start()
