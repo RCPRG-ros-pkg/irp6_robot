@@ -54,6 +54,21 @@ void HI_moxa::init(std::vector<std::string> ports) {
   // inicjalizacja zmiennych
   NFComBuf.myAddress = NF_MasterAddress;
 
+  for (unsigned int drive_number = 0; drive_number <= MOXA_SERVOS_NR;
+      drive_number++) {
+    NFComBuf.ReadDeviceStatus.addr[drive_number] = 255;
+    NFComBuf.ReadDeviceVitals.addr[drive_number] = 255;
+    NFComBuf.SetDrivesMode.addr[drive_number] = 255;
+    NFComBuf.SetDrivesPWM.addr[drive_number] = 255;
+    NFComBuf.SetDrivesCurrent.addr[drive_number] = 255;
+    NFComBuf.SetDrivesMaxCurrent.addr[drive_number] = 255;
+    NFComBuf.ReadDrivesCurrent.addr[drive_number] = 255;
+    NFComBuf.ReadDrivesPosition.addr[drive_number] = 255;
+    NFComBuf.SetDrivesMisc.addr[drive_number] = 255;
+    NFComBuf.ReadDrivesStatus.addr[drive_number] = 255;
+    NFComBuf.SetCurrentRegulator.addr[drive_number] = 255;
+  }
+
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
     NFComBuf.ReadDeviceStatus.addr[drive_number] =
@@ -417,7 +432,7 @@ uint64_t HI_moxa::write_hardware(void) {
     // Make command frames and send them to drives
     for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
       // Set communication requests
-   //   std::cout << "write drive_number: " << drive_number ;
+      //   std::cout << "write drive_number: " << drive_number ;
 
       servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
       NF_COMMAND_ReadDrivesPosition;
@@ -434,9 +449,9 @@ uint64_t HI_moxa::write_hardware(void) {
       servo_data[drive_number].commandCnt = 0;
     }
 
-   // std::cout << std::endl;
+    // std::cout << std::endl;
     for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
-     // std::cout << "write 2 drive_number: " << drive_number ;
+      // std::cout << "write 2 drive_number: " << drive_number ;
       // Send command frame
       SerialPort[drive_number]->write(
           servo_data[drive_number].txBuf,
@@ -457,7 +472,7 @@ uint64_t HI_moxa::write_hardware(void) {
       }
 #endif
     }
- //   std::cout << std::endl;
+    //   std::cout << std::endl;
   }
 
   ret = 1;
