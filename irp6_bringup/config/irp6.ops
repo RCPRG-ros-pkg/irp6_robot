@@ -175,18 +175,18 @@ ATI6284.configure()
 
 
 
-// ForceTransformation
-loadComponent("ForceTransformation", "ForceTransformation")
-ForceTransformation.loadService("rosparam");
-ForceTransformation.rosparam.getAll();
-ForceTransformation.configure()
+// Irp6pmForceTransformation
+loadComponent("Irp6pmForceTransformation", "ForceTransformation")
+Irp6pmForceTransformation.loadService("rosparam");
+Irp6pmForceTransformation.rosparam.getAll();
+Irp6pmForceTransformation.configure()
 
 
-connect("ForceTransformation.CurrentWristPose", "Irp6pmForwardKinematic.WristOutputPose", ConnPolicy())
-connect("ForceTransformation.CurrentSensorWrench", "ATI6284.Wrench", ConnPolicy())
-connect("ForceTransformation.Tool", "ToolInt.CartesianPositionCommand", ConnPolicy())
+connect("Irp6pmForceTransformation.CurrentWristPose", "Irp6pmForwardKinematic.WristOutputPose", ConnPolicy())
+connect("Irp6pmForceTransformation.CurrentSensorWrench", "ATI6284.Wrench", ConnPolicy())
+connect("Irp6pmForceTransformation.Tool", "ToolInt.CartesianPositionCommand", ConnPolicy())
 
-stream("ForceTransformation.ToolGravityParam", ros.comm.topic("/irp6p_arm/tg_param"))
+stream("Irp6pmForceTransformation.ToolGravityParam", ros.comm.topic("/irp6p_arm/tg_param"))
 
 // ForceControlLaw
 
@@ -195,7 +195,7 @@ ForceControlLaw.configure()
 
 connect("ForceControlLaw.OutputEndEffectorPose", "Irp6pmInverseKinematic.InputEndEffectorPose", ConnPolicy())
 connect("ForceControlLaw.CurrentEndEffectorPose", "Irp6pmForwardKinematic.EndEffectorOutputPose", ConnPolicy())
-connect("ForceTransformation.OutputEndEffectorWrench", "ForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
+connect("Irp6pmForceTransformation.OutputEndEffectorWrench", "ForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
 
 stream("ForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6p_arm/fcl_param"))
 
@@ -210,7 +210,7 @@ addPeer("scheme", "Irp6pmForwardKinematic");
 addPeer("scheme", "Irp6pmInverseKinematic");
 addPeer("scheme", "Irp6pmJ2M");
 addPeer("scheme", "ForceControlLaw");
-addPeer("scheme", "ForceTransformation");
+addPeer("scheme", "Irp6pmForceTransformation");
 #addPeer("scheme", "ATI6284");
 addPeer("scheme", "SplineTrajectoryGeneratorJoint");
 addPeer("scheme", "SplineTrajectoryGeneratorMotor");
@@ -282,7 +282,7 @@ scheme.addBlock("Irp6pmInverseKinematic");
 scheme.latchConnections("PortDoubleSplit_hw_cp", "HardwareInterface", true);
 scheme.addBlock("Irp6pmJ2M");
 scheme.addBlock("ForceControlLaw");
-scheme.addBlock("ForceTransformation");
+scheme.addBlock("Irp6pmForceTransformation");
 #scheme.addBlock("ATI6284");
 scheme.addBlock("SplineTrajectoryGeneratorJoint");
 scheme.addBlock("SplineTrajectoryGeneratorMotor");

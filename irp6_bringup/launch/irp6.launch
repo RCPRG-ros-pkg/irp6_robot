@@ -125,7 +125,7 @@
             x: 0.0
             y: 0.0
             z: 0.25
-      ForceTransformation:
+      Irp6pmForceTransformation:
         is_right_turn_frame: true
         tool_weight: 10.8
         gravity_arm_in_wrist:
