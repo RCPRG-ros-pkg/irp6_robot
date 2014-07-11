@@ -14,7 +14,24 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
     : TaskContext(name),
       posInc_in("posInc_in"),
       deltaInc_in("deltaInc_in"),
-      computedPwm_out("computedPwm_out") {
+      computedPwm_out("computedPwm_out"),
+      a_(0.0),
+      b0_(0.0),
+      b1_(0.0),
+      delta_eint_old(0.0),
+      delta_eint(0.0),
+      deltaIncData(0.0),
+      output_value(0.0),
+      posIncData(0.0),
+      position_increment_new(0.0),
+      position_increment_old(0.0),
+      set_value_new(0.0),
+      set_value_old(0.0),
+      set_value_very_old(0.0),
+      step_new(0.0),
+      step_old(0.0),
+      step_old_pulse(0.0)
+      {
 
   this->addEventPort(posInc_in).doc("Receiving a value of position step");
   this->addPort(deltaInc_in).doc("Receiving a value of measured increment.");

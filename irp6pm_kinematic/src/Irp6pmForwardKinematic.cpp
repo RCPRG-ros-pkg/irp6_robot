@@ -5,7 +5,12 @@
 #include "eigen_conversions/eigen_msg.h"
 
 Irp6pmForwardKinematic::Irp6pmForwardKinematic(const std::string& name)
-    : RTT::TaskContext(name, PreOperational) {
+    : RTT::TaskContext(name, PreOperational),
+      a2(0.0),
+      a3(0.0),
+      d5(0.0),
+      d6(0.0),
+      d7(0.0) {
 
   this->ports()->addPort("JointPosition", port_joint_position_);
   this->ports()->addPort("Tool", port_tool_);
@@ -80,18 +85,18 @@ void Irp6pmForwardKinematic::direct_kinematics_transform(
   local_current_joints_tmp_[3] += local_current_joints_tmp_[2];
 
   // Parametry pomocnicze - przeliczenie zmiennych.
-  const double s1 = sin(local_current_joints_tmp_[0]);
-  const double c1 = cos(local_current_joints_tmp_[0]);
-  const double s2 = sin(local_current_joints_tmp_[1]);
-  const double c2 = cos(local_current_joints_tmp_[1]);
-  const double s3 = sin(local_current_joints_tmp_[2]);
-  const double c3 = cos(local_current_joints_tmp_[2]);
-  const double s4 = sin(local_current_joints_tmp_[3]);
-  const double c4 = cos(local_current_joints_tmp_[3]);
-  const double s5 = sin(local_current_joints_tmp_[4]);
-  const double c5 = cos(local_current_joints_tmp_[4]);
-  const double s6 = sin(local_current_joints_tmp_[5]);
-  const double c6 = cos(local_current_joints_tmp_[5]);
+  const double s1 = sin((double)local_current_joints_tmp_[0]);
+  const double c1 = cos((double)local_current_joints_tmp_[0]);
+  const double s2 = sin((double)local_current_joints_tmp_[1]);
+  const double c2 = cos((double)local_current_joints_tmp_[1]);
+  const double s3 = sin((double)local_current_joints_tmp_[2]);
+  const double c3 = cos((double)local_current_joints_tmp_[2]);
+  const double s4 = sin((double)local_current_joints_tmp_[3]);
+  const double c4 = cos((double)local_current_joints_tmp_[3]);
+  const double s5 = sin((double)local_current_joints_tmp_[4]);
+  const double c5 = cos((double)local_current_joints_tmp_[4]);
+  const double s6 = sin((double)local_current_joints_tmp_[5]);
+  const double c6 = cos((double)local_current_joints_tmp_[5]);
 
   // Proste zadanie kinematyki.
   (*local_current_end_effector_frame)(0, 0) = (c1 * s4 * c5 + s1 * s5) * c6

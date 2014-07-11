@@ -11,7 +11,12 @@
 HardwareInterface::HardwareInterface(const std::string& name)
     : TaskContext(name, PreOperational),
       synchro_start_iter_(0),
-      synchro_stop_iter_(0) {
+      synchro_stop_iter_(0),
+      counter_(0.0),
+      hi_(NULL),
+      state_(NOT_SYNCHRONIZED),
+      synchro_drive_(0),
+      synchro_state_(MOVE_TO_SYNCHRO_AREA){
 
   this->addProperty("number_of_drives", number_of_drives_).doc(
       "Number of drives in robot");
@@ -374,7 +379,7 @@ void HardwareInterface::updateHook() {
     }
   }
 
- // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
+  // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
 
   hi_->write_read_hardware();
 

@@ -1,10 +1,8 @@
-
 #include <ocl/Component.hpp>
 
 #include "ATI6284.h"
 
-void WrenchKDLToMsg(const KDL::Wrench &in, geometry_msgs::Wrench &out)
-{
+void WrenchKDLToMsg(const KDL::Wrench &in, geometry_msgs::Wrench &out) {
   out.force.x = in[0];
   out.force.y = in[1];
   out.force.z = in[2];
@@ -14,30 +12,31 @@ void WrenchKDLToMsg(const KDL::Wrench &in, geometry_msgs::Wrench &out)
   out.torque.z = in[5];
 }
 
-ATI6284::ATI6284(const std::string &name) : RTT::TaskContext(name, PreOperational), wrench_port_("Wrench"), device_prop_("device", "DAQ device to use", "/dev/comedi1"), offset_prop_("offset", "sensor zero offset", KDL::Wrench::Zero())
-{
+ATI6284::ATI6284(const std::string &name)
+    : RTT::TaskContext(name, PreOperational),
+      wrench_port_("Wrench"),
+      device_prop_("device", "DAQ device to use", "/dev/comedi1"),
+      offset_prop_("offset", "sensor zero offset", KDL::Wrench::Zero()),
+      device_(NULL){
   this->addPort(wrench_port_);
   this->addProperty(device_prop_);
   this->addProperty(offset_prop_);
 }
 
-bool ATI6284::configureHook()
-{
-    return initSensor();
+bool ATI6284::configureHook() {
+  return initSensor();
 }
 
-bool ATI6284::startHook()
-{
+bool ATI6284::startHook() {
   readData();
 
-  for(int i = 0; i < 6; i++)
+  for (int i = 0; i < 6; i++)
     bias_[i] = voltage_ADC_[i];
 
   return true;
 }
 
-void ATI6284::updateHook()
-{
+void ATI6284::updateHook() {
   geometry_msgs::Wrench wrenchMsg;
 
   readData();
@@ -49,49 +48,45 @@ void ATI6284::updateHook()
   wrench_port_.write(wrenchMsg);
 }
 
-void ATI6284::stopHook()
-{
+void ATI6284::stopHook() {
 
 }
 
-bool ATI6284::initSensor()
-{
+bool ATI6284::initSensor() {
   device_ = comedi_open(device_prop_.value().c_str());
-  if(!device_) {
-    RTT::log(RTT::Error) << "Unable to open device [" << device_prop_.value() << "]" << RTT::endlog();
+  if (!device_) {
+    RTT::log(RTT::Error) << "Unable to open device [" << device_prop_.value()
+                         << "]" << RTT::endlog();
     return false;
   }
-  if(comedi_apply_calibration (device_, 0, 0, 0, 0, NULL) != 0) {
+  if (comedi_apply_calibration(device_, 0, 0, 0, 0, NULL) != 0) {
     RTT::log(RTT::Error) << "Unable to set calibration" << RTT::endlog();
     //return false;
   }
 
-  comedi_get_hardcal_converter(device_, 0, 0, 0, COMEDI_TO_PHYSICAL, &calib_ADC_);
+  comedi_get_hardcal_converter(device_, 0, 0, 0, COMEDI_TO_PHYSICAL,
+                               &calib_ADC_);
   return true;
 }
 
-void ATI6284::readData()
-{
-  for(int i = 0; i < 6; i++) {
+void ATI6284::readData() {
+  for (int i = 0; i < 6; i++) {
     comedi_data_read(device_, 0, i, 0, AREF_DIFF, &raw_ADC_[i]);
   }
 
-  for(int i = 0; i < 6; i++) {
+  for (int i = 0; i < 6; i++) {
     voltage_ADC_[i] = comedi_to_physical(raw_ADC_[i], &calib_ADC_);
   }
 
- //for(int i = 0; i < 6; i++)
- //  voltage_ADC_[i] /= 5;
+  //for(int i = 0; i < 6; i++)
+  //  voltage_ADC_[i] /= 5;
 }
 
-void ATI6284::voltage2FT()
-{
+void ATI6284::voltage2FT() {
   SetToZero(wrench_);
 
-  for (int i = 0; i < 6; ++i)
-  {
-    for (int j = 0; j < 6; ++j)
-    {
+  for (int i = 0; i < 6; ++i) {
+    for (int j = 0; j < 6; ++j) {
       wrench_[i] += (voltage_ADC_[j] - bias_[j]) * conversion_matrix[i][j];
     }
 
@@ -99,4 +94,4 @@ void ATI6284::voltage2FT()
   }
 }
 
-ORO_CREATE_COMPONENT( ATI6284 )
+ORO_CREATE_COMPONENT(ATI6284)
