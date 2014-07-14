@@ -21,7 +21,7 @@ if __name__ == '__main__':
   rospy.wait_for_service('/controller_manager/switch_controller')
   conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
   
-  conmanSwitch(['SplineTrajectoryGeneratorJoint'], [], True)
+  conmanSwitch(['Irp6pmSplineTrajectoryGeneratorJoint'], [], True)
     
   client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
   client.wait_for_server()
@@ -41,7 +41,7 @@ if __name__ == '__main__':
   client.wait_for_result()
   command_result = client.get_result()
   
-  conmanSwitch([], ['SplineTrajectoryGeneratorJoint'], True)
+  conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorJoint'], True)
   
   print 'finish'
 
