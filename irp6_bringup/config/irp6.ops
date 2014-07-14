@@ -361,18 +361,18 @@ connect("Irp6pmToolIntAction.CartesianTrajectoryCommand","Irp6pmToolInt.Cartesia
 
 
 // joint states
-loadComponent("JntPub", "JointStatePublisher");
-setActivity("JntPub", 0.01, 2, ORO_SCHED_RT);
-JntPub.loadService("rosparam");
-JntPub.rosparam.getAll();
+loadComponent("Irp6pmJntPub", "JointStatePublisher");
+setActivity("Irp6pmJntPub", 0.01, 2, ORO_SCHED_RT);
+Irp6pmJntPub.loadService("rosparam");
+Irp6pmJntPub.rosparam.getAll();
 
-connect("Irp6pmM2J.JointPosition", "JntPub.JointPosition", ConnPolicy());
-connect("Irp6pmM2J.JointPosition", "JntPub.JointVelocity", ConnPolicy());
-connect("Irp6pmM2J.JointPosition", "JntPub.JointEffort", ConnPolicy());
+connect("Irp6pmM2J.JointPosition", "Irp6pmJntPub.JointPosition", ConnPolicy());
+connect("Irp6pmM2J.JointPosition", "Irp6pmJntPub.JointVelocity", ConnPolicy());
+connect("Irp6pmM2J.JointPosition", "Irp6pmJntPub.JointEffort", ConnPolicy());
 
-stream("JntPub.joint_state", ros.comm.topic("/joint_states"));
+stream("Irp6pmJntPub.joint_state", ros.comm.topic("/irp6p_arm/joint_states"));
 
-JntPub.configure()
+Irp6pmJntPub.configure()
 
 stream("Irp6pmForwardKinematic.WristOutputPose", ros.comm.topic("/cartesian_position"))
 #stream("ATI6284.Wrench", ros.comm.topic("/ati_wrench"))
@@ -395,7 +395,7 @@ Irp6pmInverseKinematic.start()
 Irp6pmJ2M.start()
 #Irp6pmForceControlLaw.start()
 ATI6284.start()
-JntPub.start()
+Irp6pmJntPub.start()
 Irp6pmSplineTrajectoryActionJoint.start()
 Irp6pmSplineTrajectoryActionMotor.start()
 Irp6pmPoseIntAction.start()
