@@ -69,7 +69,7 @@ if __name__ == '__main__':
   pub.publish(goal)
   
   
-  # conmanSwitch([], ['ForceTransformation','ForceControlLaw'], True)
+  # conmanSwitch([], ['Irp6pmForceTransformation','Irp6pmForceControlLaw'], True)
   
   #
   # standard tool gravity param
@@ -85,7 +85,7 @@ if __name__ == '__main__':
  
   pubtg.publish(tg_goal)
    
-  # conmanSwitch(['ForceTransformation','ForceControlLaw'], [], True)
+  # conmanSwitch(['Irp6pmForceTransformation','Irp6pmForceControlLaw'], [], True)
    
   print 'finish'
   

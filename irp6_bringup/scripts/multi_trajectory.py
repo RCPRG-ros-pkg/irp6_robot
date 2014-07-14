@@ -55,7 +55,7 @@ if __name__ == '__main__':
   # Motor coordinates motion
   #
   
-  conmanSwitch(['SplineTrajectoryGeneratorMotor'], [], True)
+  conmanSwitch(['Irp6pmSplineTrajectoryGeneratorMotor'], [], True)
   
   motor_client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_motor', FollowJointTrajectoryAction)
   motor_client.wait_for_server()
@@ -78,7 +78,7 @@ if __name__ == '__main__':
   # Joint coordinates motion
   #
   
-  conmanSwitch(['SplineTrajectoryGeneratorJoint'], ['SplineTrajectoryGeneratorMotor'], True)
+  conmanSwitch(['Irp6pmSplineTrajectoryGeneratorJoint'], ['Irp6pmSplineTrajectoryGeneratorMotor'], True)
   
   joint_client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
   joint_client.wait_for_server()
@@ -98,7 +98,7 @@ if __name__ == '__main__':
   
   
   
-  conmanSwitch(['PoseInt'], ['SplineTrajectoryGeneratorJoint'], True)
+  conmanSwitch(['Irp6pmPoseInt'], ['Irp6pmSplineTrajectoryGeneratorJoint'], True)
   
   #
   # Cartesian coordinates motion
@@ -124,7 +124,7 @@ if __name__ == '__main__':
   pose_client.wait_for_result()
   command_result = pose_client.get_result()
   
-  conmanSwitch([], ['PoseInt'], True)
+  conmanSwitch([], ['Irp6pmPoseInt'], True)
   
   #
   # Tool motion
@@ -151,7 +151,7 @@ if __name__ == '__main__':
   # Cartesian coordinates motion
   #
   
-  conmanSwitch(['PoseInt'], [], True)
+  conmanSwitch(['Irp6pmPoseInt'], [], True)
   
   pose_client = actionlib.SimpleActionClient('/irp6p_arm/pose_trajectory', CartesianTrajectoryAction)
   pose_client.wait_for_server()
@@ -174,7 +174,7 @@ if __name__ == '__main__':
   pose_client.wait_for_result()
   command_result = pose_client.get_result()
   
-  conmanSwitch([], ['PoseInt'], True)
+  conmanSwitch([], ['Irp6pmPoseInt'], True)
   
   #
   # Tool motion

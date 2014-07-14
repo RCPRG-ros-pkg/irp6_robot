@@ -124,48 +124,48 @@ Irp6pmJ2M.configure()
 
 connect("Irp6pmJ2M.JointPosition","Irp6pmInverseKinematic.OutputJointPosition", ConnPolicy())
 
-loadComponent("SplineTrajectoryGeneratorJoint", "InternalSpaceSplineTrajectoryGenerator")
+loadComponent("Irp6pmSplineTrajectoryGeneratorJoint", "InternalSpaceSplineTrajectoryGenerator")
 
-SplineTrajectoryGeneratorJoint.loadService("rosparam");
-SplineTrajectoryGeneratorJoint.rosparam.getAll();
-
-
-connect("Irp6pmM2J.JointPosition","SplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
-connect("SplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6pmJ2M.JointPosition", ConnPolicy())
-SplineTrajectoryGeneratorJoint.configure()
-
-loadComponent("SplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
-
-SplineTrajectoryGeneratorMotor.loadService("rosparam");
-SplineTrajectoryGeneratorMotor.rosparam.getAll();
+Irp6pmSplineTrajectoryGeneratorJoint.loadService("rosparam");
+Irp6pmSplineTrajectoryGeneratorJoint.rosparam.getAll();
 
 
-connect("PortDoubleAggregate_hw_p.OutputPort","SplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
-connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","PortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+connect("Irp6pmM2J.JointPosition","Irp6pmSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6pmJ2M.JointPosition", ConnPolicy())
+Irp6pmSplineTrajectoryGeneratorJoint.configure()
+
+loadComponent("Irp6pmSplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
+
+Irp6pmSplineTrajectoryGeneratorMotor.loadService("rosparam");
+Irp6pmSplineTrajectoryGeneratorMotor.rosparam.getAll();
 
 
-SplineTrajectoryGeneratorMotor.configure()
+connect("PortDoubleAggregate_hw_p.OutputPort","Irp6pmSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorMotor.JointPositionCommand","PortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
-// PoseInt
 
-loadComponent("PoseInt", "CartesianInterpolator")
+Irp6pmSplineTrajectoryGeneratorMotor.configure()
 
-connect("Irp6pmForwardKinematic.EndEffectorOutputPose", "PoseInt.CartesianPosition", ConnPolicy())
-connect("PoseInt.CartesianPositionCommand", "Irp6pmInverseKinematic.InputEndEffectorPose", ConnPolicy())
+// Irp6pmPoseInt
 
-PoseInt.configure();
+loadComponent("Irp6pmPoseInt", "CartesianInterpolator")
 
-// ToolInt
+connect("Irp6pmForwardKinematic.EndEffectorOutputPose", "Irp6pmPoseInt.CartesianPosition", ConnPolicy())
+connect("Irp6pmPoseInt.CartesianPositionCommand", "Irp6pmInverseKinematic.InputEndEffectorPose", ConnPolicy())
 
-loadComponent("ToolInt", "CartesianInterpolator")
-ToolInt.configure();
-ToolInt.loadService("rosparam");
-ToolInt.rosparam.getAll();
+Irp6pmPoseInt.configure();
 
-connect("ToolInt.CartesianPositionCommand", "Irp6pmForwardKinematic.Tool", ConnPolicy())
-connect("ToolInt.CartesianPositionCommand", "Irp6pmInverseKinematic.Tool", ConnPolicy())
+// Irp6pmToolInt
 
-#stream("ToolInt.CartesianPositionCommand", ros.comm.topic("/irp6p_arm/tool"))
+loadComponent("Irp6pmToolInt", "CartesianInterpolator")
+Irp6pmToolInt.configure();
+Irp6pmToolInt.loadService("rosparam");
+Irp6pmToolInt.rosparam.getAll();
+
+connect("Irp6pmToolInt.CartesianPositionCommand", "Irp6pmForwardKinematic.Tool", ConnPolicy())
+connect("Irp6pmToolInt.CartesianPositionCommand", "Irp6pmInverseKinematic.Tool", ConnPolicy())
+
+#stream("Irp6pmToolInt.CartesianPositionCommand", ros.comm.topic("/irp6p_arm/tool"))
 
 // ATI6284
 
@@ -184,20 +184,20 @@ Irp6pmForceTransformation.configure()
 
 connect("Irp6pmForceTransformation.CurrentWristPose", "Irp6pmForwardKinematic.WristOutputPose", ConnPolicy())
 connect("Irp6pmForceTransformation.CurrentSensorWrench", "ATI6284.Wrench", ConnPolicy())
-connect("Irp6pmForceTransformation.Tool", "ToolInt.CartesianPositionCommand", ConnPolicy())
+connect("Irp6pmForceTransformation.Tool", "Irp6pmToolInt.CartesianPositionCommand", ConnPolicy())
 
 stream("Irp6pmForceTransformation.ToolGravityParam", ros.comm.topic("/irp6p_arm/tg_param"))
 
 // ForceControlLaw
 
-loadComponent("ForceControlLaw", "ForceControlLaw")
-ForceControlLaw.configure()
+loadComponent("Irp6pmForceControlLaw", "ForceControlLaw")
+Irp6pmForceControlLaw.configure()
 
-connect("ForceControlLaw.OutputEndEffectorPose", "Irp6pmInverseKinematic.InputEndEffectorPose", ConnPolicy())
-connect("ForceControlLaw.CurrentEndEffectorPose", "Irp6pmForwardKinematic.EndEffectorOutputPose", ConnPolicy())
-connect("Irp6pmForceTransformation.OutputEndEffectorWrench", "ForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
+connect("Irp6pmForceControlLaw.OutputEndEffectorPose", "Irp6pmInverseKinematic.InputEndEffectorPose", ConnPolicy())
+connect("Irp6pmForceControlLaw.CurrentEndEffectorPose", "Irp6pmForwardKinematic.EndEffectorOutputPose", ConnPolicy())
+connect("Irp6pmForceTransformation.OutputEndEffectorWrench", "Irp6pmForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
 
-stream("ForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6p_arm/fcl_param"))
+stream("Irp6pmForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6p_arm/fcl_param"))
 
 
 
@@ -209,13 +209,13 @@ addPeer("scheme", "Irp6pmM2J");
 addPeer("scheme", "Irp6pmForwardKinematic");
 addPeer("scheme", "Irp6pmInverseKinematic");
 addPeer("scheme", "Irp6pmJ2M");
-addPeer("scheme", "ForceControlLaw");
+addPeer("scheme", "Irp6pmForceControlLaw");
 addPeer("scheme", "Irp6pmForceTransformation");
 #addPeer("scheme", "ATI6284");
-addPeer("scheme", "SplineTrajectoryGeneratorJoint");
-addPeer("scheme", "SplineTrajectoryGeneratorMotor");
-addPeer("scheme", "PoseInt");
-addPeer("scheme", "ToolInt");
+addPeer("scheme", "Irp6pmSplineTrajectoryGeneratorJoint");
+addPeer("scheme", "Irp6pmSplineTrajectoryGeneratorMotor");
+addPeer("scheme", "Irp6pmPoseInt");
+addPeer("scheme", "Irp6pmToolInt");
 
 
 
@@ -281,82 +281,82 @@ scheme.addBlock("Irp6pmForwardKinematic");
 scheme.addBlock("Irp6pmInverseKinematic");
 scheme.latchConnections("PortDoubleSplit_hw_cp", "HardwareInterface", true);
 scheme.addBlock("Irp6pmJ2M");
-scheme.addBlock("ForceControlLaw");
+scheme.addBlock("Irp6pmForceControlLaw");
 scheme.addBlock("Irp6pmForceTransformation");
 #scheme.addBlock("ATI6284");
-scheme.addBlock("SplineTrajectoryGeneratorJoint");
-scheme.addBlock("SplineTrajectoryGeneratorMotor");
-scheme.addBlock("PoseInt");
-scheme.addBlock("ToolInt");
+scheme.addBlock("Irp6pmSplineTrajectoryGeneratorJoint");
+scheme.addBlock("Irp6pmSplineTrajectoryGeneratorMotor");
+scheme.addBlock("Irp6pmPoseInt");
+scheme.addBlock("Irp6pmToolInt");
 
 // ROS Interface
 
 //
-// SplineTrajectoryActionJoint
+// Irp6pmSplineTrajectoryActionJoint
 // 
 
-loadComponent("SplineTrajectoryActionJoint", "InternalSpaceSplineTrajectoryAction")
-setActivity("SplineTrajectoryActionJoint",0.01 ,2 ,ORO_SCHED_RT)
-SplineTrajectoryActionJoint.loadService("rosparam");
-SplineTrajectoryActionJoint.rosparam.getAll();
+loadComponent("Irp6pmSplineTrajectoryActionJoint", "InternalSpaceSplineTrajectoryAction")
+setActivity("Irp6pmSplineTrajectoryActionJoint",0.01 ,2 ,ORO_SCHED_RT)
+Irp6pmSplineTrajectoryActionJoint.loadService("rosparam");
+Irp6pmSplineTrajectoryActionJoint.rosparam.getAll();
 
-SplineTrajectoryActionJoint.loadService("actionlib")
-SplineTrajectoryActionJoint.actionlib.connect("/irp6p_arm/spline_trajectory_action_joint")
+Irp6pmSplineTrajectoryActionJoint.loadService("actionlib")
+Irp6pmSplineTrajectoryActionJoint.actionlib.connect("/irp6p_arm/spline_trajectory_action_joint")
 
-connect("SplineTrajectoryActionJoint.trajectoryPtr","SplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
-connect("Irp6pmM2J.JointPosition","SplineTrajectoryActionJoint.JointPosition", ConnPolicy())
-connect("SplineTrajectoryGeneratorJoint.JointPositionCommand","SplineTrajectoryActionJoint.JointPositionCommand", ConnPolicy())
+connect("Irp6pmSplineTrajectoryActionJoint.trajectoryPtr","Irp6pmSplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
+connect("Irp6pmM2J.JointPosition","Irp6pmSplineTrajectoryActionJoint.JointPosition", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6pmSplineTrajectoryActionJoint.JointPositionCommand", ConnPolicy())
 
 
-SplineTrajectoryActionJoint.configure()
+Irp6pmSplineTrajectoryActionJoint.configure()
 
 
 //
-// SplineTrajectoryActionMotor
+// Irp6pmSplineTrajectoryActionMotor
 // 
 
-loadComponent("SplineTrajectoryActionMotor", "InternalSpaceSplineTrajectoryAction")
-setActivity("SplineTrajectoryActionMotor",0.01 ,2 ,ORO_SCHED_RT)
-SplineTrajectoryActionMotor.loadService("rosparam");
-SplineTrajectoryActionMotor.rosparam.getAll();
+loadComponent("Irp6pmSplineTrajectoryActionMotor", "InternalSpaceSplineTrajectoryAction")
+setActivity("Irp6pmSplineTrajectoryActionMotor",0.01 ,2 ,ORO_SCHED_RT)
+Irp6pmSplineTrajectoryActionMotor.loadService("rosparam");
+Irp6pmSplineTrajectoryActionMotor.rosparam.getAll();
 
-SplineTrajectoryActionMotor.loadService("actionlib")
-SplineTrajectoryActionMotor.actionlib.connect("/irp6p_arm/spline_trajectory_action_motor")
+Irp6pmSplineTrajectoryActionMotor.loadService("actionlib")
+Irp6pmSplineTrajectoryActionMotor.actionlib.connect("/irp6p_arm/spline_trajectory_action_motor")
 
-connect("SplineTrajectoryActionMotor.trajectoryPtr","SplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
-connect("Irp6pmM2J.JointPosition","SplineTrajectoryActionMotor.JointPosition", ConnPolicy())
-connect("SplineTrajectoryGeneratorMotor.JointPositionCommand","SplineTrajectoryActionMotor.JointPositionCommand", ConnPolicy())
+connect("Irp6pmSplineTrajectoryActionMotor.trajectoryPtr","Irp6pmSplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
+connect("Irp6pmM2J.JointPosition","Irp6pmSplineTrajectoryActionMotor.JointPosition", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorMotor.JointPositionCommand","Irp6pmSplineTrajectoryActionMotor.JointPositionCommand", ConnPolicy())
 
-SplineTrajectoryActionMotor.configure()
+Irp6pmSplineTrajectoryActionMotor.configure()
 
 //
 // CartesianTrajectoryAction
 //
 
-loadComponent("PoseIntAction", "CartesianTrajectoryAction")
-setActivity("PoseIntAction",0.01 ,2 ,ORO_SCHED_RT)
+loadComponent("Irp6pmPoseIntAction", "CartesianTrajectoryAction")
+setActivity("Irp6pmPoseIntAction",0.01 ,2 ,ORO_SCHED_RT)
 
-PoseIntAction.configure()
+Irp6pmPoseIntAction.configure()
 
-PoseIntAction.loadService("actionlib")
-PoseIntAction.actionlib.connect("/irp6p_arm/pose_trajectory")
+Irp6pmPoseIntAction.loadService("actionlib")
+Irp6pmPoseIntAction.actionlib.connect("/irp6p_arm/pose_trajectory")
 
-connect("PoseIntAction.CartesianTrajectoryCommand","PoseInt.CartesianTrajectoryCommand", ConnPolicy())
+connect("Irp6pmPoseIntAction.CartesianTrajectoryCommand","Irp6pmPoseInt.CartesianTrajectoryCommand", ConnPolicy())
 
 
 //
-// ToolIntAction
+// Irp6pmToolIntAction
 //
 
-loadComponent("ToolIntAction", "CartesianTrajectoryAction")
-setActivity("ToolIntAction",0.01 ,2 ,ORO_SCHED_RT)
+loadComponent("Irp6pmToolIntAction", "CartesianTrajectoryAction")
+setActivity("Irp6pmToolIntAction",0.01 ,2 ,ORO_SCHED_RT)
 
-ToolIntAction.configure()
+Irp6pmToolIntAction.configure()
 
-ToolIntAction.loadService("actionlib")
-ToolIntAction.actionlib.connect("/irp6p_arm/tool_trajectory")
+Irp6pmToolIntAction.loadService("actionlib")
+Irp6pmToolIntAction.actionlib.connect("/irp6p_arm/tool_trajectory")
 
-connect("ToolIntAction.CartesianTrajectoryCommand","ToolInt.CartesianTrajectoryCommand", ConnPolicy())
+connect("Irp6pmToolIntAction.CartesianTrajectoryCommand","Irp6pmToolInt.CartesianTrajectoryCommand", ConnPolicy())
 
 
 
@@ -393,14 +393,14 @@ Irp6pmM2J.start()
 Irp6pmForwardKinematic.start()
 Irp6pmInverseKinematic.start()
 Irp6pmJ2M.start()
-#ForceControlLaw.start()
+#Irp6pmForceControlLaw.start()
 ATI6284.start()
 JntPub.start()
-SplineTrajectoryActionJoint.start()
-SplineTrajectoryActionMotor.start()
-PoseIntAction.start()
-ToolIntAction.start()
-ToolInt.start()
+Irp6pmSplineTrajectoryActionJoint.start()
+Irp6pmSplineTrajectoryActionMotor.start()
+Irp6pmPoseIntAction.start()
+Irp6pmToolIntAction.start()
+Irp6pmToolInt.start()
 
 
 

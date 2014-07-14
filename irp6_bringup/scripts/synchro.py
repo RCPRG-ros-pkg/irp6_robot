@@ -55,13 +55,13 @@ if __name__ == '__main__':
   # Deactivate all generators
   #
   
-  conmanSwitch([], ['SplineTrajectoryGeneratorMotor','SplineTrajectoryGeneratorJoint','PoseInt','ForceControlLaw','ForceTransformation'], True)
+  conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
   
   #
   # Motor coordinates motion
   #
   
-  conmanSwitch(['SplineTrajectoryGeneratorMotor'], [], True)
+  conmanSwitch(['Irp6pmSplineTrajectoryGeneratorMotor'], [], True)
   
   motor_client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_motor', FollowJointTrajectoryAction)
   motor_client.wait_for_server()
@@ -78,7 +78,7 @@ if __name__ == '__main__':
   motor_client.wait_for_result()
   command_result = motor_client.get_result()
   
-  conmanSwitch([], ['SplineTrajectoryGeneratorMotor'], True)
+  conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor'], True)
     
   
   print 'finish'

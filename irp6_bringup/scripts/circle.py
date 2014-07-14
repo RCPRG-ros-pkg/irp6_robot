@@ -51,7 +51,7 @@ rospy.init_node('multi_trajectory')
 rospy.wait_for_service('/controller_manager/switch_controller')
 conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
 
-conmanSwitch(['PoseInt'], [], True)
+conmanSwitch(['Irp6pmPoseInt'], [], True)
 
 pose_client = actionlib.SimpleActionClient('/irp6p_arm/pose_trajectory', CartesianTrajectoryAction)
 pose_client.wait_for_server()
@@ -84,4 +84,4 @@ pose_client.send_goal(goal)
 pose_client.wait_for_result()
 command_result = pose_client.get_result()
 
-conmanSwitch([], ['PoseInt'], True)
+conmanSwitch([], ['Irp6pmPoseInt'], True)
