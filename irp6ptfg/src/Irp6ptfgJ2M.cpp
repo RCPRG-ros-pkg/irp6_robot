@@ -7,6 +7,16 @@ Irp6ptfgJ2M::Irp6ptfgJ2M(const std::string& name) : RTT::TaskContext(name, PreOp
 
 	this->ports()->addPort("MotorPosition", port_motor_position_);
 	this->ports()->addPort("JointPosition", port_joint_position_);
+
+
+
+  inv_a_7 = 0.3531946456e-5;
+  inv_b_7 = 0.2622172716e19;
+  inv_c_7 = -0.2831300000e20;
+  inv_d_7 = -2564.034320;
+
+
+
 }
 
 Irp6ptfgJ2M::~Irp6ptfgJ2M() {
@@ -14,8 +24,8 @@ Irp6ptfgJ2M::~Irp6ptfgJ2M() {
 }
 
 bool Irp6ptfgJ2M::configureHook() {
-	motor_position_.resize(6);
-	joint_position_.resize(6);
+	motor_position_.resize(1);
+	joint_position_.resize(1);
 	return true;
 }
 
@@ -29,49 +39,9 @@ void Irp6ptfgJ2M::updateHook() {
 
 bool Irp6ptfgJ2M::i2mp(const double* joints, double* motors)
 {
-  const double sl123 = 7.789525e+04;
-  const double mi1 = 6.090255e+04;
-  const double ni1 = -2.934668e+04;
 
-  const double mi2 = -4.410000e+04;
-  const double ni2 = -5.124000e+04;
-
-  // Niejednoznacznosc polozenia dla 3-tej osi (obrot kisci < 180).
-  const double joint_3_revolution = M_PI;
-  // Niejednoznacznosc polozenia dla 4-tej osi (obrot kisci > 360).
-  const double axis_4_revolution = 2 * M_PI;
-
-  // Obliczanie kata obrotu walu silnika napedowego kolumny
-  motors[0] = GEAR[0] * joints[0] + SYNCHRO_JOINT_POSITION[0];
-
-  // Obliczanie kata obrotu walu silnika napedowego ramienia dolnego
-  motors[1] = GEAR[1] * sqrt(sl123 + mi1 * cos(joints[1]) + ni1
-* sin(-joints[1])) + SYNCHRO_JOINT_POSITION[1];
-
-  // Obliczanie kata obrotu walu silnika napedowego ramienia gornego
-  motors[2] = GEAR[2] * sqrt(sl123 + mi2 * cos(joints[2] + joints[1] + M_PI_2) + ni2
-* sin(-(joints[2] + joints[1] + M_PI_2))) + SYNCHRO_JOINT_POSITION[2];
-
-  // Obliczanie kata obrotu walu silnika napedowego obotu kisci T
-  // jesli jest mniejsze od -pi/2
-  double joints_tmp3 = joints[3] + joints[2] + joints[1] + M_PI_2;
-  if (joints_tmp3 < -M_PI_2)
-    joints_tmp3 += joint_3_revolution;
-  motors[3] = GEAR[3] * (joints_tmp3 + THETA[3]) + SYNCHRO_JOINT_POSITION[3];
-
-  // Obliczanie kata obrotu walu silnika napedowego obrotu kisci V
-  motors[4] = GEAR[4] * joints[4] + SYNCHRO_JOINT_POSITION[4]
-            + motors[3];
-
-  // Ograniczenie na obrot.
-  while (motors[4] < -80)
-    motors[4] += axis_4_revolution;
-  while (motors[4] > 490)
-    motors[4] -= axis_4_revolution;
-
-  // Obliczanie kata obrotu walu silnika napedowego obrotu kisci N
-  motors[5] = GEAR[5] * joints[5] + SYNCHRO_JOINT_POSITION[5];
-
+  // Obliczenie kata obrotu walu silnika napedowego chwytaka.
+  motors[0] = inv_a_7 * sqrt(inv_b_7 + inv_c_7 * joints[0]) + inv_d_7;
   return checkMotorPosition(motors);
 }
 
@@ -83,30 +53,6 @@ bool Irp6ptfgJ2M::checkMotorPosition(const double * motor_position)
   else if (motor_position[0] > UPPER_MOTOR_LIMIT[0]) // Kat f1 wiekszy od maksymalnego
     return false;//throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_0);
 
-  if (motor_position[1] < LOWER_MOTOR_LIMIT[1]) // Kat f2 mniejszy od minimalnego
-    return false;//throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_1);
-  else if (motor_position[1] > UPPER_MOTOR_LIMIT[1]) // Kat f2 wiekszy od maksymalnego
-    return false;//throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_1);
-
-  if (motor_position[2] < LOWER_MOTOR_LIMIT[2]) // Kat f3 mniejszy od minimalnego
-    return false;//throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_2);
-  else if (motor_position[2] > UPPER_MOTOR_LIMIT[2]) // Kat f3 wiekszy od maksymalnego
-    return false;//throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_2);
-
-  if (motor_position[3] < LOWER_MOTOR_LIMIT[3]) // Kat f4 mniejszy od minimalnego
-    return false; //throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_3);
-  else if (motor_position[3] > UPPER_MOTOR_LIMIT[3]) // Kat f4 wiekszy od maksymalnego
-    return false; //throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_3);
-
-  if (motor_position[4] < LOWER_MOTOR_LIMIT[4]) // Kat f5 mniejszy od minimalnego
-    return false; //throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_4);
-  else if (motor_position[4] > UPPER_MOTOR_LIMIT[4]) // Kat f5 wiekszy od maksymalnego
-    return false; //throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_4);
-
-  if (motor_position[5] < LOWER_MOTOR_LIMIT[5]) // Kat f6 mniejszy od minimalnego
-    return false; //throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_5);
-  else if (motor_position[5] > UPPER_MOTOR_LIMIT[5]) // Kat f6 wiekszy od maksymalnego
-    return false;//throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_5);
 
   return true;
 } //: check_motor_position

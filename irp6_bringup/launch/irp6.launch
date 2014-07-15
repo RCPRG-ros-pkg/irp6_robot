@@ -33,12 +33,24 @@
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
         lower_limits: [-0.45,-2.2689280276,-0.6108652382,-1.5707963268,-10.0,-2.88]
         upper_limits: [2.9670597284,-0.872664626,0.6981317008,1.6057029118,10.0,2.93]
+      Irp6ptfgSplineTrajectoryGeneratorJoint:
+        number_of_joints: 1
+      Irp6ptfgSplineTrajectoryActionJoint:
+        joint_names: [joint1]
+        lower_limits: [0.04]
+        upper_limits: [0.1]
       Irp6pmSplineTrajectoryGeneratorMotor:
         number_of_joints: 6
       Irp6pmSplineTrajectoryActionMotor:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
         lower_limits: [-470.0, -110.0, -80.0, -70.0, -80.0, -1000.0]
         upper_limits: [450.0, 100.0, 100.0, 380.0, 490.0, 3000.0]
+      Irp6ptfgSplineTrajectoryGeneratorMotor:
+        number_of_joints: 1
+      Irp6ptfgSplineTrajectoryActionMotor:
+        joint_names: [joint1]
+        lower_limits: [-1900.0]
+        upper_limits: [4900.0]
       IRp6pmRegulator_0:
         reg_number: 0
         debug: false
@@ -113,6 +125,10 @@
         number_of_ports: 6
       Irp6pmPortDoubleAggregate_hw_p:
         number_of_ports: 6
+      Irp6ptfgPortDoubleSplit_hw_cp:
+        number_of_ports: 1
+      Irp6ptfgPortDoubleAggregate_hw_p:
+        number_of_ports: 1
       Irp6pmToolInt:
         activate_pose_init: true
         init_setpoint:

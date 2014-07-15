@@ -18,6 +18,21 @@ class Irp6ptfgM2J : public RTT::TaskContext {
   RTT::InputPort<Eigen::VectorXd> port_motor_position_;
 
   Eigen::VectorXd motor_position_, joint_position_;
+
+
+
+  //! Variable related to the computations of the gripper spread.
+  double dir_a_7;
+
+  //! Variable related to the computations of the gripper spread.
+  double dir_b_7;
+
+  //! Variable related to the computations of the gripper spread.
+  double dir_c_7;
+
+  //! Variable related to the computations of the gripper spread.
+
+
 };
 
 #endif /* Irp6ptfgM2J_H_ */
