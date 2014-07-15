@@ -46,7 +46,7 @@
     </collision>
   </link>
   
-  <joint name="joint1" type="revolute">
+  <joint name="Irp6pmJoint1" type="revolute">
     <origin rpy="0 0 0" xyz="0.0 0.0 0.55"/>
     <axis xyz="0 0 1"/>
     <limit lower="-2.96705973" upper="2.96705973" effort="10.0" velocity="10.0" />
@@ -76,7 +76,7 @@
     </collision>
   </link>
 
-  <joint name="joint2" type="revolute">
+  <joint name="Irp6pmJoint2" type="revolute">
     <origin rpy="${-0.5 * M_PI} 0 0" xyz="0.0 0.0 0.4"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.8" upper="-0.872664626" effort="10.0" velocity="10.0" />
@@ -106,7 +106,7 @@
     </collision>
   </link>
 
-  <joint name="joint3" type="revolute">
+  <joint name="Irp6pmJoint3" type="revolute">
     <origin rpy="0 0 0.0" xyz="0.455 0.0 0.0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-0.3" upper="0.5" effort="10.0" velocity="10.0" />
@@ -136,7 +136,7 @@
     </collision>
   </link>
 
-  <joint name="joint4" type="revolute">
+  <joint name="Irp6pmJoint4" type="revolute">
     <origin rpy="0 0 0" xyz="0.0 0.67 0.0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.57" upper="1.57" effort="10.0" velocity="10.0" />
@@ -166,7 +166,7 @@
     </collision>
   </link>
 
-  <joint name="joint5" type="revolute">
+  <joint name="Irp6pmJoint5" type="revolute">
     <origin rpy="${-0.5 * M_PI} 0 0" xyz="0.0 0.0 0.0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-0.5" upper="5.14" effort="10.0" velocity="10.0" />
@@ -196,7 +196,7 @@
     </collision>
   </link>
 
-  <joint name="joint6" type="revolute">
+  <joint name="Irp6pmJoint6" type="revolute">
     <origin rpy="${0.5 * M_PI} 0 0" xyz="0.0 0.0 0.19"/>
     <axis xyz="0 0 1"/>
     <limit lower="-3.0" upper="2.9" effort="10.0" velocity="10.0" />
