@@ -16,7 +16,7 @@ HardwareInterface::HardwareInterface(const std::string& name)
       hi_(NULL),
       state_(NOT_SYNCHRONIZED),
       synchro_drive_(0),
-      synchro_state_(MOVE_TO_SYNCHRO_AREA){
+      synchro_state_(MOVE_TO_SYNCHRO_AREA) {
 
   this->addProperty("number_of_drives", number_of_drives_).doc(
       "Number of drives in robot");
@@ -30,6 +30,7 @@ HardwareInterface::HardwareInterface(const std::string& name)
   this->addProperty("synchro_step_coarse", synchro_step_coarse_).doc("");
   this->addProperty("synchro_step_fine", synchro_step_fine_).doc("");
   this->addProperty("current_mode", current_mode_).doc("");
+  this->addProperty("synchro_needed", synchro_needed_).doc("");
 }
 
 HardwareInterface::~HardwareInterface() {
@@ -43,6 +44,7 @@ bool HardwareInterface::configureHook() {
       || synchro_step_coarse_.size() != number_of_drives_
       || synchro_step_fine_.size() != number_of_drives_
       || card_indexes_.size() != number_of_drives_
+      || synchro_needed_.size() != number_of_drives_
       || current_mode_.size() != number_of_drives_) {
     log(Error) << "Size of parameters is different than number of drives"
                << endlog();
@@ -182,12 +184,34 @@ bool HardwareInterface::startHook() {
       RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
       if (auto_synchronize_) {
         RTT::log(RTT::Info) << "Auto synchronize" << RTT::endlog();
-        state_ = PRE_SYNCHRONIZING;
+        state_ = SERVOING;
         synchro_start_iter_ = 500;
         synchro_stop_iter_ = 1000;
         synchro_state_ = MOVE_TO_SYNCHRO_AREA;
-        synchro_drive_ = 0;
+        synchro_drive_ = -1;
         std::cout << "Auto synchronize" << std::endl;
+
+        while (true) {
+          if (++synchro_drive_ == number_of_drives_) {
+            RTT::log(RTT::Info) << "No synchronization needed" << RTT::endlog();
+
+            for (int i = 0; i < number_of_drives_; i++) {
+              motor_position_command_(i) = (double) hi_->get_position(i)
+                  * ((2.0 * M_PI) / enc_res_[i]);
+              motor_position_command_old_(i) = motor_position_command_(i);
+            }
+            break;
+          } else {
+            if (synchro_needed_[synchro_drive_]) {
+              state_ = PRE_SYNCHRONIZING;
+              break;
+            } else {
+              continue;
+            }
+          }
+
+        }
+
       } else
         state_ = NOT_SYNCHRONIZED;
     } else {
@@ -309,10 +333,19 @@ void HardwareInterface::updateHook() {
             hi_->finish_synchro(synchro_drive_);
             hi_->reset_position(synchro_drive_);
 
-            if (++synchro_drive_ < number_of_drives_) {
-              synchro_state_ = MOVE_TO_SYNCHRO_AREA;
-            } else {
-              synchro_state_ = SYNCHRO_END;
+            while (true) {
+              if (++synchro_drive_ == number_of_drives_) {
+                synchro_state_ = SYNCHRO_END;
+                break;
+              } else {
+                if (synchro_needed_[synchro_drive_]) {
+                  synchro_state_ = MOVE_TO_SYNCHRO_AREA;
+                  break;
+                } else {
+                  continue;
+                }
+              }
+
             }
 
           } else {
