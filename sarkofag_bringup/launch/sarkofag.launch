@@ -1,0 +1,60 @@
+<launch>
+
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find irp6_description)/robots/irp6p.urdf.xacro'" />
+  
+  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher"/>
+  
+  <include file="$(find rtt_ros)/launch/deployer.launch">
+    <arg name="NAME" value="ROS_OROCOS_ROBOT"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find sarkofag_bringup)/config/sarkofag.ops"/>
+    <arg name="LOG_LEVEL" value="Warning"/>
+    <arg name="DEBUG" value="false"/>
+  </include>
+
+  <group ns="ROS_OROCOS_ROBOT">
+    <rosparam>
+      SarkofagHardwareInterface:
+        number_of_drives: 1
+        auto_synchronize: true
+        ports_adresses: [/dev/ttyMI7]
+        max_current: [25000]
+        max_increment: [1000.0]
+        card_indexes: [0]
+        tx_prefix_len: 5
+        enc_res: [4000.0]
+        synchro_step_coarse: [-0.03]
+        synchro_step_fine: [0.007]
+        current_mode: [true]
+      SarkofagJntPub:
+        joint_names: [joint1]
+      SarkofagSplineTrajectoryGeneratorJoint:
+        number_of_joints: 1
+      SarkofagSplineTrajectoryActionJoint:
+        joint_names: [joint1]
+        lower_limits: [-0.45]
+        upper_limits: [2.9670597284]
+      SarkofagSplineTrajectoryGeneratorMotor:
+        number_of_joints: 1
+      SarkofagSplineTrajectoryActionMotor:
+        joint_names: [joint1]
+        lower_limits: [-470.0]
+        upper_limits: [450.0]
+      SarkofagRegulator_0:
+        reg_number: 0
+        debug: false
+        eint_dif: 0.01
+        A: 0.412429378531
+        BB0: 1.5569592
+        BB1: 1.5028614
+        current_mode: true
+        current_reg_kp: 200.0
+        max_output_current: 20000.0
+      SarkofagPortDoubleSplit_hw_cp:
+        number_of_ports: 1
+      SarkofagPortDoubleAggregate_hw_p:
+        number_of_ports: 1
+      
+    </rosparam>
+</group>
+
+</launch>
