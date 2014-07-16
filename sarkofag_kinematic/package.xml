@@ -2,6 +2,9 @@
   <name>sarkofag_kinematic</name>
   <version>0.0.1</version>
   <description>Sarkofag kinematic.</description>
+  <maintainer email="bartswis@gmail.com">Bartosz Świstak</maintainer>
+  <license>BSD</license>
+  <author>Bartosz Świstak</author>
   
   <buildtool_depend>catkin</buildtool_depend>
 
