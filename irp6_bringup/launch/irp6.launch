@@ -13,10 +13,11 @@
 
   <group ns="ROS_OROCOS_ROBOT">
     <rosparam>
-      HardwareInterface:
+      Irp6HardwareInterface:
         number_of_drives: 7
         auto_synchronize: true
         ports_adresses: [/dev/ttyMI8, /dev/ttyMI9, /dev/ttyMI10, /dev/ttyMI11, /dev/ttyMI12, /dev/ttyMI13, /dev/ttyMI14]
+        synchro_needed: [true, true, true, true, true, true, true]
         max_current: [25000, 18000, 15000, 17000, 10000, 2000, 200]
         max_increment: [1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]
         card_indexes: [0, 1, 2, 3, 4, 5, 6]
