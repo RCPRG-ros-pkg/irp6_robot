@@ -47,6 +47,8 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<double> synchro_step_coarse_;
   std::vector<double> synchro_step_fine_;
   std::vector<bool> current_mode_;
+  std::vector<bool> synchro_needed_;
+
 
   int synchro_stop_iter_;
   int synchro_start_iter_;
