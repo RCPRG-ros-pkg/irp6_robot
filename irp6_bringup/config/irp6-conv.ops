@@ -25,10 +25,10 @@ ros.import("port_split");
 
 
 //------------------------------------------------------------------------------
-//-- Two manipulators and grippers
+//-- manipulator and gripper and conveyor
 //------------------------------------------------------------------------------
 
-
+// Manipulator and gripper
 
 
 //------------------------------------------------------------------------------
@@ -530,3 +530,116 @@ Irp6pmToolInt.start()
 
 
 
+
+
+// Conveyor
+
+
+
+
+
+//------------------------------------------------------------------------------
+//-- Controller manager Conveyorscheme
+//------------------------------------------------------------------------------
+loadComponent("Conveyorscheme", "conman::Scheme");
+setActivity("Conveyorscheme", 0.002, 5, ORO_SCHED_RT);
+Conveyorscheme.loadService("conman_ros");
+Conveyorscheme.configure();
+
+//------------------------------------------------------------------------------
+//-- ConveyorHardwareInterface
+//------------------------------------------------------------------------------
+loadComponent("ConveyorHardwareInterface","HardwareInterface")
+ConveyorHardwareInterface.loadService("rosparam")
+ConveyorHardwareInterface.rosparam.getAll()
+
+
+// Motors Regulators
+
+loadComponent("ConveyorRegulator_0","IRp6Regulator")
+ConveyorRegulator_0.loadService("rosparam")
+ConveyorRegulator_0.rosparam.getAll()
+ConveyorRegulator_0.configure()
+addPeer("ConveyorHardwareInterface", "ConveyorRegulator_0")
+
+
+// Conveyor double port spliter
+
+loadComponent("ConveyorPortDoubleSplit_hw_cp","PortDoubleSplit")
+ConveyorPortDoubleSplit_hw_cp.loadService("rosparam")
+ConveyorPortDoubleSplit_hw_cp.rosparam.getAll()
+ConveyorPortDoubleSplit_hw_cp.configure()
+
+
+// Conveyor double port aggregate
+
+loadComponent("ConveyorPortDoubleAggregate_hw_p","PortDoubleAggregate")
+ConveyorPortDoubleAggregate_hw_p.loadService("rosparam")
+ConveyorPortDoubleAggregate_hw_p.rosparam.getAll()
+ConveyorPortDoubleAggregate_hw_p.configure()
+
+
+// ConveyorSplineTrajectoryGeneratorMotor
+
+ loadComponent("ConveyorSplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
+
+ConveyorSplineTrajectoryGeneratorMotor.loadService("rosparam");
+ConveyorSplineTrajectoryGeneratorMotor.rosparam.getAll();
+
+connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
+connect("ConveyorSplineTrajectoryGeneratorMotor.JointPositionCommand","ConveyorPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+
+ConveyorSplineTrajectoryGeneratorMotor.configure()
+
+// addpear
+
+addPeer("Conveyorscheme", "ConveyorHardwareInterface");
+addPeer("Conveyorscheme", "ConveyorPortDoubleSplit_hw_cp")
+addPeer("Conveyorscheme", "ConveyorPortDoubleAggregate_hw_p")
+addPeer("Conveyorscheme", "ConveyorSplineTrajectoryGeneratorMotor")
+
+
+
+Conveyorscheme.addBlock("ConveyorHardwareInterface");
+
+ConveyorHardwareInterface.configure();
+
+
+connect("ConveyorHardwareInterface.computedReg_in_0","ConveyorRegulator_0.computedPwm_out", ConnPolicy())
+connect("ConveyorRegulator_0.posInc_in","ConveyorHardwareInterface.posInc_out0", ConnPolicy())
+connect("ConveyorRegulator_0.deltaInc_in","ConveyorHardwareInterface.deltaInc_out0", ConnPolicy())
+
+connect("ConveyorPortDoubleSplit_hw_cp.OutputPort_0","ConveyorHardwareInterface.MotorPositionCommand_0", ConnPolicy())
+connect("ConveyorPortDoubleAggregate_hw_p.InputPort_0","ConveyorHardwareInterface.MotorPosition_0", ConnPolicy())
+
+
+Conveyorscheme.addBlock("ConveyorPortDoubleSplit_hw_cp")
+Conveyorscheme.addBlock("ConveyorPortDoubleAggregate_hw_p")
+Conveyorscheme.latchConnections("ConveyorPortDoubleSplit_hw_cp", "ConveyorHardwareInterface", true);
+Conveyorscheme.addBlock("ConveyorSplineTrajectoryGeneratorMotor");
+
+
+//
+// ConveyorSplineTrajectoryActionMotor
+// 
+
+loadComponent("ConveyorSplineTrajectoryActionMotor", "InternalSpaceSplineTrajectoryAction")
+setActivity("ConveyorSplineTrajectoryActionMotor",0.01 ,2 ,ORO_SCHED_RT)
+ConveyorSplineTrajectoryActionMotor.loadService("rosparam");
+ConveyorSplineTrajectoryActionMotor.rosparam.getAll();
+
+ConveyorSplineTrajectoryActionMotor.loadService("actionlib")
+ConveyorSplineTrajectoryActionMotor.actionlib.connect("/conveyor/spline_trajectory_action_motor")
+
+connect("ConveyorSplineTrajectoryActionMotor.trajectoryPtr","ConveyorSplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
+connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorSplineTrajectoryActionMotor.JointPosition", ConnPolicy())
+connect("ConveyorSplineTrajectoryActionMotor.JointPositionCommand","ConveyorSplineTrajectoryGeneratorMotor.JointPositionCommand", ConnPolicy())
+
+ConveyorSplineTrajectoryActionMotor.configure()
+
+Conveyorscheme.start()
+ConveyorHardwareInterface.start()
+ConveyorRegulator_0.start()
+ConveyorPortDoubleSplit_hw_cp.start()
+ConveyorPortDoubleAggregate_hw_p.start()
+ConveyorSplineTrajectoryActionMotor.start()
