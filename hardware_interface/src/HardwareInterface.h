@@ -2,6 +2,7 @@
 #define HARDWAREINTERFACE_H_
 
 #include "hi_moxa.h"
+#include <hi_msgs/HardwareInterfacePort.h>
 
 using namespace RTT;
 
@@ -34,20 +35,23 @@ class HardwareInterface : public RTT::TaskContext {
   Eigen::VectorXd motor_position_, motor_position_command_,
       motor_position_command_old_;
 
-  int number_of_drives_;
-  bool auto_synchronize_;
-
-  // Properties
   std::vector<std::string> ports_adresses_;
   std::vector<int> max_current_;
   std::vector<double> max_increment_;
   std::vector<unsigned int> card_indexes_;
-  int tx_prefix_len_;
   std::vector<double> enc_res_;
   std::vector<double> synchro_step_coarse_;
   std::vector<double> synchro_step_fine_;
   std::vector<bool> current_mode_;
   std::vector<bool> synchro_needed_;
+
+  // Properties
+  int number_of_drives_;
+  bool auto_synchronize_;
+  int tx_prefix_len_;
+
+  hi_msgs::HardwareInterfacePort hi_port_param_[hi_moxa::MOXA_SERVOS_NR];
+
 
 
   int synchro_stop_iter_;

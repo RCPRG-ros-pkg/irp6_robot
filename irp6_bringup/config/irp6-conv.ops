@@ -8,6 +8,7 @@ ros.import("rtt_trajectory_msgs")
 ros.import("rtt_control_msgs")
 ros.import("rtt_cartesian_trajectory_msgs")
 ros.import("rtt_force_control_msgs")
+ros.import("rtt_hi_msgs")
 
 ros.import("conman");
 ros.import("conman_ros");
