@@ -8,6 +8,7 @@ ros.import("rtt_trajectory_msgs")
 ros.import("rtt_control_msgs")
 ros.import("rtt_cartesian_trajectory_msgs")
 ros.import("rtt_force_control_msgs")
+ros.import("rtt_hi_msgs")
 
 ros.import("conman");
 ros.import("conman_ros");
@@ -119,18 +120,17 @@ scheme.addBlock("SarkofagHardwareInterface");
 SarkofagHardwareInterface.configure();
 
 ## Connect
-connect("SarkofagHardwareInterface.computedReg_in_0","SarkofagRegulator_0.computedPwm_out", ConnPolicy())
-connect("SarkofagRegulator_0.posInc_in","SarkofagHardwareInterface.posInc_out0", ConnPolicy())
-connect("SarkofagRegulator_0.deltaInc_in","SarkofagHardwareInterface.deltaInc_out0", ConnPolicy())
-
+connect("SarkofagHardwareInterface.computedReg_in_sarkofag_0","SarkofagRegulator_0.computedPwm_out", ConnPolicy())
+connect("SarkofagRegulator_0.posInc_in","SarkofagHardwareInterface.posInc_out_sarkofag_0", ConnPolicy())
+connect("SarkofagRegulator_0.deltaInc_in","SarkofagHardwareInterface.deltaInc_out_sarkofag_0", ConnPolicy())
 
 
 connect("SarkofagPortDoubleAggregate_hw_p.OutputPort","SarkofagM2J.MotorPosition", ConnPolicy())
 connect("SarkofagJ2M.MotorPosition", "SarkofagPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
-connect("SarkofagPortDoubleSplit_hw_cp.OutputPort_0","SarkofagHardwareInterface.MotorPositionCommand_0", ConnPolicy())
+connect("SarkofagPortDoubleSplit_hw_cp.OutputPort_0","SarkofagHardwareInterface.MotorPositionCommand_sarkofag_0", ConnPolicy())
 
-connect("SarkofagPortDoubleAggregate_hw_p.InputPort_0","SarkofagHardwareInterface.MotorPosition_0", ConnPolicy())
+connect("SarkofagPortDoubleAggregate_hw_p.InputPort_0","SarkofagHardwareInterface.MotorPosition_sarkofag_0", ConnPolicy())
 
 scheme.addBlock("SarkofagPortDoubleSplit_hw_cp")
 scheme.addBlock("SarkofagPortDoubleAggregate_hw_p")

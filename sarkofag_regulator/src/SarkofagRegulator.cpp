@@ -47,6 +47,7 @@ SarkofagRegulator::SarkofagRegulator(const std::string& name)
   this->addProperty("debug", debug_).doc("");
   this->addProperty("eint_dif", eint_dif_).doc("");
 
+  step_reg=0;
 }
 
 SarkofagRegulator::~SarkofagRegulator() {
@@ -128,8 +129,10 @@ int SarkofagRegulator::doServo(double step_new, int pos_inc) {
     output_value = set_value_new;
   }
 
+  	step_reg++;
+
   if (debug_) {
-    std::cout << "output_value: " << output_value << std::endl;
+    std::cout << step_reg << "  output_value: " << output_value << "  step_new: " << step_new << "  pos_inc: " << pos_inc << std::endl;
   }
 
   // przepisanie nowych wartosci zmiennych do zmiennych przechowujacych wartosci poprzednie
