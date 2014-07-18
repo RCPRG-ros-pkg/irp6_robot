@@ -132,7 +132,7 @@ int SarkofagRegulator::doServo(double step_new, int pos_inc) {
   	step_reg++;
 
   if (debug_) {
-    std::cout << step_reg << "  output_value: " << output_value << std::endl;
+    std::cout << step_reg << "  output_value: " << output_value << "  step_new: " << step_new << "  pos_inc: " << pos_inc << std::endl;
   }
 
   // przepisanie nowych wartosci zmiennych do zmiennych przechowujacych wartosci poprzednie

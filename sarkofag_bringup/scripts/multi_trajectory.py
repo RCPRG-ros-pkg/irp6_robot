@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
   goal = FollowJointTrajectoryGoal()
   goal.trajectory.joint_names = ['joint1']
-  goal.trajectory.points.append(JointTrajectoryPoint([1.57], [1.2], [], [], rospy.Duration(5.0)))
+  goal.trajectory.points.append(JointTrajectoryPoint([1.57], [-1.2], [], [], rospy.Duration(5.0)))
   goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
 
   client.send_goal(goal)
