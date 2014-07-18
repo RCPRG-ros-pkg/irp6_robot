@@ -61,5 +61,7 @@ class SarkofagRegulator : public RTT::TaskContext {
 
   double a_, b0_, b1_;
 
+  int step_reg;
+
 };
 #endif
