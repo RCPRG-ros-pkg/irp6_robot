@@ -1,0 +1,10 @@
+string label
+string ports_adresses
+bool synchro_needed
+int32 max_current
+float64 max_increment
+int32 card_indexes
+float64 enc_res
+float64 synchro_step_coarse
+float64 synchro_step_fine
+bool current_mode

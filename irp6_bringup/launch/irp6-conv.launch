@@ -6,7 +6,7 @@
   
   <include file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="ROS_OROCOS_ROBOT"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find irp6_bringup)/config/irp6.ops"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find irp6_bringup)/config/irp6-conv.ops"/>
     <arg name="LOG_LEVEL" value="Warning"/>
     <arg name="DEBUG" value="false"/>
   </include>
@@ -16,84 +16,16 @@
       Irp6HardwareInterface:
         number_of_drives: 7
         auto_synchronize: true
+        ports_adresses: [/dev/ttyMI8, /dev/ttyMI9, /dev/ttyMI10, /dev/ttyMI11, /dev/ttyMI12, /dev/ttyMI13, /dev/ttyMI14]
+        synchro_needed: [true, true, true, true, true, true, true]
+        max_current: [25000, 18000, 15000, 17000, 10000, 2000, 200]
+        max_increment: [1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]
+        card_indexes: [0, 1, 2, 3, 4, 5, 6]
         tx_prefix_len: 0
-        hi_port_param_0:
-          label: irp6pm_0
-          ports_adresses: /dev/ttyMI8
-          synchro_needed: 1
-          max_current: 25000
-          max_increment: 1000.0
-          card_indexes: 0
-          enc_res: 4000.0
-          synchro_step_coarse: -0.03
-          synchro_step_fine: 0.007
-          current_mode: 1
-        hi_port_param_1:
-          label: irp6pm_1
-          ports_adresses: /dev/ttyMI9
-          synchro_needed: 1
-          max_current: 18000
-          max_increment: 1000.0
-          card_indexes: 1
-          enc_res: 4000.0
-          synchro_step_coarse: -0.03
-          synchro_step_fine: 0.007
-          current_mode: 1
-        hi_port_param_2:
-          label: irp6pm_2
-          ports_adresses: /dev/ttyMI10
-          synchro_needed: 1
-          max_current: 15000
-          max_increment: 1000.0
-          card_indexes: 2
-          enc_res: 4000.0
-          synchro_step_coarse: -0.03
-          synchro_step_fine: 0.007
-          current_mode:  1
-        hi_port_param_3:
-          label: irp6pm_3
-          ports_adresses: /dev/ttyMI11
-          synchro_needed: 1
-          max_current: 17000
-          max_increment: 1000.0
-          card_indexes: 3
-          enc_res: 4000.0
-          synchro_step_coarse: -0.03
-          synchro_step_fine: 0.007
-          current_mode: 1
-        hi_port_param_4:
-          label: irp6pm_4
-          ports_adresses: /dev/ttyMI12
-          synchro_needed: 1
-          max_current: 10000
-          max_increment: 1000.0
-          card_indexes: 4
-          enc_res: 4000.0
-          synchro_step_coarse: -0.03
-          synchro_step_fine: 0.007
-          current_mode: 0
-        hi_port_param_5:
-          label: irp6pm_5
-          ports_adresses: /dev/ttyMI13
-          synchro_needed: 1
-          max_current: 2000
-          max_increment: 1000.0
-          card_indexes: 5
-          enc_res: 2000.0
-          synchro_step_coarse: -0.05
-          synchro_step_fine: 0.05
-          current_mode: 0
-        hi_port_param_6:
-          label: irp6ptfg
-          ports_adresses: /dev/ttyMI14
-          synchro_needed: 1
-          max_current: 200
-          max_increment: 1000.0
-          card_indexes: 6
-          enc_res: 128.0
-          synchro_step_coarse: -0.5
-          synchro_step_fine: 0.2
-          current_mode: 1
+        enc_res: [4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 2000.0, 128.0]
+        synchro_step_coarse: [-0.03, -0.03, -0.03, -0.03, -0.03, -0.05, -0.5]
+        synchro_step_fine: [0.007, 0.007, 0.007, 0.007, 0.007, 0.05, 0.2]
+        current_mode: [true, true, true, true, false, false, true]
       Irp6pmJntPub:
         joint_names: [Irp6pmJoint1, Irp6pmJoint2, Irp6pmJoint3, Irp6pmJoint4, Irp6pmJoint5, Irp6pmJoint6]
       Irp6pmSplineTrajectoryGeneratorJoint:
@@ -203,7 +135,7 @@
         init_setpoint:
           orientation:
             w: 1.0 
-            x: 0.0
+            x: 0.0           
             y: 0.0
             z: 0.0
           position:
@@ -227,6 +159,39 @@
             x: 0.0
             y: 0.0
             z: 0.09 
+      ConveyorHardwareInterface:
+        number_of_drives: 1
+        auto_synchronize: true
+        ports_adresses: [/dev/ttyMI15]
+        synchro_needed: [false]
+        max_current: [18000]
+        max_increment: [1000.0]
+        card_indexes: [7]
+        tx_prefix_len: 0
+        enc_res: [4000.0]
+        synchro_step_coarse: [-0.03]
+        synchro_step_fine: [0.007]
+        current_mode: [true]
+      ConveyorSplineTrajectoryGeneratorMotor:
+        number_of_joints: 1
+      ConveyorSplineTrajectoryActionMotor:
+        joint_names: [joint1]
+        lower_limits: [-100000.0]
+        upper_limits: [100000.0]
+      ConveyorRegulator_0:
+        reg_number: 0
+        debug: false
+        eint_dif: 0.008
+        A: 0.548946716233
+        BB0: 0.9457596
+        BB1: 0.8811594
+        current_mode: true
+        current_reg_kp: 120.0
+        max_output_current: 15000.0
+      ConveyorPortDoubleSplit_hw_cp:
+        number_of_ports: 1
+      ConveyorPortDoubleAggregate_hw_p:
+        number_of_ports: 1
     </rosparam>
 </group>
 

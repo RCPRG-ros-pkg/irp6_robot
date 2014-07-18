@@ -21,37 +21,32 @@ HardwareInterface::HardwareInterface(const std::string& name)
   this->addProperty("number_of_drives", number_of_drives_).doc(
       "Number of drives in robot");
   this->addProperty("auto_synchronize", auto_synchronize_).doc("");
-  this->addProperty("ports_adresses", ports_adresses_).doc("");
-  this->addProperty("card_indexes", card_indexes_).doc("");
-  this->addProperty("max_increment", max_increment_).doc("");
-  this->addProperty("max_current", max_current_).doc("");
   this->addProperty("tx_prefix_len", tx_prefix_len_).doc("");
-  this->addProperty("enc_res", enc_res_).doc("");
-  this->addProperty("synchro_step_coarse", synchro_step_coarse_).doc("");
-  this->addProperty("synchro_step_fine", synchro_step_fine_).doc("");
-  this->addProperty("current_mode", current_mode_).doc("");
-  this->addProperty("synchro_needed", synchro_needed_).doc("");
+  this->addProperty("hi_port_param_0", hi_port_param_[0]).doc("");
+  this->addProperty("hi_port_param_1", hi_port_param_[1]).doc("");
+  this->addProperty("hi_port_param_2", hi_port_param_[2]).doc("");
+  this->addProperty("hi_port_param_3", hi_port_param_[3]).doc("");
+  this->addProperty("hi_port_param_4", hi_port_param_[4]).doc("");
+  this->addProperty("hi_port_param_5", hi_port_param_[5]).doc("");
+  this->addProperty("hi_port_param_6", hi_port_param_[6]).doc("");
+  this->addProperty("hi_port_param_7", hi_port_param_[7]).doc("");
+  this->addProperty("hi_port_param_8", hi_port_param_[8]).doc("");
+  this->addProperty("hi_port_param_9", hi_port_param_[9]).doc("");
+  this->addProperty("hi_port_param_10", hi_port_param_[10]).doc("");
+  this->addProperty("hi_port_param_11", hi_port_param_[11]).doc("");
+  this->addProperty("hi_port_param_12", hi_port_param_[12]).doc("");
+  this->addProperty("hi_port_param_13", hi_port_param_[13]).doc("");
+  this->addProperty("hi_port_param_14", hi_port_param_[14]).doc("");
+  this->addProperty("hi_port_param_15", hi_port_param_[15]).doc("");
 }
 
 HardwareInterface::~HardwareInterface() {
 }
 
 bool HardwareInterface::configureHook() {
-  if (ports_adresses_.size() != number_of_drives_
-      || max_increment_.size() != number_of_drives_
-      || max_current_.size() != number_of_drives_
-      || enc_res_.size() != number_of_drives_
-      || synchro_step_coarse_.size() != number_of_drives_
-      || synchro_step_fine_.size() != number_of_drives_
-      || card_indexes_.size() != number_of_drives_
-      || synchro_needed_.size() != number_of_drives_
-      || current_mode_.size() != number_of_drives_) {
-    log(Error) << "Size of parameters is different than number of drives"
-               << endlog();
-    return false;
-  }
-
   // dynamic ports list initialization
+
+ // std::cout << "SIZE: "  << hi_port_param_[0].label << "enc_res: " << hi_port_param_[0].enc_res << std::endl;
 
   computedReg_in_list_.resize(number_of_drives_);
   posInc_out_list_.resize(number_of_drives_);
@@ -62,26 +57,26 @@ bool HardwareInterface::configureHook() {
   for (size_t i = 0; i < number_of_drives_; i++) {
     char computedReg_in_port_name[32];
     snprintf(computedReg_in_port_name, sizeof(computedReg_in_port_name),
-             "computedReg_in_%zu", i);
+             "computedReg_in_%s", hi_port_param_[i].label.c_str());
     computedReg_in_list_[i] = new typeof(*computedReg_in_list_[i]);
     this->ports()->addPort(computedReg_in_port_name, *computedReg_in_list_[i]);
 
     char posInc_out_port_name[32];
     snprintf(posInc_out_port_name, sizeof(posInc_out_port_name),
-             "posInc_out%zu", i);
+             "posInc_out_%s", hi_port_param_[i].label.c_str());
     posInc_out_list_[i] = new typeof(*posInc_out_list_[i]);
     this->ports()->addPort(posInc_out_port_name, *posInc_out_list_[i]);
 
     char deltaInc_out_port_name[32];
     snprintf(deltaInc_out_port_name, sizeof(deltaInc_out_port_name),
-             "deltaInc_out%zu", i);
+             "deltaInc_out_%s", hi_port_param_[i].label.c_str());
     deltaInc_out_list_[i] = new typeof(*deltaInc_out_list_[i]);
     this->ports()->addPort(deltaInc_out_port_name, *deltaInc_out_list_[i]);
 
     char MotorPositionCommand_port_name[32];
     snprintf(MotorPositionCommand_port_name,
-             sizeof(MotorPositionCommand_port_name), "MotorPositionCommand_%zu",
-             i);
+             sizeof(MotorPositionCommand_port_name), "MotorPositionCommand_%s",
+             hi_port_param_[i].label.c_str());
     port_motor_position_command_list_[i] =
         new typeof(*port_motor_position_command_list_[i]);
     this->ports()->addPort(MotorPositionCommand_port_name,
@@ -89,12 +84,52 @@ bool HardwareInterface::configureHook() {
 
     char MotorPosition_port_name[32];
     snprintf(MotorPosition_port_name, sizeof(MotorPosition_port_name),
-             "MotorPosition_%zu", i);
+             "MotorPosition_%s", hi_port_param_[i].label.c_str());
     port_motor_position_list_[i] = new typeof(*port_motor_position_list_[i]);
     this->ports()->addPort(MotorPosition_port_name,
                            *port_motor_position_list_[i]);
 
   }
+
+
+  // properties copying to internal buffers
+
+  ports_adresses_.resize(number_of_drives_);
+  max_current_.resize(number_of_drives_);
+  max_increment_.resize(number_of_drives_);
+  card_indexes_.resize(number_of_drives_);
+  enc_res_.resize(number_of_drives_);
+  synchro_step_coarse_.resize(number_of_drives_);
+  synchro_step_fine_.resize(number_of_drives_);
+  current_mode_.resize(number_of_drives_);
+  synchro_needed_.resize(number_of_drives_);
+
+//  std::cout << "HI PARAMS:"  << std::endl;
+
+  for (size_t i = 0; i < number_of_drives_; i++) {
+ //   std::cout << "i: "  << i << " label: " << hi_port_param_[i].label << std::endl;
+    ports_adresses_[i] = hi_port_param_[i].ports_adresses;
+ //   std::cout << "ports_adresses_: "  << ports_adresses_[i] << std::endl;
+    max_current_[i] = hi_port_param_[i].max_current;
+ //   std::cout << "max_current_: "  << max_current_[i] << std::endl;
+    max_increment_[i] = hi_port_param_[i].max_increment;
+//    std::cout << "max_increment_: "  << max_increment_[i] << std::endl;
+    card_indexes_[i] = hi_port_param_[i].card_indexes;
+ //   std::cout << "ports_adresses_: "  << ports_adresses_[i] << std::endl;
+    enc_res_[i] = hi_port_param_[i].enc_res;
+  //  std::cout << "card_indexes_: "  << card_indexes_[i] << std::endl;
+    synchro_step_coarse_[i] = hi_port_param_[i].synchro_step_coarse;
+  //  std::cout << "synchro_step_coarse_: "  << synchro_step_coarse_[i] << std::endl;
+    synchro_step_fine_[i] = hi_port_param_[i].synchro_step_fine;
+  //  std::cout << "synchro_step_fine_: "  << synchro_step_fine_[i] << std::endl;
+    current_mode_[i] = hi_port_param_[i].current_mode;
+ //   std::cout << "current_mode_: "  << current_mode_[i] << std::endl;
+    synchro_needed_[i] = hi_port_param_[i].synchro_needed;
+ //   std::cout << "synchro_needed_: "  << synchro_needed_[i] << std::endl << std::endl;
+  }
+
+
+
 
   hi_ = new hi_moxa::HI_moxa(number_of_drives_ - 1, card_indexes_,
                              max_increment_, tx_prefix_len_),
