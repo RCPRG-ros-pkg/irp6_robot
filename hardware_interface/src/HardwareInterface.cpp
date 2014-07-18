@@ -207,23 +207,11 @@ uint16_t HardwareInterface::convert_to_115(float input) {
   return output;
 }
 
-bool HardwareInterface::all_needed_axis_synchronised() {
-
-  for (int i = 0; i < number_of_drives_; i++) {
-    if (synchro_needed_[i]) {
-      if (!(hi_->drive_synchronized(i))) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
 bool HardwareInterface::startHook() {
   try {
     hi_->write_read_hardware();
 
-    if (!all_needed_axis_synchronised()) {
+    if (!hi_->robot_synchronized()) {
       RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
       if (auto_synchronize_) {
         RTT::log(RTT::Info) << "Auto synchronize" << RTT::endlog();
@@ -231,29 +219,9 @@ bool HardwareInterface::startHook() {
         synchro_start_iter_ = 500;
         synchro_stop_iter_ = 1000;
         synchro_state_ = MOVE_TO_SYNCHRO_AREA;
-        synchro_drive_ = -1;
+        synchro_drive_ = 0;
         std::cout << "Auto synchronize" << std::endl;
-
-        while (true) {
-          if (++synchro_drive_ == number_of_drives_) {
-            RTT::log(RTT::Info) << "No synchronization needed" << RTT::endlog();
-
-            for (int i = 0; i < number_of_drives_; i++) {
-              motor_position_command_(i) = (double) hi_->get_position(i)
-                  * ((2.0 * M_PI) / enc_res_[i]);
-              motor_position_command_old_(i) = motor_position_command_(i);
-            }
-            break;
-          } else {
-            if (synchro_needed_[synchro_drive_]) {
-              state_ = PRE_SYNCHRONIZING;
-              break;
-            } else {
-              continue;
-            }
-          }
-
-        }
+        state_ = PRE_SYNCHRONIZING;
 
       } else
         state_ = NOT_SYNCHRONIZED;
@@ -326,23 +294,38 @@ void HardwareInterface::updateHook() {
 
       switch (synchro_state_) {
         case MOVE_TO_SYNCHRO_AREA:
-          if (hi_->in_synchro_area(synchro_drive_)) {
-            RTT::log(RTT::Debug) << "[servo " << synchro_drive_
-                                 << " ] MOVE_TO_SYNCHRO_AREA ended"
-                                 << RTT::endlog();
-            pos_inc_[synchro_drive_] = 0.0;
-            synchro_state_ = STOP;
+
+          if (synchro_needed_[synchro_drive_]) {
+            if (hi_->in_synchro_area(synchro_drive_)) {
+              RTT::log(RTT::Debug) << "[servo " << synchro_drive_
+                                   << " ] MOVE_TO_SYNCHRO_AREA ended"
+                                   << RTT::endlog();
+              pos_inc_[synchro_drive_] = 0.0;
+              synchro_state_ = STOP;
+            } else {
+              // ruszam powoli w stronę synchro area
+              RTT::log(RTT::Debug) << "[servo " << synchro_drive_
+                                   << " ] MOVE_TO_SYNCHRO_AREA"
+                                   << RTT::endlog();
+              pos_inc_[synchro_drive_] = synchro_step_coarse_[synchro_drive_]
+                  * (enc_res_[synchro_drive_] / (2.0 * M_PI));
+            }
           } else {
-            // ruszam powoli w stronę synchro area
-            RTT::log(RTT::Debug) << "[servo " << synchro_drive_
-                                 << " ] MOVE_TO_SYNCHRO_AREA" << RTT::endlog();
-            pos_inc_[synchro_drive_] = synchro_step_coarse_[synchro_drive_]
-                * (enc_res_[synchro_drive_] / (2.0 * M_PI));
+
+            hi_->set_parameter_now(synchro_drive_, NF_COMMAND_SetDrivesMisc,
+            NF_DrivesMisc_SetSynchronized);
+            hi_->reset_position(synchro_drive_);
+            if (++synchro_drive_ == number_of_drives_) {
+              synchro_state_ = SYNCHRO_END;
+            } else {
+              synchro_state_ = MOVE_TO_SYNCHRO_AREA;
+            }
           }
           break;
 
         case STOP:
           hi_->start_synchro(synchro_drive_);
+
           synchro_state_ = MOVE_FROM_SYNCHRO_AREA;
 
           break;
@@ -376,19 +359,10 @@ void HardwareInterface::updateHook() {
             hi_->finish_synchro(synchro_drive_);
             hi_->reset_position(synchro_drive_);
 
-            while (true) {
-              if (++synchro_drive_ == number_of_drives_) {
-                synchro_state_ = SYNCHRO_END;
-                break;
-              } else {
-                if (synchro_needed_[synchro_drive_]) {
-                  synchro_state_ = MOVE_TO_SYNCHRO_AREA;
-                  break;
-                } else {
-                  continue;
-                }
-              }
-
+            if (++synchro_drive_ == number_of_drives_) {
+              synchro_state_ = SYNCHRO_END;
+            } else {
+              synchro_state_ = MOVE_TO_SYNCHRO_AREA;
             }
 
           } else {
