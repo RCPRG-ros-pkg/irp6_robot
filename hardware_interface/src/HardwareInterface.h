@@ -74,6 +74,7 @@ class HardwareInterface : public RTT::TaskContext {
   hi_moxa::HI_moxa *hi_;
 
   uint16_t convert_to_115(float input);
+  bool all_needed_axis_synchronised();
 
  public:
   HardwareInterface(const std::string& name);

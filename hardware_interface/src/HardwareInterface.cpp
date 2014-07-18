@@ -46,7 +46,7 @@ HardwareInterface::~HardwareInterface() {
 bool HardwareInterface::configureHook() {
   // dynamic ports list initialization
 
- // std::cout << "SIZE: "  << hi_port_param_[0].label << "enc_res: " << hi_port_param_[0].enc_res << std::endl;
+  // std::cout << "SIZE: "  << hi_port_param_[0].label << "enc_res: " << hi_port_param_[0].enc_res << std::endl;
 
   computedReg_in_list_.resize(number_of_drives_);
   posInc_out_list_.resize(number_of_drives_);
@@ -91,7 +91,6 @@ bool HardwareInterface::configureHook() {
 
   }
 
-
   // properties copying to internal buffers
 
   ports_adresses_.resize(number_of_drives_);
@@ -107,29 +106,26 @@ bool HardwareInterface::configureHook() {
 //  std::cout << "HI PARAMS:"  << std::endl;
 
   for (size_t i = 0; i < number_of_drives_; i++) {
- //   std::cout << "i: "  << i << " label: " << hi_port_param_[i].label << std::endl;
+    //   std::cout << "i: "  << i << " label: " << hi_port_param_[i].label << std::endl;
     ports_adresses_[i] = hi_port_param_[i].ports_adresses;
- //   std::cout << "ports_adresses_: "  << ports_adresses_[i] << std::endl;
+    //   std::cout << "ports_adresses_: "  << ports_adresses_[i] << std::endl;
     max_current_[i] = hi_port_param_[i].max_current;
- //   std::cout << "max_current_: "  << max_current_[i] << std::endl;
+    //   std::cout << "max_current_: "  << max_current_[i] << std::endl;
     max_increment_[i] = hi_port_param_[i].max_increment;
 //    std::cout << "max_increment_: "  << max_increment_[i] << std::endl;
     card_indexes_[i] = hi_port_param_[i].card_indexes;
- //   std::cout << "ports_adresses_: "  << ports_adresses_[i] << std::endl;
+    //   std::cout << "ports_adresses_: "  << ports_adresses_[i] << std::endl;
     enc_res_[i] = hi_port_param_[i].enc_res;
-  //  std::cout << "card_indexes_: "  << card_indexes_[i] << std::endl;
+    //  std::cout << "card_indexes_: "  << card_indexes_[i] << std::endl;
     synchro_step_coarse_[i] = hi_port_param_[i].synchro_step_coarse;
-  //  std::cout << "synchro_step_coarse_: "  << synchro_step_coarse_[i] << std::endl;
+    //  std::cout << "synchro_step_coarse_: "  << synchro_step_coarse_[i] << std::endl;
     synchro_step_fine_[i] = hi_port_param_[i].synchro_step_fine;
-  //  std::cout << "synchro_step_fine_: "  << synchro_step_fine_[i] << std::endl;
+    //  std::cout << "synchro_step_fine_: "  << synchro_step_fine_[i] << std::endl;
     current_mode_[i] = hi_port_param_[i].current_mode;
- //   std::cout << "current_mode_: "  << current_mode_[i] << std::endl;
+    //   std::cout << "current_mode_: "  << current_mode_[i] << std::endl;
     synchro_needed_[i] = hi_port_param_[i].synchro_needed;
- //   std::cout << "synchro_needed_: "  << synchro_needed_[i] << std::endl << std::endl;
+    //   std::cout << "synchro_needed_: "  << synchro_needed_[i] << std::endl << std::endl;
   }
-
-
-
 
   hi_ = new hi_moxa::HI_moxa(number_of_drives_ - 1, card_indexes_,
                              max_increment_, tx_prefix_len_),
@@ -211,11 +207,23 @@ uint16_t HardwareInterface::convert_to_115(float input) {
   return output;
 }
 
+bool HardwareInterface::all_needed_axis_synchronised() {
+
+  for (int i = 0; i < number_of_drives_; i++) {
+    if (synchro_needed_[i]) {
+      if (!(hi_->drive_synchronized(i))) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 bool HardwareInterface::startHook() {
   try {
     hi_->write_read_hardware();
 
-    if (!hi_->robot_synchronized()) {
+    if (!all_needed_axis_synchronised()) {
       RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
       if (auto_synchronize_) {
         RTT::log(RTT::Info) << "Auto synchronize" << RTT::endlog();
@@ -441,6 +449,7 @@ void HardwareInterface::updateHook() {
       RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
     }
     if (current_mode_[i]) {
+
       hi_->set_current(i, pwm_or_current_[i]);
     } else {
       hi_->set_pwm(i, pwm_or_current_[i]);
