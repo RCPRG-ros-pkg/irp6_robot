@@ -237,7 +237,13 @@
           position:
             x: 0.0
             y: 0.0
-            z: 0.09 
+            z: 0.09
+      ConveyorSplineTrajectoryGeneratorJoint:
+        number_of_joints: 1
+      ConveyorSplineTrajectoryActionJoint:
+        joint_names: [joint1]
+        lower_limits: [-1000.0]
+        upper_limits: [1000.0]
       ConveyorSplineTrajectoryGeneratorMotor:
         number_of_joints: 1
       ConveyorSplineTrajectoryActionMotor:
