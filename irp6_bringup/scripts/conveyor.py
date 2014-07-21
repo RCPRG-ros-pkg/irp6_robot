@@ -75,7 +75,30 @@ if __name__ == '__main__':
     
   conmanSwitch([], ['ConveyorSplineTrajectoryGeneratorMotor'], True)  
     
-    
+  
+  #
+  # Joint coordinates motion
+  #
+  
+  conmanSwitch(['ConveyorSplineTrajectoryGeneratorJoint'], [], True)
+  
+  joint_client = actionlib.SimpleActionClient('/conveyor/spline_trajectory_action_joint', FollowJointTrajectoryAction)
+  joint_client.wait_for_server()
+
+  print 'server ok'
+
+  goal = FollowJointTrajectoryGoal()
+  goal.trajectory.joint_names = ['joint1']
+  goal.trajectory.points.append(JointTrajectoryPoint([0.0], [0.0], [], [], rospy.Duration(3.0)))
+  goal.trajectory.points.append(JointTrajectoryPoint([0.1], [0.0], [], [], rospy.Duration(6.0)))
+  goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+
+  joint_client.send_goal(goal)
+
+  joint_client.wait_for_result()
+  command_result = joint_client.get_result()
+     
+  conmanSwitch([], ['ConveyorSplineTrajectoryGeneratorJoint'], True)
   
   print 'finish'
   
