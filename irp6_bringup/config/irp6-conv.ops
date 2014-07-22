@@ -91,6 +91,44 @@ ConveyorRegulator.loadService("rosparam")
 ConveyorRegulator.rosparam.getAll()
 ConveyorRegulator.configure()
 
+
+
+loadComponent("IRp6otmRegulator_0","IRp6Regulator")
+IRp6otmRegulator_0.loadService("rosparam")
+IRp6otmRegulator_0.rosparam.getAll()
+IRp6otmRegulator_0.configure()
+
+loadComponent("IRp6otmRegulator_1","IRp6Regulator")
+IRp6otmRegulator_1.loadService("rosparam")
+IRp6otmRegulator_1.rosparam.getAll()
+IRp6otmRegulator_1.configure()
+
+loadComponent("IRp6otmRegulator_2","IRp6Regulator")
+IRp6otmRegulator_2.loadService("rosparam")
+IRp6otmRegulator_2.rosparam.getAll()
+IRp6otmRegulator_2.configure()
+
+loadComponent("IRp6otmRegulator_3","IRp6Regulator")
+IRp6otmRegulator_3.loadService("rosparam")
+IRp6otmRegulator_3.rosparam.getAll()
+IRp6otmRegulator_3.configure()
+
+loadComponent("IRp6otmRegulator_4","IRp6Regulator")
+IRp6otmRegulator_4.loadService("rosparam")
+IRp6otmRegulator_4.rosparam.getAll()
+IRp6otmRegulator_4.configure()
+
+loadComponent("IRp6otmRegulator_5","IRp6Regulator")
+IRp6otmRegulator_5.loadService("rosparam")
+IRp6otmRegulator_5.rosparam.getAll()
+IRp6otmRegulator_5.configure()
+
+loadComponent("IRp6otmRegulator_6","IRp6Regulator")
+IRp6otmRegulator_6.loadService("rosparam")
+IRp6otmRegulator_6.rosparam.getAll()
+IRp6otmRegulator_6.configure()
+
+
 addPeer("Irp6HardwareInterface", "IRp6pmRegulator_0")
 addPeer("Irp6HardwareInterface", "IRp6pmRegulator_1")
 addPeer("Irp6HardwareInterface", "IRp6pmRegulator_2")
@@ -100,6 +138,14 @@ addPeer("Irp6HardwareInterface", "IRp6pmRegulator_5")
 
 addPeer("Irp6HardwareInterface", "Irp6ptfgRegulator")
 addPeer("Irp6HardwareInterface", "ConveyorRegulator")
+
+addPeer("Irp6HardwareInterface", "IRp6otmRegulator_0")
+addPeer("Irp6HardwareInterface", "IRp6otmRegulator_1")
+addPeer("Irp6HardwareInterface", "IRp6otmRegulator_2")
+addPeer("Irp6HardwareInterface", "IRp6otmRegulator_3")
+addPeer("Irp6HardwareInterface", "IRp6otmRegulator_4")
+addPeer("Irp6HardwareInterface", "IRp6otmRegulator_5")
+addPeer("Irp6HardwareInterface", "IRp6otmRegulator_6")
 
 
 // Irp6pm double port spliter
@@ -123,6 +169,13 @@ ConveyorPortDoubleSplit_hw_cp.loadService("rosparam")
 ConveyorPortDoubleSplit_hw_cp.rosparam.getAll()
 ConveyorPortDoubleSplit_hw_cp.configure()
 
+// Irp6otm double port spliter
+
+loadComponent("Irp6otmPortDoubleSplit_hw_cp","PortDoubleSplit")
+Irp6otmPortDoubleSplit_hw_cp.loadService("rosparam")
+Irp6otmPortDoubleSplit_hw_cp.rosparam.getAll()
+Irp6otmPortDoubleSplit_hw_cp.configure()
+
 
 // Irp6pm double port aggregate
 
@@ -144,6 +197,13 @@ loadComponent("ConveyorPortDoubleAggregate_hw_p","PortDoubleAggregate")
 ConveyorPortDoubleAggregate_hw_p.loadService("rosparam")
 ConveyorPortDoubleAggregate_hw_p.rosparam.getAll()
 ConveyorPortDoubleAggregate_hw_p.configure()
+
+// Irp6otm double port aggregate
+
+loadComponent("Irp6otmPortDoubleAggregate_hw_p","PortDoubleAggregate")
+Irp6otmPortDoubleAggregate_hw_p.loadService("rosparam")
+Irp6otmPortDoubleAggregate_hw_p.rosparam.getAll()
+Irp6otmPortDoubleAggregate_hw_p.configure()
 
 
 loadComponent("Irp6pmM2J","Irp6pmM2J")
@@ -314,9 +374,11 @@ addPeer("Irp6scheme", "Irp6HardwareInterface");
 addPeer("Irp6scheme", "Irp6pmPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "Irp6ptfgPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "ConveyorPortDoubleSplit_hw_cp")
+addPeer("Irp6scheme", "Irp6otmPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "Irp6pmPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6ptfgPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "ConveyorPortDoubleAggregate_hw_p")
+addPeer("Irp6scheme", "Irp6otmPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6pmM2J");
 addPeer("Irp6scheme", "Irp6ptfgM2J");
 addPeer("Irp6scheme", "ConveyorM2J");
@@ -368,6 +430,7 @@ connect("Irp6HardwareInterface.computedReg_in_irp6pm_5","IRp6pmRegulator_5.compu
 connect("IRp6pmRegulator_5.posInc_in","Irp6HardwareInterface.posInc_out_irp6pm_5", ConnPolicy())
 connect("IRp6pmRegulator_5.deltaInc_in","Irp6HardwareInterface.deltaInc_out_irp6pm_5", ConnPolicy())
 
+
 connect("Irp6HardwareInterface.computedReg_in_irp6ptfg","Irp6ptfgRegulator.computedPwm_out", ConnPolicy())
 connect("Irp6ptfgRegulator.posInc_in","Irp6HardwareInterface.posInc_out_irp6ptfg", ConnPolicy())
 connect("Irp6ptfgRegulator.deltaInc_in","Irp6HardwareInterface.deltaInc_out_irp6ptfg", ConnPolicy())
@@ -375,6 +438,35 @@ connect("Irp6ptfgRegulator.deltaInc_in","Irp6HardwareInterface.deltaInc_out_irp6
 connect("Irp6HardwareInterface.computedReg_in_conveyor","ConveyorRegulator.computedPwm_out", ConnPolicy())
 connect("ConveyorRegulator.posInc_in","Irp6HardwareInterface.posInc_out_conveyor", ConnPolicy())
 connect("ConveyorRegulator.deltaInc_in","Irp6HardwareInterface.deltaInc_out_conveyor", ConnPolicy())
+
+
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_0","IRp6otmRegulator_0.computedPwm_out", ConnPolicy())
+connect("IRp6otmRegulator_0.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_0", ConnPolicy())
+connect("IRp6otmRegulator_0.deltaInc_in","Irp6HardwareInterface.deltaInc_out_irp6otm_0", ConnPolicy())
+
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_1","IRp6otmRegulator_1.computedPwm_out", ConnPolicy())
+connect("IRp6otmRegulator_1.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_1", ConnPolicy())
+connect("IRp6otmRegulator_1.deltaInc_in","Irp6HardwareInterface.deltaInc_out_irp6otm_1", ConnPolicy())
+
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_2","IRp6otmRegulator_2.computedPwm_out", ConnPolicy())
+connect("IRp6otmRegulator_2.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_2", ConnPolicy())
+connect("IRp6otmRegulator_2.deltaInc_in","Irp6HardwareInterface.deltaInc_out_irp6otm_2", ConnPolicy())
+
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_3","IRp6otmRegulator_3.computedPwm_out", ConnPolicy())
+connect("IRp6otmRegulator_3.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_3", ConnPolicy())
+connect("IRp6otmRegulator_3.deltaInc_in","Irp6HardwareInterface.deltaInc_out_irp6otm_3", ConnPolicy())
+
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_4","IRp6otmRegulator_4.computedPwm_out", ConnPolicy())
+connect("IRp6otmRegulator_4.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_4", ConnPolicy())
+connect("IRp6otmRegulator_4.deltaInc_in","Irp6HardwareInterface.deltaInc_out_irp6otm_4", ConnPolicy())
+
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_5","IRp6otmRegulator_5.computedPwm_out", ConnPolicy())
+connect("IRp6otmRegulator_5.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_5", ConnPolicy())
+connect("IRp6otmRegulator_5.deltaInc_in","Irp6HardwareInterface.deltaInc_out_irp6otm_5", ConnPolicy())
+
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_6","IRp6otmRegulator_6.computedPwm_out", ConnPolicy())
+connect("IRp6otmRegulator_6.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_6", ConnPolicy())
+connect("IRp6otmRegulator_6.deltaInc_in","Irp6HardwareInterface.deltaInc_out_irp6otm_6", ConnPolicy())
 
 
 connect("Irp6pmPortDoubleAggregate_hw_p.OutputPort","Irp6pmM2J.MotorPosition", ConnPolicy())
@@ -396,6 +488,15 @@ connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_5","Irp6HardwareInterface.MotorP
 connect("Irp6ptfgPortDoubleSplit_hw_cp.OutputPort_0","Irp6HardwareInterface.MotorPositionCommand_irp6ptfg", ConnPolicy())
 connect("ConveyorPortDoubleSplit_hw_cp.OutputPort_0","Irp6HardwareInterface.MotorPositionCommand_conveyor", ConnPolicy())
 
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_0","Irp6HardwareInterface.MotorPositionCommand_irp6otm_0", ConnPolicy())
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_1","Irp6HardwareInterface.MotorPositionCommand_irp6otm_1", ConnPolicy())
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_2","Irp6HardwareInterface.MotorPositionCommand_irp6otm_2", ConnPolicy())
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_3","Irp6HardwareInterface.MotorPositionCommand_irp6otm_3", ConnPolicy())
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_4","Irp6HardwareInterface.MotorPositionCommand_irp6otm_4", ConnPolicy())
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_5","Irp6HardwareInterface.MotorPositionCommand_irp6otm_5", ConnPolicy())
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_6","Irp6HardwareInterface.MotorPositionCommand_irp6otm_6", ConnPolicy())
+
+
 connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_irp6pm_0", ConnPolicy())
 connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_1","Irp6HardwareInterface.MotorPosition_irp6pm_1", ConnPolicy())
 connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_2","Irp6HardwareInterface.MotorPosition_irp6pm_2", ConnPolicy())
@@ -406,13 +507,23 @@ connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_5","Irp6HardwareInterface.Moto
 connect("Irp6ptfgPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_irp6ptfg", ConnPolicy())
 connect("ConveyorPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_conveyor", ConnPolicy())
 
+connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_irp6otm_0", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_1","Irp6HardwareInterface.MotorPosition_irp6otm_1", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_2","Irp6HardwareInterface.MotorPosition_irp6otm_2", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_3","Irp6HardwareInterface.MotorPosition_irp6otm_3", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_4","Irp6HardwareInterface.MotorPosition_irp6otm_4", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_5","Irp6HardwareInterface.MotorPosition_irp6otm_5", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_6","Irp6HardwareInterface.MotorPosition_irp6otm_6", ConnPolicy())
+
 
 Irp6scheme.addBlock("Irp6pmPortDoubleSplit_hw_cp")
 Irp6scheme.addBlock("Irp6ptfgPortDoubleSplit_hw_cp")
 Irp6scheme.addBlock("ConveyorPortDoubleSplit_hw_cp")
+Irp6scheme.addBlock("Irp6otmPortDoubleSplit_hw_cp")
 Irp6scheme.addBlock("Irp6pmPortDoubleAggregate_hw_p")
 Irp6scheme.addBlock("Irp6ptfgPortDoubleAggregate_hw_p")
 Irp6scheme.addBlock("ConveyorPortDoubleAggregate_hw_p")
+Irp6scheme.addBlock("Irp6otmPortDoubleAggregate_hw_p")
 
 
 Irp6scheme.addBlock("Irp6pmM2J");
@@ -423,6 +534,7 @@ Irp6scheme.addBlock("Irp6pmInverseKinematic");
 Irp6scheme.latchConnections("Irp6pmPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
 Irp6scheme.latchConnections("Irp6ptfgPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
 Irp6scheme.latchConnections("ConveyorPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
+Irp6scheme.latchConnections("Irp6otmPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
 Irp6scheme.addBlock("Irp6pmJ2M");
 Irp6scheme.addBlock("Irp6ptfgJ2M");
 Irp6scheme.addBlock("ConveyorJ2M");
@@ -617,12 +729,21 @@ IRp6pmRegulator_4.start()
 IRp6pmRegulator_5.start()
 Irp6ptfgRegulator.start()
 ConveyorRegulator.start()
+IRp6otmRegulator_0.start()
+IRp6otmRegulator_1.start()
+IRp6otmRegulator_2.start()
+IRp6otmRegulator_3.start()
+IRp6otmRegulator_4.start()
+IRp6otmRegulator_5.start()
+IRp6otmRegulator_6.start()
 Irp6pmPortDoubleSplit_hw_cp.start()
 Irp6ptfgPortDoubleSplit_hw_cp.start()
 ConveyorPortDoubleSplit_hw_cp.start()
+Irp6otmPortDoubleSplit_hw_cp.start()
 Irp6pmPortDoubleAggregate_hw_p.start()
 Irp6ptfgPortDoubleAggregate_hw_p.start()
 ConveyorPortDoubleAggregate_hw_p.start()
+Irp6otmPortDoubleAggregate_hw_p.start()
 Irp6pmM2J.start()
 Irp6ptfgM2J.start()
 ConveyorM2J.start()

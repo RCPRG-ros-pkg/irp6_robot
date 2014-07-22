@@ -14,7 +14,7 @@
   <group ns="ROS_OROCOS_ROBOT">
     <rosparam>
       Irp6HardwareInterface:
-        number_of_drives: 8
+        number_of_drives: 15
         auto_synchronize: true
         tx_prefix_len: 0
         hi_port_param_0:
@@ -105,6 +105,94 @@
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007
           current_mode: 1
+        hi_port_param_8:
+          label: irp6otm_0
+          ports_adresses: /dev/ttyMI7
+          synchro_needed: 1
+          max_current: 27000
+          max_increment: 1000.0
+          card_indexes: 15
+          enc_res: 4000.0
+          synchro_step_coarse: -0.03
+          synchro_step_fine: 0.007
+          current_mode: 1
+        hi_port_param_9:
+          label: irp6otm_1
+          ports_adresses: /dev/ttyMI0
+          synchro_needed: 1
+          max_current: 25000
+          max_increment: 1000.0
+          card_indexes: 8
+          enc_res: 4000.0
+          synchro_step_coarse: -0.03
+          synchro_step_fine: 0.007   
+          current_mode: 1
+        hi_port_param_10:
+          label: irp6otm_2
+          ports_adresses: /dev/ttyMI1
+          synchro_needed: 1
+          max_current: 18000
+          max_increment: 1000.0
+          card_indexes: 9
+          enc_res: 4000.0
+          synchro_step_coarse: -0.03
+          synchro_step_fine: 0.007   
+          current_mode: 1
+        hi_port_param_11:
+          label: irp6otm_3
+          ports_adresses: /dev/ttyMI2
+          synchro_needed: 1
+          max_current: 15000
+          max_increment: 1000.0
+          card_indexes: 10
+          enc_res: 4000.0
+          synchro_step_coarse: -0.03
+          synchro_step_fine: 0.007   
+          current_mode: 1
+        hi_port_param_12:
+          label: irp6otm_4
+          ports_adresses: /dev/ttyMI3
+          synchro_needed: 1
+          max_current: 17000
+          max_increment: 1000.0
+          card_indexes: 11
+          enc_res: 4000.0
+          synchro_step_coarse: -0.03
+          synchro_step_fine: 0.007   
+          current_mode: 1
+        hi_port_param_13:
+          label: irp6otm_5
+          ports_adresses: /dev/ttyMI4
+          synchro_needed: 1
+          max_current: 10000
+          max_increment: 1000.0
+          card_indexes: 12
+          enc_res: 4000.0
+          synchro_step_coarse: -0.03
+          synchro_step_fine: 0.007   
+          current_mode: 0
+        hi_port_param_14:
+          label: irp6otm_6
+          ports_adresses: /dev/ttyMI5
+          synchro_needed: 1
+          max_current: 2000
+          max_increment: 1000.0
+          card_indexes: 13
+          enc_res: 2000.0
+          synchro_step_coarse: -0.05
+          synchro_step_fine: 0.05  
+          current_mode: 0 
+        hi_port_param_15:
+          label: irp6ottfg
+          ports_adresses: /dev/ttyMI6
+          synchro_needed: 1
+          max_current: 200
+          max_increment: 1000.0
+          card_indexes: 14
+          enc_res: 128.0
+          synchro_step_coarse: -0.5
+          synchro_step_fine: 0.2
+          current_mode: 1
       Irp6pmJntPub:
         joint_names: [Irp6pmJoint1, Irp6pmJoint2, Irp6pmJoint3, Irp6pmJoint4, Irp6pmJoint5, Irp6pmJoint6]
       Irp6pmSplineTrajectoryGeneratorJoint:
@@ -132,7 +220,7 @@
         lower_limits: [-1900.0]
         upper_limits: [4900.0]
       IRp6pmRegulator_0:
-        reg_number: 0
+        reg_number: 2
         debug: false
         eint_dif: 0.01
         A: 0.412429378531
@@ -142,7 +230,7 @@
         current_reg_kp: 200.0
         max_output_current: 20000.0
       IRp6pmRegulator_1:
-        reg_number: 1
+        reg_number: 3
         debug: false
         eint_dif: 0.008
         A: 0.655629139073
@@ -152,7 +240,7 @@
         current_reg_kp: 150.0
         max_output_current: 15000.0
       IRp6pmRegulator_2:
-        reg_number: 2
+        reg_number: 4
         debug: false
         eint_dif: 0.008
         A: 0.315789473684
@@ -162,7 +250,7 @@
         current_reg_kp: 180.0
         max_output_current: 15000.0
       IRp6pmRegulator_3:
-        reg_number: 3
+        reg_number: 5
         debug: false
         eint_dif: 0.01
         A: 0.548946716233
@@ -172,7 +260,7 @@
         current_reg_kp: 170.0
         max_output_current: 15000.0
       IRp6pmRegulator_4:
-        reg_number: 4
+        reg_number: 6
         debug: false
         eint_dif: 0.02
         A: 0.391982182628
@@ -182,7 +270,7 @@
         current_reg_kp: 110.0
         max_output_current: 8000.0
       IRp6pmRegulator_5:
-        reg_number: 5
+        reg_number: 7
         debug: false
         eint_dif: 0.005
         A: 0.3
@@ -192,7 +280,7 @@
         current_reg_kp: 11.0
         max_output_current: 1000.0
       Irp6ptfgRegulator:
-        reg_number: 6
+        reg_number: 8
         debug: false
         eint_dif: 0.02
         A: 0.2
@@ -201,6 +289,86 @@
         current_mode: true
         current_reg_kp: 0.33
         max_output_current: 80.0
+      IRp6otmRegulator_0:
+        reg_number: 9
+        debug: false
+        eint_dif: 0.01
+        A: 0.412429378531
+        BB0: 1.5569592
+        BB1: 1.5028614
+        current_mode: true
+        current_reg_kp: 190.0
+        max_output_current: 22000.0
+      IRp6otmRegulator_1:
+        reg_number: 10
+        debug: false
+        eint_dif: 0.01
+        A: 0.412429378531
+        BB0: 1.5569592
+        BB1: 1.5028614
+        current_mode: true
+        current_reg_kp: 200.0
+        max_output_current: 20000.0  
+      IRp6otmRegulator_2:
+        reg_number: 11
+        debug: false
+        eint_dif: 0.008
+        A: 0.655629139073
+        BB0: 0.6181068
+        BB1: 0.5916852
+        current_mode: true
+        current_reg_kp: 150.0
+        max_output_current: 15000.0
+      IRp6otmRegulator_3:
+        reg_number: 12
+        debug: false
+        eint_dif: 0.008
+        A: 0.315789473684
+        BB0: 1.1984784
+        BB1: 1.1424828
+        current_mode: true
+        current_reg_kp: 180.0
+        max_output_current: 15000.0
+      IRp6otmRegulator_4:
+        reg_number: 13
+        debug: false
+        eint_dif: 0.01
+        A: 0.548946716233
+        BB0: 0.6305064
+        BB1: 0.5874396
+        current_mode: true
+        current_reg_kp: 170.0
+        max_output_current: 15000.0
+      IRp6otmRegulator_5:
+        reg_number: 14
+        debug: false
+        eint_dif: 0.02
+        A: 0.391982182628
+        BB0: 0.4458592
+        BB1: 0.4085392
+        current_mode: false
+        current_reg_kp: 110.0
+        max_output_current: 8000.0
+      IRp6otmRegulator_6:
+        reg_number: 15
+        debug: false
+        eint_dif: 0.005
+        A: 0.3
+        BB0: 0.5456
+        BB1: 0.5056
+        current_mode: false
+        current_reg_kp: 11.0
+        max_output_current: 1000.0
+      Irp6ottfgRegulator:
+        reg_number: 16
+        debug: false
+        eint_dif: 0.02
+        A: 0.2
+        BB0: 15.984375
+        BB1: 15.784375
+        current_mode: true
+        current_reg_kp: 0.33
+        max_output_current: 80.0  
       Irp6pmPortDoubleSplit_hw_cp:
         number_of_ports: 6
       Irp6pmPortDoubleAggregate_hw_p:
@@ -251,7 +419,7 @@
         lower_limits: [-100000.0]
         upper_limits: [100000.0]
       ConveyorRegulator:
-        reg_number: 0
+        reg_number: 1
         debug: false
         eint_dif: 0.008
         A: 0.548946716233
@@ -264,6 +432,10 @@
         number_of_ports: 1
       ConveyorPortDoubleAggregate_hw_p:
         number_of_ports: 1
+      Irp6otmPortDoubleSplit_hw_cp:
+        number_of_ports: 7
+      Irp6otmPortDoubleAggregate_hw_p:
+        number_of_ports: 7
     </rosparam>
 </group>
 
