@@ -5,7 +5,6 @@
 
 Irp6ptfgM2J::Irp6ptfgM2J(const std::string& name)
     : RTT::TaskContext(name, PreOperational) {
-
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("JointPosition", port_joint_position_);
 
@@ -15,7 +14,6 @@ Irp6ptfgM2J::Irp6ptfgM2J(const std::string& name)
 }
 
 Irp6ptfgM2J::~Irp6ptfgM2J() {
-
 }
 
 bool Irp6ptfgM2J::configureHook() {
@@ -32,7 +30,6 @@ void Irp6ptfgM2J::updateHook() {
 
 void Irp6ptfgM2J::mp2i(const double* motors, double* joints) {
   joints[0] = dir_a_7 * (motors[0] * motors[0]) - dir_b_7 * motors[0] + dir_c_7;
-
 }
 
 ORO_CREATE_COMPONENT(Irp6ptfgM2J)
