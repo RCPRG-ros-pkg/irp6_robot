@@ -485,7 +485,7 @@ uint64_t HI_moxa::write_read_hardware(void) {
   uint64_t ret;
   if ((ret = write_hardware()) != 0) {
     struct timespec delay;
-    delay.tv_nsec = 1000000;
+    delay.tv_nsec = 1100000;
     delay.tv_sec = 0;
 
     nanosleep(&delay, NULL);
