@@ -495,8 +495,22 @@ stream("Irp6pmJntPub.joint_state", ros.comm.topic("/joint_states"));
 
 Irp6pmJntPub.configure()
 
+// motor states
+loadComponent("Irp6pmMotPub", "JointStatePublisher");
+setActivity("Irp6pmMotPub", 0.01, 2, ORO_SCHED_RT);
+Irp6pmMotPub.loadService("rosparam");
+Irp6pmMotPub.rosparam.getAll();
+
+connect("Irp6pmPortDoubleAggregate_hw_p.OutputPort", "Irp6pmMotPub.JointPosition", ConnPolicy());
+connect("Irp6pmPortDoubleAggregate_hw_p.OutputPort", "Irp6pmMotPub.JointVelocity", ConnPolicy());
+connect("Irp6pmPortDoubleAggregate_hw_p.OutputPort", "Irp6pmMotPub.JointEffort", ConnPolicy());
+
+stream("Irp6pmMotPub.joint_state", ros.comm.topic("/motor_states"));
+
+Irp6pmMotPub.configure()
+
 stream("Irp6pmForwardKinematic.WristOutputPose", ros.comm.topic("/cartesian_position"))
-#stream("ATI6284.Wrench", ros.comm.topic("/ati_wrench"))
+stream("ATI6284.Wrench", ros.comm.topic("/ati_wrench"))
 
 ## Start it
 Irp6scheme.start()
@@ -521,6 +535,7 @@ Irp6ptfgJ2M.start()
 #Irp6pmForceControlLaw.start()
 ATI6284.start()
 Irp6pmJntPub.start()
+Irp6pmMotPub.start()
 Irp6pmSplineTrajectoryActionJoint.start()
 Irp6ptfgSplineTrajectoryActionJoint.start()
 Irp6pmSplineTrajectoryActionMotor.start()

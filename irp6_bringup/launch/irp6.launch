@@ -96,6 +96,8 @@
           current_mode: 1
       Irp6pmJntPub:
         joint_names: [Irp6pmJoint1, Irp6pmJoint2, Irp6pmJoint3, Irp6pmJoint4, Irp6pmJoint5, Irp6pmJoint6]
+      Irp6pmMotPub:
+        joint_names: [Irp6pmMotor1, Irp6pmMotor2, Irp6pmMotor3, Irp6pmMotor4, Irp6pmMotor5, Irp6pmMotor6]
       Irp6pmSplineTrajectoryGeneratorJoint:
         number_of_joints: 6
       Irp6pmSplineTrajectoryActionJoint:
