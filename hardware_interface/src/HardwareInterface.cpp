@@ -209,7 +209,7 @@ uint16_t HardwareInterface::convert_to_115(float input) {
 
 bool HardwareInterface::startHook() {
   try {
-    hi_->write_read_hardware();
+    hi_->write_read_hardware(1100000);
 
     if (!hi_->robot_synchronized()) {
       RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
@@ -432,7 +432,7 @@ void HardwareInterface::updateHook() {
 
   // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
 
-  hi_->write_read_hardware();
+  hi_->write_read_hardware(1500000);
 
   if (state_ == SERVOING) {
 

@@ -128,6 +128,11 @@ IRp6otmRegulator_6.loadService("rosparam")
 IRp6otmRegulator_6.rosparam.getAll()
 IRp6otmRegulator_6.configure()
 
+loadComponent("Irp6ottfgRegulator","IRp6Regulator")
+Irp6ottfgRegulator.loadService("rosparam")
+Irp6ottfgRegulator.rosparam.getAll()
+Irp6ottfgRegulator.configure()
+
 
 addPeer("Irp6HardwareInterface", "IRp6pmRegulator_0")
 addPeer("Irp6HardwareInterface", "IRp6pmRegulator_1")
@@ -146,6 +151,8 @@ addPeer("Irp6HardwareInterface", "IRp6otmRegulator_3")
 addPeer("Irp6HardwareInterface", "IRp6otmRegulator_4")
 addPeer("Irp6HardwareInterface", "IRp6otmRegulator_5")
 addPeer("Irp6HardwareInterface", "IRp6otmRegulator_6")
+
+addPeer("Irp6HardwareInterface", "Irp6ottfgRegulator")
 
 
 // Irp6pm double port spliter
@@ -484,6 +491,12 @@ connect("IRp6otmRegulator_6.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm
 connect("IRp6otmRegulator_6.deltaInc_in","Irp6HardwareInterface.deltaInc_out_irp6otm_6", ConnPolicy())
 
 
+connect("Irp6HardwareInterface.computedReg_in_irp6ottfg","Irp6ottfgRegulator.computedPwm_out", ConnPolicy())
+connect("Irp6ottfgRegulator.posInc_in","Irp6HardwareInterface.posInc_out_irp6ottfg", ConnPolicy())
+connect("Irp6ottfgRegulator.deltaInc_in","Irp6HardwareInterface.deltaInc_out_irp6ottfg", ConnPolicy())
+
+
+
 connect("Irp6pmPortDoubleAggregate_hw_p.OutputPort","Irp6pmM2J.MotorPosition", ConnPolicy())
 connect("Irp6pmJ2M.MotorPosition", "Irp6pmPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
@@ -771,6 +784,7 @@ IRp6otmRegulator_3.start()
 IRp6otmRegulator_4.start()
 IRp6otmRegulator_5.start()
 IRp6otmRegulator_6.start()
+Irp6ottfgRegulator.start()
 Irp6pmPortDoubleSplit_hw_cp.start()
 Irp6ptfgPortDoubleSplit_hw_cp.start()
 ConveyorPortDoubleSplit_hw_cp.start()

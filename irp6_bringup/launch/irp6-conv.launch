@@ -14,7 +14,7 @@
   <group ns="ROS_OROCOS_ROBOT">
     <rosparam>
       Irp6HardwareInterface:
-        number_of_drives: 15
+        number_of_drives: 16
         auto_synchronize: true
         tx_prefix_len: 0
         hi_port_param_0:
