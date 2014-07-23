@@ -314,6 +314,20 @@ connect("ConveyorSplineTrajectoryGeneratorMotor.JointPositionCommand","ConveyorP
 ConveyorSplineTrajectoryGeneratorMotor.configure()
 
 
+// Irp6otmSplineTrajectoryGeneratorMotor
+
+loadComponent("Irp6otmSplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
+
+Irp6otmSplineTrajectoryGeneratorMotor.loadService("rosparam");
+Irp6otmSplineTrajectoryGeneratorMotor.rosparam.getAll();
+
+connect("Irp6otmPortDoubleAggregate_hw_p.OutputPort","Irp6otmSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
+connect("Irp6otmSplineTrajectoryGeneratorMotor.JointPositionCommand","Irp6otmPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+
+Irp6otmSplineTrajectoryGeneratorMotor.configure()
+
+
+
 // Irp6pmPoseInt
 
 loadComponent("Irp6pmPoseInt", "CartesianInterpolator")
@@ -395,6 +409,7 @@ addPeer("Irp6scheme", "ConveyorSplineTrajectoryGeneratorJoint");
 addPeer("Irp6scheme", "Irp6pmSplineTrajectoryGeneratorMotor");
 addPeer("Irp6scheme", "Irp6ptfgSplineTrajectoryGeneratorMotor");
 addPeer("Irp6scheme", "ConveyorSplineTrajectoryGeneratorMotor");
+addPeer("Irp6scheme", "Irp6otmSplineTrajectoryGeneratorMotor");
 addPeer("Irp6scheme", "Irp6pmPoseInt");
 addPeer("Irp6scheme", "Irp6pmToolInt");
 
@@ -547,6 +562,7 @@ Irp6scheme.addBlock("ConveyorSplineTrajectoryGeneratorJoint");
 Irp6scheme.addBlock("Irp6pmSplineTrajectoryGeneratorMotor");
 Irp6scheme.addBlock("Irp6ptfgSplineTrajectoryGeneratorMotor");
 Irp6scheme.addBlock("ConveyorSplineTrajectoryGeneratorMotor");
+Irp6scheme.addBlock("Irp6otmSplineTrajectoryGeneratorMotor");
 Irp6scheme.addBlock("Irp6pmPoseInt");
 Irp6scheme.addBlock("Irp6pmToolInt");
 
@@ -669,6 +685,25 @@ connect("ConveyorSplineTrajectoryGeneratorMotor.JointPositionCommand","ConveyorS
 ConveyorSplineTrajectoryActionMotor.configure()
 
 
+//
+// Irp6otmSplineTrajectoryActionMotor
+// 
+
+loadComponent("Irp6otmSplineTrajectoryActionMotor", "InternalSpaceSplineTrajectoryAction")
+setActivity("Irp6otmSplineTrajectoryActionMotor",0.01 ,2 ,ORO_SCHED_RT)
+Irp6otmSplineTrajectoryActionMotor.loadService("rosparam");
+Irp6otmSplineTrajectoryActionMotor.rosparam.getAll();
+
+Irp6otmSplineTrajectoryActionMotor.loadService("actionlib")
+Irp6otmSplineTrajectoryActionMotor.actionlib.connect("/irp6ot_arm/spline_trajectory_action_motor")
+
+connect("Irp6otmSplineTrajectoryActionMotor.trajectoryPtr","Irp6otmSplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_p.OutputPort","Irp6otmSplineTrajectoryActionMotor.JointPosition", ConnPolicy())
+connect("Irp6otmSplineTrajectoryGeneratorMotor.JointPositionCommand","Irp6otmSplineTrajectoryActionMotor.JointPositionCommand", ConnPolicy())
+
+Irp6otmSplineTrajectoryActionMotor.configure()
+
+
 
 //
 // CartesianTrajectoryAction
@@ -761,6 +796,7 @@ ConveyorSplineTrajectoryActionJoint.start()
 Irp6pmSplineTrajectoryActionMotor.start()
 Irp6ptfgSplineTrajectoryActionMotor.start()
 ConveyorSplineTrajectoryActionMotor.start()
+Irp6otmSplineTrajectoryActionMotor.start()
 Irp6pmPoseIntAction.start()
 Irp6pmToolIntAction.start()
 Irp6pmToolInt.start()

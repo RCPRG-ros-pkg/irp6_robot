@@ -47,60 +47,46 @@ import PyKDL
 import tf_conversions.posemath as pm
 
 if __name__ == '__main__':
-  rospy.init_node('irp6p_tfg')
+  rospy.init_node('irp6pm_force_control')
   rospy.wait_for_service('/controller_manager/switch_controller')
   conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
-  
-  #
-  # Motor coordinates motion
-  #
-  
-  conmanSwitch(['Irp6ptfgSplineTrajectoryGeneratorMotor'], [], True)
-  
-  motor_client = actionlib.SimpleActionClient('/irp6p_tfg/spline_trajectory_action_motor', FollowJointTrajectoryAction)
-  motor_client.wait_for_server()
-
-  print 'server ok'
-
-  goal = FollowJointTrajectoryGoal()
-  goal.trajectory.joint_names = ['joint1']
-  goal.trajectory.points.append(JointTrajectoryPoint([0.0], [0.0], [], [], rospy.Duration(3.0)))
-  goal.trajectory.points.append(JointTrajectoryPoint([500.0], [0.0], [], [], rospy.Duration(6.0)))
-  goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
-
-  motor_client.send_goal(goal)
-
-  motor_client.wait_for_result()
-  command_result = motor_client.get_result()
     
-  conmanSwitch([], ['Irp6ptfgSplineTrajectoryGeneratorMotor'], True)  
-    
-    
-  
-  #
-  # Joint coordinates motion
-  #
-  
-  conmanSwitch(['Irp6ptfgSplineTrajectoryGeneratorJoint'], [], True)
-  
-  joint_client = actionlib.SimpleActionClient('/irp6p_tfg/spline_trajectory_action_joint', FollowJointTrajectoryAction)
-  joint_client.wait_for_server()
-
-  print 'server ok'
-
-  goal = FollowJointTrajectoryGoal()
-  goal.trajectory.joint_names = ['joint1']
-  goal.trajectory.points.append(JointTrajectoryPoint([0.06], [0.0], [], [], rospy.Duration(3.0)))
-  goal.trajectory.points.append(JointTrajectoryPoint([0.08], [0.0], [], [], rospy.Duration(6.0)))
-  goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
-
-  joint_client.send_goal(goal)
-
-  joint_client.wait_for_result()
-  command_result = joint_client.get_result()
      
-  conmanSwitch([], ['Irp6ptfgSplineTrajectoryGeneratorJoint'], True)
+  # 
+  # Force controller parameters
+  #
   
+  pub = rospy.Publisher('/irp6p_arm/fcl_param', ForceControl)
+  
+  rospy.sleep(0.5)
+  
+  goal = ForceControl()
+  goal.inertia = Inertia(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+  goal.reciprocaldamping = ReciprocalDamping(Vector3(0.002, 0.002, 0.002), Vector3(0.05, 0.05, 0.05))
+  goal.wrench = Wrench(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+  goal.twist = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+  
+  pub.publish(goal)
+  
+  
+  # conmanSwitch([], ['Irp6pmForceTransformation','Irp6pmForceControlLaw'], True)
+  
+  #
+  # standard tool gravity param
+  #
+  
+  pubtg = rospy.Publisher('/irp6p_arm/tg_param', ToolGravityParam)
+  rospy.sleep(0.5)
+  
+  tg_goal = ToolGravityParam()
+  tg_goal.weight = 10.8
+  tg_goal.mass_center = Vector3(0.004, 0.0, 0.156)
+
+ 
+  pubtg.publish(tg_goal)
+   
+  # conmanSwitch(['Irp6pmForceTransformation','Irp6pmForceControlLaw'], [], True)
+   
   print 'finish'
   
   

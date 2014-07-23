@@ -38,43 +38,48 @@ from diagnostic_msgs.msg import *
 from geometry_msgs.msg import *
 from trajectory_msgs.msg import *
 from control_msgs.msg import *
-
-
+from cartesian_trajectory_msgs.msg import *
+from force_control_msgs.msg import *
 from tf.transformations import *
 
-from PyKDL import Rotation
-
+#from PyKDL import *
+import PyKDL
+import tf_conversions.posemath as pm
 
 if __name__ == '__main__':
-  rospy.init_node('multi_trajectory')
+  rospy.init_node('irp6pm_synchro')
   rospy.wait_for_service('/controller_manager/switch_controller')
   conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
   
+  #
+  # Deactivate all generators
+  #
   
-  conmanSwitch(['SplineTrajectoryGeneratorJoint'], ['SplineTrajectoryGeneratorMotor'], True)
+  conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
   
-  joint_client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
-  joint_client.wait_for_server()
+  #
+  # Motor coordinates motion
+  #
+  
+  conmanSwitch(['Irp6pmSplineTrajectoryGeneratorMotor'], [], True)
+  
+  motor_client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_motor', FollowJointTrajectoryAction)
+  motor_client.wait_for_server()
 
   print 'server ok'
 
   goal = FollowJointTrajectoryGoal()
   goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
-  goal.trajectory.points.append(JointTrajectoryPoint([0.4, -1.5418065817051163, 0.0, 1.5, 1.57, -2.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
-  goal.trajectory.points.append(JointTrajectoryPoint([0.0, -1.5418065817051163, 0.0, 1.5, 1.57, -2.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(15.0)))
+  goal.trajectory.points.append(JointTrajectoryPoint([0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
   goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
 
-  goal.goal_tolerance.append(JointTolerance('joint2', 0.1, 0.0, 0.0))
-  goal.path_tolerance.append(JointTolerance('joint1', 0.1, 0.0, 0.0))
+  motor_client.send_goal(goal)
 
-  joint_client.send_goal(goal)
-
-  joint_client.wait_for_result()
-  command_result = joint_client.get_result()
-
-  print command_result
+  motor_client.wait_for_result()
+  command_result = motor_client.get_result()
   
-  conmanSwitch([], ['SplineTrajectoryGeneratorJoint'], True)
+  conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor'], True)
+    
   
   print 'finish'
   

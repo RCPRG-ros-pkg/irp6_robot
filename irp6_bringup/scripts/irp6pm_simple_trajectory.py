@@ -17,7 +17,7 @@ from tf.transformations import *
 from PyKDL import Rotation
 
 if __name__ == '__main__':
-  rospy.init_node('simple_trajectory')
+  rospy.init_node('irp6pm_simple_trajectory')
   rospy.wait_for_service('/controller_manager/switch_controller')
   conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
   
