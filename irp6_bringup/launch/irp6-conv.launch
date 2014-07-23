@@ -17,6 +17,7 @@
         number_of_drives: 16
         auto_synchronize: true
         tx_prefix_len: 0
+        rwh_nsec: 1300000
         hi_port_param_0:
           label: irp6pm_0
           ports_adresses: /dev/ttyMI8
