@@ -2,7 +2,7 @@
 from IRPOS import *
 
 if __name__ == '__main__':
-	irpos = IRPOS("IRpOS")
+	irpos = IRPOS("IRpOS", "Irp6p")
 
 	irpos.stop_force_controller()
 

@@ -2,7 +2,7 @@
 from IRPOS import *
 
 if __name__ == '__main__':
-	irpos = IRPOS("IRpOS")
+	irpos = IRPOS("IRpOS", "Irp6p")
 
 	irpos.move_to_motor_position([0.4, -1.5418065817051163, 0.0, 1.57, 1.57, -2.0], 10.0)
 	irpos.move_to_motor_position([10.0, 10.0, 0.0, 10.57, 10.57, -20.0], 2.0)
