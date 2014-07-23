@@ -36,7 +36,7 @@ class HI_moxa {
   void init(std::vector<std::string> ports);
 
   // do communication cycle
-  uint64_t write_read_hardware(void);
+  uint64_t write_read_hardware(long int nsec);
 
   uint64_t read_hardware(void);
   uint64_t write_hardware(void);

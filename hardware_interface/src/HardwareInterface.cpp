@@ -16,12 +16,14 @@ HardwareInterface::HardwareInterface(const std::string& name)
       hi_(NULL),
       state_(NOT_SYNCHRONIZED),
       synchro_drive_(0),
-      synchro_state_(MOVE_TO_SYNCHRO_AREA) {
+      synchro_state_(MOVE_TO_SYNCHRO_AREA),
+      rwh_nsec_(1200000) {
 
   this->addProperty("number_of_drives", number_of_drives_).doc(
       "Number of drives in robot");
   this->addProperty("auto_synchronize", auto_synchronize_).doc("");
   this->addProperty("tx_prefix_len", tx_prefix_len_).doc("");
+  this->addProperty("rwh_nsec", rwh_nsec_).doc("");
   this->addProperty("hi_port_param_0", hi_port_param_[0]).doc("");
   this->addProperty("hi_port_param_1", hi_port_param_[1]).doc("");
   this->addProperty("hi_port_param_2", hi_port_param_[2]).doc("");
@@ -209,7 +211,7 @@ uint16_t HardwareInterface::convert_to_115(float input) {
 
 bool HardwareInterface::startHook() {
   try {
-    hi_->write_read_hardware();
+    hi_->write_read_hardware(rwh_nsec_);
 
     if (!hi_->robot_synchronized()) {
       RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
@@ -432,7 +434,7 @@ void HardwareInterface::updateHook() {
 
   // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
 
-  hi_->write_read_hardware();
+  hi_->write_read_hardware(rwh_nsec_);
 
   if (state_ == SERVOING) {
 

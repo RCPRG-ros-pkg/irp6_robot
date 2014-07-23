@@ -45,11 +45,14 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<bool> current_mode_;
   std::vector<bool> synchro_needed_;
 
+
+
+
   // Properties
   int number_of_drives_;
   bool auto_synchronize_;
   int tx_prefix_len_;
-
+  int rwh_nsec_;
   hi_msgs::HardwareInterfacePort hi_port_param_[hi_moxa::MOXA_SERVOS_NR];
 
 
