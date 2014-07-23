@@ -51,7 +51,7 @@ def generateCircle(P1, P2, P3, T):
 
 # MAIN
 
-rospy.init_node('multi_trajectory')
+rospy.init_node('irp6pm_circle')
 rospy.wait_for_service('/controller_manager/switch_controller')
 conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
 
