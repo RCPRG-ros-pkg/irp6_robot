@@ -35,6 +35,9 @@ class HI_moxa {
   // initialize
   void init(std::vector<std::string> ports);
 
+  long int longest_delay_, longest_read_delay_;
+  bool hi_sleep(long int nsec);
+
   // do communication cycle
   uint64_t write_read_hardware(long int nsec);
 
