@@ -11,6 +11,7 @@ ros.import("rtt_force_control_msgs")
 ros.import("rtt_hi_msgs")
 
 ros.import("conman");
+ros.import("rtt_conman_msgs");
 ros.import("conman_ros");
 ros.import("hardware_interface")
 ros.import("irp6_regulator")

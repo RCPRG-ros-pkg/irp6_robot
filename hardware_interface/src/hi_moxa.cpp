@@ -21,7 +21,9 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
       last_drive_number(numberOfDrivers),
       drives_addresses(card_addresses),
       ridiculous_increment(max_increments),
-      hardware_panic(false) {
+      hardware_panic(false),
+      longest_delay_(0),
+      longest_read_delay_(0) {
 
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
@@ -209,25 +211,53 @@ uint64_t HI_moxa::read_hardware(void) {
   // Read data from all drives
   for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
     rxCnt = 0;
-    while (1) {
-      if (SerialPort[drive_number]->read(&(rxBuf[rxCnt]), 1) > 0
-          && (rxCnt < 255)) {
-        if (NF_Interpreter(&NFComBuf, rxBuf, &rxCnt, rxCommandArray,
-                           &rxCommandCnt) > 0) {
-          // TODO: Check Status
-          break;
-        }
-      } else {
-        comm_timeouts[drive_number]++;
-        if (all_hardware_read) {
-          all_hardware_read = false;
-          std::cout << "[error] timeout in " << (int) receive_attempts
-                    << " communication cycle on drives";
-        }
-        std::cout << " " << (int) drive_number << "("
-                  << port_names[drive_number].c_str() << ")";
+//    while (1) {
+//      if (SerialPort[drive_number]->read(&(rxBuf[rxCnt]), 1) > 0
+//          && (rxCnt < 255)) {
+//        if (NF_Interpreter(&NFComBuf, rxBuf, &rxCnt, rxCommandArray,
+//                           &rxCommandCnt) > 0) {
+//          // TODO: Check Status
+//          break;
+//        }
+//      } else {
+//        comm_timeouts[drive_number]++;
+//        if (all_hardware_read) {
+//          all_hardware_read = false;
+//          std::cout << "[error] timeout in " << (int) receive_attempts
+//                    << " communication cycle on drives";
+//        }
+//        std::cout << " " << (int) drive_number << "("
+//                  << port_names[drive_number].c_str() << ")";
+//        break;
+//      }
+//    }
+
+    int bytes_received = 0;
+    uint8_t receive_buffer[255];
+    int receive_success = 0;
+
+    bytes_received = SerialPort[drive_number]->read(receive_buffer, 255);
+
+    for (int i = 0; i < bytes_received; i++) {
+      rxBuf[rxCnt] = receive_buffer[i];
+      if (NF_Interpreter(&NFComBuf, rxBuf, &rxCnt, rxCommandArray,
+                         &rxCommandCnt) > 0) {
+        receive_success = 1;
         break;
       }
+    }
+
+    if (receive_success) {
+    } else {
+      comm_timeouts[drive_number]++;
+      if (all_hardware_read) {
+        all_hardware_read = false;
+        std::cout << "[error] timeout in " << (int) receive_attempts
+                  << " communication cycle on drives";
+      }
+      std::cout << " " << (int) drive_number << "("
+                << port_names[drive_number].c_str() << ")";
+      //break;
     }
   }
 
@@ -479,17 +509,88 @@ uint64_t HI_moxa::write_hardware(void) {
   return ret;
 }
 
+bool HI_moxa::hi_sleep(long int nsec) {
+
+  long int isec;
+
+  long int active_delay = 300000;
+  struct timespec start_time, current_time;
+
+  if (nsec < active_delay) {
+    return false;
+  }
+
+  isec = nsec - active_delay;
+
+  clock_gettime(CLOCK_MONOTONIC, &start_time);
+
+  struct timespec delay;
+  delay.tv_nsec = isec;
+  delay.tv_sec = 0;
+
+  nanosleep(&delay, NULL);
+
+  clock_gettime(CLOCK_MONOTONIC, &current_time);
+
+  while (((current_time.tv_sec - start_time.tv_sec) * 1000000000
+      + (current_time.tv_nsec - start_time.tv_nsec)) < nsec) {
+    clock_gettime(CLOCK_MONOTONIC, &current_time);
+  }
+
+  return true;
+}
+
 // do communication cycle
 uint64_t HI_moxa::write_read_hardware(long int nsec) {
 
+
+  struct timespec start_time, current_time, read_time;
+  clock_gettime(CLOCK_MONOTONIC, &start_time);
+
   uint64_t ret;
   if ((ret = write_hardware()) != 0) {
+
+
+
+    clock_gettime(CLOCK_MONOTONIC, &current_time);
+
+    long int current_delay = (current_time.tv_sec - start_time.tv_sec)
+        * 1000000000 + (current_time.tv_nsec - start_time.tv_nsec);
+
+    if (current_delay > longest_delay_) {
+
+      longest_delay_ = current_delay;
+      std::cout << std::dec << "longest_delay_: " << longest_delay_
+                << std::endl;
+    }
+
     struct timespec delay;
     delay.tv_nsec = nsec;
     delay.tv_sec = 0;
 
+    // clock_nanosleep(CLOCK_MONOTONIC,0, &delay, NULL);
+
     nanosleep(&delay, NULL);
+
+
+    // std::cout << std::dec << "longest_delay_: " << longest_delay_ << std::endl;
+    /*
+     hi_sleep(nsec);
+     */
+
     ret = read_hardware();
+    clock_gettime(CLOCK_MONOTONIC, &read_time);
+
+
+    long int read_delay = (read_time.tv_sec - current_time.tv_sec) * 1000000000
+        + (read_time.tv_nsec - current_time.tv_nsec);
+
+    if (read_delay > longest_read_delay_) {
+      longest_read_delay_ = read_delay;
+      std::cout << std::dec << "longest_read_delay_: " << longest_read_delay_
+                << std::endl;
+    }
+
   }
 
   // std::cout <<"write_read_hardware ret: " << ret << std::endl;
