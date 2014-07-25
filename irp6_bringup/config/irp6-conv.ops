@@ -184,6 +184,13 @@ Irp6otmPortDoubleSplit_hw_cp.loadService("rosparam")
 Irp6otmPortDoubleSplit_hw_cp.rosparam.getAll()
 Irp6otmPortDoubleSplit_hw_cp.configure()
 
+// Irp6otfg double port spliter
+
+loadComponent("Irp6ottfgPortDoubleSplit_hw_cp","PortDoubleSplit")
+Irp6ottfgPortDoubleSplit_hw_cp.loadService("rosparam")
+Irp6ottfgPortDoubleSplit_hw_cp.rosparam.getAll()
+Irp6ottfgPortDoubleSplit_hw_cp.configure()
+
 
 // Irp6pm double port aggregate
 
@@ -213,6 +220,19 @@ Irp6otmPortDoubleAggregate_hw_p.loadService("rosparam")
 Irp6otmPortDoubleAggregate_hw_p.rosparam.getAll()
 Irp6otmPortDoubleAggregate_hw_p.configure()
 
+// Irp6pm double port aggregate
+
+loadComponent("Irp6pmPortDoubleAggregate_hw_p","PortDoubleAggregate")
+Irp6pmPortDoubleAggregate_hw_p.loadService("rosparam")
+Irp6pmPortDoubleAggregate_hw_p.rosparam.getAll()
+Irp6pmPortDoubleAggregate_hw_p.configure()
+
+// Irp6ottfg double port aggregate
+
+loadComponent("Irp6ottfgPortDoubleAggregate_hw_p","PortDoubleAggregate")
+Irp6ottfgPortDoubleAggregate_hw_p.loadService("rosparam")
+Irp6ottfgPortDoubleAggregate_hw_p.rosparam.getAll()
+Irp6ottfgPortDoubleAggregate_hw_p.configure()
 
 loadComponent("Irp6pmM2J","Irp6pmM2J")
 Irp6pmM2J.configure()
@@ -334,7 +354,17 @@ connect("Irp6otmSplineTrajectoryGeneratorMotor.JointPositionCommand","Irp6otmPor
 
 Irp6otmSplineTrajectoryGeneratorMotor.configure()
 
+// Irp6ottfgSplineTrajectoryGeneratorMotor
 
+ loadComponent("Irp6ottfgSplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
+
+Irp6ottfgSplineTrajectoryGeneratorMotor.loadService("rosparam");
+Irp6ottfgSplineTrajectoryGeneratorMotor.rosparam.getAll();
+
+connect("Irp6ottfgPortDoubleAggregate_hw_p.OutputPort","Irp6ottfgSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
+connect("Irp6ottfgSplineTrajectoryGeneratorMotor.JointPositionCommand","Irp6ottfgPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+
+Irp6ottfgSplineTrajectoryGeneratorMotor.configure()
 
 // Irp6pmPoseInt
 
@@ -397,10 +427,12 @@ addPeer("Irp6scheme", "Irp6pmPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "Irp6ptfgPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "ConveyorPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "Irp6otmPortDoubleSplit_hw_cp")
+addPeer("Irp6scheme", "Irp6pottfgPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "Irp6pmPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6ptfgPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "ConveyorPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6otmPortDoubleAggregate_hw_p")
+addPeer("Irp6scheme", "Irp6ottfgPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6pmM2J");
 addPeer("Irp6scheme", "Irp6ptfgM2J");
 addPeer("Irp6scheme", "ConveyorM2J");
@@ -418,6 +450,7 @@ addPeer("Irp6scheme", "Irp6pmSplineTrajectoryGeneratorMotor");
 addPeer("Irp6scheme", "Irp6ptfgSplineTrajectoryGeneratorMotor");
 addPeer("Irp6scheme", "ConveyorSplineTrajectoryGeneratorMotor");
 addPeer("Irp6scheme", "Irp6otmSplineTrajectoryGeneratorMotor");
+addPeer("Irp6scheme", "Irp6ottfgSplineTrajectoryGeneratorMotor");
 addPeer("Irp6scheme", "Irp6pmPoseInt");
 addPeer("Irp6scheme", "Irp6pmToolInt");
 
@@ -525,6 +558,7 @@ connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_4","Irp6HardwareInterface.Motor
 connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_5","Irp6HardwareInterface.MotorPositionCommand_irp6otm_5", ConnPolicy())
 connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_6","Irp6HardwareInterface.MotorPositionCommand_irp6otm_6", ConnPolicy())
 
+connect("Irp6ottfgPortDoubleSplit_hw_cp.OutputPort_0","Irp6HardwareInterface.MotorPositionCommand_irp6ottfg", ConnPolicy())
 
 connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_irp6pm_0", ConnPolicy())
 connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_1","Irp6HardwareInterface.MotorPosition_irp6pm_1", ConnPolicy())
@@ -544,16 +578,19 @@ connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_4","Irp6HardwareInterface.Mot
 connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_5","Irp6HardwareInterface.MotorPosition_irp6otm_5", ConnPolicy())
 connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_6","Irp6HardwareInterface.MotorPosition_irp6otm_6", ConnPolicy())
 
+connect("Irp6ottfgPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_irp6ottfg", ConnPolicy())
+
 
 Irp6scheme.addBlock("Irp6pmPortDoubleSplit_hw_cp")
 Irp6scheme.addBlock("Irp6ptfgPortDoubleSplit_hw_cp")
 Irp6scheme.addBlock("ConveyorPortDoubleSplit_hw_cp")
 Irp6scheme.addBlock("Irp6otmPortDoubleSplit_hw_cp")
+Irp6scheme.addBlock("Irp6ottfgPortDoubleSplit_hw_cp")
 Irp6scheme.addBlock("Irp6pmPortDoubleAggregate_hw_p")
 Irp6scheme.addBlock("Irp6ptfgPortDoubleAggregate_hw_p")
 Irp6scheme.addBlock("ConveyorPortDoubleAggregate_hw_p")
 Irp6scheme.addBlock("Irp6otmPortDoubleAggregate_hw_p")
-
+Irp6scheme.addBlock("Irp6ottfgPortDoubleAggregate_hw_p")
 
 Irp6scheme.addBlock("Irp6pmM2J");
 Irp6scheme.addBlock("Irp6ptfgM2J");
@@ -564,6 +601,7 @@ Irp6scheme.latchConnections("Irp6pmPortDoubleSplit_hw_cp", "Irp6HardwareInterfac
 Irp6scheme.latchConnections("Irp6ptfgPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
 Irp6scheme.latchConnections("ConveyorPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
 Irp6scheme.latchConnections("Irp6otmPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
+Irp6scheme.latchConnections("Irp6ottfgPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
 Irp6scheme.addBlock("Irp6pmJ2M");
 Irp6scheme.addBlock("Irp6ptfgJ2M");
 Irp6scheme.addBlock("ConveyorJ2M");
@@ -577,6 +615,7 @@ Irp6scheme.addBlock("Irp6pmSplineTrajectoryGeneratorMotor");
 Irp6scheme.addBlock("Irp6ptfgSplineTrajectoryGeneratorMotor");
 Irp6scheme.addBlock("ConveyorSplineTrajectoryGeneratorMotor");
 Irp6scheme.addBlock("Irp6otmSplineTrajectoryGeneratorMotor");
+Irp6scheme.addBlock("Irp6ottfgSplineTrajectoryGeneratorMotor");
 Irp6scheme.addBlock("Irp6pmPoseInt");
 Irp6scheme.addBlock("Irp6pmToolInt");
 
@@ -718,6 +757,25 @@ connect("Irp6otmSplineTrajectoryGeneratorMotor.JointPositionCommand","Irp6otmSpl
 Irp6otmSplineTrajectoryActionMotor.configure()
 
 
+//
+// Irp6ottfgSplineTrajectoryActionMotor
+// 
+
+loadComponent("Irp6ottfgSplineTrajectoryActionMotor", "InternalSpaceSplineTrajectoryAction")
+setActivity("Irp6ottfgSplineTrajectoryActionMotor",0.01 ,2 ,ORO_SCHED_RT)
+Irp6ottfgSplineTrajectoryActionMotor.loadService("rosparam");
+Irp6ottfgSplineTrajectoryActionMotor.rosparam.getAll();
+
+Irp6ottfgSplineTrajectoryActionMotor.loadService("actionlib")
+Irp6ottfgSplineTrajectoryActionMotor.actionlib.connect("/irp6ot_tfg/spline_trajectory_action_motor")
+
+connect("Irp6ottfgSplineTrajectoryActionMotor.trajectoryPtr","Irp6ottfgSplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
+connect("Irp6ottfgPortDoubleAggregate_hw_p.OutputPort","Irp6ottfgSplineTrajectoryActionMotor.JointPosition", ConnPolicy())
+connect("Irp6ottfgSplineTrajectoryGeneratorMotor.JointPositionCommand","Irp6ottfgSplineTrajectoryActionMotor.JointPositionCommand", ConnPolicy())
+
+Irp6ottfgSplineTrajectoryActionMotor.configure()
+
+
 
 //
 // CartesianTrajectoryAction
@@ -790,10 +848,12 @@ Irp6pmPortDoubleSplit_hw_cp.start()
 Irp6ptfgPortDoubleSplit_hw_cp.start()
 ConveyorPortDoubleSplit_hw_cp.start()
 Irp6otmPortDoubleSplit_hw_cp.start()
+Irp6ottfgPortDoubleSplit_hw_cp.start()
 Irp6pmPortDoubleAggregate_hw_p.start()
 Irp6ptfgPortDoubleAggregate_hw_p.start()
 ConveyorPortDoubleAggregate_hw_p.start()
 Irp6otmPortDoubleAggregate_hw_p.start()
+Irp6ottfgPortDoubleAggregate_hw_p.start()
 Irp6pmM2J.start()
 Irp6ptfgM2J.start()
 ConveyorM2J.start()
@@ -812,6 +872,7 @@ Irp6pmSplineTrajectoryActionMotor.start()
 Irp6ptfgSplineTrajectoryActionMotor.start()
 ConveyorSplineTrajectoryActionMotor.start()
 Irp6otmSplineTrajectoryActionMotor.start()
+Irp6ottfgSplineTrajectoryActionMotor.start()
 Irp6pmPoseIntAction.start()
 Irp6pmToolIntAction.start()
 Irp6pmToolInt.start()
