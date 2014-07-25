@@ -1,5 +1,5 @@
-#ifndef Irp6ptfgTransmission_H_
-#define Irp6ptfgTransmission_H_
+#ifndef Irp6tfgTransmission_H_
+#define Irp6tfgTransmission_H_
 
 const double GEAR[1] = {-158.0,};
 const double SYNCHRO_MOTOR_POSITION[1] = {-15.9};
@@ -12,4 +12,4 @@ const int ENC_RES[1] = {128.0};
 const double LOWER_MOTOR_LIMIT[1] = { -2000.0};
 const double UPPER_MOTOR_LIMIT[1] = { 5000.0};
 
-#endif /* Irp6ptfgTransmission_H_ */
+#endif /* Irp6tfgTransmission_H_ */

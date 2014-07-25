@@ -437,13 +437,13 @@ uint64_t HI_moxa::write_hardware(void) {
       servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
       NF_COMMAND_SetDrivesMode;
       txCnt = NF_MakeCommandFrame(
-          &NFComBuf, txBuf + 5,
+          &NFComBuf, txBuf,
           (const uint8_t*) servo_data[drive_number].commandArray,
           servo_data[drive_number].commandCnt, drives_addresses[drive_number]);
       // Clear communication request
       servo_data[drive_number].commandCnt = 0;
       // Send command frame
-      SerialPort[drive_number]->write(txBuf, txCnt + 5);
+      SerialPort[drive_number]->write(txBuf, txCnt);
     }
     if (error_msg_hardware_panic == 0) {
       std::cout << "[error] hardware panic" << std::endl;
@@ -479,13 +479,14 @@ uint64_t HI_moxa::write_hardware(void) {
       servo_data[drive_number].commandCnt = 0;
     }
 
-    // std::cout << std::endl;
+
     for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
-      // std::cout << "write 2 drive_number: " << drive_number ;
+
       // Send command frame
       SerialPort[drive_number]->write(
           servo_data[drive_number].txBuf,
           servo_data[drive_number].txCnt + howMuchItSucks);
+
 #define SPN
 #ifdef SPN
       static int rwhprints = 18;
@@ -502,42 +503,10 @@ uint64_t HI_moxa::write_hardware(void) {
       }
 #endif
     }
-    //   std::cout << std::endl;
   }
 
   ret = 1;
   return ret;
-}
-
-bool HI_moxa::hi_sleep(long int nsec) {
-
-  long int isec;
-
-  long int active_delay = 300000;
-  struct timespec start_time, current_time;
-
-  if (nsec < active_delay) {
-    return false;
-  }
-
-  isec = nsec - active_delay;
-
-  clock_gettime(CLOCK_MONOTONIC, &start_time);
-
-  struct timespec delay;
-  delay.tv_nsec = isec;
-  delay.tv_sec = 0;
-
-  nanosleep(&delay, NULL);
-
-  clock_gettime(CLOCK_MONOTONIC, &current_time);
-
-  while (((current_time.tv_sec - start_time.tv_sec) * 1000000000
-      + (current_time.tv_nsec - start_time.tv_nsec)) < nsec) {
-    clock_gettime(CLOCK_MONOTONIC, &current_time);
-  }
-
-  return true;
 }
 
 // do communication cycle
@@ -549,8 +518,6 @@ uint64_t HI_moxa::write_read_hardware(long int nsec) {
 
   uint64_t ret;
   if ((ret = write_hardware()) != 0) {
-
-
 
     clock_gettime(CLOCK_MONOTONIC, &current_time);
 
@@ -645,7 +612,7 @@ int HI_moxa::set_parameter_now(int drive_number, const int parameter, ...) {
   // Add Read Drive Status request
   setParamCommandArray[setParamCommandCnt++] = NF_COMMAND_ReadDrivesStatus;
   // Make command frame
-  txCnt = NF_MakeCommandFrame(&NFComBuf, txBuf + 5,
+  txCnt = NF_MakeCommandFrame(&NFComBuf, txBuf,
                               (const uint8_t*) setParamCommandArray,
                               setParamCommandCnt,
                               drives_addresses[drive_number]);
@@ -655,12 +622,12 @@ int HI_moxa::set_parameter_now(int drive_number, const int parameter, ...) {
   for (int param_set_attempt = 0; param_set_attempt < MAX_PARAM_SET_ATTEMPTS;
       param_set_attempt++) {
     // Send command frame
-    SerialPort[drive_number]->write(txBuf, txCnt + 5);
+    SerialPort[drive_number]->write(txBuf, txCnt);
 
 #define SPN
 #ifdef SPN
     std::cout << "SPN: ";
-    for (int i = 0; i < txCnt + 5; i++) {
+    for (int i = 0; i < txCnt; i++) {
       std::cout << std::hex << (unsigned int) txBuf[i];
       std::cout << " ";
     }
