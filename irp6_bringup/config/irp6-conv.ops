@@ -220,13 +220,6 @@ Irp6otmPortDoubleAggregate_hw_p.loadService("rosparam")
 Irp6otmPortDoubleAggregate_hw_p.rosparam.getAll()
 Irp6otmPortDoubleAggregate_hw_p.configure()
 
-// Irp6pm double port aggregate
-
-loadComponent("Irp6pmPortDoubleAggregate_hw_p","PortDoubleAggregate")
-Irp6pmPortDoubleAggregate_hw_p.loadService("rosparam")
-Irp6pmPortDoubleAggregate_hw_p.rosparam.getAll()
-Irp6pmPortDoubleAggregate_hw_p.configure()
-
 // Irp6ottfg double port aggregate
 
 loadComponent("Irp6ottfgPortDoubleAggregate_hw_p","PortDoubleAggregate")
@@ -427,7 +420,7 @@ addPeer("Irp6scheme", "Irp6pmPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "Irp6ptfgPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "ConveyorPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "Irp6otmPortDoubleSplit_hw_cp")
-addPeer("Irp6scheme", "Irp6pottfgPortDoubleSplit_hw_cp")
+addPeer("Irp6scheme", "Irp6ottfgPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "Irp6pmPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6ptfgPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "ConveyorPortDoubleAggregate_hw_p")
