@@ -19,7 +19,7 @@ ros.import("oro_joint_state_publisher")
 ros.import("internal_space_spline_trajectory_action")
 ros.import("internal_space_spline_trajectory_generator")
 ros.import("irp6pm_kinematic")
-ros.import("irp6ptfg_kinematic")
+ros.import("irp6tfg_kinematic")
 ros.import("controller_common");
 ros.import("force_contol");
 ros.import("ati6284");
@@ -129,7 +129,7 @@ Irp6ptfgPortDoubleAggregate_hw_p.configure()
 loadComponent("Irp6pmM2J","Irp6pmM2J")
 Irp6pmM2J.configure()
 
-loadComponent("Irp6ptfgM2J","Irp6ptfgM2J")
+loadComponent("Irp6ptfgM2J","Irp6tfgM2J")
 Irp6ptfgM2J.configure()
 
 
@@ -147,7 +147,7 @@ connect("Irp6pmM2J.JointPosition","Irp6pmInverseKinematic.CurrentJointPosition",
 loadComponent("Irp6pmJ2M","Irp6pmJ2M")
 Irp6pmJ2M.configure()
 
-loadComponent("Irp6ptfgJ2M","Irp6ptfgJ2M")
+loadComponent("Irp6ptfgJ2M","Irp6tfgJ2M")
 Irp6ptfgJ2M.configure()
 
 connect("Irp6pmJ2M.JointPosition","Irp6pmInverseKinematic.OutputJointPosition", ConnPolicy())

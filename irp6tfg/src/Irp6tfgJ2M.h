@@ -1,14 +1,14 @@
-#ifndef Irp6ptfgJ2M_H_
-#define Irp6ptfgJ2M_H_
+#ifndef Irp6tfgJ2M_H_
+#define Irp6tfgJ2M_H_
 
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
 #include <Eigen/Dense>
 
-class Irp6ptfgJ2M : public RTT::TaskContext {
+class Irp6tfgJ2M : public RTT::TaskContext {
  public:
-  Irp6ptfgJ2M(const std::string& name);
-  virtual ~Irp6ptfgJ2M();
+  Irp6tfgJ2M(const std::string& name);
+  virtual ~Irp6tfgJ2M();
 
   bool configureHook();
   void updateHook();
@@ -35,4 +35,4 @@ class Irp6ptfgJ2M : public RTT::TaskContext {
   double inv_d_7;
 };
 
-#endif /* Irp6ptfgJ2M_H_ */
+#endif /* Irp6tfgJ2M_H_ */
