@@ -236,6 +236,9 @@ Irp6ptfgM2J.configure()
 loadComponent("ConveyorM2J","ConveyorM2J")
 ConveyorM2J.configure()
 
+loadComponent("Irp6ottfgM2J","Irp6tfgM2J")
+Irp6ottfgM2J.configure()
+
 loadComponent("Irp6pmForwardKinematic","Irp6pmForwardKinematic")
 Irp6pmForwardKinematic.configure()
 
@@ -254,6 +257,9 @@ Irp6ptfgJ2M.configure()
 
 loadComponent("ConveyorJ2M","ConveyorJ2M")
 ConveyorJ2M.configure()
+
+loadComponent("Irp6ottfgJ2M","Irp6tfgJ2M")
+Irp6ottfgJ2M.configure()
 
 connect("Irp6pmJ2M.JointPosition","Irp6pmInverseKinematic.OutputJointPosition", ConnPolicy())
 
@@ -295,6 +301,20 @@ ConveyorSplineTrajectoryGeneratorJoint.rosparam.getAll();
 connect("ConveyorM2J.JointPosition","ConveyorSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
 connect("ConveyorSplineTrajectoryGeneratorJoint.JointPositionCommand","ConveyorJ2M.JointPosition", ConnPolicy())
 ConveyorSplineTrajectoryGeneratorJoint.configure()
+
+
+// Irp6ottfgSplineTrajectoryGeneratorJoint
+
+loadComponent("Irp6ottfgSplineTrajectoryGeneratorJoint", "InternalSpaceSplineTrajectoryGenerator")
+
+Irp6ottfgSplineTrajectoryGeneratorJoint.loadService("rosparam");
+Irp6ottfgSplineTrajectoryGeneratorJoint.rosparam.getAll();
+
+
+connect("Irp6ottfgM2J.JointPosition","Irp6ottfgSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
+connect("Irp6ottfgSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6ottfgJ2M.JointPosition", ConnPolicy())
+Irp6ottfgSplineTrajectoryGeneratorJoint.configure()
+
 
 
 // Irp6pmSplineTrajectoryGeneratorMotor
@@ -429,16 +449,19 @@ addPeer("Irp6scheme", "Irp6ottfgPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6pmM2J");
 addPeer("Irp6scheme", "Irp6ptfgM2J");
 addPeer("Irp6scheme", "ConveyorM2J");
+addPeer("Irp6scheme", "Irp6ottfgM2J");
 addPeer("Irp6scheme", "Irp6pmForwardKinematic");
 addPeer("Irp6scheme", "Irp6pmInverseKinematic");
 addPeer("Irp6scheme", "Irp6pmJ2M");
 addPeer("Irp6scheme", "Irp6ptfgJ2M");
 addPeer("Irp6scheme", "ConveyorJ2M");
+addPeer("Irp6scheme", "Irp6ottfgJ2M");
 addPeer("Irp6scheme", "Irp6pmForceControlLaw");
 addPeer("Irp6scheme", "Irp6pmForceTransformation");
 addPeer("Irp6scheme", "Irp6pmSplineTrajectoryGeneratorJoint");
 addPeer("Irp6scheme", "Irp6ptfgSplineTrajectoryGeneratorJoint");
 addPeer("Irp6scheme", "ConveyorSplineTrajectoryGeneratorJoint");
+addPeer("Irp6scheme", "Irp6ottfgSplineTrajectoryGeneratorJoint");
 addPeer("Irp6scheme", "Irp6pmSplineTrajectoryGeneratorMotor");
 addPeer("Irp6scheme", "Irp6ptfgSplineTrajectoryGeneratorMotor");
 addPeer("Irp6scheme", "ConveyorSplineTrajectoryGeneratorMotor");
@@ -533,6 +556,9 @@ connect("Irp6ptfgJ2M.MotorPosition", "Irp6ptfgPortDoubleSplit_hw_cp.InputPort", 
 connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorM2J.MotorPosition", ConnPolicy())
 connect("ConveyorJ2M.MotorPosition", "ConveyorPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
+connect("Irp6ottfgPortDoubleAggregate_hw_p.OutputPort","Irp6ottfgM2J.MotorPosition", ConnPolicy())
+connect("Irp6ottfgJ2M.MotorPosition", "Irp6ottfgPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+
 connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_0","Irp6HardwareInterface.MotorPositionCommand_irp6pm_0", ConnPolicy())
 connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_1","Irp6HardwareInterface.MotorPositionCommand_irp6pm_1", ConnPolicy())
 connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_2","Irp6HardwareInterface.MotorPositionCommand_irp6pm_2", ConnPolicy())
@@ -588,6 +614,7 @@ Irp6scheme.addBlock("Irp6ottfgPortDoubleAggregate_hw_p")
 Irp6scheme.addBlock("Irp6pmM2J");
 Irp6scheme.addBlock("Irp6ptfgM2J");
 Irp6scheme.addBlock("ConveyorM2J");
+Irp6scheme.addBlock("Irp6ottfgM2J");
 Irp6scheme.addBlock("Irp6pmForwardKinematic");
 Irp6scheme.addBlock("Irp6pmInverseKinematic");
 Irp6scheme.latchConnections("Irp6pmPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
@@ -598,12 +625,14 @@ Irp6scheme.latchConnections("Irp6ottfgPortDoubleSplit_hw_cp", "Irp6HardwareInter
 Irp6scheme.addBlock("Irp6pmJ2M");
 Irp6scheme.addBlock("Irp6ptfgJ2M");
 Irp6scheme.addBlock("ConveyorJ2M");
+Irp6scheme.addBlock("Irp6ottfgJ2M");
 Irp6scheme.addBlock("Irp6pmForceControlLaw");
 Irp6scheme.addBlock("Irp6pmForceTransformation");
 #Irp6scheme.addBlock("ATI6284");
 Irp6scheme.addBlock("Irp6pmSplineTrajectoryGeneratorJoint");
 Irp6scheme.addBlock("Irp6ptfgSplineTrajectoryGeneratorJoint");
 Irp6scheme.addBlock("ConveyorSplineTrajectoryGeneratorJoint");
+Irp6scheme.addBlock("Irp6ottfgSplineTrajectoryGeneratorJoint");
 Irp6scheme.addBlock("Irp6pmSplineTrajectoryGeneratorMotor");
 Irp6scheme.addBlock("Irp6ptfgSplineTrajectoryGeneratorMotor");
 Irp6scheme.addBlock("ConveyorSplineTrajectoryGeneratorMotor");
@@ -672,6 +701,27 @@ connect("ConveyorSplineTrajectoryGeneratorJoint.JointPositionCommand","ConveyorS
 
 
 ConveyorSplineTrajectoryActionJoint.configure()
+
+
+
+//
+// Irp6ottfgSplineTrajectoryActionJoint
+// 
+
+loadComponent("Irp6ottfgSplineTrajectoryActionJoint", "InternalSpaceSplineTrajectoryAction")
+setActivity("Irp6ottfgSplineTrajectoryActionJoint",0.01 ,2 ,ORO_SCHED_RT)
+Irp6ottfgSplineTrajectoryActionJoint.loadService("rosparam");
+Irp6ottfgSplineTrajectoryActionJoint.rosparam.getAll();
+
+Irp6ottfgSplineTrajectoryActionJoint.loadService("actionlib")
+Irp6ottfgSplineTrajectoryActionJoint.actionlib.connect("/irp6ot_tfg/spline_trajectory_action_joint")
+
+connect("Irp6ottfgSplineTrajectoryActionJoint.trajectoryPtr","Irp6ottfgSplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
+connect("Irp6ottfgM2J.JointPosition","Irp6ottfgSplineTrajectoryActionJoint.JointPosition", ConnPolicy())
+connect("Irp6ottfgSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6ottfgSplineTrajectoryActionJoint.JointPositionCommand", ConnPolicy())
+
+
+Irp6ottfgSplineTrajectoryActionJoint.configure()
 
 
 //
@@ -850,17 +900,20 @@ Irp6ottfgPortDoubleAggregate_hw_p.start()
 Irp6pmM2J.start()
 Irp6ptfgM2J.start()
 ConveyorM2J.start()
+Irp6ottfgM2J.start()
 Irp6pmForwardKinematic.start()
 Irp6pmInverseKinematic.start()
 Irp6pmJ2M.start()
 Irp6ptfgJ2M.start()
 ConveyorJ2M.start()
+Irp6ottfgJ2M.start()
 #Irp6pmForceControlLaw.start()
 ATI6284.start()
 Irp6pmJntPub.start()
 Irp6pmSplineTrajectoryActionJoint.start()
 Irp6ptfgSplineTrajectoryActionJoint.start()
 ConveyorSplineTrajectoryActionJoint.start()
+Irp6ottfgSplineTrajectoryActionJoint.start()
 Irp6pmSplineTrajectoryActionMotor.start()
 Irp6ptfgSplineTrajectoryActionMotor.start()
 ConveyorSplineTrajectoryActionMotor.start()
