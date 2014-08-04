@@ -16,13 +16,13 @@ HardwareInterface::HardwareInterface(const std::string& name)
       hi_(NULL),
       state_(NOT_SYNCHRONIZED),
       synchro_drive_(0),
+      tx_prefix_len_(0),
       synchro_state_(MOVE_TO_SYNCHRO_AREA),
       rwh_nsec_(1200000) {
 
   this->addProperty("number_of_drives", number_of_drives_).doc(
       "Number of drives in robot");
   this->addProperty("auto_synchronize", auto_synchronize_).doc("");
-  this->addProperty("tx_prefix_len", tx_prefix_len_).doc("");
   this->addProperty("rwh_nsec", rwh_nsec_).doc("");
   this->addProperty("hi_port_param_0", hi_port_param_[0]).doc("");
   this->addProperty("hi_port_param_1", hi_port_param_[1]).doc("");
