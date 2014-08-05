@@ -479,7 +479,6 @@ uint64_t HI_moxa::write_hardware(void) {
       servo_data[drive_number].commandCnt = 0;
     }
 
-
     for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
 
       // Send command frame
@@ -512,7 +511,6 @@ uint64_t HI_moxa::write_hardware(void) {
 // do communication cycle
 uint64_t HI_moxa::write_read_hardware(long int nsec) {
 
-
   struct timespec start_time, current_time, read_time;
   clock_gettime(CLOCK_MONOTONIC, &start_time);
 
@@ -527,8 +525,7 @@ uint64_t HI_moxa::write_read_hardware(long int nsec) {
     if (current_delay > longest_delay_) {
 
       longest_delay_ = current_delay;
-      std::cout << std::dec << "longest_delay_: " << longest_delay_
-                << std::endl;
+      //  std::cout << std::dec << "longest_delay_: " << longest_delay_ << std::endl;
     }
 
     struct timespec delay;
@@ -539,7 +536,6 @@ uint64_t HI_moxa::write_read_hardware(long int nsec) {
 
     nanosleep(&delay, NULL);
 
-
     // std::cout << std::dec << "longest_delay_: " << longest_delay_ << std::endl;
     /*
      hi_sleep(nsec);
@@ -547,7 +543,6 @@ uint64_t HI_moxa::write_read_hardware(long int nsec) {
 
     ret = read_hardware();
     clock_gettime(CLOCK_MONOTONIC, &read_time);
-
 
     long int read_delay = (read_time.tv_sec - current_time.tv_sec) * 1000000000
         + (read_time.tv_nsec - current_time.tv_nsec);

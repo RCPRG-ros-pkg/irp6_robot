@@ -199,14 +199,20 @@
         number_of_joints: 6
       Irp6pmSplineTrajectoryActionJoint:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
-        lower_limits: [-0.45,-2.2689280276,-0.6108652382,-1.5707963268,-10.0,-2.88]
-        upper_limits: [2.9670597284,-0.872664626,0.6981317008,1.6057029118,10.0,2.93]
+        lower_limits: [-0.45, -2.2689280276, -0.6108652382, -1.5707963268, -10.0, -2.88]
+        upper_limits: [2.9670597284, -0.872664626, 0.6981317008, 1.6057029118, 10.0, 2.93]
       Irp6ptfgSplineTrajectoryGeneratorJoint:
         number_of_joints: 1
       Irp6ptfgSplineTrajectoryActionJoint:
         joint_names: [joint1]
         lower_limits: [0.04]
         upper_limits: [0.1]
+      Irp6otmSplineTrajectoryGeneratorJoint:
+        number_of_joints: 7
+      Irp6otmSplineTrajectoryActionJoint:
+        joint_names: [joint1, joint2, joint3, joint4, joint5, joint6, joint7]
+        lower_limits: [-0.4, -0.45, -2.2689280276, -0.6108652382, -1.5707963268, -10.0, -2.88]
+        upper_limits: [1.21, 2.9670597284, -0.872664626, 0.6981317008, 1.6057029118, 10.0, 2.93]
       Irp6ottfgSplineTrajectoryGeneratorJoint:
         number_of_joints: 1
       Irp6ottfgSplineTrajectoryActionJoint:
