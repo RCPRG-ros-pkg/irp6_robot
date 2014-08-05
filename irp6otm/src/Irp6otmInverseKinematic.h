@@ -39,6 +39,9 @@ class Irp6otmInverseKinematic : public RTT::TaskContext {
 
   geometry_msgs::Pose tool_msgs_;
 
+  //! D-H kinematic parameters - length of 1st segment.
+  double d1;
+
   //! D-H kinematic parameters - length of 2nd segment.
   double a2;
 

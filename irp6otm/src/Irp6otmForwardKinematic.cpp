@@ -6,6 +6,7 @@
 
 Irp6otmForwardKinematic::Irp6otmForwardKinematic(const std::string& name)
     : RTT::TaskContext(name, PreOperational),
+      d1(0.0),
       a2(0.0),
       a3(0.0),
       d5(0.0),
@@ -30,6 +31,7 @@ bool Irp6otmForwardKinematic::configureHook() {
   /* -----------------------------------------------------------------------
    Dlugosci czlonow robota [m].
    ------------------------------------------------------------------------- */
+  d1 = d1_const;
   a2 = a2_const;
   a3 = a3_const;
   d5 = d5_const;
@@ -81,22 +83,23 @@ void Irp6otmForwardKinematic::direct_kinematics_transform(
   // poprawka w celu uwzglednienia konwencji DH
   local_current_joints_tmp_ = local_current_joints;
 
-  local_current_joints_tmp_[2] += local_current_joints_tmp_[1] + M_PI_2;
-  local_current_joints_tmp_[3] += local_current_joints_tmp_[2];
+  local_current_joints_tmp_[3] += local_current_joints_tmp_[2] + M_PI_2;
+  local_current_joints_tmp_[4] += local_current_joints_tmp_[3];
 
   // Parametry pomocnicze - przeliczenie zmiennych.
-  const double s1 = sin((double)local_current_joints_tmp_[0]);
-  const double c1 = cos((double)local_current_joints_tmp_[0]);
-  const double s2 = sin((double)local_current_joints_tmp_[1]);
-  const double c2 = cos((double)local_current_joints_tmp_[1]);
-  const double s3 = sin((double)local_current_joints_tmp_[2]);
-  const double c3 = cos((double)local_current_joints_tmp_[2]);
-  const double s4 = sin((double)local_current_joints_tmp_[3]);
-  const double c4 = cos((double)local_current_joints_tmp_[3]);
-  const double s5 = sin((double)local_current_joints_tmp_[4]);
-  const double c5 = cos((double)local_current_joints_tmp_[4]);
-  const double s6 = sin((double)local_current_joints_tmp_[5]);
-  const double c6 = cos((double)local_current_joints_tmp_[5]);
+  double d0 = local_current_joints_tmp_[0];
+  double s1 = sin(local_current_joints_tmp_[1]);
+  double c1 = cos(local_current_joints_tmp_[1]);
+  double s2 = sin(local_current_joints_tmp_[2]);
+  double c2 = cos(local_current_joints_tmp_[2]);
+  double s3 = sin(local_current_joints_tmp_[3]);
+  double c3 = cos(local_current_joints_tmp_[3]);
+  double s4 = sin(local_current_joints_tmp_[4]);
+  double c4 = cos(local_current_joints_tmp_[4]);
+  double s5 = sin(local_current_joints_tmp_[5]);
+  double c5 = cos(local_current_joints_tmp_[5]);
+  double s6 = sin(local_current_joints_tmp_[6]);
+  double c6 = cos(local_current_joints_tmp_[6]);
 
   // Proste zadanie kinematyki.
   (*local_current_end_effector_frame)(0, 0) = (c1 * s4 * c5 + s1 * s5) * c6
@@ -104,15 +107,14 @@ void Irp6otmForwardKinematic::direct_kinematics_transform(
   (*local_current_end_effector_frame)(0, 1) = -(c1 * s4 * c5 + s1 * s5) * s6
       + c1 * c4 * c6;  //OX
   (*local_current_end_effector_frame)(0, 2) = c1 * s4 * s5 - s1 * c5;  //AX
-  (*local_current_end_effector_frame)(0, 3) = c1
-      * (a2 * c2 + a3 * c3 + d5 * c4);  //PX
+  (*local_current_end_effector_frame)(0, 3) = c1 * (a2 * c2 + a3 * c3 + d5 * c4);  //PX
   (*local_current_end_effector_frame)(1, 0) = (s1 * s4 * c5 - c1 * s5) * c6
-      + s1 * c4 * s6;  //NY2
+      + s1 * c4 * s6;  //NY
   (*local_current_end_effector_frame)(1, 1) = -(s1 * s4 * c5 - c1 * s5) * s6
       + s1 * c4 * c6;  //OY
   (*local_current_end_effector_frame)(1, 2) = s1 * s4 * s5 + c1 * c5;  //AY
-  (*local_current_end_effector_frame)(1, 3) = s1
-      * (a2 * c2 + a3 * c3 + d5 * c4);  //PY
+  (*local_current_end_effector_frame)(1, 3) = s1 * (a2 * c2 + a3 * c3 + d5 * c4)
+      + d0;  //PY
   (*local_current_end_effector_frame)(2, 0) = c4 * c5 * c6 - s4 * s6;  //NZ
   (*local_current_end_effector_frame)(2, 1) = -c4 * c5 * s6 - s4 * c6;  //OZ
   (*local_current_end_effector_frame)(2, 2) = c4 * s5;  //AZ

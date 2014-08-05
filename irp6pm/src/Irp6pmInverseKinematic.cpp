@@ -37,9 +37,9 @@ bool Irp6pmInverseKinematic::configureHook() {
   d6 = d6_const;
   d7 = d7_const;
 
-  local_desired_joints_.resize(6);
-  local_current_joints_.resize(6);
-  local_current_joints_tmp_.resize(6);
+  local_desired_joints_.resize(NUMBER_OF_SERVOS);
+  local_current_joints_.resize(NUMBER_OF_SERVOS);
+  local_current_joints_tmp_.resize(NUMBER_OF_SERVOS);
 
   if (port_tool_.read(tool_msgs_) == RTT::NewData) {
 
