@@ -30,14 +30,15 @@ bool Irp6pmForwardKinematic::configureHook() {
   /* -----------------------------------------------------------------------
    Dlugosci czlonow robota [m].
    ------------------------------------------------------------------------- */
+
   a2 = a2_const;
   a3 = a3_const;
   d5 = d5_const;
   d6 = d6_const;
   d7 = d7_const;
 
-  joint_position_.resize(6);
-  local_current_joints_tmp_.resize(6);
+  joint_position_.resize(NUMBER_OF_SERVOS);
+  local_current_joints_tmp_.resize(NUMBER_OF_SERVOS);
 
   if (port_tool_.read(tool_msgs_) == RTT::NewData) {
 

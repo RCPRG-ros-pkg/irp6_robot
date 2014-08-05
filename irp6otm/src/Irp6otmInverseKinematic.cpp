@@ -6,6 +6,7 @@
 
 Irp6otmInverseKinematic::Irp6otmInverseKinematic(const std::string& name)
     : RTT::TaskContext(name, PreOperational),
+      d1(0.0),
       a2(0.0),
       a3(0.0),
       d5(0.0),
@@ -31,15 +32,16 @@ bool Irp6otmInverseKinematic::configureHook() {
   /* -----------------------------------------------------------------------
    Dlugosci czlonow robota [m].
    ------------------------------------------------------------------------- */
+  d1 = d1_const;
   a2 = a2_const;
   a3 = a3_const;
   d5 = d5_const;
   d6 = d6_const;
   d7 = d7_const;
 
-  local_desired_joints_.resize(6);
-  local_current_joints_.resize(6);
-  local_current_joints_tmp_.resize(6);
+  local_desired_joints_.resize(NUMBER_OF_SERVOS);
+  local_current_joints_.resize(NUMBER_OF_SERVOS);
+  local_current_joints_tmp_.resize(NUMBER_OF_SERVOS);
 
   if (port_tool_.read(tool_msgs_) == RTT::NewData) {
 
@@ -91,11 +93,12 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
     const Eigen::Affine3d& local_desired_end_effector_frame,
     Eigen::VectorXd* local_desired_joints) {
 
+
   // poprawka w celu uwzglednienia konwencji DH
   local_current_joints_tmp_ = local_current_joints;
 
-  local_current_joints_tmp_[2] += local_current_joints_tmp_[1] + M_PI_2;
-  local_current_joints_tmp_[3] += local_current_joints_tmp_[2];
+  local_current_joints_tmp_[3] += local_current_joints_tmp_[2] + M_PI_2;
+  local_current_joints_tmp_[4] += local_current_joints_tmp_[3];
 
   // Stale
   const double EPS = 1e-10;
@@ -104,9 +107,9 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
   double Nx, Ox, Ax, Px;
   double Ny, Oy, Ay, Py;
   double Nz, Oz, Az, Pz;
-  double s0, c0, s1, c1, s3, c3, s4, c4;
+  double s1, c1, s2, c2, s4, c4, s5, c5;
   double E, F, K, ro, G, H;
-  double t5, t_ok;
+  double t6, t_ok;
 
   // Przepisanie zmiennych.
   Nx = local_desired_end_effector_frame(0, 0);
@@ -119,150 +122,141 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
   Ay = local_desired_end_effector_frame(1, 2);
   Az = local_desired_end_effector_frame(2, 2);
   Px = local_desired_end_effector_frame(0, 3);
-  Py = local_desired_end_effector_frame(1, 3);
+  Py = local_desired_end_effector_frame(1, 3) - local_current_joints_tmp_[0];
   Pz = local_desired_end_effector_frame(2, 3) - z_offset_const;
 
   //  Wyliczenie Theta1.
-  (*local_desired_joints)[0] = (atan2(Py, Px));
-  s0 = sin((double) (*local_desired_joints)[0]);
-  c0 = cos((double) (*local_desired_joints)[0]);
+  (*local_desired_joints)[1] = (atan2(Py, Px));
+  s1 = sin((*local_desired_joints)[1]);
+  c1 = cos((*local_desired_joints)[1]);
 
   // Wyliczenie Theta5.
-  c4 = Ay * c0 - Ax * s0;
+  c5 = Ay * c1 - Ax * s1;
   // Sprawdzenie bledow numerycznych.
-  if (fabs(c4 * c4 - 1) > EPS)
-    s4 = sqrt(1 - c4 * c4);
+  if (fabs(c5 * c5 - 1) > EPS)
+    s5 = sqrt(1 - c5 * c5);
   else
-    s4 = 0;
+    s5 = 0;
 
   double cj_tmp;
   double dj_translation;
   // Sprawdzenie rozwiazania.
-  if (local_current_joints_tmp_[4] > M_PI) {
-    cj_tmp = local_current_joints_tmp_[4] - 2 * M_PI;
+  if (local_current_joints_tmp_[5] > M_PI) {
+    cj_tmp = local_current_joints_tmp_[5] - 2 * M_PI;
     dj_translation = 2 * M_PI;
-  } else if (local_current_joints_tmp_[4] < -M_PI) {
-    cj_tmp = local_current_joints_tmp_[4] + 2 * M_PI;
+  } else if (local_current_joints_tmp_[5] < -M_PI) {
+    cj_tmp = local_current_joints_tmp_[5] + 2 * M_PI;
     dj_translation = -2 * M_PI;
   } else {
-    cj_tmp = local_current_joints_tmp_[4];
+    cj_tmp = local_current_joints_tmp_[5];
     dj_translation = 0.0;
   }
 
   // Niejednoznacznosc - uzywamy rozwiazanie blizsze poprzedniemu.
   if (cj_tmp > 0)
-    (*local_desired_joints)[4] = atan2(s4, c4);
+    (*local_desired_joints)[5] = atan2(s5, c5);
   else
-    (*local_desired_joints)[4] = atan2(-s4, c4);
+    (*local_desired_joints)[5] = atan2(-s5, c5);
 
   // Dodanie przesuniecia.
-  (*local_desired_joints)[4] += dj_translation;
+  (*local_desired_joints)[5] += dj_translation;
 
   // Wyliczenie Theta4 i Theta6.
-  if (fabs(s4) < EPS) {
+  if (fabs(s5) < EPS) {
     printf("Osobliwosc\n");
     // W przypadku osobliwosci katowi theta4 przypisywana wartosc poprzednia.
-    (*local_desired_joints)[3] = local_current_joints_tmp_[3];
-    t5 = atan2(c0 * Nx + s0 * Ny, c0 * Ox + s0 * Oy);
+    (*local_desired_joints)[4] = local_current_joints_tmp_[4];
+    t6 = atan2(c1 * Nx + s1 * Ny, c1 * Ox + s1 * Oy);
 
     // Sprawdzenie warunkow.
-    t_ok = t5 + (*local_desired_joints)[3];
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 - M_PI + (*local_desired_joints)[3]
-                - (local_current_joints_tmp_[5]))))
-      t_ok = t5 - M_PI + (*local_desired_joints)[3];
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 + M_PI + (*local_desired_joints)[3]
-                - (local_current_joints_tmp_[5]))))
-      t_ok = t5 + M_PI + (*local_desired_joints)[3];
+    t_ok = t6 + (*local_desired_joints)[4];
+    if (fabs(t_ok - local_current_joints_tmp_[6])
+        > fabs(t6 - M_PI + (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+      t_ok = t6 - M_PI + (*local_desired_joints)[4];
+    if (fabs(t_ok - local_current_joints_tmp_[6])
+        > fabs(t6 + M_PI + (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+      t_ok = t6 + M_PI + (*local_desired_joints)[4];
 
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 - 2 * M_PI + (*local_desired_joints)[3]
-                - (local_current_joints_tmp_[5]))))
-      t_ok = t5 - 2 * M_PI + (*local_desired_joints)[3];
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 + 2 * M_PI + (*local_desired_joints)[3]
-                - (local_current_joints_tmp_[5]))))
-      t_ok = t5 + 2 * M_PI + (*local_desired_joints)[3];
+    if (fabs(t_ok - local_current_joints_tmp_[6])
+        > fabs(t6 - 2 * M_PI + (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+      t_ok = t6 - 2 * M_PI + (*local_desired_joints)[4];
+    if (fabs(t_ok - local_current_joints_tmp_[6])
+        > fabs(t6 + 2 * M_PI + (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+      t_ok = t6 + 2 * M_PI + (*local_desired_joints)[4];
 
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 - (*local_desired_joints)[3] - (local_current_joints_tmp_[5]))))
-      t_ok = t5 - (*local_desired_joints)[3];
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 - M_PI - (*local_desired_joints)[3]
-                - (local_current_joints_tmp_[5]))))
-      t_ok = t5 - M_PI - (*local_desired_joints)[3];
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 + M_PI - (*local_desired_joints)[3]
-                - (local_current_joints_tmp_[5]))))
-      t_ok = t5 + M_PI - (*local_desired_joints)[3];
+    if (fabs(t_ok - local_current_joints_tmp_[6])
+        > fabs(t6 - (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+      t_ok = t6 - (*local_desired_joints)[4];
+    if (fabs(t_ok - local_current_joints_tmp_[6])
+        > fabs(t6 - M_PI - (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+      t_ok = t6 - M_PI - (*local_desired_joints)[4];
+    if (fabs(t_ok - local_current_joints_tmp_[6])
+        > fabs(t6 + M_PI - (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+      t_ok = t6 + M_PI - (*local_desired_joints)[4];
 
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 - 2 * M_PI - (*local_desired_joints)[3]
-                - (local_current_joints_tmp_[5]))))
-      t_ok = t5 - 2 * M_PI - (*local_desired_joints)[3];
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 + 2 * M_PI - (*local_desired_joints)[3]
-                - (local_current_joints_tmp_[5]))))
-      t_ok = t5 + 2 * M_PI - (*local_desired_joints)[3];
+    if (fabs(t_ok - local_current_joints_tmp_[6])
+        > fabs(t6 - 2 * M_PI - (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+      t_ok = t6 - 2 * M_PI - (*local_desired_joints)[4];
+    if (fabs(t_ok - local_current_joints_tmp_[6])
+        > fabs(t6 + 2 * M_PI - (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+      t_ok = t6 + 2 * M_PI - (*local_desired_joints)[4];
 
-    (*local_desired_joints)[5] = t_ok;
+    //  std::cout << "variant 1" << std::endl;
+
+    (*local_desired_joints)[6] = t_ok;
   } else {
-    t5 = atan2(-s0 * Ox + c0 * Oy, s0 * Nx - c0 * Ny);
-    t_ok = t5;
-
+    t6 = atan2(-s1 * Ox + c1 * Oy, s1 * Nx - c1 * Ny);
+    t_ok = t6;
+    //  std::cout << "variant 2" << std::endl;
     // Sprawdzenie warunkow.
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(t5 - M_PI - (local_current_joints_tmp_[5]))))
-      t_ok = t5 - M_PI;
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(t5 + M_PI - (local_current_joints_tmp_[5]))))
-      t_ok = t5 + M_PI;
+    if (fabs(t_ok - local_current_joints_tmp_[6]) > fabs(t6 - M_PI - (local_current_joints_tmp_[6]))) {
+      //  std::cout << "variant 2 a" << std::endl;
+      t_ok = t6 - M_PI;
+    }
+    if (fabs(t_ok - local_current_joints_tmp_[6]) > fabs(t6 + M_PI - (local_current_joints_tmp_[6]))) {
+      //  std::cout << "variant 2 b" << std::endl;
+      t_ok = t6 + M_PI;
+    }
 
-    (*local_desired_joints)[5] = t_ok;
-    t_ok = atan2(c0 * Ax + s0 * Ay, Az);
+    (*local_desired_joints)[6] = t_ok;
+    t_ok = atan2(c1 * Ax + s1 * Ay, Az);
 
-    if (fabs((double)(t_ok - local_current_joints_tmp_[3]))
-        > fabs((double)(t_ok - M_PI - (local_current_joints_tmp_[3]))))
+    if (fabs(t_ok - local_current_joints_tmp_[4]) > fabs(t_ok - M_PI - (local_current_joints_tmp_[4]))) {
+      //  std::cout << "variant 2 c" << std::endl;
       t_ok = t_ok - M_PI;
-    if (fabs((double)(t_ok - local_current_joints_tmp_[3]))
-        > fabs((double)(t_ok + M_PI - (local_current_joints_tmp_[3]))))
+    }
+    if (fabs(t_ok - local_current_joints_tmp_[4]) > fabs(t_ok + M_PI - (local_current_joints_tmp_[4]))) {
+      //  std::cout << "variant 2 d" << std::endl;
       t_ok = t_ok + M_PI;
-    (*local_desired_joints)[3] = t_ok;
-  }  //: else
+    }
+
+    (*local_desired_joints)[4] = t_ok;
+  } //: else
 
   // Wyliczenie Theta2.
-  c3 = cos((double)(*local_desired_joints)[3]);
-  s3 = sin((double)(*local_desired_joints)[3]);
+  c4 = cos((*local_desired_joints)[4]);
+  s4 = sin((*local_desired_joints)[4]);
 
-  E = c0 * Px + s0 * Py - c3 * d5;
-  F = -Pz - s3 * d5;
+  E = c1 * Px + s1 * Py - c4 * d5;
+  F = -Pz - s4 * d5;
   G = 2 * E * a2;
   H = 2 * F * a2;
   K = E * E + F * F + a2 * a2 - a3 * a3;
   ro = sqrt(G * G + H * H);
 
-  (*local_desired_joints)[1] = atan2(K / ro, sqrt(1 - ((K * K) / (ro * ro))))
-      - atan2(G, H);
+  (*local_desired_joints)[2] = atan2(K / ro, sqrt(1 - ((K * K) / (ro * ro)))) - atan2(G, H);
 
   // Wyliczenie Theta3.
-  s1 = sin((double)(*local_desired_joints)[1]);
-  c1 = cos((double)(*local_desired_joints)[1]);
-  (*local_desired_joints)[2] = atan2(F - a2 * s1, E - a2 * c1);
+  s2 = sin((*local_desired_joints)[2]);
+  c2 = cos((*local_desired_joints)[2]);
+  (*local_desired_joints)[3] = atan2(F - a2 * s2, E - a2 * c2);
+
+  // Tor. Nie bierze udzialu w tym rozwiazaniu.
+  (*local_desired_joints)[0] = local_current_joints_tmp_[0];
 
   // poprawka w celu dostosowania do konwencji DH
-  (*local_desired_joints)[2] -= (*local_desired_joints)[1] + M_PI_2;
-  (*local_desired_joints)[3] -= (*local_desired_joints)[2]
-      + (*local_desired_joints)[1] + M_PI_2;
+  (*local_desired_joints)[3] -= (*local_desired_joints)[2] + M_PI_2;
+  (*local_desired_joints)[4] -= (*local_desired_joints)[3] + (*local_desired_joints)[2] + M_PI_2;
 
 }
 

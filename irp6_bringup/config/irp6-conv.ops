@@ -265,10 +265,22 @@ ConveyorJ2M.configure()
 loadComponent("Irp6otmJ2M","Irp6otmJ2M")
 Irp6otmJ2M.configure()
 
+loadComponent("Irp6otmForwardKinematic","Irp6otmForwardKinematic")
+Irp6otmForwardKinematic.configure()
+
+connect("Irp6otmM2J.JointPosition","Irp6otmForwardKinematic.JointPosition", ConnPolicy())
+
+loadComponent("Irp6otmInverseKinematic","Irp6otmInverseKinematic")
+Irp6otmInverseKinematic.configure()
+
+connect("Irp6otmM2J.JointPosition","Irp6otmInverseKinematic.CurrentJointPosition", ConnPolicy())
+
 loadComponent("Irp6ottfgJ2M","Irp6tfgJ2M")
 Irp6ottfgJ2M.configure()
 
 connect("Irp6pmJ2M.JointPosition","Irp6pmInverseKinematic.OutputJointPosition", ConnPolicy())
+
+connect("Irp6otmJ2M.JointPosition","Irp6otmInverseKinematic.OutputJointPosition", ConnPolicy())
 
 
 // Irp6pmSplineTrajectoryGeneratorJoint
@@ -420,6 +432,29 @@ connect("Irp6pmToolInt.CartesianPositionCommand", "Irp6pmInverseKinematic.Tool",
 
 #stream("Irp6pmToolInt.CartesianPositionCommand", ros.comm.topic("/irp6p_arm/tool"))
 
+
+// Irp6otmPoseInt
+
+loadComponent("Irp6otmPoseInt", "CartesianInterpolator")
+
+connect("Irp6otmForwardKinematic.EndEffectorOutputPose", "Irp6otmPoseInt.CartesianPosition", ConnPolicy())
+connect("Irp6otmPoseInt.CartesianPositionCommand", "Irp6otmInverseKinematic.InputEndEffectorPose", ConnPolicy())
+
+Irp6otmPoseInt.configure();
+
+// Irp6otmToolInt
+
+loadComponent("Irp6otmToolInt", "CartesianInterpolator")
+Irp6otmToolInt.configure();
+Irp6otmToolInt.loadService("rosparam");
+Irp6otmToolInt.rosparam.getAll();
+
+connect("Irp6otmToolInt.CartesianPositionCommand", "Irp6otmForwardKinematic.Tool", ConnPolicy())
+connect("Irp6otmToolInt.CartesianPositionCommand", "Irp6otmInverseKinematic.Tool", ConnPolicy())
+
+#stream("Irp6otmToolInt.CartesianPositionCommand", ros.comm.topic("/irp6ot_arm/tool"))
+
+
 // ATI6284
 
 loadComponent("ATI6284", "ATI6284")
@@ -477,6 +512,8 @@ addPeer("Irp6scheme", "Irp6pmJ2M");
 addPeer("Irp6scheme", "Irp6ptfgJ2M");
 addPeer("Irp6scheme", "ConveyorJ2M");
 addPeer("Irp6scheme", "Irp6otmJ2M");
+addPeer("Irp6scheme", "Irp6otmForwardKinematic");
+addPeer("Irp6scheme", "Irp6otmInverseKinematic");
 addPeer("Irp6scheme", "Irp6ottfgJ2M");
 addPeer("Irp6scheme", "Irp6pmForceControlLaw");
 addPeer("Irp6scheme", "Irp6pmForceTransformation");
@@ -492,6 +529,8 @@ addPeer("Irp6scheme", "Irp6otmSplineTrajectoryGeneratorMotor");
 addPeer("Irp6scheme", "Irp6ottfgSplineTrajectoryGeneratorMotor");
 addPeer("Irp6scheme", "Irp6pmPoseInt");
 addPeer("Irp6scheme", "Irp6pmToolInt");
+addPeer("Irp6scheme", "Irp6otmPoseInt");
+addPeer("Irp6scheme", "Irp6otmToolInt");
 
 
 
@@ -644,6 +683,8 @@ Irp6scheme.addBlock("Irp6otmM2J");
 Irp6scheme.addBlock("Irp6ottfgM2J");
 Irp6scheme.addBlock("Irp6pmForwardKinematic");
 Irp6scheme.addBlock("Irp6pmInverseKinematic");
+Irp6scheme.addBlock("Irp6otmForwardKinematic");
+Irp6scheme.addBlock("Irp6otmInverseKinematic");
 Irp6scheme.latchConnections("Irp6pmPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
 Irp6scheme.latchConnections("Irp6ptfgPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
 Irp6scheme.latchConnections("ConveyorPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
@@ -669,6 +710,8 @@ Irp6scheme.addBlock("Irp6otmSplineTrajectoryGeneratorMotor");
 Irp6scheme.addBlock("Irp6ottfgSplineTrajectoryGeneratorMotor");
 Irp6scheme.addBlock("Irp6pmPoseInt");
 Irp6scheme.addBlock("Irp6pmToolInt");
+Irp6scheme.addBlock("Irp6otmPoseInt");
+Irp6scheme.addBlock("Irp6otmToolInt");
 
 // ROS Interface
 
@@ -869,7 +912,7 @@ Irp6ottfgSplineTrajectoryActionMotor.configure()
 
 
 //
-// CartesianTrajectoryAction
+// Irp6pmPoseIntAction
 //
 
 loadComponent("Irp6pmPoseIntAction", "CartesianTrajectoryAction")
@@ -896,6 +939,37 @@ Irp6pmToolIntAction.loadService("actionlib")
 Irp6pmToolIntAction.actionlib.connect("/irp6p_arm/tool_trajectory")
 
 connect("Irp6pmToolIntAction.CartesianTrajectoryCommand","Irp6pmToolInt.CartesianTrajectoryCommand", ConnPolicy())
+
+
+//
+// Irp6otmPoseIntAction
+//
+
+loadComponent("Irp6otmPoseIntAction", "CartesianTrajectoryAction")
+setActivity("Irp6otmPoseIntAction",0.01 ,2 ,ORO_SCHED_RT)
+
+Irp6otmPoseIntAction.configure()
+
+Irp6otmPoseIntAction.loadService("actionlib")
+Irp6otmPoseIntAction.actionlib.connect("/irp6ot_arm/pose_trajectory")
+
+connect("Irp6otmPoseIntAction.CartesianTrajectoryCommand","Irp6otmPoseInt.CartesianTrajectoryCommand", ConnPolicy())
+
+
+//
+// Irp6otmToolIntAction
+//
+
+loadComponent("Irp6otmToolIntAction", "CartesianTrajectoryAction")
+setActivity("Irp6otmToolIntAction",0.01 ,2 ,ORO_SCHED_RT)
+
+Irp6otmToolIntAction.configure()
+
+Irp6otmToolIntAction.loadService("actionlib")
+Irp6otmToolIntAction.actionlib.connect("/irp6ot_arm/tool_trajectory")
+
+connect("Irp6otmToolIntAction.CartesianTrajectoryCommand","Irp6otmToolInt.CartesianTrajectoryCommand", ConnPolicy())
+
 
 
 
@@ -957,6 +1031,8 @@ Irp6ptfgJ2M.start()
 ConveyorJ2M.start()
 Irp6otmJ2M.start()
 Irp6ottfgJ2M.start()
+Irp6otmForwardKinematic.start()
+Irp6otmInverseKinematic.start()
 #Irp6pmForceControlLaw.start()
 ATI6284.start()
 Irp6pmJntPub.start()
@@ -973,6 +1049,9 @@ Irp6ottfgSplineTrajectoryActionMotor.start()
 Irp6pmPoseIntAction.start()
 Irp6pmToolIntAction.start()
 Irp6pmToolInt.start()
+Irp6otmPoseIntAction.start()
+Irp6otmToolIntAction.start()
+Irp6otmToolInt.start()
 
 
 

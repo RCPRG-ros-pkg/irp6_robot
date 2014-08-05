@@ -417,6 +417,18 @@
             x: 0.0
             y: 0.0
             z: 0.25
+      Irp6otmToolInt:
+        activate_pose_init: true
+        init_setpoint:
+          orientation:
+            w: 1.0 
+            x: 0.0           
+            y: 0.0
+            z: 0.0
+          position:
+            x: 0.0
+            y: 0.0
+            z: 0.25      
       Irp6pmForceTransformation:
         is_right_turn_frame: true
         tool_weight: 10.8
