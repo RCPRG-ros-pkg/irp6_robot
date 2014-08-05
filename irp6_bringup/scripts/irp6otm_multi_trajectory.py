@@ -74,6 +74,34 @@ if __name__ == '__main__':
   command_result = motor_client.get_result()
     
   conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor'], True)  
+  
+  
+  #
+  # Joint coordinates motion
+  #
+  
+  conmanSwitch(['Irp6otmSplineTrajectoryGeneratorJoint'], [], True)
+  
+  joint_client = actionlib.SimpleActionClient('/irp6ot_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
+  joint_client.wait_for_server()
+
+  print 'server ok'
+
+  goal = FollowJointTrajectoryGoal()
+  goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6', 'joint7']
+  goal.trajectory.points.append(JointTrajectoryPoint([0.0, 0.4, -1.5418065817051163, 0.0, 1.5, 1.57, -2.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(3.0)))
+  goal.trajectory.points.append(JointTrajectoryPoint([0.1, 0.0, -1.5418065817051163, 0.0, 1.5, 1.57, -1.57], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(6.0)))
+  goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+
+  joint_client.send_goal(goal)
+
+  joint_client.wait_for_result()
+  command_result = joint_client.get_result()
+  
+  
+  
+  conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorJoint'], True)
+  
     
   print 'finish'
   

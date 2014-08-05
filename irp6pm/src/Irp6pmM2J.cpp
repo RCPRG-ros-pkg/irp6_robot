@@ -15,8 +15,8 @@ Irp6pmM2J::~Irp6pmM2J() {
 }
 
 bool Irp6pmM2J::configureHook() {
-	motor_position_.resize(6);
-	joint_position_.resize(6);
+	motor_position_.resize(NUMBER_OF_SERVOS);
+	joint_position_.resize(NUMBER_OF_SERVOS);
 	return true;
 }
 
@@ -32,13 +32,6 @@ void Irp6pmM2J::mp2i(const double* motors, double* joints)
   double c, d, l;
   double sinus, cosinus;
   double M1, M2;
-
-  const double sl123 = 7.789525e+04;
-  const double mi1 = 6.090255e+04;
-  const double ni1 = -2.934668e+04;
-
-  const double mi2 = -4.410000e+04;
-  const double ni2 = -5.124000e+04;
 
 // Przelicznik polozenia walu silnika napedowego kolumny w radianach
 // na kat obrotu kolumny (wspolrzedna wewnetrzna) w radianach
