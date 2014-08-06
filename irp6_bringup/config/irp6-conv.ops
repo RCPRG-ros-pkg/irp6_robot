@@ -10,9 +10,9 @@ ros.import("rtt_cartesian_trajectory_msgs")
 ros.import("rtt_force_control_msgs")
 ros.import("rtt_hi_msgs")
 
-ros.import("conman");
-ros.import("rtt_conman_msgs");
-ros.import("conman_ros");
+ros.import("conman")
+ros.import("rtt_conman_msgs")
+ros.import("conman_ros")
 ros.import("hardware_interface")
 ros.import("irp6_regulator")
 ros.import("oro_joint_state_publisher")
@@ -22,10 +22,11 @@ ros.import("irp6pm_kinematic")
 ros.import("irp6otm_kinematic")
 ros.import("irp6tfg_kinematic")
 ros.import("conveyor_kinematic")
-ros.import("controller_common");
-ros.import("force_contol");
-ros.import("ati6284");
-ros.import("port_split");
+ros.import("controller_common")
+ros.import("force_contol")
+ros.import("ati3084")
+ros.import("ati6284")
+ros.import("port_split")
 
 
 //------------------------------------------------------------------------------
@@ -462,7 +463,6 @@ setActivity("ATI6284", 0.002, 5, ORO_SCHED_RT)
 ATI6284.configure()
 
 
-
 // Irp6pmForceTransformation
 loadComponent("Irp6pmForceTransformation", "ForceTransformation")
 Irp6pmForceTransformation.loadService("rosparam");
@@ -487,6 +487,38 @@ connect("Irp6pmForceTransformation.OutputEndEffectorWrench", "Irp6pmForceControl
 
 stream("Irp6pmForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6p_arm/fcl_param"))
 
+
+
+// ATI3084
+
+loadComponent("ATI3084", "ATI3084")
+setActivity("ATI3084", 0.002, 5, ORO_SCHED_RT)
+ATI3084.configure()
+
+
+// Irp6otmForceTransformation
+loadComponent("Irp6otmForceTransformation", "ForceTransformation")
+Irp6otmForceTransformation.loadService("rosparam");
+Irp6otmForceTransformation.rosparam.getAll();
+Irp6otmForceTransformation.configure()
+
+
+connect("Irp6otmForceTransformation.CurrentWristPose", "Irp6otmForwardKinematic.WristOutputPose", ConnPolicy())
+connect("Irp6otmForceTransformation.CurrentSensorWrench", "ATI3084.Wrench", ConnPolicy())
+connect("Irp6otmForceTransformation.Tool", "Irp6otmToolInt.CartesianPositionCommand", ConnPolicy())
+
+stream("Irp6otmForceTransformation.ToolGravityParam", ros.comm.topic("/irp6ot_arm/tg_param"))
+
+// ForceControlLaw
+
+loadComponent("Irp6otmForceControlLaw", "ForceControlLaw")
+Irp6otmForceControlLaw.configure()
+
+connect("Irp6otmForceControlLaw.OutputEndEffectorPose", "Irp6otmInverseKinematic.InputEndEffectorPose", ConnPolicy())
+connect("Irp6otmForceControlLaw.CurrentEndEffectorPose", "Irp6otmForwardKinematic.EndEffectorOutputPose", ConnPolicy())
+connect("Irp6otmForceTransformation.OutputEndEffectorWrench", "Irp6otmForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
+
+stream("Irp6otmForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6ot_arm/fcl_param"))
 
 
 
@@ -515,8 +547,10 @@ addPeer("Irp6scheme", "Irp6otmJ2M");
 addPeer("Irp6scheme", "Irp6otmForwardKinematic");
 addPeer("Irp6scheme", "Irp6otmInverseKinematic");
 addPeer("Irp6scheme", "Irp6ottfgJ2M");
-addPeer("Irp6scheme", "Irp6pmForceControlLaw");
 addPeer("Irp6scheme", "Irp6pmForceTransformation");
+addPeer("Irp6scheme", "Irp6pmForceControlLaw");
+addPeer("Irp6scheme", "Irp6otmForceTransformation");
+addPeer("Irp6scheme", "Irp6otmForceControlLaw");
 addPeer("Irp6scheme", "Irp6pmSplineTrajectoryGeneratorJoint");
 addPeer("Irp6scheme", "Irp6ptfgSplineTrajectoryGeneratorJoint");
 addPeer("Irp6scheme", "ConveyorSplineTrajectoryGeneratorJoint");
@@ -697,7 +731,8 @@ Irp6scheme.addBlock("Irp6otmJ2M");
 Irp6scheme.addBlock("Irp6ottfgJ2M");
 Irp6scheme.addBlock("Irp6pmForceControlLaw");
 Irp6scheme.addBlock("Irp6pmForceTransformation");
-#Irp6scheme.addBlock("ATI6284");
+Irp6scheme.addBlock("Irp6otmForceControlLaw");
+Irp6scheme.addBlock("Irp6otmForceTransformation");
 Irp6scheme.addBlock("Irp6pmSplineTrajectoryGeneratorJoint");
 Irp6scheme.addBlock("Irp6ptfgSplineTrajectoryGeneratorJoint");
 Irp6scheme.addBlock("ConveyorSplineTrajectoryGeneratorJoint");
@@ -1033,8 +1068,8 @@ Irp6otmJ2M.start()
 Irp6ottfgJ2M.start()
 Irp6otmForwardKinematic.start()
 Irp6otmInverseKinematic.start()
-#Irp6pmForceControlLaw.start()
 ATI6284.start()
+ATI3084.start()
 Irp6pmJntPub.start()
 Irp6pmSplineTrajectoryActionJoint.start()
 Irp6ptfgSplineTrajectoryActionJoint.start()
