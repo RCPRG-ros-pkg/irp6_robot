@@ -12,6 +12,7 @@ HardwareInterface::HardwareInterface(const std::string& name)
     : TaskContext(name, PreOperational),
       synchro_start_iter_(0),
       synchro_stop_iter_(0),
+      test_mode_(0),
       counter_(0.0),
       hi_(NULL),
       state_(NOT_SYNCHRONIZED),
@@ -23,6 +24,7 @@ HardwareInterface::HardwareInterface(const std::string& name)
   this->addProperty("number_of_drives", number_of_drives_).doc(
       "Number of drives in robot");
   this->addProperty("auto_synchronize", auto_synchronize_).doc("");
+  this->addProperty("test_mode", test_mode_).doc("");
   this->addProperty("rwh_nsec", rwh_nsec_).doc("");
   this->addProperty("hi_port_param_0", hi_port_param_[0]).doc("");
   this->addProperty("hi_port_param_1", hi_port_param_[1]).doc("");
@@ -129,9 +131,10 @@ bool HardwareInterface::configureHook() {
     //   std::cout << "synchro_needed_: "  << synchro_needed_[i] << std::endl << std::endl;
   }
 
-  hi_ = new hi_moxa::HI_moxa(number_of_drives_ - 1, card_indexes_,
-                             max_increment_, tx_prefix_len_),
-
+  if (!test_mode_) {
+    hi_ = new hi_moxa::HI_moxa(number_of_drives_ - 1, card_indexes_,
+                               max_increment_, tx_prefix_len_);
+  }
   counter_ = 0.0;
 
   increment_.resize(number_of_drives_);
@@ -145,24 +148,27 @@ bool HardwareInterface::configureHook() {
 
   try {
     struct timespec delay;
-    hi_->init(ports_adresses_);
-    for (int i = 0; i < number_of_drives_; i++) {
-      hi_->set_parameter_now(i, NF_COMMAND_SetDrivesMaxCurrent,
-                             (int16_t) max_current_[i]);
-    }
-    /*
-     NF_STRUCT_Regulator tmpReg = { convert_to_115(0.0600), convert_to_115(
-     0.0500), convert_to_115(0.0), 0 };
+    if (!test_mode_) {
+      hi_->init(ports_adresses_);
 
-     hi_->set_pwm_mode(0);
-     hi_->set_parameter_now(0, NF_COMMAND_SetCurrentRegulator, tmpReg);
-     */
+      for (int i = 0; i < number_of_drives_; i++) {
+        hi_->set_parameter_now(i, NF_COMMAND_SetDrivesMaxCurrent,
+                               (int16_t) max_current_[i]);
+      }
+      /*
+       NF_STRUCT_Regulator tmpReg = { convert_to_115(0.0600), convert_to_115(
+       0.0500), convert_to_115(0.0), 0 };
 
-    for (int i = 0; i < number_of_drives_; i++) {
-      if (current_mode_[i]) {
-        hi_->set_current_mode(i);
-      } else {
-        hi_->set_pwm_mode(i);
+       hi_->set_pwm_mode(0);
+       hi_->set_parameter_now(0, NF_COMMAND_SetCurrentRegulator, tmpReg);
+       */
+
+      for (int i = 0; i < number_of_drives_; i++) {
+        if (current_mode_[i]) {
+          hi_->set_current_mode(i);
+        } else {
+          hi_->set_pwm_mode(i);
+        }
       }
     }
   } catch (std::exception& e) {
@@ -209,30 +215,50 @@ uint16_t HardwareInterface::convert_to_115(float input) {
   return output;
 }
 
+void HardwareInterface::test_mode_sleep() {
+  struct timespec delay;
+  delay.tv_nsec = rwh_nsec_ + 200000;
+  delay.tv_sec = 0;
+
+  nanosleep(&delay, NULL);
+}
+
 bool HardwareInterface::startHook() {
   try {
-    hi_->write_read_hardware(rwh_nsec_);
+    if (!test_mode_) {
+      hi_->write_read_hardware(rwh_nsec_);
 
-    if (!hi_->robot_synchronized()) {
-      RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
-      if (auto_synchronize_) {
-        RTT::log(RTT::Info) << "Auto synchronize" << RTT::endlog();
+      if (!hi_->robot_synchronized()) {
+        RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
+        if (auto_synchronize_) {
+          RTT::log(RTT::Info) << "Auto synchronize" << RTT::endlog();
+          state_ = SERVOING;
+          synchro_start_iter_ = 500;
+          synchro_stop_iter_ = 1000;
+          synchro_state_ = MOVE_TO_SYNCHRO_AREA;
+          synchro_drive_ = 0;
+          std::cout << "Auto synchronize" << std::endl;
+          state_ = PRE_SYNCHRONIZING;
+
+        } else
+          state_ = NOT_SYNCHRONIZED;
+      } else {
+        RTT::log(RTT::Info) << "Robot synchronized" << RTT::endlog();
+
+        for (int i = 0; i < number_of_drives_; i++) {
+          motor_position_command_(i) = (double) hi_->get_position(i)
+              * ((2.0 * M_PI) / enc_res_[i]);
+          motor_position_command_old_(i) = motor_position_command_(i);
+        }
+
         state_ = SERVOING;
-        synchro_start_iter_ = 500;
-        synchro_stop_iter_ = 1000;
-        synchro_state_ = MOVE_TO_SYNCHRO_AREA;
-        synchro_drive_ = 0;
-        std::cout << "Auto synchronize" << std::endl;
-        state_ = PRE_SYNCHRONIZING;
-
-      } else
-        state_ = NOT_SYNCHRONIZED;
+      }
     } else {
-      RTT::log(RTT::Info) << "Robot synchronized" << RTT::endlog();
+      test_mode_sleep();
+      RTT::log(RTT::Info) << "HI test mode activated" << RTT::endlog();
 
       for (int i = 0; i < number_of_drives_; i++) {
-        motor_position_command_(i) = (double) hi_->get_position(i)
-            * ((2.0 * M_PI) / enc_res_[i]);
+        motor_position_command_(i) = 0.0;
         motor_position_command_old_(i) = motor_position_command_(i);
       }
 
@@ -245,9 +271,12 @@ bool HardwareInterface::startHook() {
 
   for (int i = 0; i < number_of_drives_; i++) {
     pos_inc_[i] = 0.0;
-
-    motor_position_(i) = (double) hi_->get_position(i)
-        * ((2.0 * M_PI) / enc_res_[i]);
+    if (!test_mode_) {
+      motor_position_(i) = (double) hi_->get_position(i)
+          * ((2.0 * M_PI) / enc_res_[i]);
+    } else {
+      motor_position_(i) = 0.0;
+    }
 
     port_motor_position_list_[i]->write(motor_position_[i]);
   }
@@ -394,56 +423,66 @@ void HardwareInterface::updateHook() {
       break;
   }
 
-  for (int i = 0; i < number_of_drives_; i++) {
-    increment_[i] = hi_->get_increment(i);
-
-    if (abs(increment_[i]) > 400) {
-      increment_[i] = 0;
-      std::cout << "very high increment_" << std::endl;
-    }
-
-    if (fabs(pos_inc_[i]) > 400) {
-      std::cout << "very high pos_inc_ i: " << i << " pos_inc: " << pos_inc_[i]
-                << std::endl;
-      pos_inc_[i] = 0;
-    }
-  }
-
-  for (int i = 0; i < number_of_drives_; i++) {
-    deltaInc_out_list_[i]->write(increment_[i]);
-    posInc_out_list_[i]->write(pos_inc_[i]);
-
-  }
-
-  for (size_t i = 0; i < servo_list_.size(); i++) {
-    //std::cout << "servo update" << std::endl;
-    servo_list_[i]->update();
-  }
-
-  for (int i = 0; i < number_of_drives_; i++) {
-    if (NewData != computedReg_in_list_[i]->read(pwm_or_current_[i])) {
-      RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
-    }
-    if (current_mode_[i]) {
-
-      hi_->set_current(i, pwm_or_current_[i]);
-    } else {
-      hi_->set_pwm(i, pwm_or_current_[i]);
-    }
-  }
-
-  // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
-
-  hi_->write_read_hardware(rwh_nsec_);
-
-  if (state_ == SERVOING) {
+  if (!test_mode_) {
 
     for (int i = 0; i < number_of_drives_; i++) {
-      motor_position_(i) = (double) hi_->get_position(i)
-          * ((2.0 * M_PI) / enc_res_[i]);
+      increment_[i] = hi_->get_increment(i);
 
+      if (abs(increment_[i]) > 400) {
+        increment_[i] = 0;
+        std::cout << "very high increment_" << std::endl;
+      }
+
+      if (fabs(pos_inc_[i]) > 400) {
+        std::cout << "very high pos_inc_ i: " << i << " pos_inc: "
+                  << pos_inc_[i] << std::endl;
+        pos_inc_[i] = 0;
+      }
+    }
+
+    for (int i = 0; i < number_of_drives_; i++) {
+      deltaInc_out_list_[i]->write(increment_[i]);
+      posInc_out_list_[i]->write(pos_inc_[i]);
+
+    }
+
+    for (size_t i = 0; i < servo_list_.size(); i++) {
+      //std::cout << "servo update" << std::endl;
+      servo_list_[i]->update();
+    }
+
+    for (int i = 0; i < number_of_drives_; i++) {
+      if (NewData != computedReg_in_list_[i]->read(pwm_or_current_[i])) {
+        RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
+      }
+      if (current_mode_[i]) {
+
+        hi_->set_current(i, pwm_or_current_[i]);
+      } else {
+        hi_->set_pwm(i, pwm_or_current_[i]);
+      }
+    }
+
+    // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
+
+    hi_->write_read_hardware(rwh_nsec_);
+
+    if (state_ == SERVOING) {
+
+      for (int i = 0; i < number_of_drives_; i++) {
+        motor_position_(i) = (double) hi_->get_position(i)
+            * ((2.0 * M_PI) / enc_res_[i]);
+
+        port_motor_position_list_[i]->write(motor_position_[i]);
+      }
+    }
+  } else {
+    test_mode_sleep();
+    for (int i = 0; i < number_of_drives_; i++) {
+      motor_position_(i) = motor_position_command_(i);
       port_motor_position_list_[i]->write(motor_position_[i]);
     }
+
   }
 
 }

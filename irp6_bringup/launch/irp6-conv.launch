@@ -16,6 +16,7 @@
       Irp6HardwareInterface:
         number_of_drives: 16
         auto_synchronize: true
+        test_mode: false
         rwh_nsec: 1200000
         hi_port_param_0:
           label: irp6pm_0

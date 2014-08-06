@@ -16,6 +16,7 @@
       Irp6HardwareInterface:
         number_of_drives: 7
         auto_synchronize: true
+        test_mode: false
         hi_port_param_0:
           label: irp6pm_0
           ports_adresses: /dev/ttyMI8
