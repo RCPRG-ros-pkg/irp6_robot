@@ -51,6 +51,7 @@ class HardwareInterface : public RTT::TaskContext {
   // Properties
   int number_of_drives_;
   bool auto_synchronize_;
+  bool test_mode_;
   int tx_prefix_len_;
   int rwh_nsec_;
   hi_msgs::HardwareInterfacePort hi_port_param_[hi_moxa::MOXA_SERVOS_NR];
@@ -77,6 +78,7 @@ class HardwareInterface : public RTT::TaskContext {
   hi_moxa::HI_moxa *hi_;
 
   uint16_t convert_to_115(float input);
+  void test_mode_sleep();
 
  public:
   HardwareInterface(const std::string& name);
@@ -85,6 +87,7 @@ class HardwareInterface : public RTT::TaskContext {
   bool configureHook();
   bool startHook();
   void updateHook();
+
 };
 
 #endif // HARDWAREINTERFACE_H_

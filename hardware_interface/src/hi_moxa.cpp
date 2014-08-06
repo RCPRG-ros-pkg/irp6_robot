@@ -549,13 +549,12 @@ uint64_t HI_moxa::write_read_hardware(long int nsec) {
 
     if (read_delay > longest_read_delay_) {
       longest_read_delay_ = read_delay;
-      std::cout << std::dec << "longest_read_delay_: " << longest_read_delay_
-                << std::endl;
+      //  std::cout << std::dec << "longest_read_delay_: " << longest_read_delay_    << std::endl;
     }
 
   }
 
-  // std::cout <<"write_read_hardware ret: " << ret << std::endl;
+// std::cout <<"write_read_hardware ret: " << ret << std::endl;
 
   return ret;
 }
@@ -604,14 +603,14 @@ int HI_moxa::set_parameter_now(int drive_number, const int parameter, ...) {
   }
   va_end(newValue);
 
-  // Add Read Drive Status request
+// Add Read Drive Status request
   setParamCommandArray[setParamCommandCnt++] = NF_COMMAND_ReadDrivesStatus;
-  // Make command frame
+// Make command frame
   txCnt = NF_MakeCommandFrame(&NFComBuf, txBuf,
                               (const uint8_t*) setParamCommandArray,
                               setParamCommandCnt,
                               drives_addresses[drive_number]);
-  // Clear communication request
+// Clear communication request
   setParamCommandCnt = 0;
 
   for (int param_set_attempt = 0; param_set_attempt < MAX_PARAM_SET_ATTEMPTS;
