@@ -23,10 +23,11 @@ ros.import("irp6otm_kinematic")
 ros.import("irp6tfg_kinematic")
 ros.import("conveyor_kinematic")
 ros.import("controller_common")
-ros.import("force_contol")
+ros.import("force_control")
 ros.import("ati3084")
 ros.import("ati6284")
 ros.import("port_split")
+ros.import("irp6_haptic")
 
 
 //------------------------------------------------------------------------------

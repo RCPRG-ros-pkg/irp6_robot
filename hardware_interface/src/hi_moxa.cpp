@@ -383,7 +383,7 @@ uint64_t HI_moxa::read_hardware(void) {
     // hardware_panic = true;
     // std::cout << "[error] power_fault" << std::endl;
     if (error_msg_power_stage == 0) {
-      // temp_message << "[error] power_fault" <<  std::endl;
+      temp_message << "[error] power_fault" <<  std::endl;
       std::cerr << temp_message.str() << std::cerr.flush();
       // master.msg->message(lib::NON_FATAL_ERROR, "Wylaczono moc - robot zablokowany");
       error_msg_power_stage++;
