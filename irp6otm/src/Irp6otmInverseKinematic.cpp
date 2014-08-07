@@ -163,7 +163,7 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
 
   // Wyliczenie Theta4 i Theta6.
   if (fabs(s5) < EPS) {
-    printf("Osobliwosc\n");
+    printf("Osobliwosc ot\n");
     // W przypadku osobliwosci katowi theta4 przypisywana wartosc poprzednia.
     (*local_desired_joints)[4] = local_current_joints_tmp_[4];
     t6 = atan2(c1 * Nx + s1 * Ny, c1 * Ox + s1 * Oy);

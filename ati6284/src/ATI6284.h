@@ -12,6 +12,8 @@
 
 #include "geometry_msgs/Wrench.h"
 
+const double FORCE_CONSTRAINTS[6] = { 65.0, 65.0, 130.0, 5.0, 5.0, 5.0 };
+
 const double conversion_scale[6] = {
   4.5511972116989, 4.5511972116989, 1.41244051397552, 84.8843245576086, 84.8843245576086, 80.9472037525247 };
 
