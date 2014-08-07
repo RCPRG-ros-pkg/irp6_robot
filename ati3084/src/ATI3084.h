@@ -12,39 +12,40 @@
 #include <Eigen/Dense>
 #include "geometry_msgs/Wrench.h"
 
-typedef Eigen::Matrix <double, 6, 6> Matrix6d;
-typedef Eigen::Matrix <double, 6, 1> Vector6d;
+const double FORCE_CONSTRAINTS[6] = { 65.0, 65.0, 130.0, 5.0, 5.0, 5.0 };
 
-class ATI3084 : public RTT::TaskContext
-{
-public:
-    ATI3084(const std::string &name);
+typedef Eigen::Matrix<double, 6, 6> Matrix6d;
+typedef Eigen::Matrix<double, 6, 1> Vector6d;
 
-    bool configureHook();
-    bool startHook();
-    void updateHook();
-    void stopHook();
+class ATI3084 : public RTT::TaskContext {
+ public:
+  ATI3084(const std::string &name);
 
-protected:
-    RTT::OutputPort<geometry_msgs::Wrench> wrench_port_;
-    RTT::Property<std::string> device_prop_;
-    RTT::Property<KDL::Wrench> offset_prop_;
-private:
-    comedi_t *device_;
-    lsampl_t raw_ADC_[6];
+  bool configureHook();
+  bool startHook();
+  void updateHook();
+  void stopHook();
 
-    Vector6d voltage_ADC_;
-    Vector6d bias_;
-	  Matrix6d conversion_matrix; // F/T conversion matrix
-    Vector6d conversion_scale; // F/T scaling
-    lsampl_t maxdata_;
-    comedi_range *rangetype_;
+ protected:
+  RTT::OutputPort<geometry_msgs::Wrench> wrench_port_;
+  RTT::Property<std::string> device_prop_;
+  RTT::Property<KDL::Wrench> offset_prop_;
+ private:
+  comedi_t *device_;
+  lsampl_t raw_ADC_[6];
 
-    KDL::Wrench wrench_;
+  Vector6d voltage_ADC_;
+  Vector6d bias_;
+  Matrix6d conversion_matrix;  // F/T conversion matrix
+  Vector6d conversion_scale;  // F/T scaling
+  lsampl_t maxdata_;
+  comedi_range *rangetype_;
 
-    bool initSensor();
-    void readData();
-    void voltage2FT();
+  KDL::Wrench wrench_;
+
+  bool initSensor();
+  void readData();
+  void voltage2FT();
 
 };
 

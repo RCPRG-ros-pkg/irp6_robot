@@ -17,7 +17,7 @@ ATI6284::ATI6284(const std::string &name)
       wrench_port_("Wrench"),
       device_prop_("device", "DAQ device to use", "/dev/comedi1"),
       offset_prop_("offset", "sensor zero offset", KDL::Wrench::Zero()),
-      device_(NULL){
+      device_(NULL) {
   this->addPort(wrench_port_);
   this->addProperty(device_prop_);
   this->addProperty(offset_prop_);
@@ -45,7 +45,19 @@ void ATI6284::updateHook() {
   //wrench_ -= offset_prop_.value();
 
   WrenchKDLToMsg(wrench_, wrenchMsg);
-  wrench_port_.write(wrenchMsg);
+
+  // sprawdzenie ograniczen na sile
+  bool overforce = false;
+  for (int i = 0; i < 6; i++) {
+    if ((fabs(wrench_[i]) > FORCE_CONSTRAINTS[i])
+        || (!(std::isfinite(wrench_[i])))) {
+      overforce = true;
+    }
+  }
+
+  if (!overforce) {
+    wrench_port_.write(wrenchMsg);
+  }
 }
 
 void ATI6284::stopHook() {
