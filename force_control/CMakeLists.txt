@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-project(force_contol)
+project(force_control)
 
 find_package(catkin REQUIRED COMPONENTS rtt_ros geometry_msgs eigen_conversions kdl_conversions force_control_msgs)
 
