@@ -52,8 +52,11 @@ if __name__ == '__main__':
   conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
   
   #
-  # DAprroach to initial position
+  # Aprroach to initial position
   #
+  
+  print 'Irp6 on track approach to initial position'
+  
   
   #
   # Joint coordinates motion
@@ -103,7 +106,7 @@ if __name__ == '__main__':
   
   conmanSwitch([], ['Irp6otmPoseInt'], True)
   
-  
+  print 'Irp6 postument approach to initial position'
   
   #
   # Joint coordinates motion
@@ -153,6 +156,76 @@ if __name__ == '__main__':
   command_result = pose_client.get_result()
   
   conmanSwitch([], ['Irp6pmPoseInt'], True)
+  
+  
+  print 'Irp6 on track force control parameters'   
+  
+  # 
+  # Force controller parameters
+  #
+  
+  pub = rospy.Publisher('/irp6ot_arm/fcl_param', ForceControl)
+  
+  rospy.sleep(0.5)
+  
+  goal = ForceControl()
+  goal.inertia = Inertia(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+  goal.reciprocaldamping = ReciprocalDamping(Vector3(0.002, 0.002, 0.002), Vector3(0.05, 0.05, 0.05))
+  goal.wrench = Wrench(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+  goal.twist = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+  
+  pub.publish(goal)
+  
+  #
+  # standard tool gravity param
+  #
+  
+  pubtg = rospy.Publisher('/irp6ot_arm/tg_param', ToolGravityParam)
+  rospy.sleep(0.5)
+  
+  tg_goal = ToolGravityParam()
+  tg_goal.weight = 10.8
+  tg_goal.mass_center = Vector3(0.004, 0.0, 0.156)
+
+ 
+  pubtg.publish(tg_goal)
+   
+  print 'Irp6 postument force control parameters'     
+  
+  
+  # 
+  # Force controller parameters
+  #
+  
+  pub = rospy.Publisher('/irp6p_arm/fcl_param', ForceControl)
+  
+  rospy.sleep(0.5)
+  
+  goal = ForceControl()
+  goal.inertia = Inertia(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+  goal.reciprocaldamping = ReciprocalDamping(Vector3(0.002, 0.002, 0.002), Vector3(0.05, 0.05, 0.05))
+  goal.wrench = Wrench(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+  goal.twist = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+  
+  pub.publish(goal)
+  
+  
+  #
+  # standard tool gravity param
+  #
+  
+  pubtg = rospy.Publisher('/irp6p_arm/tg_param', ToolGravityParam)
+  rospy.sleep(0.5)
+  
+  tg_goal = ToolGravityParam()
+  tg_goal.weight = 10.8
+  tg_goal.mass_center = Vector3(0.004, 0.0, 0.156)
+
+ 
+  pubtg.publish(tg_goal)
+   
+  conmanSwitch(['Irp6pmForceTransformation','Irp6otmForceTransformation','Irp6otmForceControlLaw','Irp6Haptic'], [], True)
+    
     
   print 'finish'
   

@@ -521,6 +521,21 @@ connect("Irp6otmForceTransformation.OutputEndEffectorWrench", "Irp6otmForceContr
 
 stream("Irp6otmForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6ot_arm/fcl_param"))
 
+//
+// Irp6 Haptic
+//
+
+loadComponent("Irp6Haptic", "Irp6Haptic")
+Irp6Haptic.configure()
+
+connect("Irp6otmForwardKinematic.EndEffectorOutputPose", "Irp6Haptic.CurrentEndEffectorPose", ConnPolicy())
+connect("Irp6pmInverseKinematic.InputEndEffectorPose", "Irp6Haptic.OutputEndEffectorPose", ConnPolicy())
+
+connect("Irp6pmForceTransformation.OutputEndEffectorWrench", "Irp6Haptic.CurrentEndEffectorWrench", ConnPolicy())
+connect("Irp6otmForceControlLaw.CurrentFclParam", "Irp6Haptic.OutputFclParam", ConnPolicy())
+
+
+
 
 
 addPeer("Irp6scheme", "Irp6HardwareInterface");
@@ -552,6 +567,7 @@ addPeer("Irp6scheme", "Irp6pmForceTransformation");
 addPeer("Irp6scheme", "Irp6pmForceControlLaw");
 addPeer("Irp6scheme", "Irp6otmForceTransformation");
 addPeer("Irp6scheme", "Irp6otmForceControlLaw");
+addPeer("Irp6scheme", "Irp6Haptic");
 addPeer("Irp6scheme", "Irp6pmSplineTrajectoryGeneratorJoint");
 addPeer("Irp6scheme", "Irp6ptfgSplineTrajectoryGeneratorJoint");
 addPeer("Irp6scheme", "ConveyorSplineTrajectoryGeneratorJoint");
@@ -734,6 +750,7 @@ Irp6scheme.addBlock("Irp6pmForceControlLaw");
 Irp6scheme.addBlock("Irp6pmForceTransformation");
 Irp6scheme.addBlock("Irp6otmForceControlLaw");
 Irp6scheme.addBlock("Irp6otmForceTransformation");
+Irp6scheme.addBlock("Irp6Haptic");
 Irp6scheme.addBlock("Irp6pmSplineTrajectoryGeneratorJoint");
 Irp6scheme.addBlock("Irp6ptfgSplineTrajectoryGeneratorJoint");
 Irp6scheme.addBlock("ConveyorSplineTrajectoryGeneratorJoint");
