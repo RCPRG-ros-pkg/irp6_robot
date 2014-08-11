@@ -18,6 +18,7 @@ typedef Eigen::Matrix<double, 6, 6> Matrix6d;
 typedef Eigen::Matrix<double, 6, 1> Vector6d;
 
 #define WRENCH_BUFFER_SIZE 4
+#define USLEEP_MUX 50
 
 
 class ATI3084 : public RTT::TaskContext {

@@ -89,8 +89,8 @@ void ATI3084::updateHook() {
   // sprawdzenie ograniczen na sile
   bool overforce = false;
   for (int i = 0; i < 6; i++) {
-    if ((fabs(wrench_[i]) > FORCE_CONSTRAINTS[i])
-        || (!(std::isfinite(wrench_[i])))) {
+    if ((fabs(computed_wrench_[i]) > FORCE_CONSTRAINTS[i])
+        || (!(std::isfinite(computed_wrench_[i])))) {
       overforce = true;
     }
   }
@@ -128,32 +128,32 @@ void ATI3084::readData() {
   comedi_dio_write(device_, DOSD, MUX1, 0);
   comedi_dio_write(device_, DOSD, MUX2, 0);
 
-  usleep(100);
+  usleep(USLEEP_MUX);
   comedi_data_read(device_, 0, 0, 0, AREF_DIFF, &raw_ADC_[0]);
   ////// G1
 
   comedi_dio_write(device_, DOSD, MUX0, 1);
-  usleep(100);
+  usleep(USLEEP_MUX);
   comedi_data_read(device_, 0, 0, 0, AREF_DIFF, &raw_ADC_[1]);
   ////// G2
 
   comedi_dio_write(device_, DOSD, MUX1, 1);
-  usleep(100);
+  usleep(USLEEP_MUX);
   comedi_data_read(device_, 0, 0, 0, AREF_DIFF, &raw_ADC_[2]);
   ////// G3
 
   comedi_dio_write(device_, DOSD, MUX0, 0);
-  usleep(100);
+  usleep(USLEEP_MUX);
   comedi_data_read(device_, 0, 0, 0, AREF_DIFF, &raw_ADC_[3]);
   ////// G4
 
   comedi_dio_write(device_, DOSD, MUX2, 1);
-  usleep(100);
+  usleep(USLEEP_MUX);
   comedi_data_read(device_, 0, 0, 0, AREF_DIFF, &raw_ADC_[4]);
   ////// G5
 
   comedi_dio_write(device_, DOSD, MUX0, 1);
-  usleep(100);
+  usleep(USLEEP_MUX);
   comedi_data_read(device_, 0, 0, 0, AREF_DIFF, &raw_ADC_[5]);
 
   for (int i = 0; i < 6; i++) {
