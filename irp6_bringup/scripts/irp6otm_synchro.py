@@ -47,46 +47,40 @@ import PyKDL
 import tf_conversions.posemath as pm
 
 if __name__ == '__main__':
-  rospy.init_node('irp6otm_force_control')
+  rospy.init_node('Irp6otm_synchro')
   rospy.wait_for_service('/controller_manager/switch_controller')
   conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
-    
-     
-  # 
-  # Force controller parameters
-  #
-  
-  pub = rospy.Publisher('/irp6ot_arm/fcl_param', ForceControl)
-  
-  rospy.sleep(0.5)
-  
-  goal = ForceControl()
-  goal.inertia = Inertia(Vector3(20.0, 20.0, 20.0), Vector3(0.5, 0.5, 0.5))
-  goal.reciprocaldamping = ReciprocalDamping(Vector3(0.0025, 0.0025, 0.0025), Vector3(0.05, 0.05, 0.05))
-  goal.wrench = Wrench(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
-  goal.twist = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
-  
-  pub.publish(goal)
-  
-  
-  conmanSwitch([], ['Irp6otmForceTransformation','Irp6otmForceControlLaw'], True)
   
   #
-  # standard tool gravity param
+  # Deactivate all generators
   #
   
-  pubtg = rospy.Publisher('/irp6ot_arm/tg_param', ToolGravityParam)
-  rospy.sleep(0.5)
+  conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
   
-  tg_goal = ToolGravityParam()
-  tg_goal.weight = 10.8
-  tg_goal.mass_center = Vector3(0.004, 0.0, 0.156)
+  #
+  # Motor coordinates motion
+  #
+  
+  conmanSwitch(['Irp6otmSplineTrajectoryGeneratorMotor'], [], True)
+  
+  motor_client = actionlib.SimpleActionClient('/irp6ot_arm/spline_trajectory_action_motor', FollowJointTrajectoryAction)
+  motor_client.wait_for_server()
 
- 
-  pubtg.publish(tg_goal)
-   
-  conmanSwitch(['Irp6otmForceTransformation','Irp6otmForceControlLaw'], [], True)
-   
+  print 'server ok'
+
+  goal = FollowJointTrajectoryGoal()
+  goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6', 'joint7']
+  goal.trajectory.points.append(JointTrajectoryPoint([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
+  goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+
+  motor_client.send_goal(goal)
+
+  motor_client.wait_for_result()
+  command_result = motor_client.get_result()
+  
+  conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor'], True)
+    
+  
   print 'finish'
   
   
