@@ -51,7 +51,7 @@ if __name__ == '__main__':
   rospy.wait_for_service('/controller_manager/switch_controller')
   conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
   
-  conmanSwitch([], ['Irp6pmForceTransformation','Irp6otmForceTransformation','Irp6otmForceControlLaw','Irp6Haptic'], True)
+  conmanSwitch([], ['Irp6pmForceTransformation','Irp6pmForceControlLaw','Irp6otmForceTransformation','Irp6otmForceControlLaw','Irp6Haptic'], True)
       
   print 'finish'
   

@@ -169,8 +169,8 @@ if __name__ == '__main__':
   rospy.sleep(0.5)
   
   goal = ForceControl()
-  goal.inertia = Inertia(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
-  goal.reciprocaldamping = ReciprocalDamping(Vector3(0.002, 0.002, 0.002), Vector3(0.05, 0.05, 0.05))
+  goal.inertia = Inertia(Vector3(0.0, 0.0, 0.0), Vector3(0.5, 0.5, 0.5))
+  goal.reciprocaldamping = ReciprocalDamping(Vector3(0.0025, 0.0025, 0.0025), Vector3(0.05, 0.05, 0.05))
   goal.wrench = Wrench(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
   goal.twist = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
   
@@ -202,8 +202,8 @@ if __name__ == '__main__':
   rospy.sleep(0.5)
   
   goal = ForceControl()
-  goal.inertia = Inertia(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
-  goal.reciprocaldamping = ReciprocalDamping(Vector3(0.002, 0.002, 0.002), Vector3(0.05, 0.05, 0.05))
+  goal.inertia = Inertia(Vector3(0.0, 0.0, 0.0), Vector3(0.5, 0.5, 0.5))
+  goal.reciprocaldamping = ReciprocalDamping(Vector3(0.0025, 0.0025, 0.0025), Vector3(0.05, 0.05, 0.05))
   goal.wrench = Wrench(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
   goal.twist = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
   
