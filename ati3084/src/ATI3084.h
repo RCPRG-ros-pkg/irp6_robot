@@ -17,6 +17,9 @@ const double FORCE_CONSTRAINTS[6] = { 65.0, 65.0, 130.0, 5.0, 5.0, 5.0 };
 typedef Eigen::Matrix<double, 6, 6> Matrix6d;
 typedef Eigen::Matrix<double, 6, 1> Vector6d;
 
+#define WRENCH_BUFFER_SIZE 4
+
+
 class ATI3084 : public RTT::TaskContext {
  public:
   ATI3084(const std::string &name);
@@ -42,10 +45,13 @@ class ATI3084 : public RTT::TaskContext {
   comedi_range *rangetype_;
 
   KDL::Wrench wrench_;
+  KDL::Wrench computed_wrench_;
+  std::vector<KDL::Wrench> wrench_buffer_;
 
   bool initSensor();
   void readData();
   void voltage2FT();
+  void computeWrench();
 
 };
 

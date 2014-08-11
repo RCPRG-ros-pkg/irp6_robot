@@ -32,10 +32,15 @@ ATI3084::ATI3084(const std::string &name)
   conversion_matrix << -0.000022, 0.001325, -0.035134, 0.640126, 0.051951, -0.641909, 0.017570, -0.743414, -0.016234, 0.372558, -0.032329, 0.366082, -1.184654, -0.012028, -1.165485, -0.014266, -1.174821, 0.002540, 0.007847, -0.144965, 0.552931, 0.079813, -0.571950, 0.071877, -0.661215, -0.007048, 0.337836, -0.125610, 0.315335, 0.132327, -0.010556, 0.346443, -0.009666, 0.344562, -0.031572, 0.339944;
 
   conversion_scale << -20.4, -20.4, -20.4, -1.23, -1.23, -1.23;
+
+  wrench_buffer_.resize(WRENCH_BUFFER_SIZE);
+
 }
 
 bool ATI3084::configureHook() {
+
   return initSensor();
+
 }
 
 bool ATI3084::startHook() {
@@ -46,6 +51,24 @@ bool ATI3084::startHook() {
   return true;
 }
 
+void ATI3084::computeWrench() {
+
+  for (int j = 0; j < 6; j++) {
+    computed_wrench_[j] = 0;
+  }
+
+  for (int i = 0; i < WRENCH_BUFFER_SIZE; i++) {
+    for (int j = 0; j < 6; j++) {
+      computed_wrench_[j] += wrench_buffer_[i][j];
+    }
+  }
+
+  for (int j = 0; j < 6; j++) {
+    computed_wrench_[j] /= WRENCH_BUFFER_SIZE;
+  }
+
+}
+
 void ATI3084::updateHook() {
   geometry_msgs::Wrench wrenchMsg;
 
@@ -54,7 +77,14 @@ void ATI3084::updateHook() {
 
   //wrench_ -= offset_prop_.value();
 
-  WrenchKDLToMsg(wrench_, wrenchMsg);
+  // obsluga bufora pomiarowego
+
+  static int index = 0;
+  wrench_buffer_[index] = wrench_;
+  index = (index + 1) % WRENCH_BUFFER_SIZE;
+  computeWrench();
+
+  WrenchKDLToMsg(computed_wrench_, wrenchMsg);
 
   // sprawdzenie ograniczen na sile
   bool overforce = false;
