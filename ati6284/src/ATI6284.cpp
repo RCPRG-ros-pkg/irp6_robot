@@ -2,22 +2,9 @@
 
 #include "ATI6284.h"
 
-void WrenchKDLToMsg(const KDL::Wrench &in, geometry_msgs::Wrench &out) {
-  out.force.x = in[0];
-  out.force.y = in[1];
-  out.force.z = in[2];
-
-  out.torque.x = in[3];
-  out.torque.y = in[4];
-  out.torque.z = in[5];
-}
-
 ATI6284::ATI6284(const std::string &name)
-    : RTT::TaskContext(name, PreOperational),
-      wrench_port_("Wrench"),
-      device_prop_("device", "DAQ device to use", "/dev/comedi1"),
-      offset_prop_("offset", "sensor zero offset", KDL::Wrench::Zero()),
-      device_(NULL) {
+    : ForceSensor(name),
+      device_prop_("device", "DAQ device to use", "/dev/comedi1") {
   this->addPort(wrench_port_);
   this->addProperty(device_prop_);
   this->addProperty(offset_prop_);

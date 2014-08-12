@@ -9,7 +9,6 @@
 #include <rtt/Property.hpp>
 
 #include <kdl/frames.hpp>
-#include <Eigen/Dense>
 #include "geometry_msgs/Wrench.h"
 #include "../../force_sensor/src/ForceSensor.h"
 
@@ -32,11 +31,10 @@ class ATI3084 : public ForceSensor {
   void stopHook();
 
  protected:
-  RTT::OutputPort<geometry_msgs::Wrench> wrench_port_;
   RTT::Property<std::string> device_prop_;
-  RTT::Property<KDL::Wrench> offset_prop_;
+
  private:
-  comedi_t *device_;
+
   lsampl_t raw_ADC_[6];
 
   Vector6d voltage_ADC_;

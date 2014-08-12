@@ -11,6 +11,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>rtt_ros</build_depend> 
+  <build_depend>force_sensor</build_depend> 
   <build_depend>comedi</build_depend> 
 
   <run_depend>rtt_ros</run_depend> 

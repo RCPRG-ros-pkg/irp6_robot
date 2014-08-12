@@ -20,7 +20,10 @@ void ForceSensor::WrenchKDLToMsg(const KDL::Wrench &in,
 }
 
 ForceSensor::ForceSensor(const std::string &name)
-    : RTT::TaskContext(name, PreOperational) {
+    : RTT::TaskContext(name, PreOperational),
+      wrench_port_("Wrench"),
+      offset_prop_("offset", "sensor zero offset", KDL::Wrench::Zero()),
+      device_(NULL) {
 
 }
 

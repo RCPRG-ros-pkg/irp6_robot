@@ -17,7 +17,13 @@ class ForceSensor : public RTT::TaskContext {
  public:
   ForceSensor(const std::string &name);
 
+ protected:
+  RTT::OutputPort<geometry_msgs::Wrench> wrench_port_;
+  RTT::Property<KDL::Wrench> offset_prop_;
+
+protected:
   void WrenchKDLToMsg(const KDL::Wrench &in, geometry_msgs::Wrench &out);
+  comedi_t *device_;
 
 };
 

@@ -8,13 +8,9 @@
 
 #define DOSD 3
 
-
 ATI3084::ATI3084(const std::string &name)
     : ForceSensor(name),
-      wrench_port_("Wrench"),
-      device_prop_("device", "DAQ device to use", "/dev/comedi0"),
-      offset_prop_("offset", "sensor zero offset", KDL::Wrench::Zero()),
-      device_(NULL) {
+      device_prop_("device", "DAQ device to use", "/dev/comedi0") {
   this->addPort(wrench_port_);
   this->addProperty(device_prop_);
   this->addProperty(offset_prop_);
