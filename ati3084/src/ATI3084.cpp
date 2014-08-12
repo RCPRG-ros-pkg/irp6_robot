@@ -8,22 +8,9 @@
 
 #define DOSD 3
 
-void WrenchKDLToMsg(const KDL::Wrench &in, geometry_msgs::Wrench &out) {
-  out.force.x = in[0];
-  out.force.y = in[1];
-  out.force.z = in[2];
-
-  out.torque.x = in[3];
-  out.torque.y = in[4];
-  out.torque.z = in[5];
-}
-
 ATI3084::ATI3084(const std::string &name)
-    : RTT::TaskContext(name, PreOperational),
-      wrench_port_("Wrench"),
-      device_prop_("device", "DAQ device to use", "/dev/comedi0"),
-      offset_prop_("offset", "sensor zero offset", KDL::Wrench::Zero()),
-      device_(NULL) {
+    : ForceSensor(name),
+      device_prop_("device", "DAQ device to use", "/dev/comedi0") {
   this->addPort(wrench_port_);
   this->addProperty(device_prop_);
   this->addProperty(offset_prop_);
@@ -33,7 +20,7 @@ ATI3084::ATI3084(const std::string &name)
 
   conversion_scale << -20.4, -20.4, -20.4, -1.23, -1.23, -1.23;
 
-  wrench_buffer_.resize(WRENCH_BUFFER_SIZE);
+  wrench_buffer_.resize(FAST_WRENCH_BUFFER_SIZE);
 
 }
 
@@ -57,14 +44,14 @@ void ATI3084::computeWrench() {
     computed_wrench_[j] = 0;
   }
 
-  for (int i = 0; i < WRENCH_BUFFER_SIZE; i++) {
+  for (int i = 0; i < FAST_WRENCH_BUFFER_SIZE; i++) {
     for (int j = 0; j < 6; j++) {
       computed_wrench_[j] += wrench_buffer_[i][j];
     }
   }
 
   for (int j = 0; j < 6; j++) {
-    computed_wrench_[j] /= WRENCH_BUFFER_SIZE;
+    computed_wrench_[j] /= FAST_WRENCH_BUFFER_SIZE;
   }
 
 }
@@ -81,7 +68,7 @@ void ATI3084::updateHook() {
 
   static int index = 0;
   wrench_buffer_[index] = wrench_;
-  index = (index + 1) % WRENCH_BUFFER_SIZE;
+  index = (index + 1) % FAST_WRENCH_BUFFER_SIZE;
   computeWrench();
 
   WrenchKDLToMsg(computed_wrench_, wrenchMsg);
@@ -89,8 +76,8 @@ void ATI3084::updateHook() {
   // sprawdzenie ograniczen na sile
   bool overforce = false;
   for (int i = 0; i < 6; i++) {
-    if ((fabs(wrench_[i]) > FORCE_CONSTRAINTS[i])
-        || (!(std::isfinite(wrench_[i])))) {
+    if ((fabs(computed_wrench_[i]) > FORCE_CONSTRAINTS[i])
+        || (!(std::isfinite(computed_wrench_[i])))) {
       overforce = true;
     }
   }
@@ -128,32 +115,32 @@ void ATI3084::readData() {
   comedi_dio_write(device_, DOSD, MUX1, 0);
   comedi_dio_write(device_, DOSD, MUX2, 0);
 
-  usleep(100);
+  usleep(USLEEP_MUX);
   comedi_data_read(device_, 0, 0, 0, AREF_DIFF, &raw_ADC_[0]);
   ////// G1
 
   comedi_dio_write(device_, DOSD, MUX0, 1);
-  usleep(100);
+  usleep(USLEEP_MUX);
   comedi_data_read(device_, 0, 0, 0, AREF_DIFF, &raw_ADC_[1]);
   ////// G2
 
   comedi_dio_write(device_, DOSD, MUX1, 1);
-  usleep(100);
+  usleep(USLEEP_MUX);
   comedi_data_read(device_, 0, 0, 0, AREF_DIFF, &raw_ADC_[2]);
   ////// G3
 
   comedi_dio_write(device_, DOSD, MUX0, 0);
-  usleep(100);
+  usleep(USLEEP_MUX);
   comedi_data_read(device_, 0, 0, 0, AREF_DIFF, &raw_ADC_[3]);
   ////// G4
 
   comedi_dio_write(device_, DOSD, MUX2, 1);
-  usleep(100);
+  usleep(USLEEP_MUX);
   comedi_data_read(device_, 0, 0, 0, AREF_DIFF, &raw_ADC_[4]);
   ////// G5
 
   comedi_dio_write(device_, DOSD, MUX0, 1);
-  usleep(100);
+  usleep(USLEEP_MUX);
   comedi_data_read(device_, 0, 0, 0, AREF_DIFF, &raw_ADC_[5]);
 
   for (int i = 0; i < 6; i++) {

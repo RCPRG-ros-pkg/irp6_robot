@@ -493,7 +493,7 @@ stream("Irp6pmForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6p_arm/fcl_p
 // ATI3084
 
 loadComponent("ATI3084", "ATI3084")
-setActivity("ATI3084", 0.0005, 5, ORO_SCHED_RT)
+setActivity("ATI3084", 0.001, 5, ORO_SCHED_RT)
 ATI3084.configure()
 
 

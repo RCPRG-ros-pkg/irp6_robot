@@ -1,0 +1,19 @@
+<package>
+  <name>force_sensor</name>
+  <version>0.0.1</version>
+  <description>FT Sensor Common</description>
+  <maintainer email="tomrobotics@gmail.com">Tomasz Winiarski</maintainer>
+
+  <license>BSD</license>
+
+  <author email="konradb3@gmail.com">Tomasz Winiarski</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>rtt_ros</build_depend> 
+  <build_depend>comedi</build_depend> 
+
+  <run_depend>rtt_ros</run_depend> 
+  
+
+</package>
