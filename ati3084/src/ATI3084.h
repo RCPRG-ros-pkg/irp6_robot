@@ -11,17 +11,18 @@
 #include <kdl/frames.hpp>
 #include <Eigen/Dense>
 #include "geometry_msgs/Wrench.h"
+#include "../../force_sensor/src/ForceSensor.h"
 
 const double FORCE_CONSTRAINTS[6] = { 65.0, 65.0, 130.0, 5.0, 5.0, 5.0 };
 
 typedef Eigen::Matrix<double, 6, 6> Matrix6d;
 typedef Eigen::Matrix<double, 6, 1> Vector6d;
 
-#define WRENCH_BUFFER_SIZE 4
+#define FAST_WRENCH_BUFFER_SIZE 2
 #define USLEEP_MUX 50
 
 
-class ATI3084 : public RTT::TaskContext {
+class ATI3084 : public ForceSensor {
  public:
   ATI3084(const std::string &name);
 

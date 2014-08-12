@@ -8,18 +8,9 @@
 
 #define DOSD 3
 
-void WrenchKDLToMsg(const KDL::Wrench &in, geometry_msgs::Wrench &out) {
-  out.force.x = in[0];
-  out.force.y = in[1];
-  out.force.z = in[2];
-
-  out.torque.x = in[3];
-  out.torque.y = in[4];
-  out.torque.z = in[5];
-}
 
 ATI3084::ATI3084(const std::string &name)
-    : RTT::TaskContext(name, PreOperational),
+    : ForceSensor(name),
       wrench_port_("Wrench"),
       device_prop_("device", "DAQ device to use", "/dev/comedi0"),
       offset_prop_("offset", "sensor zero offset", KDL::Wrench::Zero()),
@@ -33,7 +24,7 @@ ATI3084::ATI3084(const std::string &name)
 
   conversion_scale << -20.4, -20.4, -20.4, -1.23, -1.23, -1.23;
 
-  wrench_buffer_.resize(WRENCH_BUFFER_SIZE);
+  wrench_buffer_.resize(FAST_WRENCH_BUFFER_SIZE);
 
 }
 
@@ -57,14 +48,14 @@ void ATI3084::computeWrench() {
     computed_wrench_[j] = 0;
   }
 
-  for (int i = 0; i < WRENCH_BUFFER_SIZE; i++) {
+  for (int i = 0; i < FAST_WRENCH_BUFFER_SIZE; i++) {
     for (int j = 0; j < 6; j++) {
       computed_wrench_[j] += wrench_buffer_[i][j];
     }
   }
 
   for (int j = 0; j < 6; j++) {
-    computed_wrench_[j] /= WRENCH_BUFFER_SIZE;
+    computed_wrench_[j] /= FAST_WRENCH_BUFFER_SIZE;
   }
 
 }
@@ -81,7 +72,7 @@ void ATI3084::updateHook() {
 
   static int index = 0;
   wrench_buffer_[index] = wrench_;
-  index = (index + 1) % WRENCH_BUFFER_SIZE;
+  index = (index + 1) % FAST_WRENCH_BUFFER_SIZE;
   computeWrench();
 
   WrenchKDLToMsg(computed_wrench_, wrenchMsg);

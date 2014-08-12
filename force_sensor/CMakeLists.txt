@@ -1,18 +1,21 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-project(ati3084)
+project(force_sensor)
 
-find_package(catkin REQUIRED COMPONENTS rtt_ros force_sensor)
+find_package(catkin REQUIRED COMPONENTS rtt_ros)
 
 find_package(Eigen REQUIRED)
 
 find_package(OROCOS-RTT REQUIRED)
 
+catkin_package(
+LIBRARIES ${PROJECT_NAME}
+)
+
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
 include_directories(${catkin_INCLUDE_DIRS} ${Eigen_INCLUDE_DIRS})
 
-orocos_component(${PROJECT_NAME} src/ATI3084.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} comedi)
+add_library(${PROJECT_NAME} src/ForceSensor.cpp)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
-orocos_generate_package()
