@@ -5,53 +5,17 @@
 ATI6284::ATI6284(const std::string &name)
     : ForceSensor(name),
       device_prop_("device", "DAQ device to use", "/dev/comedi1") {
-  this->addPort(wrench_port_);
+
   this->addProperty(device_prop_);
-  this->addProperty(offset_prop_);
+
+  // Initialize conversion matrix
+  conversion_matrix << -0.40709, -0.27318, 0.34868, -33.58156, -0.32609, 33.54162, 0.35472, 38.22730, -0.41173, -19.49156, 0.49550, -19.15271, 18.72635, -0.59676, 19.27843, -0.56931, 18.69352, -0.67633, -0.40836, -0.95908, -33.37957, 1.38537, 32.52522, -0.51156, 37.13715, -1.02875, -20.00474, -0.27959, -19.34135, 1.42577, -0.15775, -18.16831, -0.00133, -18.78961, 0.31895, -18.38586;
+
+  conversion_scale << 0.219722406, 0.219722406, 0.707994418, 0.011780738, 0.011780738, 0.012353731;
+
 }
 
 bool ATI6284::configureHook() {
-  return initSensor();
-}
-
-bool ATI6284::startHook() {
-  readData();
-
-  for (int i = 0; i < 6; i++)
-    bias_[i] = voltage_ADC_[i];
-
-  return true;
-}
-
-void ATI6284::updateHook() {
-  geometry_msgs::Wrench wrenchMsg;
-
-  readData();
-  voltage2FT();
-
-  //wrench_ -= offset_prop_.value();
-
-  WrenchKDLToMsg(wrench_, wrenchMsg);
-
-  // sprawdzenie ograniczen na sile
-  bool overforce = false;
-  for (int i = 0; i < 6; i++) {
-    if ((fabs(wrench_[i]) > FORCE_CONSTRAINTS[i])
-        || (!(std::isfinite(wrench_[i])))) {
-      overforce = true;
-    }
-  }
-
-  if (!overforce) {
-    wrench_port_.write(wrenchMsg);
-  }
-}
-
-void ATI6284::stopHook() {
-
-}
-
-bool ATI6284::initSensor() {
   device_ = comedi_open(device_prop_.value().c_str());
   if (!device_) {
     RTT::log(RTT::Error) << "Unable to open device [" << device_prop_.value()
@@ -68,29 +32,22 @@ bool ATI6284::initSensor() {
   return true;
 }
 
+
+
+
+
 void ATI6284::readData() {
   for (int i = 0; i < 6; i++) {
     comedi_data_read(device_, 0, i, 0, AREF_DIFF, &raw_ADC_[i]);
   }
 
   for (int i = 0; i < 6; i++) {
-    voltage_ADC_[i] = comedi_to_physical(raw_ADC_[i], &calib_ADC_);
+    voltage_ADC_(i) = comedi_to_physical(raw_ADC_[i], &calib_ADC_);
   }
 
-  //for(int i = 0; i < 6; i++)
-  //  voltage_ADC_[i] /= 5;
+//for(int i = 0; i < 6; i++)
+//  voltage_ADC_[i] /= 5;
 }
 
-void ATI6284::voltage2FT() {
-  SetToZero(wrench_);
-
-  for (int i = 0; i < 6; ++i) {
-    for (int j = 0; j < 6; ++j) {
-      wrench_[i] += (voltage_ADC_[j] - bias_[j]) * conversion_matrix[i][j];
-    }
-
-    wrench_[i] /= conversion_scale[i];
-  }
-}
 
 ORO_CREATE_COMPONENT(ATI6284)
