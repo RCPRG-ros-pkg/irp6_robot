@@ -25,7 +25,11 @@ ForceSensor::ForceSensor(const std::string &name)
       fast_filtered_wrench_output_port_("OutputFastFilteredWrench"),
       slow_filtered_wrench_output_port_("OutputSlowFilteredWrench"),
       offset_prop_("offset", "sensor zero offset", KDL::Wrench::Zero()),
-      device_(NULL) {
+      device_(NULL),
+      slow_buffer_size_(100),
+      fast_buffer_size_(2),
+      slow_buffer_index_(0),
+      fast_buffer_index_(0) {
 
   this->addPort(raw_wrench_output_port_);
   this->addPort(fast_filtered_wrench_output_port_);
@@ -33,6 +37,8 @@ ForceSensor::ForceSensor(const std::string &name)
 
   this->addProperty(offset_prop_);
   this->addProperty("force_limits", force_limits_);
+  this->addProperty("slow_buffer_size", slow_buffer_size_);
+  this->addProperty("fast_buffer_size", fast_buffer_size_);
 }
 
 bool ForceSensor::startHook() {
@@ -51,19 +57,22 @@ bool ForceSensor::configureHook() {
     return false;
   }
 
+  slow_buffer_.resize(slow_buffer_size_);
+  fast_buffer_.resize(fast_buffer_size_);
+
   return true;
 
 }
 
 void ForceSensor::updateHook() {
-  geometry_msgs::Wrench wrenchMsg;
+  geometry_msgs::Wrench RawWrenchMsg;
+  geometry_msgs::Wrench SlowFilteredWrenchMsg;
+  geometry_msgs::Wrench FastFilteredWrenchMsg;
 
   readData();
   voltage2FT();
 
 //wrench_ -= offset_prop_.value();
-
-  WrenchKDLToMsg(wrench_, wrenchMsg);
 
 // sprawdzenie ograniczen na sile
   bool overforce = false;
@@ -75,10 +84,38 @@ void ForceSensor::updateHook() {
   }
 
   if (!overforce) {
-    raw_wrench_output_port_.write(wrenchMsg);
-    fast_filtered_wrench_output_port_.write(wrenchMsg);
-    slow_filtered_wrench_output_port_.write(wrenchMsg);
+    valid_wrench_ = wrench_;
   }
+
+  WrenchKDLToMsg(valid_wrench_, RawWrenchMsg);
+  raw_wrench_output_port_.write(RawWrenchMsg);
+
+  // tu i ponizej dla fast moze być problem ze stabilnoscią numeryczną
+  // po jej stwierdzeniu zamienic na proste liczenie podzielonej sumy wszystkich elementow
+
+  slow_filtered_wrench_ = slow_filtered_wrench_
+      + valid_wrench_ / slow_buffer_size_ - slow_buffer_[slow_buffer_index_] / slow_buffer_size_;
+
+  slow_buffer_[slow_buffer_index_] = valid_wrench_;
+  if ((++slow_buffer_index_) == slow_buffer_size_) {
+    slow_buffer_index_ = 0;
+  }
+
+  WrenchKDLToMsg(slow_filtered_wrench_, SlowFilteredWrenchMsg);
+  slow_filtered_wrench_output_port_.write(SlowFilteredWrenchMsg);
+
+
+  fast_filtered_wrench_ = fast_filtered_wrench_
+      + valid_wrench_/ fast_buffer_size_ - fast_buffer_[fast_buffer_index_]/ fast_buffer_size_ ;
+
+  fast_buffer_[fast_buffer_index_] = valid_wrench_;
+  if ((++fast_buffer_index_) == fast_buffer_size_) {
+    fast_buffer_index_ = 0;
+  }
+
+  WrenchKDLToMsg(fast_filtered_wrench_, FastFilteredWrenchMsg);
+  fast_filtered_wrench_output_port_.write(FastFilteredWrenchMsg);
+
 }
 
 void ForceSensor::voltage2FT() {

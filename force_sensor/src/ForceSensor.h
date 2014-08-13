@@ -28,11 +28,11 @@ class ForceSensor : public RTT::TaskContext {
   Vector6d conversion_scale;  // F/T scaling
 
   KDL::Wrench wrench_;
+  KDL::Wrench valid_wrench_;
 
   RTT::OutputPort<geometry_msgs::Wrench> raw_wrench_output_port_;
   RTT::OutputPort<geometry_msgs::Wrench> fast_filtered_wrench_output_port_;
   RTT::OutputPort<geometry_msgs::Wrench> slow_filtered_wrench_output_port_;
-
 
   void WrenchKDLToMsg(const KDL::Wrench &in, geometry_msgs::Wrench &out);
   void voltage2FT();
@@ -44,9 +44,20 @@ class ForceSensor : public RTT::TaskContext {
   Vector6d voltage_ADC_;
   Vector6d bias_;
 
+  std::vector<KDL::Wrench> slow_buffer_;
+  std::vector<KDL::Wrench> fast_buffer_;
+
+  int slow_buffer_index_;
+  int fast_buffer_index_;
+
+  KDL::Wrench slow_filtered_wrench_;
+  KDL::Wrench fast_filtered_wrench_;
+
   // properties
   std::vector<double> force_limits_;
   RTT::Property<KDL::Wrench> offset_prop_;
+  int slow_buffer_size_;
+  int fast_buffer_size_;
 
 };
 

@@ -460,7 +460,7 @@ connect("Irp6otmToolInt.CartesianPositionCommand", "Irp6otmInverseKinematic.Tool
 // ATI6284
 
 loadComponent("ATI6284", "ATI6284")
-setActivity("ATI6284", 0.002, 5, ORO_SCHED_RT)
+setActivity("ATI6284", 0.001, 5, ORO_SCHED_RT)
 ATI6284.loadService("rosparam")
 ATI6284.rosparam.getAll()
 ATI6284.configure()
@@ -983,7 +983,9 @@ Irp6pmPoseIntAction.loadService("actionlib")
 Irp6pmPoseIntAction.actionlib.connect("/irp6p_arm/pose_trajectory")
 
 connect("Irp6pmPoseIntAction.CartesianTrajectoryCommand","Irp6pmPoseInt.CartesianTrajectoryCommand", ConnPolicy())
+connect("Irp6pmForceTransformation.OutputEndEffectorWrench", "Irp6pmPoseIntAction.CartesianWrench", ConnPolicy())
 
+stream("Irp6pmForceTransformation.OutputEndEffectorWrench", ros.comm.topic("/irp6pm_wrench"));
 
 //
 // Irp6pmToolIntAction
@@ -1013,7 +1015,9 @@ Irp6otmPoseIntAction.loadService("actionlib")
 Irp6otmPoseIntAction.actionlib.connect("/irp6ot_arm/pose_trajectory")
 
 connect("Irp6otmPoseIntAction.CartesianTrajectoryCommand","Irp6otmPoseInt.CartesianTrajectoryCommand", ConnPolicy())
+connect("Irp6otmForceTransformation.OutputEndEffectorWrench", "Irp6otmPoseIntAction.CartesianWrench", ConnPolicy())
 
+stream("Irp6otmForceTransformation.OutputEndEffectorWrench", ros.comm.topic("/irp6otm_wrench"));
 
 //
 // Irp6otmToolIntAction
