@@ -447,6 +447,10 @@
             x: 0.0
             y: 0.0
             z: 0.09
+      ATI6284:
+        force_limits: [65.0, 65.0, 130.0, 5.0, 5.0, 5.0]
+      ATI3084:
+        force_limits: [65.0, 65.0, 130.0, 5.0, 5.0, 5.0]
       Irp6otmForceTransformation:
         is_right_turn_frame: true
         tool_weight: 13.18

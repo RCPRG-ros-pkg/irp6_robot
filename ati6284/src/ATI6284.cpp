@@ -16,25 +16,27 @@ ATI6284::ATI6284(const std::string &name)
 }
 
 bool ATI6284::configureHook() {
-  device_ = comedi_open(device_prop_.value().c_str());
-  if (!device_) {
-    RTT::log(RTT::Error) << "Unable to open device [" << device_prop_.value()
-                         << "]" << RTT::endlog();
+
+  if (ForceSensor::configureHook()) {
+    device_ = comedi_open(device_prop_.value().c_str());
+    if (!device_) {
+      RTT::log(RTT::Error) << "Unable to open device [" << device_prop_.value()
+                           << "]" << RTT::endlog();
+      return false;
+    }
+    if (comedi_apply_calibration(device_, 0, 0, 0, 0, NULL) != 0) {
+      RTT::log(RTT::Error) << "Unable to set calibration" << RTT::endlog();
+      //return false;
+    }
+
+    comedi_get_hardcal_converter(device_, 0, 0, 0, COMEDI_TO_PHYSICAL,
+                                 &calib_ADC_);
+
+  } else {
     return false;
   }
-  if (comedi_apply_calibration(device_, 0, 0, 0, 0, NULL) != 0) {
-    RTT::log(RTT::Error) << "Unable to set calibration" << RTT::endlog();
-    //return false;
-  }
-
-  comedi_get_hardcal_converter(device_, 0, 0, 0, COMEDI_TO_PHYSICAL,
-                               &calib_ADC_);
   return true;
 }
-
-
-
-
 
 void ATI6284::readData() {
   for (int i = 0; i < 6; i++) {
@@ -48,6 +50,5 @@ void ATI6284::readData() {
 //for(int i = 0; i < 6; i++)
 //  voltage_ADC_[i] /= 5;
 }
-
 
 ORO_CREATE_COMPONENT(ATI6284)

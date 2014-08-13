@@ -21,13 +21,18 @@ void ForceSensor::WrenchKDLToMsg(const KDL::Wrench &in,
 
 ForceSensor::ForceSensor(const std::string &name)
     : RTT::TaskContext(name, PreOperational),
-      wrench_port_("Wrench"),
+      raw_wrench_output_port_("OutputRawWrench"),
+      fast_filtered_wrench_output_port_("OutputFastFilteredWrench"),
+      slow_filtered_wrench_output_port_("OutputSlowFilteredWrench"),
       offset_prop_("offset", "sensor zero offset", KDL::Wrench::Zero()),
       device_(NULL) {
 
-  this->addPort(wrench_port_);
-  this->addProperty(offset_prop_);
+  this->addPort(raw_wrench_output_port_);
+  this->addPort(fast_filtered_wrench_output_port_);
+  this->addPort(slow_filtered_wrench_output_port_);
 
+  this->addProperty(offset_prop_);
+  this->addProperty("force_limits", force_limits_);
 }
 
 bool ForceSensor::startHook() {
@@ -38,6 +43,17 @@ bool ForceSensor::startHook() {
   return true;
 }
 
+bool ForceSensor::configureHook() {
+
+  if (force_limits_.size() != 6) {
+    RTT::Logger::log(RTT::Logger::Error) << "Force limits not loaded"
+                                         << RTT::endlog();
+    return false;
+  }
+
+  return true;
+
+}
 
 void ForceSensor::updateHook() {
   geometry_msgs::Wrench wrenchMsg;
@@ -52,14 +68,16 @@ void ForceSensor::updateHook() {
 // sprawdzenie ograniczen na sile
   bool overforce = false;
   for (int i = 0; i < 6; i++) {
-    if ((fabs(wrench_[i]) > FORCE_CONSTRAINTS[i])
+    if ((fabs(wrench_[i]) > force_limits_[i])
         || (!(std::isfinite(wrench_[i])))) {
       overforce = true;
     }
   }
 
   if (!overforce) {
-    wrench_port_.write(wrenchMsg);
+    raw_wrench_output_port_.write(wrenchMsg);
+    fast_filtered_wrench_output_port_.write(wrenchMsg);
+    slow_filtered_wrench_output_port_.write(wrenchMsg);
   }
 }
 
@@ -74,7 +92,6 @@ void ForceSensor::voltage2FT() {
   for (int i = 0; i < 6; i++) {
     wrench_[i] = force(i);
   }
-
 
 }
 

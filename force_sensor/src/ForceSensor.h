@@ -15,14 +15,13 @@
 typedef Eigen::Matrix<double, 6, 6> Matrix6d;
 typedef Eigen::Matrix<double, 6, 1> Vector6d;
 
-const double FORCE_CONSTRAINTS[6] = { 65.0, 65.0, 130.0, 5.0, 5.0, 5.0 };
-
 class ForceSensor : public RTT::TaskContext {
 
  public:
   ForceSensor(const std::string &name);
   bool startHook();
   void updateHook();
+  virtual bool configureHook();
 
  protected:
   Matrix6d conversion_matrix;  // F/T conversion matrix
@@ -30,8 +29,10 @@ class ForceSensor : public RTT::TaskContext {
 
   KDL::Wrench wrench_;
 
-  RTT::OutputPort<geometry_msgs::Wrench> wrench_port_;
-  RTT::Property<KDL::Wrench> offset_prop_;
+  RTT::OutputPort<geometry_msgs::Wrench> raw_wrench_output_port_;
+  RTT::OutputPort<geometry_msgs::Wrench> fast_filtered_wrench_output_port_;
+  RTT::OutputPort<geometry_msgs::Wrench> slow_filtered_wrench_output_port_;
+
 
   void WrenchKDLToMsg(const KDL::Wrench &in, geometry_msgs::Wrench &out);
   void voltage2FT();
@@ -42,6 +43,10 @@ class ForceSensor : public RTT::TaskContext {
   lsampl_t raw_ADC_[6];
   Vector6d voltage_ADC_;
   Vector6d bias_;
+
+  // properties
+  std::vector<double> force_limits_;
+  RTT::Property<KDL::Wrench> offset_prop_;
 
 };
 
