@@ -461,6 +461,8 @@ connect("Irp6otmToolInt.CartesianPositionCommand", "Irp6otmInverseKinematic.Tool
 
 loadComponent("ATI6284", "ATI6284")
 setActivity("ATI6284", 0.002, 5, ORO_SCHED_RT)
+ATI6284.loadService("rosparam")
+ATI6284.rosparam.getAll()
 ATI6284.configure()
 
 
@@ -472,7 +474,8 @@ Irp6pmForceTransformation.configure()
 
 
 connect("Irp6pmForceTransformation.CurrentWristPose", "Irp6pmForwardKinematic.WristOutputPose", ConnPolicy())
-connect("Irp6pmForceTransformation.CurrentSensorWrench", "ATI6284.Wrench", ConnPolicy())
+connect("Irp6pmForceTransformation.CurrentSensorSlowFilteredWrench", "ATI6284.OutputSlowFilteredWrench", ConnPolicy())
+connect("Irp6pmForceTransformation.CurrentSensorFastFilteredWrench", "ATI6284.OutputFastFilteredWrench", ConnPolicy())
 connect("Irp6pmForceTransformation.Tool", "Irp6pmToolInt.CartesianPositionCommand", ConnPolicy())
 
 stream("Irp6pmForceTransformation.ToolGravityParam", ros.comm.topic("/irp6p_arm/tg_param"))
@@ -494,6 +497,8 @@ stream("Irp6pmForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6p_arm/fcl_p
 
 loadComponent("ATI3084", "ATI3084")
 setActivity("ATI3084", 0.001, 5, ORO_SCHED_RT)
+ATI3084.loadService("rosparam")
+ATI3084.rosparam.getAll()
 ATI3084.configure()
 
 
@@ -505,7 +510,8 @@ Irp6otmForceTransformation.configure()
 
 
 connect("Irp6otmForceTransformation.CurrentWristPose", "Irp6otmForwardKinematic.WristOutputPose", ConnPolicy())
-connect("Irp6otmForceTransformation.CurrentSensorWrench", "ATI3084.Wrench", ConnPolicy())
+connect("Irp6otmForceTransformation.CurrentSensorSlowFilteredWrench", "ATI3084.OutputSlowFilteredWrench", ConnPolicy())
+connect("Irp6otmForceTransformation.CurrentSensorFastFilteredWrench", "ATI3084.OutputFastFilteredWrench", ConnPolicy())
 connect("Irp6otmForceTransformation.Tool", "Irp6otmToolInt.CartesianPositionCommand", ConnPolicy())
 
 stream("Irp6otmForceTransformation.ToolGravityParam", ros.comm.topic("/irp6ot_arm/tg_param"))
@@ -1041,7 +1047,7 @@ stream("Irp6pmJntPub.joint_state", ros.comm.topic("/joint_states"));
 Irp6pmJntPub.configure()
 
 stream("Irp6pmForwardKinematic.WristOutputPose", ros.comm.topic("/cartesian_position"))
-#stream("ATI6284.Wrench", ros.comm.topic("/ati_wrench"))
+#stream("ATI6284.OutputFastFilteredWrench", ros.comm.topic("/ati_wrench"))
 
 ## Start it
 Irp6scheme.start()
