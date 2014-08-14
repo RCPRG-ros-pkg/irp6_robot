@@ -252,16 +252,14 @@ uint64_t HI_moxa::read_hardware(void) {
       comm_timeouts[drive_number]++;
       if (all_hardware_read) {
         all_hardware_read = false;
-        std::cout << "[error] timeout in " << (int) receive_attempts
-                  << " communication cycle on drives";
+        //   std::cout << "[error] timeout in " << (int) receive_attempts << " communication cycle on drives";
       }
-      std::cout << " " << (int) drive_number << "("
-                << port_names[drive_number].c_str() << ")";
+     // std::cout << " " << (int) drive_number << "(" << port_names[drive_number].c_str() << ")";
       //break;
     }
   }
 
-  // If Hardware Panic, after receiving data, wait till the end of comm cycle and return.
+// If Hardware Panic, after receiving data, wait till the end of comm cycle and return.
   if (hardware_panic) {
     /*
      struct timespec delay;
@@ -280,7 +278,7 @@ uint64_t HI_moxa::read_hardware(void) {
     std::cout << std::endl;
   }
 
-  // Inicjalizacja flag
+// Inicjalizacja flag
   robot_synchronized = true;
   power_fault = false;
 
@@ -377,13 +375,13 @@ uint64_t HI_moxa::read_hardware(void) {
     }
   }
 
-  // master.controller_state_edp_buf.is_synchronised = robot_synchronized;
-  // master.controller_state_edp_buf.robot_in_fault_state = power_fault;
+// master.controller_state_edp_buf.is_synchronised = robot_synchronized;
+// master.controller_state_edp_buf.robot_in_fault_state = power_fault;
   if (power_fault) {
     // hardware_panic = true;
     // std::cout << "[error] power_fault" << std::endl;
     if (error_msg_power_stage == 0) {
-      temp_message << "[error] power_fault" <<  std::endl;
+      temp_message << "[error] power_fault" << std::endl;
       std::cerr << temp_message.str() << std::cerr.flush();
       // master.msg->message(lib::NON_FATAL_ERROR, "Wylaczono moc - robot zablokowany");
       error_msg_power_stage++;
@@ -428,7 +426,7 @@ uint64_t HI_moxa::write_hardware(void) {
   uint8_t drive_number;
   static std::stringstream temp_message;
 
-  // If Hardware Panic, send PARAM_DRIVER_MODE_ERROR to motor drivers
+// If Hardware Panic, send PARAM_DRIVER_MODE_ERROR to motor drivers
   if (hardware_panic) {
     for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
       // only set error parameter, do not wait for answer
