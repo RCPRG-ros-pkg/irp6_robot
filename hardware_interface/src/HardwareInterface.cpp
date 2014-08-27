@@ -436,7 +436,7 @@ void HardwareInterface::updateHook() {
       if (fabs(pos_inc_[i]) > 400) {
         std::cout << "very high pos_inc_ i: " << i << " pos_inc: "
                   << pos_inc_[i] << std::endl;
-        pos_inc_[i] = 0;
+       // pos_inc_[i] = 0;
       }
     }
 
