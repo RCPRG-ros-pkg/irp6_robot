@@ -275,7 +275,7 @@ uint64_t HI_moxa::read_hardware(void) {
     for (drive_number = 0; drive_number <= last_drive_number; drive_number++)
       comm_timeouts[drive_number] = 0;
   } else {
-    std::cout << std::endl;
+   // std::cout << std::endl;
   }
 
 // Inicjalizacja flag
