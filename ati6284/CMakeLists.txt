@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 
 project(ati6284)
 
-find_package(catkin REQUIRED COMPONENTS rtt_ros force_sensor)
+find_package(catkin REQUIRED COMPONENTS rtt_ros force_sensor cmake_modules)
 find_package(Eigen REQUIRED)
 find_package(OROCOS-RTT REQUIRED)
 
