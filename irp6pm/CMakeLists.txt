@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 
 project(irp6pm_kinematic)
 
-find_package(catkin REQUIRED COMPONENTS rtt_ros geometry_msgs eigen_conversions)
+find_package(catkin REQUIRED COMPONENTS rtt_ros geometry_msgs eigen_conversions cmake_modules)
 
 find_package(OROCOS-RTT REQUIRED)
 find_package(Eigen REQUIRED)

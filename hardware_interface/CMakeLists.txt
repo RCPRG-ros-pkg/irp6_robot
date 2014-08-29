@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.6)
 project(hardware_interface)
 
-find_package(catkin REQUIRED COMPONENTS hi_msgs)
+find_package(catkin REQUIRED COMPONENTS hi_msgs cmake_modules)
 
 find_package(OROCOS-RTT REQUIRED)
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
