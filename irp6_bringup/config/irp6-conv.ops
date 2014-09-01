@@ -223,6 +223,14 @@ Irp6otmPortDoubleAggregate_hw_p.loadService("rosparam")
 Irp6otmPortDoubleAggregate_hw_p.rosparam.getAll()
 Irp6otmPortDoubleAggregate_hw_p.configure()
 
+// Irp6otm double port aggregate desired
+
+loadComponent("Irp6otmPortDoubleAggregate_hw_desired","PortDoubleAggregate")
+Irp6otmPortDoubleAggregate_hw_desired.loadService("rosparam")
+Irp6otmPortDoubleAggregate_hw_desired.rosparam.getAll()
+Irp6otmPortDoubleAggregate_hw_desired.configure()
+
+
 // Irp6ottfg double port aggregate
 
 loadComponent("Irp6ottfgPortDoubleAggregate_hw_p","PortDoubleAggregate")
@@ -241,6 +249,9 @@ ConveyorM2J.configure()
 
 loadComponent("Irp6otmM2J","Irp6otmM2J")
 Irp6otmM2J.configure()
+
+loadComponent("Irp6otmM2Jdesired","Irp6otmM2J")
+Irp6otmM2Jdesired.configure()
 
 loadComponent("Irp6ottfgM2J","Irp6tfgM2J")
 Irp6ottfgM2J.configure()
@@ -275,7 +286,9 @@ connect("Irp6otmM2J.JointPosition","Irp6otmForwardKinematic.JointPosition", Conn
 loadComponent("Irp6otmInverseKinematic","Irp6otmInverseKinematic")
 Irp6otmInverseKinematic.configure()
 
-connect("Irp6otmM2J.JointPosition","Irp6otmInverseKinematic.CurrentJointPosition", ConnPolicy())
+// connect("Irp6otmM2J.JointPosition","Irp6otmInverseKinematic.CurrentJointPosition", ConnPolicy())
+ connect("Irp6otmM2Jdesired.JointPosition","Irp6otmInverseKinematic.CurrentJointPosition", ConnPolicy())
+
 
 loadComponent("Irp6ottfgJ2M","Irp6tfgJ2M")
 Irp6ottfgJ2M.configure()
@@ -554,11 +567,13 @@ addPeer("Irp6scheme", "Irp6pmPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6ptfgPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "ConveyorPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6otmPortDoubleAggregate_hw_p")
+addPeer("Irp6scheme", "Irp6otmPortDoubleAggregate_hw_desired")
 addPeer("Irp6scheme", "Irp6ottfgPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6pmM2J");
 addPeer("Irp6scheme", "Irp6ptfgM2J");
 addPeer("Irp6scheme", "ConveyorM2J");
 addPeer("Irp6scheme", "Irp6otmM2J");
+addPeer("Irp6scheme", "Irp6otmM2Jdesired");
 addPeer("Irp6scheme", "Irp6ottfgM2J");
 addPeer("Irp6scheme", "Irp6pmForwardKinematic");
 addPeer("Irp6scheme", "Irp6pmInverseKinematic");
@@ -676,6 +691,12 @@ connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorM2J.MotorPosition
 connect("ConveyorJ2M.MotorPosition", "ConveyorPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
 connect("Irp6otmPortDoubleAggregate_hw_p.OutputPort","Irp6otmM2J.MotorPosition", ConnPolicy())
+
+
+connect("Irp6otmPortDoubleAggregate_hw_desired.OutputPort","Irp6otmM2Jdesired.MotorPosition", ConnPolicy())
+
+
+
 connect("Irp6otmJ2M.MotorPosition", "Irp6otmPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
 connect("Irp6ottfgPortDoubleAggregate_hw_p.OutputPort","Irp6ottfgM2J.MotorPosition", ConnPolicy())
@@ -719,6 +740,14 @@ connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_4","Irp6HardwareInterface.Mot
 connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_5","Irp6HardwareInterface.MotorPosition_irp6otm_5", ConnPolicy())
 connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_6","Irp6HardwareInterface.MotorPosition_irp6otm_6", ConnPolicy())
 
+connect("Irp6otmPortDoubleAggregate_hw_desired.InputPort_0","Irp6otmPortDoubleSplit_hw_cp.OutputPort_0", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_desired.InputPort_1","Irp6otmPortDoubleSplit_hw_cp.OutputPort_1", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_desired.InputPort_2","Irp6otmPortDoubleSplit_hw_cp.OutputPort_2", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_desired.InputPort_3","Irp6otmPortDoubleSplit_hw_cp.OutputPort_3", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_desired.InputPort_4","Irp6otmPortDoubleSplit_hw_cp.OutputPort_4", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_desired.InputPort_5","Irp6otmPortDoubleSplit_hw_cp.OutputPort_5", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_desired.InputPort_6","Irp6otmPortDoubleSplit_hw_cp.OutputPort_6", ConnPolicy())
+
 connect("Irp6ottfgPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_irp6ottfg", ConnPolicy())
 
 
@@ -731,17 +760,20 @@ Irp6scheme.addBlock("Irp6pmPortDoubleAggregate_hw_p")
 Irp6scheme.addBlock("Irp6ptfgPortDoubleAggregate_hw_p")
 Irp6scheme.addBlock("ConveyorPortDoubleAggregate_hw_p")
 Irp6scheme.addBlock("Irp6otmPortDoubleAggregate_hw_p")
+Irp6scheme.addBlock("Irp6otmPortDoubleAggregate_hw_desired")
 Irp6scheme.addBlock("Irp6ottfgPortDoubleAggregate_hw_p")
 
 Irp6scheme.addBlock("Irp6pmM2J");
 Irp6scheme.addBlock("Irp6ptfgM2J");
 Irp6scheme.addBlock("ConveyorM2J");
 Irp6scheme.addBlock("Irp6otmM2J");
+Irp6scheme.addBlock("Irp6otmM2Jdesired");
 Irp6scheme.addBlock("Irp6ottfgM2J");
 Irp6scheme.addBlock("Irp6pmForwardKinematic");
 Irp6scheme.addBlock("Irp6pmInverseKinematic");
 Irp6scheme.addBlock("Irp6otmForwardKinematic");
 Irp6scheme.addBlock("Irp6otmInverseKinematic");
+Irp6scheme.latchConnections("Irp6otmPortDoubleAggregate_hw_desired", "Irp6otmM2Jdesired", true);
 Irp6scheme.latchConnections("Irp6pmPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
 Irp6scheme.latchConnections("Irp6ptfgPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
 Irp6scheme.latchConnections("ConveyorPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
@@ -1081,11 +1113,13 @@ Irp6pmPortDoubleAggregate_hw_p.start()
 Irp6ptfgPortDoubleAggregate_hw_p.start()
 ConveyorPortDoubleAggregate_hw_p.start()
 Irp6otmPortDoubleAggregate_hw_p.start()
+Irp6otmPortDoubleAggregate_hw_desired.start()
 Irp6ottfgPortDoubleAggregate_hw_p.start()
 Irp6pmM2J.start()
 Irp6ptfgM2J.start()
 ConveyorM2J.start()
 Irp6otmM2J.start()
+Irp6otmM2Jdesired.start()
 Irp6ottfgM2J.start()
 Irp6pmForwardKinematic.start()
 Irp6pmInverseKinematic.start()
