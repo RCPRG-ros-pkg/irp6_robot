@@ -196,6 +196,20 @@
           current_mode: 1
       Irp6pmJntPub:
         joint_names: [Irp6pmJoint1, Irp6pmJoint2, Irp6pmJoint3, Irp6pmJoint4, Irp6pmJoint5, Irp6pmJoint6]
+      Irp6pmMotPub:
+        joint_names: [Irp6pmMotor1, Irp6pmMotor2, Irp6pmMotor3, Irp6pmMotor4, Irp6pmMotor5, Irp6pmMotor6]
+      Irp6otmJntPub:
+        joint_names: [Irp6otmJoint1, Irp6otmJoint2, Irp6otmJoint3, Irp6otmJoint4, Irp6otmJoint5, Irp6otmJoint6, Irp6otmJoint7]
+      Irp6otmMotPub:
+        joint_names: [Irp6otmMotor1, Irp6otmMotor2, Irp6otmMotor3, Irp6otmJMotor4, Irp6otmMotor5, Irp6otmMotor6, Irp6otmMotor7]
+      Irp6ptfgJntPub:
+        joint_names: [Irp6ptfgJoint1]
+      Irp6ptfgMotPub:
+        joint_names: [Irp6ptfgMotor1]
+      Irp6ottfgJntPub:
+        joint_names: [Irp6ottfgJoint1]
+      Irp6ottfgMotPub:
+        joint_names: [Irp6ottfgMotor1]
       Irp6pmSplineTrajectoryGeneratorJoint:
         number_of_joints: 6
       Irp6pmSplineTrajectoryActionJoint:
