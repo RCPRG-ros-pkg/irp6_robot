@@ -502,6 +502,8 @@
         number_of_ports: 7
       Irp6otmPortDoubleAggregate_hw_p:
         number_of_ports: 7
+      Irp6otmPortDoubleAggregate_hw_desired:
+        number_of_ports: 7
     </rosparam>
 </group>
 
