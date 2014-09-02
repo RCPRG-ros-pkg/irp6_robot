@@ -6,7 +6,7 @@ then
 	exit
 fi
 
-source /opt/ros/hydro/setup.bash
+source /opt/ros/indigo/setup.bash
 export LANG=en
 if [ -d ~/ws_irp6 ]
 then
