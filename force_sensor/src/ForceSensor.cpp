@@ -29,11 +29,13 @@ ForceSensor::ForceSensor(const std::string &name)
       slow_buffer_size_(100),
       fast_buffer_size_(2),
       slow_buffer_index_(0),
-      fast_buffer_index_(0) {
+      fast_buffer_index_(0),
+      test_mode_(0) {
 
   this->addPort(raw_wrench_output_port_);
   this->addPort(fast_filtered_wrench_output_port_);
   this->addPort(slow_filtered_wrench_output_port_);
+  this->addProperty("test_mode", test_mode_).doc("");
 
   this->addProperty(offset_prop_);
   this->addProperty("force_limits", force_limits_);
@@ -42,7 +44,13 @@ ForceSensor::ForceSensor(const std::string &name)
 }
 
 bool ForceSensor::startHook() {
-  readData();
+  if (!test_mode_) {
+    readData();
+  } else {
+    for (int i = 0; i < 6; i++) {
+      voltage_ADC_(i) = 0.0;
+    }
+  }
 
   bias_ = voltage_ADC_;
 
@@ -60,7 +68,11 @@ bool ForceSensor::configureHook() {
   slow_buffer_.resize(slow_buffer_size_);
   fast_buffer_.resize(fast_buffer_size_);
 
-  return true;
+  if (!test_mode_) {
+    return configureParticularSensorHook();
+  } else {
+    return true;
+  }
 
 }
 
@@ -69,7 +81,14 @@ void ForceSensor::updateHook() {
   geometry_msgs::Wrench SlowFilteredWrenchMsg;
   geometry_msgs::Wrench FastFilteredWrenchMsg;
 
-  readData();
+  if (!test_mode_) {
+    readData();
+  } else {
+    for (int i = 0; i < 6; i++) {
+      voltage_ADC_(i) = 0.0;
+    }
+  }
+
   voltage2FT();
 
 //wrench_ -= offset_prop_.value();
@@ -94,7 +113,8 @@ void ForceSensor::updateHook() {
   // po jej stwierdzeniu zamienic na proste liczenie podzielonej sumy wszystkich elementow
 
   slow_filtered_wrench_ = slow_filtered_wrench_
-      + valid_wrench_ / slow_buffer_size_ - slow_buffer_[slow_buffer_index_] / slow_buffer_size_;
+      + valid_wrench_ / slow_buffer_size_
+      - slow_buffer_[slow_buffer_index_] / slow_buffer_size_;
 
   slow_buffer_[slow_buffer_index_] = valid_wrench_;
   if ((++slow_buffer_index_) == slow_buffer_size_) {
@@ -104,9 +124,9 @@ void ForceSensor::updateHook() {
   WrenchKDLToMsg(slow_filtered_wrench_, SlowFilteredWrenchMsg);
   slow_filtered_wrench_output_port_.write(SlowFilteredWrenchMsg);
 
-
   fast_filtered_wrench_ = fast_filtered_wrench_
-      + valid_wrench_/ fast_buffer_size_ - fast_buffer_[fast_buffer_index_]/ fast_buffer_size_ ;
+      + valid_wrench_ / fast_buffer_size_
+      - fast_buffer_[fast_buffer_index_] / fast_buffer_size_;
 
   fast_buffer_[fast_buffer_index_] = valid_wrench_;
   if ((++fast_buffer_index_) == fast_buffer_size_) {

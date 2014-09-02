@@ -21,23 +21,21 @@ ATI3084::ATI3084(const std::string &name)
 
 }
 
-bool ATI3084::configureHook() {
-  if (ForceSensor::configureHook()) {
-    device_ = comedi_open(device_prop_.value().c_str());
-    if (!device_) {
-      RTT::log(RTT::Error) << "Unable to open device [" << device_prop_.value()
-                           << "]" << RTT::endlog();
-      return false;
-    }
-    //comedi_dio_config(device_, DOSD, 0, COMEDI_OUTPUT);
-    //comedi_dio_config(device_, DOSD, 1, COMEDI_OUTPUT);
-    //comedi_dio_config(device_, DOSD, 2, COMEDI_OUTPUT);
+bool ATI3084::configureParticularSensorHook() {
 
-    maxdata_ = comedi_get_maxdata(device_, 0, 0);
-    rangetype_ = comedi_get_range(device_, 0, 0, 0);
-  } else {
+  device_ = comedi_open(device_prop_.value().c_str());
+  if (!device_) {
+    RTT::log(RTT::Error) << "Unable to open device [" << device_prop_.value()
+                         << "]" << RTT::endlog();
     return false;
   }
+  //comedi_dio_config(device_, DOSD, 0, COMEDI_OUTPUT);
+  //comedi_dio_config(device_, DOSD, 1, COMEDI_OUTPUT);
+  //comedi_dio_config(device_, DOSD, 2, COMEDI_OUTPUT);
+
+  maxdata_ = comedi_get_maxdata(device_, 0, 0);
+  rangetype_ = comedi_get_range(device_, 0, 0, 0);
+
   return true;
 
 }

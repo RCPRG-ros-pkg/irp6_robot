@@ -37,6 +37,7 @@ class ForceSensor : public RTT::TaskContext {
   void WrenchKDLToMsg(const KDL::Wrench &in, geometry_msgs::Wrench &out);
   void voltage2FT();
   virtual void readData() = 0;
+  virtual bool configureParticularSensorHook() = 0;
 
   comedi_t *device_;
 
@@ -58,6 +59,7 @@ class ForceSensor : public RTT::TaskContext {
   RTT::Property<KDL::Wrench> offset_prop_;
   int slow_buffer_size_;
   int fast_buffer_size_;
+  bool test_mode_;
 
 };
 

@@ -21,7 +21,7 @@ class ATI6284 : public ForceSensor {
  public:
   ATI6284(const std::string &name);
 
-  bool configureHook();
+  bool configureParticularSensorHook();
 
 
 
