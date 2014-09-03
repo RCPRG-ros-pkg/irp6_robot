@@ -424,7 +424,7 @@ uint64_t HI_moxa::write_hardware(void) {
   static int error_msg_hardware_panic = 0;
   uint64_t ret = 0;
   uint8_t drive_number;
-  static std::stringstream temp_message;
+  // static std::stringstream temp_message;
 
 // If Hardware Panic, send PARAM_DRIVER_MODE_ERROR to motor drivers
   if (hardware_panic) {
@@ -447,7 +447,7 @@ uint64_t HI_moxa::write_hardware(void) {
       std::cout << "[error] hardware panic" << std::endl;
       error_msg_hardware_panic++;
     }
-    std::cout << temp_message.str() << std::endl;
+    // std::cout << temp_message.str() << std::endl;
     /*
      struct timespec delay;
      delay.tv_nsec = 2000000;

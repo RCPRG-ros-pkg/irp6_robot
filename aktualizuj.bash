@@ -6,7 +6,7 @@ then
 	exit
 fi
 
-source /opt/ros/hydro/setup.bash
+source /opt/ros/indigo/setup.bash
 export LANG=en
 if [ -d ~/ws_irp6 ]
 then
@@ -16,7 +16,7 @@ then
 	catkin_make_isolated --install -DENABLE_CORBA=ON -DCORBA_IMPLEMENTATION=OMNIORB -DCMAKE_BUILD_TYPE=RelWithDebInfo
 	source install_isolated/setup.bash
 	cd ../underlay
-	catkin_make -DCMAKE_BUILD_TYPE=RelWithDebInfo
+	catkin_make -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCATKIN_ENABLE_TESTING=OFF
 	source devel/setup.bash
 fi
 

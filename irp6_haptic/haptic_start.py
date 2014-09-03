@@ -164,7 +164,7 @@ if __name__ == '__main__':
   # Force controller parameters
   #
   
-  pub = rospy.Publisher('/irp6ot_arm/fcl_param', ForceControl)
+  pub = rospy.Publisher('/irp6ot_arm/fcl_param', ForceControl, queue_size=0)
   
   rospy.sleep(0.5)
   
@@ -180,7 +180,7 @@ if __name__ == '__main__':
   # standard tool gravity param
   #
   
-  pubtg = rospy.Publisher('/irp6ot_arm/tg_param', ToolGravityParam)
+  pubtg = rospy.Publisher('/irp6ot_arm/tg_param', ToolGravityParam, queue_size=0)
   rospy.sleep(0.5)
   
   tg_goal = ToolGravityParam()
@@ -197,7 +197,7 @@ if __name__ == '__main__':
   # Force controller parameters
   #
   
-  pub = rospy.Publisher('/irp6p_arm/fcl_param', ForceControl)
+  pub = rospy.Publisher('/irp6p_arm/fcl_param', ForceControl, queue_size=0)
   
   rospy.sleep(0.5)
   
@@ -214,7 +214,7 @@ if __name__ == '__main__':
   # standard tool gravity param
   #
   
-  pubtg = rospy.Publisher('/irp6p_arm/tg_param', ToolGravityParam)
+  pubtg = rospy.Publisher('/irp6p_arm/tg_param', ToolGravityParam, queue_size=0)
   rospy.sleep(0.5)
   
   tg_goal = ToolGravityParam()
