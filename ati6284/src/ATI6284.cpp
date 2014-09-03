@@ -4,7 +4,7 @@
 
 ATI6284::ATI6284(const std::string &name)
     : ForceSensor(name),
-      device_prop_("device", "DAQ device to use", "/dev/comedi1") {
+      device_prop_("device", "DAQ device to use", "/dev/comedi0") {
 
   this->addProperty(device_prop_);
 
