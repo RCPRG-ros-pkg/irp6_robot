@@ -16,7 +16,7 @@
       Irp6HardwareInterface:
         number_of_drives: 16
         auto_synchronize: true
-        test_mode: true
+        test_mode: false
         rwh_nsec: 1200000
         hi_port_param_0:
           label: irp6pm_0
@@ -448,12 +448,12 @@
             y: 0.0
             z: 0.09
       ATI6284:
-        test_mode: true
+        test_mode: false
         force_limits: [65.0, 65.0, 130.0, 5.0, 5.0, 5.0]
         slow_buffer_size: 100
         fast_buffer_size: 2
       ATI3084:
-        test_mode: true
+        test_mode: false
         force_limits: [65.0, 65.0, 130.0, 5.0, 5.0, 5.0]
         slow_buffer_size: 100
         fast_buffer_size: 2

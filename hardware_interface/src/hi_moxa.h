@@ -20,7 +20,7 @@ namespace hi_moxa {
 
 const std::size_t MOXA_SERVOS_NR = NF_BUFSZ_NumberOfDrives;
 const int MAX_PARAM_SET_ATTEMPTS = 3;
-const int MAX_COMM_TIMEOUTS = 3;
+const int MAX_COMM_TIMEOUTS = 10;
 const std::size_t FIRST_HARDWARE_READS_WITH_ZERO_INCREMENT = 4;
 
 const int VOLTAGE = 48.0;
