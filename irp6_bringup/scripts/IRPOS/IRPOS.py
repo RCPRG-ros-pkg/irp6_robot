@@ -88,8 +88,8 @@ class IRPOS:
 		self.tfg_joint_position_subscriber = rospy.Subscriber('/'+robotNameLower+'_tfg/joint_state', JointState, self.tfg_joint_position_callback)
 
 		self.cartesian_position_subscriber = rospy.Subscriber('/'+robotNameLower+'_arm/cartesian_position', Pose, self.cartesian_position_callback)
-		self.wrench_subscriber = rospy.Subscriber('/'+robotNameLower+'_arm/ati_wrench', Wrench, self.wrench_callback)
-
+		self.wrench_subscriber = rospy.Subscriber('/'+robotNameLower+'m_wrench', Wrench, self.wrench_callback)		
+	
 		self.fcl_param_publisher = rospy.Publisher('/'+robotNameLower+'_arm/fcl_param', ForceControl)
 		self.tg_param_publisher = rospy.Publisher('/'+robotNameLower+'_arm/tg_param', ToolGravityParam)
 		
@@ -167,7 +167,6 @@ class IRPOS:
 	# MOTOR     
 
 	# move_abs_to_motor_position
-	# move_rel_to_motor_position
 	def move_to_motor_position(self, motor_positions, time_from_start):
 		print "[IRPOS] Move to motor position"
 
@@ -176,6 +175,26 @@ class IRPOS:
 		motorGoal = FollowJointTrajectoryGoal()
 		motorGoal.trajectory.joint_names = self.robot_joint_names
 		motorGoal.trajectory.points.append(JointTrajectoryPoint(motor_positions, self.get_zeros_vector(), [], [], rospy.Duration(time_from_start)))
+		motorGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+
+		self.motor_client.send_goal(motorGoal)
+		self.motor_client.wait_for_result()
+
+		result = self.motor_client.get_result()
+		print "[IRPOS] Result: "+str(result)
+
+		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorMotor'], True)
+
+	def move_rel_to_motor_position(self, motor_positions, time_from_start):
+		print "[IRPOS] Move to motor position"
+
+		self.conmanSwitch([self.robot_name+'mSplineTrajectoryGeneratorMotor'], [], True)
+
+		actual_motors = self.get_motor_position()
+
+		motorGoal = FollowJointTrajectoryGoal()
+		motorGoal.trajectory.joint_names = self.robot_joint_names
+		motorGoal.trajectory.points.append(JointTrajectoryPoint(map(sum, zip(list(actual_motors),motor_positions)), self.get_zeros_vector(), [], [], rospy.Duration(time_from_start)))
 		motorGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
 
 		self.motor_client.send_goal(motorGoal)
@@ -215,7 +234,6 @@ class IRPOS:
 	# JOINT
 
 	# move_abs_to_joint_position
-	# move_rel_to_joint_position
 	def move_to_joint_position(self, joint_positions, time_from_start):
 		print "[IRPOS] Move to joint position"
 
@@ -224,6 +242,26 @@ class IRPOS:
 		jointGoal = FollowJointTrajectoryGoal()
 		jointGoal.trajectory.joint_names = self.robot_joint_names
 		jointGoal.trajectory.points.append(JointTrajectoryPoint(joint_positions, self.get_zeros_vector(), [], [], rospy.Duration(time_from_start)))
+		jointGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+
+		self.joint_client.send_goal(jointGoal)
+		self.joint_client.wait_for_result()
+		
+		result = self.joint_client.get_result()
+		print "[IRPOS] Result: "+str(result)
+
+		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorJoint'], True)
+
+	def move_rel_to_joint_position(self, joint_positions, time_from_start):
+		print "[IRPOS] Move relative to joint position"
+
+		self.conmanSwitch([self.robot_name+'mSplineTrajectoryGeneratorJoint'], [], True)
+		
+		actual_joints = self.get_joint_position()
+
+		jointGoal = FollowJointTrajectoryGoal()
+		jointGoal.trajectory.joint_names = self.robot_joint_names
+		jointGoal.trajectory.points.append(JointTrajectoryPoint(map(sum, zip(list(actual_joints),joint_positions)), self.get_zeros_vector(), [], [], rospy.Duration(time_from_start)))
 		jointGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
 
 		self.joint_client.send_goal(jointGoal)

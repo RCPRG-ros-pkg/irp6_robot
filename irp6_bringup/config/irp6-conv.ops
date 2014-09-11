@@ -1077,6 +1077,7 @@ connect("Irp6pmM2J.JointPosition", "Irp6pmJntPub.JointVelocity", ConnPolicy());
 connect("Irp6pmM2J.JointPosition", "Irp6pmJntPub.JointEffort", ConnPolicy());
 
 stream("Irp6pmJntPub.joint_state", ros.comm.topic("irp6p_arm/joint_states"));
+stream("Irp6pmJntPub.joint_state", ros.comm.topic("/joint_states"));
 
 Irp6pmJntPub.configure()
 
@@ -1183,8 +1184,8 @@ stream("Irp6pmForwardKinematic.EndEffectorOutputPose", ros.comm.topic("/irp6p_ar
 stream("Irp6otmForwardKinematic.EndEffectorOutputPose", ros.comm.topic("/irp6ot_arm/cartesian_position"))
 
 // ati wrench
-stream("ATI6284.OutputFastFilteredWrench", ros.comm.topic("/irp6p_arm/ati_wrench"))
-stream("ATI3084.OutputFastFilteredWrench", ros.comm.topic("/irp6ot_arm/ati_wrench"))
+#stream("Irp6otmForceTransformation.OutputEndEffectorWrench", ros.comm.topic("/irp6ot_arm/ati_wrench"))
+#stream("Irp6pmForceTransformation.OutputEndEffectorWrench", ros.comm.topic("/irp6p_arm/ati_wrench"))
 
 ## Start it
 Irp6scheme.start()
