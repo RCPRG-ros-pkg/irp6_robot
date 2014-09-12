@@ -51,6 +51,12 @@ if __name__ == '__main__':
   rospy.wait_for_service('/controller_manager/switch_controller')
   conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
     
+  #
+  # Deactivate all generators
+  #
+  
+  conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
+  
      
   # 
   # Force controller parameters

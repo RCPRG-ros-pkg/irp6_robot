@@ -52,6 +52,12 @@ if __name__ == '__main__':
   conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
   
   #
+  # Deactivate all generators
+  #
+  
+  conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
+    
+  #
   # Motor coordinates motion
   #
   
@@ -61,6 +67,8 @@ if __name__ == '__main__':
   motor_client.wait_for_server()
 
   print 'server ok'
+
+  motor_client.cancel_all_goals()
 
   goal = FollowJointTrajectoryGoal()
   goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
@@ -85,6 +93,8 @@ if __name__ == '__main__':
 
   print 'server ok'
 
+  joint_client.cancel_all_goals()
+
   goal = FollowJointTrajectoryGoal()
   goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
   goal.trajectory.points.append(JointTrajectoryPoint([0.4, -1.5418065817051163, 0.0, 1.5, 1.57, -2.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(3.0)))
@@ -108,6 +118,8 @@ if __name__ == '__main__':
   pose_client.wait_for_server()
   
   print 'server ok'
+  
+  pose_client.cancel_all_goals()
      
   goal = CartesianTrajectoryGoal()
   
@@ -157,6 +169,8 @@ if __name__ == '__main__':
   pose_client.wait_for_server()
   
   print 'server ok'
+     
+  pose_client.cancel_goal()
      
   goal = CartesianTrajectoryGoal()
   

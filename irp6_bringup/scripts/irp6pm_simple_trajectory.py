@@ -21,6 +21,13 @@ if __name__ == '__main__':
   rospy.wait_for_service('/controller_manager/switch_controller')
   conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
   
+  #
+  # Deactivate all generators
+  #
+  
+  conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
+  
+  
   conmanSwitch(['Irp6pmSplineTrajectoryGeneratorJoint'], [], True)
     
   client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
