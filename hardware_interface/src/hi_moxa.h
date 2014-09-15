@@ -102,7 +102,7 @@ class HI_moxa {
   /// Receive Fail Counter
   uint8_t receiveFailCnt[MOXA_SERVOS_NR];
   uint8_t maxReceiveFailCnt;
-  #define MAX_RECEIVE_FAIL_CNT  2 // *2ms extra time for packet receive
+  #define MAX_RECEIVE_FAIL_CNT  1 // *2ms extra time for packet receive
 
   /// tab of data buffers
   struct servo_St servo_data[MOXA_SERVOS_NR];
