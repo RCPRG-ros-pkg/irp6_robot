@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
   print 'server ok'
 
-  motor_client.cancel_all_goals()
+  # motor_client.cancel_all_goals()
 
   goal = FollowJointTrajectoryGoal()
   goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
@@ -93,7 +93,7 @@ if __name__ == '__main__':
 
   print 'server ok'
 
-  joint_client.cancel_all_goals()
+  # joint_client.cancel_all_goals()
 
   goal = FollowJointTrajectoryGoal()
   goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
@@ -119,7 +119,7 @@ if __name__ == '__main__':
   
   print 'server ok'
   
-  pose_client.cancel_all_goals()
+  # pose_client.cancel_all_goals()
      
   goal = CartesianTrajectoryGoal()
   

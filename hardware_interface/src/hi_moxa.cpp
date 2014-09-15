@@ -125,7 +125,10 @@ void HI_moxa::init(std::vector<std::string> ports) {
     // start driver in MANUAL mode
     set_parameter_now(drive_number, NF_COMMAND_SetDrivesMode,
     NF_DrivesMode_MANUAL);
+
+    receiveFailCnt[drive_number] = 0;
   }
+  maxReceiveFailCnt = MAX_RECEIVE_FAIL_CNT;
   reset_counters();
 }
 
@@ -238,12 +241,22 @@ uint64_t HI_moxa::read_hardware(void) {
 
     bytes_received = SerialPort[drive_number]->read(receive_buffer, 255);
 
+    receiveFailCnt[drive_number]++;
     for (int i = 0; i < bytes_received; i++) {
       rxBuf[rxCnt] = receive_buffer[i];
       if (NF_Interpreter(&NFComBuf, rxBuf, &rxCnt, rxCommandArray,
                          &rxCommandCnt) > 0) {
         receive_success = 1;
+        receiveFailCnt[drive_number] = 0;
         break;
+      }
+    }
+    if (receiveFailCnt[drive_number]) {
+      if (receiveFailCnt[drive_number] > maxReceiveFailCnt) {
+        receiveFailCnt[drive_number] = 0;
+        // std::cout << "[warn] extra receive time: drive " << (int) drive_number << " counter reset " << std::endl;;
+      } else {
+        // std::cout << "[warn] extra receive time: drive " << (int) drive_number << " event " << (int) receiveFailCnt[drive_number] << std::endl;
       }
     }
 
@@ -254,7 +267,7 @@ uint64_t HI_moxa::read_hardware(void) {
         all_hardware_read = false;
         //   std::cout << "[error] timeout in " << (int) receive_attempts << " communication cycle on drives";
       }
-     // std::cout << " " << (int) drive_number << "(" << port_names[drive_number].c_str() << ")";
+      // std::cout << " " << (int) drive_number << "(" << port_names[drive_number].c_str() << ")";
       //break;
     }
   }
@@ -275,7 +288,7 @@ uint64_t HI_moxa::read_hardware(void) {
     for (drive_number = 0; drive_number <= last_drive_number; drive_number++)
       comm_timeouts[drive_number] = 0;
   } else {
-   // std::cout << std::endl;
+    // std::cout << std::endl;
   }
 
 // Inicjalizacja flag
@@ -480,9 +493,10 @@ uint64_t HI_moxa::write_hardware(void) {
     for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
 
       // Send command frame
-      SerialPort[drive_number]->write(
-          servo_data[drive_number].txBuf,
-          servo_data[drive_number].txCnt + howMuchItSucks);
+      if (receiveFailCnt[drive_number] == 0)
+        SerialPort[drive_number]->write(
+            servo_data[drive_number].txBuf,
+            servo_data[drive_number].txCnt + howMuchItSucks);
 
 #define SPN
 #ifdef SPN

@@ -20,7 +20,7 @@ namespace hi_moxa {
 
 const std::size_t MOXA_SERVOS_NR = NF_BUFSZ_NumberOfDrives;
 const int MAX_PARAM_SET_ATTEMPTS = 3;
-const int MAX_COMM_TIMEOUTS = 15;
+const int MAX_COMM_TIMEOUTS = 6;
 const std::size_t FIRST_HARDWARE_READS_WITH_ZERO_INCREMENT = 4;
 
 const int VOLTAGE = 48.0;
@@ -98,6 +98,11 @@ class HI_moxa {
 
   /// tab of comunication class instances
   SerialComm* SerialPort[MOXA_SERVOS_NR];
+
+  /// Receive Fail Counter
+  uint8_t receiveFailCnt[MOXA_SERVOS_NR];
+  uint8_t maxReceiveFailCnt;
+  #define MAX_RECEIVE_FAIL_CNT  1 // *2ms extra time for packet receive
 
   /// tab of data buffers
   struct servo_St servo_data[MOXA_SERVOS_NR];

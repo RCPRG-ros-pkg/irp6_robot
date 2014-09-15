@@ -70,7 +70,7 @@ if __name__ == '__main__':
   print 'server ok'
   
   
-  motor_client.cancel_all_goals()
+  # motor_client.cancel_all_goals()
   goal = FollowJointTrajectoryGoal()
   goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6', 'joint7']
   goal.trajectory.points.append(JointTrajectoryPoint([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
@@ -95,7 +95,7 @@ if __name__ == '__main__':
   joint_client.wait_for_server()
 
   print 'server ok'
-  joint_client.cancel_all_goals()
+  # joint_client.cancel_all_goals()
   goal = FollowJointTrajectoryGoal()
   goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6', 'joint7']
   goal.trajectory.points.append(JointTrajectoryPoint([0.0, 0.4, -1.5418065817051163, 0.0, 1.5, 1.57, -2.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(3.0)))
@@ -122,7 +122,7 @@ if __name__ == '__main__':
   
   print 'server ok'
   
-  pose_client.cancel_all_goals()   
+  # pose_client.cancel_all_goals()   
   goal = CartesianTrajectoryGoal()
   
   rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.0, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 1.18029263241))
@@ -172,7 +172,7 @@ if __name__ == '__main__':
   
   print 'server ok'
   
-  pose_client.cancel_all_goals()      
+  # pose_client.cancel_all_goals()      
   goal = CartesianTrajectoryGoal()
   
   rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.0, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 1.181029263241))
