@@ -115,8 +115,12 @@ class HI_moxa {
   NF_STRUCT_ComBuf NFComBuf;
   uint8_t txBuf[BUFF_SIZE];
   uint8_t txCnt;
-  uint8_t rxBuf[BUFF_SIZE];
-  uint8_t rxCnt;
+
+  struct {
+    uint8_t rxBuf[BUFF_SIZE];
+    uint8_t rxCnt;
+  } drive_buff[MOXA_SERVOS_NR];
+
   uint8_t rxCommandArray[BUFF_SIZE];
   uint8_t rxCommandCnt;
 };
