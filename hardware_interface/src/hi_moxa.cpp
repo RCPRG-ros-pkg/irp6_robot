@@ -213,7 +213,7 @@ uint64_t HI_moxa::read_hardware(void) {
   all_hardware_read = true;
   // Read data from all drives
   for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
-    rxCnt = 0;
+    //rxCnt = 0;
 //    while (1) {
 //      if (SerialPort[drive_number]->read(&(rxBuf[rxCnt]), 1) > 0
 //          && (rxCnt < 255)) {
@@ -244,19 +244,22 @@ uint64_t HI_moxa::read_hardware(void) {
     receiveFailCnt[drive_number]++;
     for (int i = 0; i < bytes_received; i++) {
       rxBuf[rxCnt] = receive_buffer[i];
-      if (NF_Interpreter(&NFComBuf, rxBuf, &rxCnt, rxCommandArray,
-                         &rxCommandCnt) > 0) {
+      if (NF_Interpreter(&NFComBuf, rxBuf, &rxCnt, rxCommandArray, &rxCommandCnt) > 0) {
+        rxCnt = 0;
         receive_success = 1;
         receiveFailCnt[drive_number] = 0;
         break;
       }
+      if(rxCnt == 255)
+        rxCnt = 0;
     }
     if (receiveFailCnt[drive_number]) {
       if (receiveFailCnt[drive_number] > maxReceiveFailCnt) {
+        rxCnt = 0;
         receiveFailCnt[drive_number] = 0;
-        // std::cout << "[warn] extra receive time: drive " << (int) drive_number << " counter reset " << std::endl;;
+         std::cout << "[warn] extra receive time: drive " << (int) drive_number << " counter reset " << "bytes_received: " << bytes_received  << std::endl;;
       } else {
-        // std::cout << "[warn] extra receive time: drive " << (int) drive_number << " event " << (int) receiveFailCnt[drive_number] << std::endl;
+         std::cout << "[warn] extra receive time: drive " << (int) drive_number << " event " << (int) receiveFailCnt[drive_number]  << " bytes_received: " << bytes_received << std::endl;
       }
     }
 
