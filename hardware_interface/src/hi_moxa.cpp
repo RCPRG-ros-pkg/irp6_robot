@@ -30,13 +30,14 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
 
     memset(servo_data + drive_number, 0, sizeof(servo_St));
     memset(oldtio + drive_number, 0, sizeof(termios));
+    drive_buff[drive_number].rxCnt = 0;
     //clear_buffer(drive_number);
   }
   memset(&NFComBuf, 0, sizeof(NF_STRUCT_ComBuf));
   memset(txBuf, 0, BUFF_SIZE);
   txCnt = 0;
-  memset(rxBuf, 0, BUFF_SIZE);
-  rxCnt = 0;
+  // memset(rxBuf, 0, BUFF_SIZE);
+
   memset(rxCommandArray, 0, BUFF_SIZE);
   rxCommandCnt = 0;
 }
@@ -69,7 +70,7 @@ void HI_moxa::init(std::vector<std::string> ports) {
     NFComBuf.SetDrivesMisc.addr[drive_number] = 255;
     NFComBuf.ReadDrivesStatus.addr[drive_number] = 255;
     NFComBuf.SetCurrentRegulator.addr[drive_number] = 255;
-  }
+   }
 
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
@@ -243,19 +244,19 @@ uint64_t HI_moxa::read_hardware(void) {
 
     receiveFailCnt[drive_number]++;
     for (int i = 0; i < bytes_received; i++) {
-      rxBuf[rxCnt] = receive_buffer[i];
-      if (NF_Interpreter(&NFComBuf, rxBuf, &rxCnt, rxCommandArray, &rxCommandCnt) > 0) {
-        rxCnt = 0;
+      drive_buff[drive_number].rxBuf[drive_buff[drive_number].rxCnt] = receive_buffer[i];
+      if (NF_Interpreter(&NFComBuf, drive_buff[drive_number].rxBuf, &drive_buff[drive_number].rxCnt, rxCommandArray, &rxCommandCnt) > 0) {
+        drive_buff[drive_number].rxCnt = 0;
         receive_success = 1;
         receiveFailCnt[drive_number] = 0;
         break;
       }
-      if(rxCnt == 255)
-        rxCnt = 0;
+      if(drive_buff[drive_number].rxCnt == 255)
+        drive_buff[drive_number].rxCnt = 0;
     }
     if (receiveFailCnt[drive_number]) {
       if (receiveFailCnt[drive_number] > maxReceiveFailCnt) {
-        rxCnt = 0;
+        drive_buff[drive_number].rxCnt = 0;
         receiveFailCnt[drive_number] = 0;
          std::cout << "[warn] extra receive time: drive " << (int) drive_number << " counter reset " << "bytes_received: " << bytes_received  << std::endl;;
       } else {
@@ -653,13 +654,14 @@ int HI_moxa::set_parameter_now(int drive_number, const int parameter, ...) {
     delay.tv_sec = 0;
     nanosleep(&delay, NULL);
 
-    rxCnt = 0;
+    drive_buff[drive_number].rxCnt = 0;
     while (1) {
-      if (SerialPort[drive_number]->read(&(rxBuf[rxCnt]), 1) > 0
-          && (rxCnt < 255)) {
-        if (NF_Interpreter(&NFComBuf, rxBuf, &rxCnt, rxCommandArray,
+      if (SerialPort[drive_number]->read(&(drive_buff[drive_number].rxBuf[drive_buff[drive_number].rxCnt]), 1) > 0
+          && (drive_buff[drive_number].rxCnt < 255)) {
+        if (NF_Interpreter(&NFComBuf, drive_buff[drive_number].rxBuf, &drive_buff[drive_number].rxCnt, rxCommandArray,
                            &rxCommandCnt) > 0) {
           // TODO: Check status;
+          drive_buff[drive_number].rxCnt = 0;
           return 0;
         }
       } else {
