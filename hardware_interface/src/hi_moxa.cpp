@@ -279,9 +279,13 @@ uint64_t HI_moxa::read_hardware(void) {
                     << std::endl;
 
         } else {
-          std::cout << "[warn] extra receive time: drive " << (int) drive_number
-                    << " event " << (int) receiveFailCnt[drive_number]
-                    << " bytes_received: " << bytes_received << std::endl;
+
+          if ((int) receiveFailCnt[drive_number] > 1) {
+            std::cout << "[warn] extra receive time: drive "
+                      << (int) drive_number << " event "
+                      << (int) receiveFailCnt[drive_number]
+                      << " bytes_received: " << bytes_received << std::endl;
+          }
         }
       }
 
@@ -325,7 +329,6 @@ uint64_t HI_moxa::read_hardware(void) {
     servo_data[drive_number].previous_absolute_position =
         servo_data[drive_number].current_absolute_position;
 
-
     // Wykrywanie sekwencji timeoutow komunikacji
     if (comm_timeouts[drive_number] >= MAX_COMM_TIMEOUTS) {
       hardware_panic = true;
@@ -336,7 +339,6 @@ uint64_t HI_moxa::read_hardware(void) {
       // master.msg->message(lib::FATAL_ERROR, temp_message.str());
       std::cerr << temp_message.str() << std::cerr.flush();
     }
-
 
     if (read_needed[drive_number] && !receiveFail[drive_number]) {
       // Wypelnienie pol odebranymi danymi
@@ -569,7 +571,7 @@ uint64_t HI_moxa::write_hardware(void) {
 #endif
       }
     } else {
-      std::cout << "write hardware !all_hardware_read " << std::endl;
+     // std::cout << "write hardware !all_hardware_read " << std::endl;
 
     }
   }
