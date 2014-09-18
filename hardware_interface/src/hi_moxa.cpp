@@ -211,8 +211,8 @@ uint64_t HI_moxa::read_hardware(void) {
   receive_attempts++;
 
   // Tu kiedys byl SELECT
+  bool current_all_hardware_read = true;
 
-  all_hardware_read = true;
   // Read data from all drives
   for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
     //rxCnt = 0;
@@ -241,13 +241,32 @@ uint64_t HI_moxa::read_hardware(void) {
     uint8_t receive_buffer[255];
     int receive_success = 0;
 
-    bytes_received = SerialPort[drive_number]->read(receive_buffer, 255);
+    bool read_needed = !all_hardware_read && receiveFail[drive_number];
+
+    if (all_hardware_read){
+      bytes_received = SerialPort[drive_number]->read(receive_buffer, 255);
+    }
+
+    if (read_needed) {
+       bytes_received = SerialPort[drive_number]->read(receive_buffer, 255);
+       std::cout << "[warn] ! all hardware read receive time: drive " << (int) drive_number
+                         << " event " << (int) receiveFailCnt[drive_number]
+                         << " bytes_received: " << bytes_received << std::endl;
+    } else if (!all_hardware_read && !receiveFail[drive_number]) {
+      bytes_received=19;
+    }
+
 
     receiveFailCnt[drive_number]++;
     receiveFail[drive_number] = true;
     for (int i = 0; i < bytes_received; i++) {
+      if (all_hardware_read || (read_needed)){
       drive_buff[drive_number].rxBuf[drive_buff[drive_number].rxCnt] =
           receive_buffer[i];
+      } else {
+       // std::cout << "[warn] do not read copy " << std::endl;
+
+      }
       if (NF_Interpreter(&NFComBuf, drive_buff[drive_number].rxBuf,
                          &drive_buff[drive_number].rxCnt, rxCommandArray,
                          &rxCommandCnt) > 0) {
@@ -279,15 +298,15 @@ uint64_t HI_moxa::read_hardware(void) {
     if (receive_success) {
     } else {
       comm_timeouts[drive_number]++;
-      if (all_hardware_read) {
-        all_hardware_read = false;
+      if (current_all_hardware_read) {
+        current_all_hardware_read = false;
         //   std::cout << "[error] timeout in " << (int) receive_attempts << " communication cycle on drives";
       }
       // std::cout << " " << (int) drive_number << "(" << port_names[drive_number].c_str() << ")";
       //break;
     }
   }
-
+  all_hardware_read = current_all_hardware_read;
 // If Hardware Panic, after receiving data, wait till the end of comm cycle and return.
   if (hardware_panic) {
     /*
@@ -498,8 +517,9 @@ uint64_t HI_moxa::write_hardware(void) {
     return ret;
   } else {
     // przygotowanie pod test zablokowania komunikacji po bledzie
-    //if (all_hardware_read)
-    if (1) {
+    if (all_hardware_read)
+    //if (1)
+    {
 
       // Make command frames and send them to drives
       for (drive_number = 0; drive_number <= last_drive_number;
@@ -551,6 +571,9 @@ uint64_t HI_moxa::write_hardware(void) {
         }
 #endif
       }
+    } else {
+      std::cout << "write hardware !all_hardware_read "  << std::endl;
+
     }
   }
 
