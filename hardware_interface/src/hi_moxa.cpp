@@ -131,7 +131,7 @@ void HI_moxa::init(std::vector<std::string> ports) {
 
     receiveFailCnt[drive_number] = 0;
   }
-  maxReceiveFailCnt = MAX_RECEIVE_FAIL_CNT;
+  //maxReceiveFailCnt = MAX_RECEIVE_FAIL_CNT;
   reset_counters();
 }
 
@@ -271,6 +271,7 @@ uint64_t HI_moxa::read_hardware(void) {
         }
       }
       if (receiveFailCnt[drive_number]) {
+        /*
         if (receiveFailCnt[drive_number] > maxReceiveFailCnt) {
           drive_buff[drive_number].rxCnt = 0;
           receiveFailCnt[drive_number] = 0;
@@ -279,14 +280,14 @@ uint64_t HI_moxa::read_hardware(void) {
                     << std::endl;
 
         } else {
-
+*/
           if ((int) receiveFailCnt[drive_number] > 2) {
             std::cout << "[warn] extra receive time: drive "
                       << (int) drive_number << " event "
                       << (int) receiveFailCnt[drive_number]
                       << " bytes_received: " << bytes_received << std::endl;
           }
-        }
+        //}
       }
 
       if (receive_success) {
