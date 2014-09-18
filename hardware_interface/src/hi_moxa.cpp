@@ -324,6 +324,20 @@ uint64_t HI_moxa::read_hardware(void) {
   for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
     servo_data[drive_number].previous_absolute_position =
         servo_data[drive_number].current_absolute_position;
+
+
+    // Wykrywanie sekwencji timeoutow komunikacji
+    if (comm_timeouts[drive_number] >= MAX_COMM_TIMEOUTS) {
+      hardware_panic = true;
+      temp_message << "[error] multiple communication timeouts on drive "
+                   << (int) drive_number << "("
+                   << port_names[drive_number].c_str() << "): limit = "
+                   << MAX_COMM_TIMEOUTS << std::endl;
+      // master.msg->message(lib::FATAL_ERROR, temp_message.str());
+      std::cerr << temp_message.str() << std::cerr.flush();
+    }
+
+
     if (read_needed[drive_number] && !receiveFail[drive_number]) {
       // Wypelnienie pol odebranymi danymi
       // NFComBuf.ReadDrivesPosition.data[] contains last received value
@@ -408,16 +422,6 @@ uint64_t HI_moxa::read_hardware(void) {
         }
       }
 
-      // Wykrywanie sekwencji timeoutow komunikacji
-      if (comm_timeouts[drive_number] >= MAX_COMM_TIMEOUTS) {
-        hardware_panic = true;
-        temp_message << "[error] multiple communication timeouts on drive "
-                     << (int) drive_number << "("
-                     << port_names[drive_number].c_str() << "): limit = "
-                     << MAX_COMM_TIMEOUTS << std::endl;
-        // master.msg->message(lib::FATAL_ERROR, temp_message.str());
-        std::cerr << temp_message.str() << std::cerr.flush();
-      }
     } else {
       servo_data[drive_number].current_absolute_position =
           servo_data[drive_number].previous_absolute_position
