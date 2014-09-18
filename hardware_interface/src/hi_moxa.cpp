@@ -435,7 +435,7 @@ uint64_t HI_moxa::read_hardware(void) {
 // master.controller_state_edp_buf.is_synchronised = robot_synchronized;
 // master.controller_state_edp_buf.robot_in_fault_state = power_fault;
   if (power_fault) {
-    // hardware_panic = true;
+     hardware_panic = true;
     // std::cout << "[error] power_fault" << std::endl;
     if (error_msg_power_stage == 0) {
       temp_message << "[error] power_fault" << std::endl;
