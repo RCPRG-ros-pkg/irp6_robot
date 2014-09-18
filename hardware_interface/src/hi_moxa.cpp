@@ -22,6 +22,7 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
       drives_addresses(card_addresses),
       ridiculous_increment(max_increments),
       hardware_panic(false),
+      all_hardware_read(true),
       longest_delay_(0),
       longest_read_delay_(0) {
 
@@ -31,6 +32,7 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
     memset(servo_data + drive_number, 0, sizeof(servo_St));
     memset(oldtio + drive_number, 0, sizeof(termios));
     drive_buff[drive_number].rxCnt = 0;
+    receiveFail[drive_number] = false;
     //clear_buffer(drive_number);
   }
   memset(&NFComBuf, 0, sizeof(NF_STRUCT_ComBuf));
@@ -70,7 +72,7 @@ void HI_moxa::init(std::vector<std::string> ports) {
     NFComBuf.SetDrivesMisc.addr[drive_number] = 255;
     NFComBuf.ReadDrivesStatus.addr[drive_number] = 255;
     NFComBuf.SetCurrentRegulator.addr[drive_number] = 255;
-   }
+  }
 
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
@@ -201,7 +203,6 @@ uint64_t HI_moxa::read_hardware(void) {
   const int synchro_switch_filter_th = 2;
   bool robot_synchronized = true;
   bool power_fault;
-  bool all_hardware_read = true;
   uint64_t ret = 0;
   uint8_t drive_number;
   static int status_disp_cnt = 0;
@@ -243,24 +244,35 @@ uint64_t HI_moxa::read_hardware(void) {
     bytes_received = SerialPort[drive_number]->read(receive_buffer, 255);
 
     receiveFailCnt[drive_number]++;
+    receiveFail[drive_number] = true;
     for (int i = 0; i < bytes_received; i++) {
-      drive_buff[drive_number].rxBuf[drive_buff[drive_number].rxCnt] = receive_buffer[i];
-      if (NF_Interpreter(&NFComBuf, drive_buff[drive_number].rxBuf, &drive_buff[drive_number].rxCnt, rxCommandArray, &rxCommandCnt) > 0) {
+      drive_buff[drive_number].rxBuf[drive_buff[drive_number].rxCnt] =
+          receive_buffer[i];
+      if (NF_Interpreter(&NFComBuf, drive_buff[drive_number].rxBuf,
+                         &drive_buff[drive_number].rxCnt, rxCommandArray,
+                         &rxCommandCnt) > 0) {
         drive_buff[drive_number].rxCnt = 0;
         receive_success = 1;
         receiveFailCnt[drive_number] = 0;
+        receiveFail[drive_number] = false;
         break;
       }
-      if(drive_buff[drive_number].rxCnt == 255)
+      if (drive_buff[drive_number].rxCnt == 255) {
         drive_buff[drive_number].rxCnt = 0;
+      }
     }
     if (receiveFailCnt[drive_number]) {
       if (receiveFailCnt[drive_number] > maxReceiveFailCnt) {
         drive_buff[drive_number].rxCnt = 0;
         receiveFailCnt[drive_number] = 0;
-         std::cout << "[warn] extra receive time: drive " << (int) drive_number << " counter reset " << "bytes_received: " << bytes_received  << std::endl;;
+        std::cout << "[warn] extra receive time: drive " << (int) drive_number
+                  << " counter reset " << "bytes_received: " << bytes_received
+                  << std::endl;
+
       } else {
-         std::cout << "[warn] extra receive time: drive " << (int) drive_number << " event " << (int) receiveFailCnt[drive_number]  << " bytes_received: " << bytes_received << std::endl;
+        std::cout << "[warn] extra receive time: drive " << (int) drive_number
+                  << " event " << (int) receiveFailCnt[drive_number]
+                  << " bytes_received: " << bytes_received << std::endl;
       }
     }
 
@@ -300,12 +312,23 @@ uint64_t HI_moxa::read_hardware(void) {
   power_fault = false;
 
   for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
+
     // Wypelnienie pol odebranymi danymi
     // NFComBuf.ReadDrivesPosition.data[] contains last received value
     servo_data[drive_number].previous_absolute_position =
         servo_data[drive_number].current_absolute_position;
-    servo_data[drive_number].current_absolute_position = NFComBuf
-        .ReadDrivesPosition.data[drive_number];
+
+    // jak nie odbierzemy biezacej pozycji to zakladamy, ze robot porusza sie ze stala predkoscia
+    // wygladza to trajektorie w sytuacji zaklocen w komunikacji z kartami,
+    // gdyz wczesniej zakladala sie wowczas bezruch
+    if (receiveFail[drive_number]) {
+      servo_data[drive_number].current_absolute_position =
+          servo_data[drive_number].previous_absolute_position
+              + servo_data[drive_number].current_position_inc;
+    } else {
+      servo_data[drive_number].current_absolute_position = NFComBuf
+          .ReadDrivesPosition.data[drive_number];
+    }
 
     // Ustawienie flagi wlaczonej mocy
     if ((NFComBuf.ReadDrivesStatus.data[drive_number]
@@ -474,49 +497,60 @@ uint64_t HI_moxa::write_hardware(void) {
      */
     return ret;
   } else {
-    // Make command frames and send them to drives
-    for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
-      // Set communication requests
-      //   std::cout << "write drive_number: " << drive_number ;
+    // przygotowanie pod test zablokowania komunikacji po bledzie
+    //if (all_hardware_read)
+    if (1) {
 
-      servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
-      NF_COMMAND_ReadDrivesPosition;
-      servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
-      NF_COMMAND_ReadDrivesCurrent;
-      servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
-      NF_COMMAND_ReadDrivesStatus;
-      // Make command frame
-      servo_data[drive_number].txCnt = NF_MakeCommandFrame(
-          &NFComBuf, servo_data[drive_number].txBuf + howMuchItSucks,
-          (const uint8_t*) servo_data[drive_number].commandArray,
-          servo_data[drive_number].commandCnt, drives_addresses[drive_number]);
-      // Clear communication requests
-      servo_data[drive_number].commandCnt = 0;
-    }
+      // Make command frames and send them to drives
+      for (drive_number = 0; drive_number <= last_drive_number;
+          drive_number++) {
+        // Set communication requests
+        //   std::cout << "write drive_number: " << drive_number ;
 
-    for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
+        servo_data[drive_number].commandArray[servo_data[drive_number]
+            .commandCnt++] =
+        NF_COMMAND_ReadDrivesPosition;
+        servo_data[drive_number].commandArray[servo_data[drive_number]
+            .commandCnt++] =
+        NF_COMMAND_ReadDrivesCurrent;
+        servo_data[drive_number].commandArray[servo_data[drive_number]
+            .commandCnt++] =
+        NF_COMMAND_ReadDrivesStatus;
+        // Make command frame
+        servo_data[drive_number].txCnt = NF_MakeCommandFrame(
+            &NFComBuf, servo_data[drive_number].txBuf + howMuchItSucks,
+            (const uint8_t*) servo_data[drive_number].commandArray,
+            servo_data[drive_number].commandCnt,
+            drives_addresses[drive_number]);
+        // Clear communication requests
+        servo_data[drive_number].commandCnt = 0;
+      }
 
-      // Send command frame
-      if (receiveFailCnt[drive_number] == 0)
-        SerialPort[drive_number]->write(
-            servo_data[drive_number].txBuf,
-            servo_data[drive_number].txCnt + howMuchItSucks);
+      for (drive_number = 0; drive_number <= last_drive_number;
+          drive_number++) {
+
+        // Send command frame
+        if (receiveFailCnt[drive_number] == 0)
+          SerialPort[drive_number]->write(
+              servo_data[drive_number].txBuf,
+              servo_data[drive_number].txCnt + howMuchItSucks);
 
 #define SPN
 #ifdef SPN
-      static int rwhprints = 18;
-      if (rwhprints) {
-        rwhprints--;
-        std::cout << "RWH: ";
-        for (int i = 0; i < servo_data[drive_number].txCnt + howMuchItSucks;
-            i++) {
-          std::cout << std::hex
-                    << (unsigned int) servo_data[drive_number].txBuf[i];
-          std::cout << " ";
+        static int rwhprints = 18;
+        if (rwhprints) {
+          rwhprints--;
+          std::cout << "RWH: ";
+          for (int i = 0; i < servo_data[drive_number].txCnt + howMuchItSucks;
+              i++) {
+            std::cout << std::hex
+                      << (unsigned int) servo_data[drive_number].txBuf[i];
+            std::cout << " ";
+          }
+          std::cout << std::endl;
         }
-        std::cout << std::endl;
-      }
 #endif
+      }
     }
   }
 
@@ -656,9 +690,11 @@ int HI_moxa::set_parameter_now(int drive_number, const int parameter, ...) {
 
     drive_buff[drive_number].rxCnt = 0;
     while (1) {
-      if (SerialPort[drive_number]->read(&(drive_buff[drive_number].rxBuf[drive_buff[drive_number].rxCnt]), 1) > 0
-          && (drive_buff[drive_number].rxCnt < 255)) {
-        if (NF_Interpreter(&NFComBuf, drive_buff[drive_number].rxBuf, &drive_buff[drive_number].rxCnt, rxCommandArray,
+      if (SerialPort[drive_number]->read(
+          &(drive_buff[drive_number].rxBuf[drive_buff[drive_number].rxCnt]), 1)
+          > 0 && (drive_buff[drive_number].rxCnt < 255)) {
+        if (NF_Interpreter(&NFComBuf, drive_buff[drive_number].rxBuf,
+                           &drive_buff[drive_number].rxCnt, rxCommandArray,
                            &rxCommandCnt) > 0) {
           // TODO: Check status;
           drive_buff[drive_number].rxCnt = 0;
