@@ -15,8 +15,8 @@
     <rosparam>
       Irp6HardwareInterface:
         number_of_drives: 16
-        auto_synchronize: true
-        test_mode: false
+        auto_synchronize: false
+        test_mode: true
         rwh_nsec: 1200000
         hi_port_param_0:
           label: irp6pm_0
@@ -24,6 +24,7 @@
           synchro_needed: 1
           max_current: 25000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 0
           enc_res: 4000.0
           synchro_step_coarse: -0.03
@@ -35,6 +36,7 @@
           synchro_needed: 1
           max_current: 18000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 1
           enc_res: 4000.0
           synchro_step_coarse: -0.03
@@ -46,6 +48,7 @@
           synchro_needed: 1
           max_current: 15000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 2
           enc_res: 4000.0
           synchro_step_coarse: -0.03
@@ -57,6 +60,7 @@
           synchro_needed: 1
           max_current: 17000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 3
           enc_res: 4000.0
           synchro_step_coarse: -0.03
@@ -68,6 +72,7 @@
           synchro_needed: 1
           max_current: 10000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 4
           enc_res: 4000.0
           synchro_step_coarse: -0.03
@@ -79,6 +84,7 @@
           synchro_needed: 1
           max_current: 2000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 5
           enc_res: 2000.0
           synchro_step_coarse: -0.05
@@ -90,6 +96,7 @@
           synchro_needed: 1
           max_current: 200
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 6
           enc_res: 128.0
           synchro_step_coarse: -0.5
@@ -101,6 +108,7 @@
           synchro_needed: 0
           max_current: 18000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 7
           enc_res: 4000.0
           synchro_step_coarse: -0.03
@@ -112,6 +120,7 @@
           synchro_needed: 1
           max_current: 27000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 15
           enc_res: 4000.0
           synchro_step_coarse: -0.03
@@ -123,6 +132,7 @@
           synchro_needed: 1
           max_current: 25000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 8
           enc_res: 4000.0
           synchro_step_coarse: -0.03
@@ -134,6 +144,7 @@
           synchro_needed: 1
           max_current: 18000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 9
           enc_res: 4000.0
           synchro_step_coarse: -0.03
@@ -145,6 +156,7 @@
           synchro_needed: 1
           max_current: 15000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 10
           enc_res: 4000.0
           synchro_step_coarse: -0.03
@@ -156,6 +168,7 @@
           synchro_needed: 1
           max_current: 17000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 11
           enc_res: 4000.0
           synchro_step_coarse: -0.03
@@ -167,6 +180,7 @@
           synchro_needed: 1
           max_current: 10000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 12
           enc_res: 4000.0
           synchro_step_coarse: -0.03
@@ -178,6 +192,7 @@
           synchro_needed: 1
           max_current: 2000
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 13
           enc_res: 2000.0
           synchro_step_coarse: -0.05
@@ -189,6 +204,7 @@
           synchro_needed: 1
           max_current: 200
           max_increment: 1000.0
+          max_desired_increment: 400.0
           card_indexes: 14
           enc_res: 128.0
           synchro_step_coarse: -0.5
