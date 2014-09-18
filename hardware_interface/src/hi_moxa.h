@@ -42,6 +42,7 @@ class HI_moxa {
 
   uint64_t read_hardware(void);
   uint64_t write_hardware(void);
+  void set_hardware_panic(void);
 
   // set parameter
   void set_parameter(int drive_number, const int parameter, ...);

@@ -450,6 +450,7 @@ void HardwareInterface::updateHook() {
         std::cout << "very high pos_inc_ i: " << i << " pos_inc: "
                   << pos_inc_[i] << std::endl;
         // pos_inc_[i] = 0;
+        hi_->set_hardware_panic();
       }
     }
 
