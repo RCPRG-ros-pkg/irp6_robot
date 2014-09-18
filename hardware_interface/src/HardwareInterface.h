@@ -8,6 +8,7 @@ using namespace RTT;
 
 typedef enum {
   NOT_SYNCHRONIZED,
+  PRE_SERVOING,
   SERVOING,
   PRE_SYNCHRONIZING,
   SYNCHRONIZING
@@ -60,6 +61,7 @@ class HardwareInterface : public RTT::TaskContext {
 
   int synchro_stop_iter_;
   int synchro_start_iter_;
+  int servo_start_iter_;
 
   double counter_;
 

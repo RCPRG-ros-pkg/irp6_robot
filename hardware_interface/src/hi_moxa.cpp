@@ -280,7 +280,7 @@ uint64_t HI_moxa::read_hardware(void) {
 
         } else {
 
-          if ((int) receiveFailCnt[drive_number] > 1) {
+          if ((int) receiveFailCnt[drive_number] > 2) {
             std::cout << "[warn] extra receive time: drive "
                       << (int) drive_number << " event "
                       << (int) receiveFailCnt[drive_number]

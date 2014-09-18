@@ -20,7 +20,7 @@ namespace hi_moxa {
 
 const std::size_t MOXA_SERVOS_NR = NF_BUFSZ_NumberOfDrives;
 const int MAX_PARAM_SET_ATTEMPTS = 3;
-const int MAX_COMM_TIMEOUTS = 6;
+const int MAX_COMM_TIMEOUTS = 10;
 const std::size_t FIRST_HARDWARE_READS_WITH_ZERO_INCREMENT = 4;
 
 const int VOLTAGE = 48.0;
@@ -104,7 +104,7 @@ class HI_moxa {
   bool receiveFail[MOXA_SERVOS_NR];
 
   uint8_t maxReceiveFailCnt;
-  #define MAX_RECEIVE_FAIL_CNT  4 // *2ms extra time for packet receive
+  #define MAX_RECEIVE_FAIL_CNT  5 // *2ms extra time for packet receive
 
   bool all_hardware_read;
 

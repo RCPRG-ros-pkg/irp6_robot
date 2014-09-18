@@ -11,6 +11,7 @@
 HardwareInterface::HardwareInterface(const std::string& name)
     : TaskContext(name, PreOperational),
       synchro_start_iter_(0),
+      servo_start_iter_(0),
       synchro_stop_iter_(0),
       test_mode_(0),
       counter_(0.0),
@@ -227,7 +228,7 @@ bool HardwareInterface::startHook() {
   try {
     if (!test_mode_) {
       hi_->write_read_hardware(rwh_nsec_);
-
+      servo_start_iter_ = 200;
       if (!hi_->robot_synchronized()) {
         RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
         if (auto_synchronize_) {
@@ -246,23 +247,23 @@ bool HardwareInterface::startHook() {
         RTT::log(RTT::Info) << "Robot synchronized" << RTT::endlog();
 
         for (int i = 0; i < number_of_drives_; i++) {
-          motor_position_command_(i) = (double) hi_->get_position(i)
-              * ((2.0 * M_PI) / enc_res_[i]);
-          motor_position_command_old_(i) = motor_position_command_(i);
+          motor_position_command_(i) = motor_position_command_old_(i) =
+              motor_position_(i) = (double) hi_->get_position(i)
+                  * ((2.0 * M_PI) / enc_res_[i]);
         }
 
-        state_ = SERVOING;
+        state_ = PRE_SERVOING;
       }
     } else {
       test_mode_sleep();
       RTT::log(RTT::Info) << "HI test mode activated" << RTT::endlog();
 
       for (int i = 0; i < number_of_drives_; i++) {
-        motor_position_command_(i) = 0.0;
-        motor_position_command_old_(i) = motor_position_command_(i);
+        motor_position_command_(i) = motor_position_command_old_(i) =
+            motor_position_(i) = 0.0;
       }
 
-      state_ = SERVOING;
+      state_ = PRE_SERVOING;
     }
   } catch (const std::exception& e) {
     RTT::log(RTT::Error) << e.what() << RTT::endlog();
@@ -270,13 +271,6 @@ bool HardwareInterface::startHook() {
   }
 
   for (int i = 0; i < number_of_drives_; i++) {
-    pos_inc_[i] = 0.0;
-    if (!test_mode_) {
-      motor_position_(i) = (double) hi_->get_position(i)
-          * ((2.0 * M_PI) / enc_res_[i]);
-    } else {
-      motor_position_(i) = 0.0;
-    }
 
     port_motor_position_list_[i]->write(motor_position_[i]);
   }
@@ -292,6 +286,25 @@ void HardwareInterface::updateHook() {
       for (int i = 0; i < number_of_drives_; i++) {
         pos_inc_[i] = 0.0;
       }
+      break;
+
+    case PRE_SERVOING:
+
+      if (!test_mode_) {
+        for (int i = 0; i < number_of_drives_; i++) {
+          motor_position_command_(i) = motor_position_command_old_(i) =
+              motor_position_(i) = (double) hi_->get_position(i)
+                  * ((2.0 * M_PI) / enc_res_[i]);
+          pos_inc_[i] = 0.0;
+        }
+
+      }
+
+      if ((servo_start_iter_--) <= 0) {
+          state_ = SERVOING;
+          std::cout << "Servoing started" << std::endl;
+        }
+
       break;
 
     case SERVOING:
@@ -413,7 +426,7 @@ void HardwareInterface::updateHook() {
                   ->get_position(i) * (2.0 * M_PI) / enc_res_[i];
             }
 
-            state_ = SERVOING;
+            state_ = PRE_SERVOING;
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
                                  << " ] SYNCHRONIZING ended" << RTT::endlog();
             std::cout << "synchro finished" << std::endl;
@@ -436,7 +449,7 @@ void HardwareInterface::updateHook() {
       if (fabs(pos_inc_[i]) > 400) {
         std::cout << "very high pos_inc_ i: " << i << " pos_inc: "
                   << pos_inc_[i] << std::endl;
-       // pos_inc_[i] = 0;
+        // pos_inc_[i] = 0;
       }
     }
 
