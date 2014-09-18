@@ -103,8 +103,8 @@ class HI_moxa {
   uint8_t receiveFailCnt[MOXA_SERVOS_NR];
   bool receiveFail[MOXA_SERVOS_NR];
 
-  uint8_t maxReceiveFailCnt;
-  #define MAX_RECEIVE_FAIL_CNT  5 // *2ms extra time for packet receive
+  // uint8_t maxReceiveFailCnt;
+  // #define MAX_RECEIVE_FAIL_CNT  5 // *2ms extra time for packet receive
 
   bool all_hardware_read;
 
