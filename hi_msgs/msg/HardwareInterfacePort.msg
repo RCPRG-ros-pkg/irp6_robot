@@ -3,6 +3,7 @@ string ports_adresses
 bool synchro_needed
 int32 max_current
 float64 max_increment
+float64 max_desired_increment
 int32 card_indexes
 float64 enc_res
 float64 synchro_step_coarse

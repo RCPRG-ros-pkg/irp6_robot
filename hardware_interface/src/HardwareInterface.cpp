@@ -101,6 +101,7 @@ bool HardwareInterface::configureHook() {
   ports_adresses_.resize(number_of_drives_);
   max_current_.resize(number_of_drives_);
   max_increment_.resize(number_of_drives_);
+  max_desired_increment_.resize(number_of_drives_);
   card_indexes_.resize(number_of_drives_);
   enc_res_.resize(number_of_drives_);
   synchro_step_coarse_.resize(number_of_drives_);
@@ -118,6 +119,8 @@ bool HardwareInterface::configureHook() {
     //   std::cout << "max_current_: "  << max_current_[i] << std::endl;
     max_increment_[i] = hi_port_param_[i].max_increment;
 //    std::cout << "max_increment_: "  << max_increment_[i] << std::endl;
+    max_desired_increment_[i] = hi_port_param_[i].max_desired_increment;
+//    std::cout << "max_desired_increment_: "  << max_desired_increment_[i] << std::endl;
     card_indexes_[i] = hi_port_param_[i].card_indexes;
     //   std::cout << "ports_adresses_: "  << ports_adresses_[i] << std::endl;
     enc_res_[i] = hi_port_param_[i].enc_res;
@@ -301,9 +304,9 @@ void HardwareInterface::updateHook() {
       }
 
       if ((servo_start_iter_--) <= 0) {
-          state_ = SERVOING;
-          std::cout << "Servoing started" << std::endl;
-        }
+        state_ = SERVOING;
+        std::cout << "Servoing started" << std::endl;
+      }
 
       break;
 
@@ -441,12 +444,7 @@ void HardwareInterface::updateHook() {
     for (int i = 0; i < number_of_drives_; i++) {
       increment_[i] = hi_->get_increment(i);
 
-      if (abs(increment_[i]) > 400) {
-        increment_[i] = 0;
-        std::cout << "very high increment_" << std::endl;
-      }
-
-      if (fabs(pos_inc_[i]) > 400) {
+      if (fabs(pos_inc_[i]) > max_desired_increment_[i]) {
         std::cout << "very high pos_inc_ i: " << i << " pos_inc: "
                   << pos_inc_[i] << std::endl;
         // pos_inc_[i] = 0;
@@ -491,6 +489,14 @@ void HardwareInterface::updateHook() {
       }
     }
   } else {
+    for (int i = 0; i < number_of_drives_; i++) {
+      if (fabs(pos_inc_[i]) > max_desired_increment_[i]) {
+        std::cout << "very high pos_inc_ i: " << i << " pos_inc: "
+                  << pos_inc_[i] << std::endl;
+
+      }
+    }
+
     test_mode_sleep();
     for (int i = 0; i < number_of_drives_; i++) {
       motor_position_(i) = motor_position_command_(i);
