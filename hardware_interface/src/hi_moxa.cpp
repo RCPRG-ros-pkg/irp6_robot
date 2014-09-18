@@ -632,6 +632,12 @@ uint64_t HI_moxa::write_read_hardware(long int nsec) {
   return ret;
 }
 
+
+void HI_moxa::set_hardware_panic(void){
+  hardware_panic = true;
+}
+
+
 // send parameter to motor driver
 void HI_moxa::set_parameter(int drive_number, const int parameter, ...) {
 }
