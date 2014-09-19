@@ -22,7 +22,7 @@
           ports_adresses: /dev/ttyMI8
           synchro_needed: 1
           max_current: 25000
-          max_increment: 300.0
+          max_increment: 1000.0
           max_desired_increment: 200.0
           card_indexes: 0
           enc_res: 4000.0
@@ -34,7 +34,7 @@
           ports_adresses: /dev/ttyMI9
           synchro_needed: 1
           max_current: 18000
-          max_increment: 300.0
+          max_increment: 1000.0
           max_desired_increment: 200.0
           card_indexes: 1
           enc_res: 4000.0
@@ -46,7 +46,7 @@
           ports_adresses: /dev/ttyMI10
           synchro_needed: 1
           max_current: 15000
-          max_increment: 300.0
+          max_increment: 1000.0
           max_desired_increment: 200.0
           card_indexes: 2
           enc_res: 4000.0
@@ -58,7 +58,7 @@
           ports_adresses: /dev/ttyMI11
           synchro_needed: 1
           max_current: 17000
-          max_increment: 300.0
+          max_increment: 1000.0
           max_desired_increment: 200.0
           card_indexes: 3
           enc_res: 4000.0
@@ -70,7 +70,7 @@
           ports_adresses: /dev/ttyMI12
           synchro_needed: 1
           max_current: 10000
-          max_increment: 300.0
+          max_increment: 1000.0
           max_desired_increment: 200.0
           card_indexes: 4
           enc_res: 4000.0
@@ -82,7 +82,7 @@
           ports_adresses: /dev/ttyMI13
           synchro_needed: 1
           max_current: 2000
-          max_increment: 300.0
+          max_increment: 1000.0
           max_desired_increment: 200.0
           card_indexes: 5
           enc_res: 2000.0
@@ -94,7 +94,7 @@
           ports_adresses: /dev/ttyMI14
           synchro_needed: 1
           max_current: 200
-          max_increment: 300.0
+          max_increment: 1000.0
           max_desired_increment: 200.0
           card_indexes: 6
           enc_res: 128.0
