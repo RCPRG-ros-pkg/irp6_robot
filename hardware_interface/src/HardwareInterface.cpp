@@ -143,11 +143,14 @@ bool HardwareInterface::configureHook() {
 
   increment_.resize(number_of_drives_);
   pos_inc_.resize(number_of_drives_);
+
   pwm_or_current_.resize(number_of_drives_);
+  max_pos_inc_.resize(number_of_drives_);
 
   for (int i = 0; i < number_of_drives_; i++) {
     increment_[i] = 0;
     pwm_or_current_[0] = 0;
+    max_pos_inc_[i] = 0.0;
   }
 
   try {
@@ -282,6 +285,10 @@ bool HardwareInterface::startHook() {
 }
 
 void HardwareInterface::updateHook() {
+
+  static int iteration_nr = 0;
+
+  iteration_nr++;
 
   switch (state_) {
     case NOT_SYNCHRONIZED:
@@ -438,6 +445,26 @@ void HardwareInterface::updateHook() {
       }
       break;
   }
+
+  // test maksymalnej wartosci zadanej
+  for (int i = 0; i < number_of_drives_; i++) {
+    if (fabs(pos_inc_[i]) > max_pos_inc_[i]) {
+      max_pos_inc_[i] = fabs(pos_inc_[i]);
+    }
+    /*
+     if (iteration_nr % 5000 == 0) {
+     std::cout << "axis i: " << i << " max_pos_inc_: " << max_pos_inc_[i]
+     << std::endl;
+     }
+     */
+
+  }
+
+  /*
+   if (iteration_nr % 5000 == 0) {
+   std::cout << "--------" << std::endl;
+   }
+   */
 
   if (!test_mode_) {
 

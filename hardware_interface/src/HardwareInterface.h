@@ -71,6 +71,7 @@ class HardwareInterface : public RTT::TaskContext {
   int synchro_drive_;
 
   std::vector<double> pos_inc_;
+  std::vector<double> max_pos_inc_;
 
   std::vector<double> increment_;
   std::vector<double> motor_pos_;
