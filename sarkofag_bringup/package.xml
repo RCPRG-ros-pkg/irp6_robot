@@ -1,6 +1,6 @@
 <package>
   <name>sarkofag_bringup</name>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <description>Sarkofag bringup.</description>
   <maintainer email="bartswis@gmail.com">Bartosz Świstak</maintainer>
   <license>BSD</license>
