@@ -11,6 +11,7 @@ ros.import("rtt_force_control_msgs")
 ros.import("rtt_hi_msgs")
 
 ros.import("conman");
+ros.import("rtt_conman_msgs");
 ros.import("conman_ros");
 ros.import("hardware_interface")
 ros.import("sarkofag_regulator")
@@ -197,6 +198,20 @@ stream("SarkofagJntPub.joint_state", ros.comm.topic("/joint_states"));
 
 SarkofagJntPub.configure()
 
+// motor states
+loadComponent("SarkofagMotPub", "JointStatePublisher");
+setActivity("SarkofagMotPub", 0.01, 2, ORO_SCHED_RT);
+SarkofagMotPub.loadService("rosparam");
+SarkofagMotPub.rosparam.getAll();
+
+connect("SarkofagPortDoubleAggregate_hw_p.OutputPort", "SarkofagMotPub.JointPosition", ConnPolicy());
+connect("SarkofagPortDoubleAggregate_hw_p.OutputPort", "SarkofagMotPub.JointVelocity", ConnPolicy());
+connect("SarkofagPortDoubleAggregate_hw_p.OutputPort", "SarkofagMotPub.JointEffort", ConnPolicy());
+
+stream("SarkofagMotPub.joint_state", ros.comm.topic("/motor_states"));
+
+SarkofagMotPub.configure()
+
 stream("SarkofagKinematicModel.WristOutputPose", ros.comm.topic("/cartesian_position"))
 
 ## Start it
@@ -209,6 +224,7 @@ SarkofagM2J.start()
 SarkofagKinematicModel.start()
 SarkofagJ2M.start()
 SarkofagJntPub.start()
+SarkofagMotPub.start()
 SarkofagSplineTrajectoryActionJoint.start()
 SarkofagSplineTrajectoryActionMotor.start()
 
