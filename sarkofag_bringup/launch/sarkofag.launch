@@ -16,6 +16,7 @@
       SarkofagHardwareInterface:
         number_of_drives: 1
         auto_synchronize: true
+        test_mode: false
         tx_prefix_len: 5
         hi_port_param_0:
           label: sarkofag_0
@@ -23,6 +24,7 @@
           synchro_needed: 1
           max_current: 25000
           max_increment: 1000.0
+          max_desired_increment: 200.0
           card_indexes: 0
           enc_res: 4000.0
           synchro_step_coarse: -0.03
