@@ -1091,6 +1091,7 @@ connect("Irp6otmM2J.JointPosition", "Irp6otmJntPub.JointPosition", ConnPolicy())
 connect("Irp6otmM2J.JointPosition", "Irp6otmJntPub.JointVelocity", ConnPolicy());
 connect("Irp6otmM2J.JointPosition", "Irp6otmJntPub.JointEffort", ConnPolicy());
 
+stream("Irp6otmJntPub.joint_state", ros.comm.topic("irp6ot_arm/joint_states"));
 stream("Irp6otmJntPub.joint_state", ros.comm.topic("/joint_states"));
 
 Irp6otmJntPub.configure()
@@ -1133,6 +1134,7 @@ connect("Irp6ptfgM2J.JointPosition", "Irp6ptfgJntPub.JointPosition", ConnPolicy(
 connect("Irp6ptfgM2J.JointPosition", "Irp6ptfgJntPub.JointVelocity", ConnPolicy());
 connect("Irp6ptfgM2J.JointPosition", "Irp6ptfgJntPub.JointEffort", ConnPolicy());
 
+stream("Irp6ptfgJntPub.joint_state", ros.comm.topic("irp6p_tfg/joint_state"));
 stream("Irp6ptfgJntPub.joint_state", ros.comm.topic("/joint_states"));
 
 Irp6ptfgJntPub.configure()
@@ -1147,6 +1149,7 @@ connect("Irp6ottfgM2J.JointPosition", "Irp6ottfgJntPub.JointPosition", ConnPolic
 connect("Irp6ottfgM2J.JointPosition", "Irp6ottfgJntPub.JointVelocity", ConnPolicy());
 connect("Irp6ottfgM2J.JointPosition", "Irp6ottfgJntPub.JointEffort", ConnPolicy());
 
+stream("Irp6ottfgJntPub.joint_state", ros.comm.topic("/irp6ot_tfg/joint_state"));
 stream("Irp6ottfgJntPub.joint_state", ros.comm.topic("/joint_states"));
 
 Irp6ottfgJntPub.configure()
