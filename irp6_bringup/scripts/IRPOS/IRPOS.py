@@ -26,6 +26,10 @@ import PyKDL
 import tf_conversions.posemath as pm
 
 class IRPOS:
+
+	BCOLOR = '\033[94m'
+	ENDC = '\033[0m'
+
 	robot_name = None
 	robot_joint_names = None
 
@@ -84,14 +88,15 @@ class IRPOS:
 		self.motor_position_subscriber = rospy.Subscriber('/'+robotNameLower+'_arm/motor_states', JointState, self.motor_position_callback)
 		self.joint_position_subscriber = rospy.Subscriber('/'+robotNameLower+'_arm/joint_states', JointState, self.joint_position_callback)
 
+
 		self.tfg_motor_position_subscriber = rospy.Subscriber('/'+robotNameLower+'_tfg/motor_state', JointState, self.tfg_motor_position_callback)
 		self.tfg_joint_position_subscriber = rospy.Subscriber('/'+robotNameLower+'_tfg/joint_state', JointState, self.tfg_joint_position_callback)
 
 		self.cartesian_position_subscriber = rospy.Subscriber('/'+robotNameLower+'_arm/cartesian_position', Pose, self.cartesian_position_callback)
 		self.wrench_subscriber = rospy.Subscriber('/'+robotNameLower+'m_wrench', Wrench, self.wrench_callback)		
 	
-		self.fcl_param_publisher = rospy.Publisher('/'+robotNameLower+'_arm/fcl_param', ForceControl)
-		self.tg_param_publisher = rospy.Publisher('/'+robotNameLower+'_arm/tg_param', ToolGravityParam)
+		self.fcl_param_publisher = rospy.Publisher('/'+robotNameLower+'_arm/fcl_param', ForceControl, queue_size=0)
+		self.tg_param_publisher = rospy.Publisher('/'+robotNameLower+'_arm/tg_param', ToolGravityParam, queue_size=0)
 		
 		self.motor_client = actionlib.SimpleActionClient('/'+robotNameLower+'_arm/spline_trajectory_action_motor', FollowJointTrajectoryAction)
 		self.motor_client.wait_for_server()
@@ -111,7 +116,15 @@ class IRPOS:
 		self.pose_client = actionlib.SimpleActionClient('/'+robotNameLower+'_arm/pose_trajectory', CartesianTrajectoryAction)
 		self.pose_client.wait_for_server()
 
-		print "[IRPOS] System ready"
+		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorMotor', self.robot_name+'mSplineTrajectoryGeneratorJoint', self.robot_name+'mPoseInt', self.robot_name+'mForceTransformation', self.robot_name+'mForceControlLaw', self.robot_name+'tfgSplineTrajectoryGeneratorJoint', self.robot_name+'tfgSplineTrajectoryGeneratorMotor'], True)
+
+		self.motor_client.cancel_goal()
+		self.joint_client.cancel_goal()
+		self.tfg_motor_client.cancel_goal()
+		self.tfg_joint_client.cancel_goal()
+		self.pose_client.cancel_goal()
+
+		print self.BCOLOR+"[IRPOS] System ready"+self.ENDC
 
 	def motor_position_callback(self, data):
 		self.lmp_lock.acquire()
@@ -146,8 +159,36 @@ class IRPOS:
 	def get_zeros_vector(self):
 		return [0.0] * len(self.robot_joint_names)
 
+	def spline_error_code_to_string(self, error_code):
+		if (error_code==0): 
+			return "SUCCESSFUL"
+		elif (error_code==-1): 
+			return "INVALID_GOAL"
+		elif (error_code==-2): 
+			return "INVALID_JOINTS"
+		elif (error_code==-3): 
+			return "OLD_HEADER_TIMESTAMP"
+		elif (error_code==-4): 
+			return "PATH_TOLERANCE_VIOLATED"
+		elif (error_code==-5): 
+			return "GOAL_TOLERANCE_VIOLATED"
+		return "UNKNOWN"
+
+	def cartesian_error_code_to_string(self, error_code):
+		if (error_code==0): 
+			return "SUCCESSFUL"
+		elif (error_code==-1): 
+			return "ROOT_TRANSFORM_FAILED"
+		elif (error_code==-2): 
+			return "TOOL_TRANSFORM_FAILED"
+		elif (error_code==-3): 
+			return "PATH_TOLERANCE_VIOLATED"
+		elif (error_code==-4): 
+			return "INVALID_POSTURE"
+		return "UNKNOWN"
+
         def move_to_synchro_position(self, duration):
-		print "[IRPOS] Move to synchro position"
+		print self.BCOLOR+"[IRPOS] Move to synchro position"+self.ENDC
 
 		self.conmanSwitch([self.robot_name+'mSplineTrajectoryGeneratorMotor'], [], True)
 
@@ -160,15 +201,15 @@ class IRPOS:
 		self.motor_client.wait_for_result()
 
 		result = self.motor_client.get_result()
-		print "[IRPOS] Result: "+str(result)
+		code = self.spline_error_code_to_string(result.error_code)
+		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorMotor'], True)
 
-	# MOTOR     
+	# MOTOR POSITION   
 
-	# move_abs_to_motor_position
 	def move_to_motor_position(self, motor_positions, time_from_start):
-		print "[IRPOS] Move to motor position"
+		print self.BCOLOR+"[IRPOS] Move to motor position"+self.ENDC
 
 		self.conmanSwitch([self.robot_name+'mSplineTrajectoryGeneratorMotor'], [], True)
 
@@ -181,12 +222,13 @@ class IRPOS:
 		self.motor_client.wait_for_result()
 
 		result = self.motor_client.get_result()
-		print "[IRPOS] Result: "+str(result)
+		code = self.spline_error_code_to_string(result.error_code)
+		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorMotor'], True)
 
 	def move_rel_to_motor_position(self, motor_positions, time_from_start):
-		print "[IRPOS] Move to motor position"
+		print self.BCOLOR+"[IRPOS] Move to motor position"+self.ENDC
 
 		self.conmanSwitch([self.robot_name+'mSplineTrajectoryGeneratorMotor'], [], True)
 
@@ -201,12 +243,13 @@ class IRPOS:
 		self.motor_client.wait_for_result()
 
 		result = self.motor_client.get_result()
-		print "[IRPOS] Result: "+str(result)
+		code = self.spline_error_code_to_string(result.error_code)
+		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorMotor'], True)
 
 	def move_along_motor_trajectory(self, points):
-		print "[IRPOS] Move along motor trajectory"
+		print self.BCOLOR+"[IRPOS] Move along motor trajectory"+self.ENDC
 
 		self.conmanSwitch([self.robot_name+'mSplineTrajectoryGeneratorMotor'], [], True)
 
@@ -214,14 +257,15 @@ class IRPOS:
 		motorGoal.trajectory.joint_names = self.robot_joint_names
 		for i in points:
 			motorGoal.trajectory.points.append(JointTrajectoryPoint(i.positions, i.velocities, i.accelerations, i.effort, i.time_from_start))
-			print str(i.positions)
+			#print str(i.positions)
 		motorGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
 
 		self.motor_client.send_goal(motorGoal)
 		self.motor_client.wait_for_result()
 
 		result = self.motor_client.get_result()
-		print "[IRPOS] Result: "+str(result)
+		code = self.spline_error_code_to_string(result.error_code)
+		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorMotor'], True)
 
@@ -231,11 +275,10 @@ class IRPOS:
 		self.lmp_lock.release()		
 		return ret
 
-	# JOINT
+	# JOINT POSITION
 
-	# move_abs_to_joint_position
 	def move_to_joint_position(self, joint_positions, time_from_start):
-		print "[IRPOS] Move to joint position"
+		print self.BCOLOR+"[IRPOS] Move to joint position"+self.ENDC
 
 		self.conmanSwitch([self.robot_name+'mSplineTrajectoryGeneratorJoint'], [], True)
 		
@@ -248,12 +291,13 @@ class IRPOS:
 		self.joint_client.wait_for_result()
 		
 		result = self.joint_client.get_result()
-		print "[IRPOS] Result: "+str(result)
+		code = self.spline_error_code_to_string(result.error_code)
+		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorJoint'], True)
 
 	def move_rel_to_joint_position(self, joint_positions, time_from_start):
-		print "[IRPOS] Move relative to joint position"
+		print self.BCOLOR+"[IRPOS] Move relative to joint position"+self.ENDC
 
 		self.conmanSwitch([self.robot_name+'mSplineTrajectoryGeneratorJoint'], [], True)
 		
@@ -268,14 +312,13 @@ class IRPOS:
 		self.joint_client.wait_for_result()
 		
 		result = self.joint_client.get_result()
-		print "[IRPOS] Result: "+str(result)
+		code = self.spline_error_code_to_string(result.error_code)
+		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorJoint'], True)
 
 	def move_along_joint_trajectory(self, points):
-		print "[IRPOS] Move along joint trajectory"
-
-		#print str(self.get_cartesian_pose())
+		print self.BCOLOR+"[IRPOS] Move along joint trajectory"+self.ENDC
 
 		self.conmanSwitch([self.robot_name+'mSplineTrajectoryGeneratorJoint'], [], True)
 		
@@ -290,7 +333,8 @@ class IRPOS:
 		self.joint_client.wait_for_result()
 		
 		result = self.joint_client.get_result()
-		print "[IRPOS] Result: "+str(result)
+		code = self.spline_error_code_to_string(result.error_code)
+		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorJoint'], True)
 
@@ -301,9 +345,10 @@ class IRPOS:
 		self.ljp_lock.release()		
 		return ret
 
-	# CARTESIAN
+	# CARTESIAN POSITION
+
 	def move_to_cartesian_pose(self, time_from_start, pose):
-		print "[IRPOS] Move to cartesian trajctory"
+		print self.BCOLOR+"[IRPOS] Move to cartesian trajctory"+self.ENDC
 				
 		self.conmanSwitch([self.robot_name+'mPoseInt'], [], True)
 
@@ -315,22 +360,43 @@ class IRPOS:
 		self.pose_client.wait_for_result()
 
 		result = self.pose_client.get_result()
-		print "[IRPOS] Result: "+str(result)
+		code = self.cartesian_error_code_to_string(result.error_code)
+		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mPoseInt'], True)
 
 	def move_rel_to_cartesian_pose(self, time_from_start, rel_pose):
-		print "[IRPOS] Move to cartesian trajctory"
+		print self.BCOLOR+"[IRPOS] Move relative to cartesian trajctory"+self.ENDC
 				
 		self.conmanSwitch([self.robot_name+'mPoseInt'], [], True)
 
 		actual_pose = self.get_cartesian_pose()
 		pose = Pose(Point(actual_pose.position.x+rel_pose.position.x, actual_pose.position.y+rel_pose.position.y, actual_pose.position.z+rel_pose.position.z), Quaternion(actual_pose.orientation.x+rel_pose.orientation.x, actual_pose.orientation.y+rel_pose.orientation.y, actual_pose.orientation.z+rel_pose.orientation.z, actual_pose.orientation.w+rel_pose.orientation.w))
 
-		#print str(actual_pose)
-		#print str(pose)
+		cartesianGoal = CartesianTrajectoryGoal()
+		cartesianGoal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(time_from_start), pose, Twist()))
+		cartesianGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.1)
+		
+		self.pose_client.send_goal(cartesianGoal)
+		self.pose_client.wait_for_result()
+
+		result = self.pose_client.get_result()
+		code = self.cartesian_error_code_to_string(result.error_code)
+		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
+
+		self.conmanSwitch([], [self.robot_name+'mPoseInt'], True)
+
+	def move_rel_to_cartesian_pose_with_contact(self, time_from_start, rel_pose, wrench_constraint):
+		print self.BCOLOR+"[IRPOS] Move relative to cartesian trajctory with contact"+self.ENDC
+				
+		self.conmanSwitch([self.robot_name+'mPoseInt', self.robot_name+'mForceTransformation'], [], True)
+		time.sleep(0.05)
+
+		actual_pose = self.get_cartesian_pose()
+		pose = Pose(Point(actual_pose.position.x+rel_pose.position.x, actual_pose.position.y+rel_pose.position.y, actual_pose.position.z+rel_pose.position.z), Quaternion(actual_pose.orientation.x+rel_pose.orientation.x, actual_pose.orientation.y+rel_pose.orientation.y, actual_pose.orientation.z+rel_pose.orientation.z, actual_pose.orientation.w+rel_pose.orientation.w))
 
 		cartesianGoal = CartesianTrajectoryGoal()
+		cartesianGoal.wrench_constraint = wrench_constraint
 		cartesianGoal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(time_from_start), pose, Twist()))
 		cartesianGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.1)
 
@@ -338,33 +404,33 @@ class IRPOS:
 		self.pose_client.wait_for_result()
 
 		result = self.pose_client.get_result()
-		print "[IRPOS] Result: "+str(result)
+		code = self.cartesian_error_code_to_string(result.error_code)
+		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
-		#print str(self.get_cartesian_pose())
-
-		self.conmanSwitch([], [self.robot_name+'mPoseInt'], True)
+		self.conmanSwitch([], [self.robot_name+'mPoseInt', self.robot_name+'mForceTransformation'], True)
 
 	def move_along_cartesian_trajectory(self, points):
-		print "[IRPOS] Move along cartesian trajectory"
+		print self.BCOLOR+"[IRPOS] Move along cartesian trajectory"+self.ENDC
 
 		self.conmanSwitch([self.robot_name+'mPoseInt'], [], True)
 
 		cartesianGoal = CartesianTrajectoryGoal()
 		for i in points:
 			cartesianGoal.trajectory.points.append(CartesianTrajectoryPoint(i.time_from_start, i.pose, i.twist))
-			print str(i.pose.position.x)+str(i.pose.position.y)+str(i.pose.position.z)
+			#print str(i.pose.position.x)+str(i.pose.position.y)+str(i.pose.position.z)
 		cartesianGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.1)
 
 		self.pose_client.send_goal(cartesianGoal)
 		self.pose_client.wait_for_result()
 
 		result = self.pose_client.get_result()
-		print "[IRPOS] Result: "+str(result)
+		code = self.cartesian_error_code_to_string(result.error_code)
+		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mPoseInt'], True)
 
 	def move_along_cartesian_circle(self, P1, P2, P3, time_from_start):
-		print "[IRPOS] Move along cartesian circle"
+		print self.BCOLOR+"[IRPOS] Move along cartesian circle"+self.ENDC
 
 		self.conmanSwitch([self.robot_name+'mPoseInt'], [], True)
 
@@ -404,7 +470,8 @@ class IRPOS:
 		self.pose_client.wait_for_result()
 
 		result = self.pose_client.get_result()
-		print "[IRPOS] Result: "+str(result)
+		code = self.cartesian_error_code_to_string(result.error_code)
+		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mPoseInt'], True)
   
@@ -414,9 +481,10 @@ class IRPOS:
 		self.lcp_lock.release()		
 		return ret
 
-	# TOOL	
+	# TOOL PARAMS
+
 	def set_tool_geometry_params(self, transformation):
-		print "[IRPOS] Set tool geometry params"
+		print self.BCOLOR+"[IRPOS] Set tool geometry params"+self.ENDC
 
 		goal = CartesianTrajectoryGoal() 
 
@@ -425,18 +493,21 @@ class IRPOS:
 
 		self.tool_client.send_goal(goal)
 		self.tool_client.wait_for_result()
+
 		result = self.tool_client.get_result()
-		print "[IRPOS] Result: "+str(result)
+		code = self.cartesian_error_code_to_string(result.error_code)
+		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 	
 	def set_tool_physical_params(self, weight, mass_center_position):
-		print "[IRPOS] Set tool physical params"
+		print self.BCOLOR+"[IRPOS] Set tool physical params"+self.ENDC
 
 		self.tool_weight = weight
 		self.tool_mass_center = mass_center_position
 
 	# FORCE CONTROL
+
 	def start_force_controller(self, inertia, reciprocaldamping, wrench, twist):
-		print "[IRPOS] Start force controller"
+		print self.BCOLOR+"[IRPOS] Start force controller"+self.ENDC
 
 		forceControlGoal = ForceControl()
 		forceControlGoal.inertia = inertia
@@ -452,7 +523,9 @@ class IRPOS:
  
 		self.tg_param_publisher.publish(tg_goal)
 
-		self.conmanSwitch([self.robot_name+'mForceTransformation',self.robot_name+'mForceControlLaw'], [], True)
+		self.conmanSwitch([self.robot_name+'mForceTransformation'], [], True)
+		time.sleep(0.05)
+		self.conmanSwitch([self.robot_name+'mForceControlLaw'], [], True)
 
 	def set_force_controller_goal(self, inertia, reciprocaldamping, wrench, twist):
 		forceControlGoal = ForceControl()
@@ -470,7 +543,7 @@ class IRPOS:
 		self.tg_param_publisher.publish(tg_goal)
 
 	def stop_force_controller(self):
-		print "[IRPOS] Stop force controller"
+		print self.BCOLOR+"[IRPOS] Stop force controller"+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mForceTransformation',self.robot_name+'mForceControlLaw'], True)
 		return 0
@@ -482,8 +555,9 @@ class IRPOS:
 		return ret
 
 	# GRIPPER
+
 	def tfg_to_motor_position(self, motor_position, time_from_start):
-		print "[IRPOS] Tfg to motor position"		
+		print self.BCOLOR+"[IRPOS] Tfg to motor position"+self.ENDC		
 		self.conmanSwitch([self.robot_name+'tfgSplineTrajectoryGeneratorMotor'], [], True)
   
 		goal = FollowJointTrajectoryGoal()
@@ -499,7 +573,7 @@ class IRPOS:
 		self.conmanSwitch([], [self.robot_name+'tfgSplineTrajectoryGeneratorMotor'], True)  
 
 	def tfg_to_joint_position(self, joint_position, time_from_start):
-		print "[IRPOS] Tfg to joint position"	
+		print self.BCOLOR+"[IRPOS] Tfg to joint position"+self.ENDC	
 		self.conmanSwitch([self.robot_name+'tfgSplineTrajectoryGeneratorJoint'], [], True)
   
 		goal = FollowJointTrajectoryGoal()
