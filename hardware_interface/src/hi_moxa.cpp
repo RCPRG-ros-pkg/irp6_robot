@@ -499,6 +499,8 @@ uint64_t HI_moxa::read_hardware(int velocity_filtration) {
       servo_data[drive_number].current_absolute_position =
           servo_data[drive_number].previous_absolute_position
               + servo_data[drive_number].current_position_inc;
+      // pozwalamy przez kilka cykli swobodnie dokorygowasc
+      accel_limit = HI_ACCEL_LIMIT_CYCLE_NR;
     }
   }
 
