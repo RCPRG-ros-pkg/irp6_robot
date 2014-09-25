@@ -24,7 +24,8 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
       hardware_panic(false),
       all_hardware_read(true),
       longest_delay_(0),
-      longest_read_delay_(0) {
+      longest_read_delay_(0),
+      cycle_nr(0) {
 
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
@@ -189,6 +190,9 @@ void HI_moxa::set_current(int drive_number, double set_value) {
 }
 
 uint64_t HI_moxa::read_hardware(void) {
+
+  cycle_nr++;
+
   static int64_t receive_attempts = 0;
   // UNUSED: static int64_t receive_timeouts = 0;
   static int error_msg_power_stage = 0;
@@ -272,21 +276,21 @@ uint64_t HI_moxa::read_hardware(void) {
       }
       if (receiveFailCnt[drive_number]) {
         /*
-        if (receiveFailCnt[drive_number] > maxReceiveFailCnt) {
-          drive_buff[drive_number].rxCnt = 0;
-          receiveFailCnt[drive_number] = 0;
-          std::cout << "[warn] extra receive time: drive " << (int) drive_number
-                    << " counter reset " << "bytes_received: " << bytes_received
-                    << std::endl;
+         if (receiveFailCnt[drive_number] > maxReceiveFailCnt) {
+         drive_buff[drive_number].rxCnt = 0;
+         receiveFailCnt[drive_number] = 0;
+         std::cout << "[warn] extra receive time: drive " << (int) drive_number
+         << " counter reset " << "bytes_received: " << bytes_received
+         << std::endl;
 
-        } else {
-*/
-          if ((int) receiveFailCnt[drive_number] > 2) {
-            std::cout << "[warn] extra receive time: drive "
-                      << (int) drive_number << " event "
-                      << (int) receiveFailCnt[drive_number]
-                      << " bytes_received: " << bytes_received << std::endl;
-          }
+         } else {
+         */
+        if ((int) receiveFailCnt[drive_number] > 2) {
+          std::cout << "[warn] extra receive time: drive " << (int) drive_number
+                    << " event " << (int) receiveFailCnt[drive_number]
+                    << " bytes_received: " << bytes_received << " cycle: "
+                    << cycle_nr << std::endl;
+        }
         //}
       }
 
@@ -435,7 +439,7 @@ uint64_t HI_moxa::read_hardware(void) {
 // master.controller_state_edp_buf.is_synchronised = robot_synchronized;
 // master.controller_state_edp_buf.robot_in_fault_state = power_fault;
   if (power_fault) {
-     hardware_panic = true;
+    hardware_panic = true;
     // std::cout << "[error] power_fault" << std::endl;
     if (error_msg_power_stage == 0) {
       temp_message << "[error] power_fault" << std::endl;
@@ -572,7 +576,7 @@ uint64_t HI_moxa::write_hardware(void) {
 #endif
       }
     } else {
-     // std::cout << "write hardware !all_hardware_read " << std::endl;
+      // std::cout << "write hardware !all_hardware_read " << std::endl;
 
     }
   }
@@ -632,11 +636,9 @@ uint64_t HI_moxa::write_read_hardware(long int nsec) {
   return ret;
 }
 
-
-void HI_moxa::set_hardware_panic(void){
+void HI_moxa::set_hardware_panic(void) {
   hardware_panic = true;
 }
-
 
 // send parameter to motor driver
 void HI_moxa::set_parameter(int drive_number, const int parameter, ...) {

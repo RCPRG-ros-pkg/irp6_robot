@@ -75,6 +75,7 @@ class HI_moxa {
   void clear_buffer(int drive_number);
 
   uint16_t convert_to_115(float input);
+  int cycle_nr;
 
  protected:
   bool hardware_panic;
