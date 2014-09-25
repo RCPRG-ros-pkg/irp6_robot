@@ -233,7 +233,7 @@ void HardwareInterface::test_mode_sleep() {
 bool HardwareInterface::startHook() {
   try {
     if (!test_mode_) {
-      hi_->write_read_hardware(rwh_nsec_);
+      hi_->write_read_hardware(rwh_nsec_, 0);
       servo_start_iter_ = 200;
       if (!hi_->robot_synchronized()) {
         RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
@@ -504,7 +504,7 @@ void HardwareInterface::updateHook() {
 
     // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
 
-    hi_->write_read_hardware(rwh_nsec_);
+    hi_->write_read_hardware(rwh_nsec_, 0);
 
     if (state_ == SERVOING) {
 

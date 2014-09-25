@@ -141,6 +141,7 @@ void HI_moxa::reset_counters(void) {
     servo_data[i].current_absolute_position = 0L;
     servo_data[i].previous_absolute_position = 0L;
     servo_data[i].current_position_inc = 0.0;
+    servo_data[i].previous_position_inc = 0.0;
   }
 }
 
@@ -189,9 +190,11 @@ void HI_moxa::set_current(int drive_number, double set_value) {
   NF_COMMAND_SetDrivesCurrent;
 }
 
-uint64_t HI_moxa::read_hardware(void) {
+uint64_t HI_moxa::read_hardware(int velocity_filtration) {
 
   cycle_nr++;
+
+  static int32_t accel_limit = 0;
 
   static int64_t receive_attempts = 0;
   // UNUSED: static int64_t receive_timeouts = 0;
@@ -334,6 +337,9 @@ uint64_t HI_moxa::read_hardware(void) {
     servo_data[drive_number].previous_absolute_position =
         servo_data[drive_number].current_absolute_position;
 
+    servo_data[drive_number].previous_position_inc = servo_data[drive_number]
+        .current_position_inc;
+
     // Wykrywanie sekwencji timeoutow komunikacji
     if (comm_timeouts[drive_number] >= MAX_COMM_TIMEOUTS) {
       hardware_panic = true;
@@ -348,13 +354,6 @@ uint64_t HI_moxa::read_hardware(void) {
     if (read_needed[drive_number] && !receiveFail[drive_number]) {
       // Wypelnienie pol odebranymi danymi
       // NFComBuf.ReadDrivesPosition.data[] contains last received value
-
-      // jak nie odbierzemy biezacej pozycji to zakladamy, ze robot porusza sie ze stala predkoscia
-      // wygladza to trajektorie w sytuacji zaklocen w komunikacji z kartami,
-      // gdyz wczesniej zakladala sie wowczas bezruch
-
-      servo_data[drive_number].current_absolute_position = NFComBuf
-          .ReadDrivesPosition.data[drive_number];
 
       // Ustawienie flagi wlaczonej mocy
       if ((NFComBuf.ReadDrivesStatus.data[drive_number]
@@ -377,17 +376,79 @@ uint64_t HI_moxa::read_hardware(void) {
         last_synchro_state[drive_number] = 1;
       }
 
+      int32_t rdp = NFComBuf.ReadDrivesPosition.data[drive_number];
+
       // W pierwszych odczytach danych z napedu przyrost pozycji musi byc 0.
       if ((servo_data[drive_number].first_hardware_reads > 0)) {
-        servo_data[drive_number].previous_absolute_position =
-            servo_data[drive_number].current_absolute_position;
+        servo_data[drive_number].previous_absolute_position = rdp;
         servo_data[drive_number].first_hardware_reads--;
       }
 
-      // Sprawdzenie przyrostu pozycji enkodera
-      servo_data[drive_number].current_position_inc =
-          (double) (servo_data[drive_number].current_absolute_position
-              - servo_data[drive_number].previous_absolute_position);
+      double cpi = (double) rdp
+          - servo_data[drive_number].previous_absolute_position;
+
+#define HI_MAX_INC 20
+#define HI_ACCEL_LIMIT_CYCLE_NR 2
+
+      switch (velocity_filtration) {
+        // wariant podstawowy bez filtracji
+        case 0: {
+          servo_data[drive_number].current_position_inc = cpi;
+          servo_data[drive_number].current_absolute_position = rdp;
+          break;
+        }
+          // wariant z ograniczeniem przyrostu
+        case 1: {
+          if (cpi > servo_data[drive_number].previous_position_inc + HI_MAX_INC) {
+            servo_data[drive_number].current_position_inc =
+                servo_data[drive_number].previous_position_inc + HI_MAX_INC;
+            servo_data[drive_number].current_absolute_position =
+                servo_data[drive_number].previous_absolute_position
+                    + servo_data[drive_number].current_position_inc;
+
+          } else if (cpi
+              < servo_data[drive_number].previous_position_inc - HI_MAX_INC) {
+            servo_data[drive_number].current_position_inc =
+                servo_data[drive_number].previous_position_inc - HI_MAX_INC;
+            servo_data[drive_number].current_absolute_position =
+                servo_data[drive_number].previous_absolute_position
+                    + servo_data[drive_number].current_position_inc;
+          } else {
+            servo_data[drive_number].current_position_inc = cpi;
+            servo_data[drive_number].current_absolute_position = rdp;
+          }
+          break;
+        }
+          // wariant z ograniczeniem przyrostu ale potem na kilka krokow droga wolna. To przyspiesza powrot na trajektorie
+        case 2: {
+          if ((cpi > servo_data[drive_number].previous_position_inc + HI_MAX_INC)
+              && (!accel_limit)) {
+            servo_data[drive_number].current_position_inc =
+                servo_data[drive_number].previous_position_inc + HI_MAX_INC;
+            servo_data[drive_number].current_absolute_position =
+                servo_data[drive_number].previous_absolute_position
+                    + servo_data[drive_number].current_position_inc;
+            accel_limit = HI_ACCEL_LIMIT_CYCLE_NR;
+          } else if ((cpi
+              < servo_data[drive_number].previous_position_inc - HI_MAX_INC)
+              && (!accel_limit)) {
+            servo_data[drive_number].current_position_inc =
+                servo_data[drive_number].previous_position_inc - HI_MAX_INC;
+            servo_data[drive_number].current_absolute_position =
+                servo_data[drive_number].previous_absolute_position
+                    + servo_data[drive_number].current_position_inc;
+            accel_limit = HI_ACCEL_LIMIT_CYCLE_NR;
+          } else {
+            servo_data[drive_number].current_position_inc = cpi;
+            servo_data[drive_number].current_absolute_position = rdp;
+            if (accel_limit > 0) {
+              accel_limit--;
+            }
+          }
+          break;
+        }
+
+      }
 
       if ((robot_synchronized)
           && ((int) ridiculous_increment[drive_number] != 0)) {
@@ -430,6 +491,11 @@ uint64_t HI_moxa::read_hardware(void) {
       }
 
     } else {
+
+      // jak nie odbierzemy biezacej pozycji to zakladamy, ze robot porusza sie ze stala predkoscia
+      // wygladza to trajektorie w sytuacji zaklocen w komunikacji z kartami,
+      // gdyz wczesniej zakladala sie wowczas bezruch
+
       servo_data[drive_number].current_absolute_position =
           servo_data[drive_number].previous_absolute_position
               + servo_data[drive_number].current_position_inc;
@@ -487,7 +553,7 @@ uint64_t HI_moxa::write_hardware(void) {
   static int error_msg_hardware_panic = 0;
   uint64_t ret = 0;
   uint8_t drive_number;
-  // static std::stringstream temp_message;
+// static std::stringstream temp_message;
 
 // If Hardware Panic, send PARAM_DRIVER_MODE_ERROR to motor drivers
   if (hardware_panic) {
@@ -586,7 +652,7 @@ uint64_t HI_moxa::write_hardware(void) {
 }
 
 // do communication cycle
-uint64_t HI_moxa::write_read_hardware(long int nsec) {
+uint64_t HI_moxa::write_read_hardware(long int nsec, int velocity_filtration) {
 
   struct timespec start_time, current_time, read_time;
   clock_gettime(CLOCK_MONOTONIC, &start_time);
@@ -618,7 +684,7 @@ uint64_t HI_moxa::write_read_hardware(long int nsec) {
      hi_sleep(nsec);
      */
 
-    ret = read_hardware();
+    ret = read_hardware(velocity_filtration);
     clock_gettime(CLOCK_MONOTONIC, &read_time);
 
     long int read_delay = (read_time.tv_sec - current_time.tv_sec) * 1000000000
@@ -818,6 +884,8 @@ void HI_moxa::reset_position(int drive_number) {
   servo_data[drive_number].current_absolute_position = 0L;
   servo_data[drive_number].previous_absolute_position = 0L;
   servo_data[drive_number].current_position_inc = 0.0;
+  servo_data[drive_number].previous_position_inc = 0.0;
+
   servo_data[drive_number].first_hardware_reads =
       FIRST_HARDWARE_READS_WITH_ZERO_INCREMENT;
   std::cout << "[func] HI_moxa::reset_position(" << drive_number << ")"
