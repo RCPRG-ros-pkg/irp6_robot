@@ -238,6 +238,14 @@ Irp6ottfgPortDoubleAggregate_hw_p.loadService("rosparam")
 Irp6ottfgPortDoubleAggregate_hw_p.rosparam.getAll()
 Irp6ottfgPortDoubleAggregate_hw_p.configure()
 
+
+// Irp6pm double to float64 converter
+
+loadComponent("PortDoubleToFloat64_1","PortDoubleToFloat64")
+PortDoubleToFloat64_1.configure()
+stream("PortDoubleToFloat64_1.OutputPort", ros.comm.topic("/debug"));
+
+
 loadComponent("Irp6pmM2J","Irp6pmM2J")
 Irp6pmM2J.configure()
 
@@ -604,6 +612,9 @@ addPeer("Irp6scheme", "Irp6pmToolInt");
 addPeer("Irp6scheme", "Irp6otmPoseInt");
 addPeer("Irp6scheme", "Irp6otmToolInt");
 
+addPeer("Irp6scheme", "PortDoubleToFloat64_1");
+
+
 
 
 
@@ -636,6 +647,7 @@ connect("Irp6HardwareInterface.computedReg_in_irp6pm_5","IRp6pmRegulator_5.compu
 connect("IRp6pmRegulator_5.posInc_in","Irp6HardwareInterface.posInc_out_irp6pm_5", ConnPolicy())
 connect("IRp6pmRegulator_5.deltaInc_in","Irp6HardwareInterface.deltaInc_out_irp6pm_5", ConnPolicy())
 
+connect("PortDoubleToFloat64_1.InputPort","Irp6HardwareInterface.deltaInc_out_irp6pm_5", ConnPolicy())
 
 connect("Irp6HardwareInterface.computedReg_in_irp6ptfg","Irp6ptfgRegulator.computedPwm_out", ConnPolicy())
 connect("Irp6ptfgRegulator.posInc_in","Irp6HardwareInterface.posInc_out_irp6ptfg", ConnPolicy())
@@ -729,6 +741,7 @@ connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_3","Irp6HardwareInterface.Moto
 connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_4","Irp6HardwareInterface.MotorPosition_irp6pm_4", ConnPolicy())
 connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_5","Irp6HardwareInterface.MotorPosition_irp6pm_5", ConnPolicy())
 
+
 connect("Irp6ptfgPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_irp6ptfg", ConnPolicy())
 connect("ConveyorPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_conveyor", ConnPolicy())
 
@@ -803,6 +816,9 @@ Irp6scheme.addBlock("Irp6pmPoseInt");
 Irp6scheme.addBlock("Irp6pmToolInt");
 Irp6scheme.addBlock("Irp6otmPoseInt");
 Irp6scheme.addBlock("Irp6otmToolInt");
+
+Irp6scheme.addBlock("PortDoubleToFloat64_1");
+
 
 // ROS Interface
 
@@ -1262,5 +1278,6 @@ Irp6otmPoseIntAction.start()
 Irp6otmToolIntAction.start()
 Irp6otmToolInt.start()
 
+PortDoubleToFloat64_1.start()
 
 
