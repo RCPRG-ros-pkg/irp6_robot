@@ -504,7 +504,7 @@ void HardwareInterface::updateHook() {
 
     // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
 
-    hi_->write_read_hardware(rwh_nsec_, 2);
+    hi_->write_read_hardware(rwh_nsec_, 0);
 
     if (state_ == SERVOING) {
 
