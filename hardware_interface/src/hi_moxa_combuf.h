@@ -75,6 +75,7 @@ struct servo_St{
 	int32_t current_absolute_position;
 	int32_t previous_absolute_position;
 	double current_position_inc;
+	double previous_position_inc;
 	int first_hardware_reads;
 	bool trace_resolver_zero;
 }__attribute__((__packed__));

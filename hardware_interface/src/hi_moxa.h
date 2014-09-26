@@ -38,9 +38,9 @@ class HI_moxa {
   long int longest_delay_, longest_read_delay_;
 
   // do communication cycle
-  uint64_t write_read_hardware(long int nsec);
+  uint64_t write_read_hardware(long int nsec, int velocity_filtration);
 
-  uint64_t read_hardware(void);
+  uint64_t read_hardware(int velocity_filtration);
   uint64_t write_hardware(void);
   void set_hardware_panic(void);
 
