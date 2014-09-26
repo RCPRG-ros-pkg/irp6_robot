@@ -194,7 +194,7 @@ uint64_t HI_moxa::read_hardware(int velocity_filtration) {
 
   cycle_nr++;
 
-  static int32_t accel_limit = 0;
+  static int accel_limit[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
   static int64_t receive_attempts = 0;
   // UNUSED: static int64_t receive_timeouts = 0;
@@ -422,29 +422,33 @@ uint64_t HI_moxa::read_hardware(int velocity_filtration) {
           // wariant z ograniczeniem przyrostu ale potem na kilka krokow droga wolna. To przyspiesza powrot na trajektorie
         case 2: {
           if ((cpi > servo_data[drive_number].previous_position_inc + HI_MAX_INC)
-              && (!accel_limit)) {
+              && (accel_limit[drive_number] == 0)) {
             servo_data[drive_number].current_position_inc =
                 servo_data[drive_number].previous_position_inc + HI_MAX_INC;
             servo_data[drive_number].current_absolute_position =
                 servo_data[drive_number].previous_absolute_position
                     + servo_data[drive_number].current_position_inc;
-            accel_limit = HI_ACCEL_LIMIT_CYCLE_NR;
+            accel_limit[drive_number] = HI_ACCEL_LIMIT_CYCLE_NR;
           } else if ((cpi
               < servo_data[drive_number].previous_position_inc - HI_MAX_INC)
-              && (!accel_limit)) {
+              && (accel_limit[drive_number] == 0)) {
             servo_data[drive_number].current_position_inc =
                 servo_data[drive_number].previous_position_inc - HI_MAX_INC;
             servo_data[drive_number].current_absolute_position =
                 servo_data[drive_number].previous_absolute_position
                     + servo_data[drive_number].current_position_inc;
-            accel_limit = HI_ACCEL_LIMIT_CYCLE_NR;
+            accel_limit[drive_number] = HI_ACCEL_LIMIT_CYCLE_NR;
           } else {
             servo_data[drive_number].current_position_inc = cpi;
             servo_data[drive_number].current_absolute_position = rdp;
-            if (accel_limit > 0) {
-              accel_limit--;
+            if (accel_limit[drive_number] > 0) {
+              accel_limit[drive_number]--;
             }
           }
+          break;
+        }
+        default: {
+          hardware_panic = true;
           break;
         }
 
@@ -499,8 +503,7 @@ uint64_t HI_moxa::read_hardware(int velocity_filtration) {
       servo_data[drive_number].current_absolute_position =
           servo_data[drive_number].previous_absolute_position
               + servo_data[drive_number].current_position_inc;
-      // pozwalamy przez kilka cykli swobodnie dokorygowasc
-      accel_limit = HI_ACCEL_LIMIT_CYCLE_NR;
+
     }
   }
 
