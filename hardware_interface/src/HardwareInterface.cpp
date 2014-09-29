@@ -58,6 +58,9 @@ bool HardwareInterface::configureHook() {
   deltaInc_out_list_.resize(number_of_drives_);
   port_motor_position_command_list_.resize(number_of_drives_);
   port_motor_position_list_.resize(number_of_drives_);
+  port_motor_increment_list_.resize(number_of_drives_);
+  port_motor_voltage_list_.resize(number_of_drives_);
+  port_motor_current_list_.resize(number_of_drives_);
 
   for (size_t i = 0; i < number_of_drives_; i++) {
     char computedReg_in_port_name[32];
@@ -93,6 +96,27 @@ bool HardwareInterface::configureHook() {
     port_motor_position_list_[i] = new typeof(*port_motor_position_list_[i]);
     this->ports()->addPort(MotorPosition_port_name,
                            *port_motor_position_list_[i]);
+
+    char MotorIncrement_port_name[32];
+    snprintf(MotorIncrement_port_name, sizeof(MotorIncrement_port_name),
+             "MotorIncrement_%s", hi_port_param_[i].label.c_str());
+    port_motor_increment_list_[i] = new typeof(*port_motor_increment_list_[i]);
+    this->ports()->addPort(MotorIncrement_port_name,
+                           *port_motor_increment_list_[i]);
+
+    char MotorVoltage_port_name[32];
+    snprintf(MotorVoltage_port_name, sizeof(MotorVoltage_port_name),
+             "MotorVoltage_%s", hi_port_param_[i].label.c_str());
+    port_motor_voltage_list_[i] = new typeof(*port_motor_voltage_list_[i]);
+    this->ports()->addPort(MotorVoltage_port_name,
+                           *port_motor_voltage_list_[i]);
+
+    char MotorCurrent_port_name[32];
+    snprintf(MotorCurrent_port_name, sizeof(MotorCurrent_port_name),
+             "MotorCurrent_%s", hi_port_param_[i].label.c_str());
+    port_motor_current_list_[i] = new typeof(*port_motor_current_list_[i]);
+    this->ports()->addPort(MotorCurrent_port_name,
+                           *port_motor_current_list_[i]);
 
   }
 
@@ -184,6 +208,9 @@ bool HardwareInterface::configureHook() {
   }
 
   motor_position_.resize(number_of_drives_);
+  motor_increment_.resize(number_of_drives_);
+  motor_voltage_.resize(number_of_drives_);
+  motor_current_.resize(number_of_drives_);
   motor_position_command_.resize(number_of_drives_);
   motor_position_command_old_.resize(number_of_drives_);
 
@@ -256,6 +283,9 @@ bool HardwareInterface::startHook() {
           motor_position_command_(i) = motor_position_command_old_(i) =
               motor_position_(i) = (double) hi_->get_position(i)
                   * ((2.0 * M_PI) / enc_res_[i]);
+          motor_increment_(i) = (double) hi_->get_increment(i);
+          motor_voltage_(i) = (double) hi_->get_voltage(i);
+          motor_current_(i) = (double) hi_->get_current(i);
         }
 
         state_ = PRE_SERVOING;
@@ -267,6 +297,9 @@ bool HardwareInterface::startHook() {
       for (int i = 0; i < number_of_drives_; i++) {
         motor_position_command_(i) = motor_position_command_old_(i) =
             motor_position_(i) = 0.0;
+        motor_increment_(i) = 0.0;
+        motor_voltage_(i) = 0.0;
+        motor_current_(i) = 0.0;
       }
 
       state_ = PRE_SERVOING;
@@ -279,6 +312,9 @@ bool HardwareInterface::startHook() {
   for (int i = 0; i < number_of_drives_; i++) {
 
     port_motor_position_list_[i]->write(motor_position_[i]);
+    port_motor_increment_list_[i]->write(motor_increment_[i]);
+    port_motor_voltage_list_[i]->write(motor_voltage_[i]);
+    port_motor_current_list_[i]->write(motor_current_[i]);
   }
 
   return true;
@@ -306,6 +342,9 @@ void HardwareInterface::updateHook() {
               motor_position_(i) = (double) hi_->get_position(i)
                   * ((2.0 * M_PI) / enc_res_[i]);
           pos_inc_[i] = 0.0;
+          motor_increment_(i) = (double) hi_->get_increment(i);
+          motor_voltage_(i) = (double) hi_->get_voltage(i);
+          motor_current_(i) = (double) hi_->get_current(i);
         }
 
       }
@@ -511,8 +550,14 @@ void HardwareInterface::updateHook() {
       for (int i = 0; i < number_of_drives_; i++) {
         motor_position_(i) = (double) hi_->get_position(i)
             * ((2.0 * M_PI) / enc_res_[i]);
+        motor_increment_(i) = (double) hi_->get_increment(i);
+        motor_voltage_(i) = (double) hi_->get_voltage(i);
+        motor_current_(i) = (double) hi_->get_current(i);
 
         port_motor_position_list_[i]->write(motor_position_[i]);
+        port_motor_increment_list_[i]->write(motor_increment_[i]);
+        port_motor_voltage_list_[i]->write(motor_voltage_[i]);
+        port_motor_current_list_[i]->write(motor_current_[i]);
       }
     }
   } else {
@@ -528,6 +573,9 @@ void HardwareInterface::updateHook() {
     for (int i = 0; i < number_of_drives_; i++) {
       motor_position_(i) = motor_position_command_(i);
       port_motor_position_list_[i]->write(motor_position_[i]);
+      port_motor_increment_list_[i]->write(motor_increment_[i]);
+      port_motor_voltage_list_[i]->write(motor_voltage_[i]);
+      port_motor_current_list_[i]->write(motor_current_[i]);
     }
 
   }

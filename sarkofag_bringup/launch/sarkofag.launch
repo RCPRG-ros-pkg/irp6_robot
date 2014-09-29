@@ -59,7 +59,9 @@
         number_of_ports: 1
       SarkofagPortDoubleAggregate_hw_p:
         number_of_ports: 1
-      
+      MatExport_0:
+        reg_number: 0
+        debug: true
     </rosparam>
 </group>
 
