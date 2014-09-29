@@ -281,6 +281,9 @@ bool HardwareInterface::startHook() {
     port_motor_position_list_[i]->write(motor_position_[i]);
   }
 
+  hi_->write_hardware();
+
+
   return true;
 }
 
@@ -289,6 +292,14 @@ void HardwareInterface::updateHook() {
   static int iteration_nr = 0;
 
   iteration_nr++;
+
+  if (!test_mode_) {
+
+    hi_->read_hardware(0);
+
+  }
+
+
 
   switch (state_) {
     case NOT_SYNCHRONIZED:
@@ -504,7 +515,8 @@ void HardwareInterface::updateHook() {
 
     // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
 
-    hi_->write_read_hardware(rwh_nsec_, 0);
+   // hi_->write_read_hardware(rwh_nsec_, 0);
+
 
     if (state_ == SERVOING) {
 
@@ -515,6 +527,10 @@ void HardwareInterface::updateHook() {
         port_motor_position_list_[i]->write(motor_position_[i]);
       }
     }
+
+    hi_->write_hardware();
+
+
   } else {
     for (int i = 0; i < number_of_drives_; i++) {
       if (fabs(pos_inc_[i]) > max_desired_increment_[i]) {

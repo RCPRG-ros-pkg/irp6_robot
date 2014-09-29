@@ -293,7 +293,7 @@ uint64_t HI_moxa::read_hardware(int velocity_filtration) {
          } else {
          */
         valid_msr_nr[drive_number] = 0;
-        if ((int) receiveFailCnt[drive_number] > 1) {
+        if ((int) receiveFailCnt[drive_number] > 0) {
           std::cout << "[warn] extra receive time: drive " << (int) drive_number
                     << " event " << (int) receiveFailCnt[drive_number]
                     << " bytes_received: " << bytes_received << " cycle: "
