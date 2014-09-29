@@ -47,9 +47,6 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<bool> current_mode_;
   std::vector<bool> synchro_needed_;
 
-
-
-
   // Properties
   int number_of_drives_;
   bool auto_synchronize_;
@@ -57,8 +54,6 @@ class HardwareInterface : public RTT::TaskContext {
   int tx_prefix_len_;
   int rwh_nsec_;
   hi_msgs::HardwareInterfacePort hi_port_param_[hi_moxa::MOXA_SERVOS_NR];
-
-
 
   int synchro_stop_iter_;
   int synchro_start_iter_;
@@ -69,6 +64,7 @@ class HardwareInterface : public RTT::TaskContext {
   State state_;
   SynchroState synchro_state_;
   int synchro_drive_;
+  bool burst_mode_;
 
   std::vector<double> pos_inc_;
   std::vector<double> max_pos_inc_;
