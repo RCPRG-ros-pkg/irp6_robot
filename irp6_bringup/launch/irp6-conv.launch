@@ -83,7 +83,7 @@
           ports_adresses: /dev/ttyMI13
           synchro_needed: 1
           max_current: 2000
-          max_increment: 2000.0
+          max_increment: 500.0
           max_desired_increment: 200.0
           card_indexes: 5
           enc_res: 2000.0
