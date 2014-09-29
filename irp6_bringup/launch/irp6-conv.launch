@@ -4,19 +4,11 @@
   
   <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher"/>
   
-  <include file="$(find rtt_ros)/launch/deployer.launch">
-    <arg name="NAME" value="ROS_OROCOS_ROBOT"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find irp6_bringup)/config/irp6-conv.ops"/>
-    <arg name="LOG_LEVEL" value="Warning"/>
-    <arg name="DEBUG" value="false"/>
-  </include>
-
   <group ns="ROS_OROCOS_ROBOT">
     <rosparam>
       Irp6HardwareInterface:
         number_of_drives: 16
         auto_synchronize: true
-        test_mode: false
         rwh_nsec: 1200000
         hi_port_param_0:
           label: irp6pm_0
@@ -478,12 +470,10 @@
             y: 0.0
             z: 0.09
       ATI6284:
-        test_mode: false
         force_limits: [65.0, 65.0, 130.0, 5.0, 5.0, 5.0]
         slow_buffer_size: 100
         fast_buffer_size: 2
       ATI3084:
-        test_mode: false
         force_limits: [65.0, 65.0, 130.0, 5.0, 5.0, 5.0]
         slow_buffer_size: 100
         fast_buffer_size: 2
