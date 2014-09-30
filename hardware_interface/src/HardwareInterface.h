@@ -51,6 +51,7 @@ class HardwareInterface : public RTT::TaskContext {
   int number_of_drives_;
   bool auto_synchronize_;
   bool test_mode_;
+  int timeouts_to_print_;
   int tx_prefix_len_;
   int rwh_nsec_;
   hi_msgs::HardwareInterfacePort hi_port_param_[hi_moxa::MOXA_SERVOS_NR];

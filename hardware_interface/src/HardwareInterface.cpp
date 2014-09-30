@@ -21,12 +21,14 @@ HardwareInterface::HardwareInterface(const std::string& name)
       tx_prefix_len_(0),
       synchro_state_(MOVE_TO_SYNCHRO_AREA),
       rwh_nsec_(1200000),
-      burst_mode_(true) {
+      burst_mode_(true),
+      timeouts_to_print_(1) {
 
   this->addProperty("number_of_drives", number_of_drives_).doc(
       "Number of drives in robot");
   this->addProperty("auto_synchronize", auto_synchronize_).doc("");
   this->addProperty("test_mode", test_mode_).doc("");
+  this->addProperty("timeouts_to_print", timeouts_to_print_).doc("");
   this->addProperty("rwh_nsec", rwh_nsec_).doc("");
   this->addProperty("hi_port_param_0", hi_port_param_[0]).doc("");
   this->addProperty("hi_port_param_1", hi_port_param_[1]).doc("");
@@ -297,7 +299,7 @@ void HardwareInterface::updateHook() {
 
   if (!test_mode_ && (!burst_mode_)) {
 
-    hi_->read_hardware(0);
+    hi_->read_hardware(timeouts_to_print_);
 
   }
 
@@ -516,7 +518,7 @@ void HardwareInterface::updateHook() {
     // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
 
     if (burst_mode_) {
-      hi_->write_read_hardware(rwh_nsec_, 0);
+      hi_->write_read_hardware(rwh_nsec_, timeouts_to_print_);
     }
 
     if (state_ == SERVOING) {

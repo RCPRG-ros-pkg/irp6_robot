@@ -123,7 +123,7 @@
           enc_res: 4000.0
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007
-          current_mode: 1
+          current_mode: 0
         hi_port_param_9:
           label: irp6otm_1
           ports_adresses: /dev/ttyMI0
@@ -349,7 +349,7 @@
         A: 0.412429378531
         BB0: 1.5569592
         BB1: 1.5028614
-        current_mode: true
+        current_mode: false
         current_reg_kp: 190.0
         max_output_current: 22000.0
       IRp6otmRegulator_1:

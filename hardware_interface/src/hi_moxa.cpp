@@ -190,7 +190,7 @@ void HI_moxa::set_current(int drive_number, double set_value) {
   NF_COMMAND_SetDrivesCurrent;
 }
 
-uint64_t HI_moxa::read_hardware(int velocity_filtration) {
+uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
 
   cycle_nr++;
 
@@ -292,8 +292,9 @@ uint64_t HI_moxa::read_hardware(int velocity_filtration) {
 
          } else {
          */
+
         valid_msr_nr[drive_number] = 0;
-        if ((int) receiveFailCnt[drive_number] > 0) {
+        if ((int) receiveFailCnt[drive_number] > timeouts_to_print) {
           std::cout << "[warn] extra receive time: drive " << (int) drive_number
                     << " event " << (int) receiveFailCnt[drive_number]
                     << " bytes_received: " << bytes_received << " cycle: "
@@ -392,8 +393,6 @@ uint64_t HI_moxa::read_hardware(int velocity_filtration) {
       double cpi = (double) rdp
           - servo_data[drive_number].previous_absolute_position;
 
-#define HI_MAX_INC 50
-#define HI_ACCEL_LIMIT_CYCLE_NR 2
       // pierwszy pomiar jest spóźniony więc nadal interpolujemy
       if (valid_msr_nr[drive_number] < 2) {
         servo_data[drive_number].current_absolute_position =
@@ -401,71 +400,8 @@ uint64_t HI_moxa::read_hardware(int velocity_filtration) {
                 + servo_data[drive_number].current_position_inc;
       } else {
 
-        switch (velocity_filtration) {
-          // wariant podstawowy bez filtracji
-          case 0: {
-            servo_data[drive_number].current_position_inc = cpi;
-            servo_data[drive_number].current_absolute_position = rdp;
-            break;
-          }
-            // wariant z ograniczeniem przyrostu
-          case 1: {
-            if (cpi
-                > servo_data[drive_number].previous_position_inc + HI_MAX_INC) {
-              servo_data[drive_number].current_position_inc =
-                  servo_data[drive_number].previous_position_inc + HI_MAX_INC;
-              servo_data[drive_number].current_absolute_position =
-                  servo_data[drive_number].previous_absolute_position
-                      + servo_data[drive_number].current_position_inc;
-
-            } else if (cpi
-                < servo_data[drive_number].previous_position_inc - HI_MAX_INC) {
-              servo_data[drive_number].current_position_inc =
-                  servo_data[drive_number].previous_position_inc - HI_MAX_INC;
-              servo_data[drive_number].current_absolute_position =
-                  servo_data[drive_number].previous_absolute_position
-                      + servo_data[drive_number].current_position_inc;
-            } else {
-              servo_data[drive_number].current_position_inc = cpi;
-              servo_data[drive_number].current_absolute_position = rdp;
-            }
-            break;
-          }
-            // wariant z ograniczeniem przyrostu ale potem na kilka krokow droga wolna. To przyspiesza powrot na trajektorie
-          case 2: {
-            if ((cpi
-                > servo_data[drive_number].previous_position_inc + HI_MAX_INC)
-                && (accel_limit[drive_number] == 0)) {
-              servo_data[drive_number].current_position_inc =
-                  servo_data[drive_number].previous_position_inc + HI_MAX_INC;
-              servo_data[drive_number].current_absolute_position =
-                  servo_data[drive_number].previous_absolute_position
-                      + servo_data[drive_number].current_position_inc;
-              accel_limit[drive_number] = HI_ACCEL_LIMIT_CYCLE_NR;
-            } else if ((cpi
-                < servo_data[drive_number].previous_position_inc - HI_MAX_INC)
-                && (accel_limit[drive_number] == 0)) {
-              servo_data[drive_number].current_position_inc =
-                  servo_data[drive_number].previous_position_inc - HI_MAX_INC;
-              servo_data[drive_number].current_absolute_position =
-                  servo_data[drive_number].previous_absolute_position
-                      + servo_data[drive_number].current_position_inc;
-              accel_limit[drive_number] = HI_ACCEL_LIMIT_CYCLE_NR;
-            } else {
-              servo_data[drive_number].current_position_inc = cpi;
-              servo_data[drive_number].current_absolute_position = rdp;
-              if (accel_limit[drive_number] > 0) {
-                accel_limit[drive_number]--;
-              }
-            }
-            break;
-          }
-          default: {
-            hardware_panic = true;
-            break;
-          }
-
-        }
+        servo_data[drive_number].current_position_inc = cpi;
+        servo_data[drive_number].current_absolute_position = rdp;
       }
 
       if ((robot_synchronized)
@@ -672,7 +608,7 @@ uint64_t HI_moxa::write_hardware(void) {
 }
 
 // do communication cycle
-uint64_t HI_moxa::write_read_hardware(long int nsec, int velocity_filtration) {
+uint64_t HI_moxa::write_read_hardware(long int nsec, int timeouts_to_print) {
 
   struct timespec start_time, current_time, read_time;
   clock_gettime(CLOCK_MONOTONIC, &start_time);
@@ -704,7 +640,7 @@ uint64_t HI_moxa::write_read_hardware(long int nsec, int velocity_filtration) {
      hi_sleep(nsec);
      */
 
-    ret = read_hardware(velocity_filtration);
+    ret = read_hardware(timeouts_to_print);
     clock_gettime(CLOCK_MONOTONIC, &read_time);
 
     long int read_delay = (read_time.tv_sec - current_time.tv_sec) * 1000000000
