@@ -20,12 +20,15 @@ HardwareInterface::HardwareInterface(const std::string& name)
       synchro_drive_(0),
       tx_prefix_len_(0),
       synchro_state_(MOVE_TO_SYNCHRO_AREA),
-      rwh_nsec_(1200000) {
+      rwh_nsec_(1200000),
+      burst_mode_(true),
+      timeouts_to_print_(1) {
 
   this->addProperty("number_of_drives", number_of_drives_).doc(
       "Number of drives in robot");
   this->addProperty("auto_synchronize", auto_synchronize_).doc("");
   this->addProperty("test_mode", test_mode_).doc("");
+  this->addProperty("timeouts_to_print", timeouts_to_print_).doc("");
   this->addProperty("rwh_nsec", rwh_nsec_).doc("");
   this->addProperty("hi_port_param_0", hi_port_param_[0]).doc("");
   this->addProperty("hi_port_param_1", hi_port_param_[1]).doc("");
@@ -317,8 +320,9 @@ bool HardwareInterface::startHook() {
     port_motor_current_list_[i]->write(motor_current_[i]);
   }
 
-  hi_->write_hardware();
-
+  if (!test_mode_ && (!burst_mode_)) {
+    hi_->write_hardware();
+  }
 
   return true;
 }
@@ -329,13 +333,11 @@ void HardwareInterface::updateHook() {
 
   iteration_nr++;
 
-  if (!test_mode_) {
+  if (!test_mode_ && (!burst_mode_)) {
 
-    hi_->read_hardware(0);
+    hi_->read_hardware(timeouts_to_print_);
 
   }
-
-
 
   switch (state_) {
     case NOT_SYNCHRONIZED:
@@ -554,8 +556,9 @@ void HardwareInterface::updateHook() {
 
     // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
 
-   // hi_->write_read_hardware(rwh_nsec_, 0);
-
+    if (burst_mode_) {
+      hi_->write_read_hardware(rwh_nsec_, timeouts_to_print_);
+    }
 
     if (state_ == SERVOING) {
 
@@ -572,10 +575,9 @@ void HardwareInterface::updateHook() {
         port_motor_current_list_[i]->write(motor_current_[i]);
       }
     }
-
-    hi_->write_hardware();
-
-
+    if (!burst_mode_) {
+      hi_->write_hardware();
+    }
   } else {
     for (int i = 0; i < number_of_drives_; i++) {
       if (fabs(pos_inc_[i]) > max_desired_increment_[i]) {

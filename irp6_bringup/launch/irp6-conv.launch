@@ -1,22 +1,20 @@
 <launch>
-
+ 
+ #
+ # DO NOT USE THAT FILE DIRECTLY.
+ #
+ # Use irp6-conv-hardware.launch or irp6-con-nohardware.launch 
+ #
+ 
   <param name="robot_description" command="$(find xacro)/xacro.py '$(find irp6_description)/robots/irp6pboth.urdf.xacro'" />
   
   <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher"/>
   
-  <include file="$(find rtt_ros)/launch/deployer.launch">
-    <arg name="NAME" value="ROS_OROCOS_ROBOT"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find irp6_bringup)/config/irp6-conv.ops"/>
-    <arg name="LOG_LEVEL" value="Warning"/>
-    <arg name="DEBUG" value="false"/>
-  </include>
-
   <group ns="ROS_OROCOS_ROBOT">
     <rosparam>
       Irp6HardwareInterface:
         number_of_drives: 16
         auto_synchronize: true
-        test_mode: false
         rwh_nsec: 1200000
         hi_port_param_0:
           label: irp6pm_0
@@ -125,7 +123,7 @@
           enc_res: 4000.0
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007
-          current_mode: 1
+          current_mode: 0
         hi_port_param_9:
           label: irp6otm_1
           ports_adresses: /dev/ttyMI0
@@ -351,7 +349,7 @@
         A: 0.412429378531
         BB0: 1.5569592
         BB1: 1.5028614
-        current_mode: true
+        current_mode: false
         current_reg_kp: 190.0
         max_output_current: 22000.0
       IRp6otmRegulator_1:
@@ -478,12 +476,10 @@
             y: 0.0
             z: 0.09
       ATI6284:
-        test_mode: false
         force_limits: [65.0, 65.0, 130.0, 5.0, 5.0, 5.0]
         slow_buffer_size: 100
         fast_buffer_size: 2
       ATI3084:
-        test_mode: false
         force_limits: [65.0, 65.0, 130.0, 5.0, 5.0, 5.0]
         slow_buffer_size: 100
         fast_buffer_size: 2
