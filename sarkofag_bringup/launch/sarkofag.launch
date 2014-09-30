@@ -16,7 +16,9 @@
       SarkofagHardwareInterface:
         number_of_drives: 1
         auto_synchronize: true
+        rwh_nsec: 1200000
         test_mode: false
+        timeouts_to_print: 1
         hi_port_param_0:
           label: sarkofag_0
           ports_adresses: /dev/ttyMI7
@@ -59,7 +61,6 @@
         number_of_ports: 1
       SarkofagPortDoubleAggregate_hw_p:
         number_of_ports: 1
-      
     </rosparam>
 </group>
 
