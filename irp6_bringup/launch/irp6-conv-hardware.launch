@@ -15,7 +15,7 @@
     <rosparam>
       Irp6HardwareInterface:
         test_mode: false
-        timeouts_to_print: 1
+        timeouts_to_print: 3
       ATI6284:
         test_mode: false
       ATI3084:

@@ -420,13 +420,14 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
             || (servo_data[drive_number].current_position_inc
                 < -ridiculous_increment[drive_number])) {
           hardware_panic = true;
-          temp_message << std::endl << "[error] RIDICOLOUS INCREMENT on drive "
+          temp_message << std::endl << RED
+                       << "[error] RIDICOLOUS INCREMENT on drive "
                        << (int) drive_number << ", "
                        << port_names[drive_number].c_str() << ", c.cycle "
                        << (int) receive_attempts << ": read = "
                        << servo_data[drive_number].current_position_inc
                        << ", max = " << ridiculous_increment[drive_number]
-                       << std::endl << std::endl;
+                       << RESET << std::endl << std::endl;
           // master.msg->message(lib::FATAL_ERROR, temp_message.str());
           std::cerr << temp_message.str() << std::cerr.flush();
         }
@@ -437,11 +438,11 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
           & NF_DrivesStatus_Overcurrent) != 0) {
         if (error_msg_overcurrent == 0) {
           // master.msg->message(lib::NON_FATAL_ERROR, "Overcurrent");
-          std::cout << std::endl << "[error] OVERCURRENT on drive "
+          std::cout << std::endl << RED << "[error] OVERCURRENT on drive "
                     << (int) drive_number << ", "
                     << port_names[drive_number].c_str() << ": read = "
                     << NFComBuf.ReadDrivesCurrent.data[drive_number] << "mA"
-                    << std::endl << std::endl;
+                    << RESET << std::endl << std::endl;
           error_msg_overcurrent++;
         }
       }
@@ -452,8 +453,8 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
         hardware_panic = true;
         if (error_limit_switch == 0) {
           // master.msg->message(lib::NON_FATAL_ERROR, "Overcurrent");
-          std::cout << std::endl << "[error] UPPER LIMIT SWITCH on drive"
-                    << (int) drive_number << std::endl << std::endl;
+          std::cout << std::endl << RED << "[error] UPPER LIMIT SWITCH on drive"
+                    << (int) drive_number << RESET << std::endl << std::endl;
           error_limit_switch++;
         }
       }
@@ -464,8 +465,8 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
         hardware_panic = true;
         if (error_limit_switch == 0) {
           // master.msg->message(lib::NON_FATAL_ERROR, "Overcurrent");
-          std::cout << std::endl << "[error] LOWER LIMIT SWITCH on drive"
-                    << (int) drive_number << std::endl << std::endl;
+          std::cout << std::endl << RED << "[error] LOWER LIMIT SWITCH on drive"
+                    << (int) drive_number << RESET << std::endl << std::endl;
           error_limit_switch++;
         }
       }
