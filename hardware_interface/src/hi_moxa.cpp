@@ -204,6 +204,7 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
   static int error_msg_power_stage = 0;
 
   static int error_msg_overcurrent = 0;
+  static int error_limit_switch = 0;
   static int last_synchro_state[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0 };
   static int comm_timeouts[] =
@@ -419,13 +420,13 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
             || (servo_data[drive_number].current_position_inc
                 < -ridiculous_increment[drive_number])) {
           hardware_panic = true;
-          temp_message << "[error] ridiculous increment on drive "
+          temp_message << std::endl << "[error] RIDICOLOUS INCREMENT on drive "
                        << (int) drive_number << ", "
                        << port_names[drive_number].c_str() << ", c.cycle "
                        << (int) receive_attempts << ": read = "
                        << servo_data[drive_number].current_position_inc
                        << ", max = " << ridiculous_increment[drive_number]
-                       << std::endl;
+                       << std::endl << std::endl;
           // master.msg->message(lib::FATAL_ERROR, temp_message.str());
           std::cerr << temp_message.str() << std::cerr.flush();
         }
@@ -436,11 +437,36 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
           & NF_DrivesStatus_Overcurrent) != 0) {
         if (error_msg_overcurrent == 0) {
           // master.msg->message(lib::NON_FATAL_ERROR, "Overcurrent");
-          std::cout << "[error] overcurrent on drive " << (int) drive_number
-                    << ", " << port_names[drive_number].c_str() << ": read = "
+          std::cout << std::endl << "[error] OVERCURRENT on drive "
+                    << (int) drive_number << ", "
+                    << port_names[drive_number].c_str() << ": read = "
                     << NFComBuf.ReadDrivesCurrent.data[drive_number] << "mA"
-                    << std::endl;
+                    << std::endl << std::endl;
           error_msg_overcurrent++;
+        }
+      }
+
+      // Sprawdzenie krancowek gorny limit
+      if ((NFComBuf.ReadDrivesStatus.data[drive_number]
+          & NF_DrivesStatus_LimitSwitchUp) != 0) {
+        hardware_panic = true;
+        if (error_limit_switch == 0) {
+          // master.msg->message(lib::NON_FATAL_ERROR, "Overcurrent");
+          std::cout << std::endl << "[error] UPPER LIMIT SWITCH on drive"
+                    << (int) drive_number << std::endl << std::endl;
+          error_limit_switch++;
+        }
+      }
+
+      // Sprawdzenie krancowek dolny limit
+      if ((NFComBuf.ReadDrivesStatus.data[drive_number]
+          & NF_DrivesStatus_LimitSwitchDown) != 0) {
+        hardware_panic = true;
+        if (error_limit_switch == 0) {
+          // master.msg->message(lib::NON_FATAL_ERROR, "Overcurrent");
+          std::cout << std::endl << "[error] LOWER LIMIT SWITCH on drive"
+                    << (int) drive_number << std::endl << std::endl;
+          error_limit_switch++;
         }
       }
 
@@ -464,7 +490,8 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
     hardware_panic = true;
     // std::cout << "[error] power_fault" << std::endl;
     if (error_msg_power_stage == 0) {
-      temp_message << "[error] power_fault" << std::endl;
+      temp_message << std::endl << "[error] POWER FAULT" << std::endl
+                   << std::endl;
       std::cerr << temp_message.str() << std::cerr.flush();
       // master.msg->message(lib::NON_FATAL_ERROR, "Wylaczono moc - robot zablokowany");
       error_msg_power_stage++;
