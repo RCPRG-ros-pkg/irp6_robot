@@ -57,6 +57,15 @@
         current_mode: true
         current_reg_kp: 200.0
         max_output_current: 20000.0
+      DataExport_0:
+        drive_number: 0
+        debug: false
+        position: true
+        increment: true
+        voltage: false
+        current: true
+        matfile: true
+        csvfile: true
       SarkofagPortDoubleSplit_hw_cp:
         number_of_ports: 1
       SarkofagPortDoubleAggregate_hw_p:

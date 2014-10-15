@@ -15,6 +15,7 @@ ros.import("rtt_conman_msgs");
 ros.import("conman_ros");
 ros.import("hardware_interface")
 ros.import("sarkofag_regulator")
+ros.import("data_export")
 ros.import("oro_joint_state_publisher")
 ros.import("internal_space_spline_trajectory_action")
 ros.import("internal_space_spline_trajectory_generator")
@@ -48,8 +49,14 @@ SarkofagRegulator_0.loadService("rosparam")
 SarkofagRegulator_0.rosparam.getAll()
 SarkofagRegulator_0.configure()
 
+loadComponent("DataExport_0","DataExport")
+DataExport_0.loadService("rosparam")
+DataExport_0.rosparam.getAll()
+DataExport_0.configure()
+
 
 addPeer("SarkofagHardwareInterface", "SarkofagRegulator_0")
+addPeer("SarkofagHardwareInterface", "DataExport_0")
 
 //SarkofagHardwareInterface.configure()
 
@@ -125,6 +132,11 @@ SarkofagHardwareInterface.configure();
 connect("SarkofagHardwareInterface.computedReg_in_sarkofag_0","SarkofagRegulator_0.computedPwm_out", ConnPolicy())
 connect("SarkofagRegulator_0.posInc_in","SarkofagHardwareInterface.posInc_out_sarkofag_0", ConnPolicy())
 connect("SarkofagRegulator_0.deltaInc_in","SarkofagHardwareInterface.deltaInc_out_sarkofag_0", ConnPolicy())
+
+connect("DataExport_0.position_in","SarkofagHardwareInterface.MotorPosition_sarkofag_0", ConnPolicy())
+connect("DataExport_0.increment_in","SarkofagHardwareInterface.MotorIncrement_sarkofag_0", ConnPolicy())
+#connect("DataExport_0.voltage_in","SarkofagHardwareInterface.MotorVoltage_sarkofag_0", ConnPolicy())
+connect("DataExport_0.current_in","SarkofagHardwareInterface.MotorCurrent_sarkofag_0", ConnPolicy())
 
 connect("SarkofagPortDoubleAggregate_hw_p.OutputPort","SarkofagM2J.MotorPosition", ConnPolicy())
 connect("SarkofagJ2M.MotorPosition", "SarkofagPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
@@ -218,6 +230,7 @@ stream("SarkofagKinematicModel.WristOutputPose", ros.comm.topic("/cartesian_posi
 scheme.start()
 SarkofagHardwareInterface.start()
 SarkofagRegulator_0.start()
+DataExport_0.start()
 SarkofagPortDoubleSplit_hw_cp.start()
 SarkofagPortDoubleAggregate_hw_p.start()
 SarkofagM2J.start()
