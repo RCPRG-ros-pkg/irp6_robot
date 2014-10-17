@@ -1,5 +1,5 @@
-#ifndef MatEXPORT_H_
-#define MatEXPORT_H_
+#ifndef DATAEXPORT_H_
+#define DATAEXPORT_H_
 
 #include <iostream>
 #include <fstream>
@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <unistd.h>
 //#include "matio.h"
+
+#include <hi_msgs/HardwareInterfacePort.h>
 
 using namespace RTT;
 using namespace std;
@@ -26,27 +28,24 @@ class DataExport : public RTT::TaskContext {
   bool configureHook();
   void updateHook();
 
-  InputPort<double> position_in;
-  InputPort<double> increment_in;
-  //InputPort<double> voltage_in;
-  InputPort<double> current_in;
+  std::vector<InputPort<double>*> port_motor_position_list_;
+  std::vector<InputPort<double>*> port_motor_increment_list_;
+  std::vector<InputPort<double>*> port_motor_current_list_;
+
+  std::vector<std::string> label_;
 
   double positionData;
   double incrementData;
-  //double voltageData;
   double currentData;
 
   // Properties
-  int drive_number_;
+  int number_of_drives_;
+  std::string filename_;
   bool debug_;
-  bool position_;
-  bool increment_;
-  bool voltage_;
-  bool current_;
   bool matfile_;
   bool csvfile_;
-
-  long step_reg;
+  hi_msgs::HardwareInterfacePort hi_port_param_[16];
+  long step;
 
   ofstream csv;
 
