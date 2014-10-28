@@ -28,6 +28,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# WSPOLPRACUJE z conv-hardware.launch
+
+
+
 import rospy
 import tf
 import actionlib
@@ -47,40 +51,40 @@ import PyKDL
 import tf_conversions.posemath as pm
 
 if __name__ == '__main__':
-  rospy.init_node('multi_trajectory')
-  rospy.wait_for_service('/controller_manager/switch_controller')
-  conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+  rospy.init_node('conveyor_test')
+  # rospy.wait_for_service('/controller_manager/switch_controller')
+  # conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
   
   #
   # Motor coordinates motion
   #
   
-  conmanSwitch(['ConveyorSplineTrajectoryGeneratorMotor'], [], True)
+  # conmanSwitch(['ConveyorSplineTrajectoryGeneratorMotor'], [], True)
   
-  motor_client = actionlib.SimpleActionClient('/conveyor/spline_trajectory_action_motor', FollowJointTrajectoryAction)
-  motor_client.wait_for_server()
+  # motor_client = actionlib.SimpleActionClient('/conveyor/spline_trajectory_action_motor', FollowJointTrajectoryAction)
+  # motor_client.wait_for_server()
 
-  print 'server ok'
+  # print 'server ok'
 
-  goal = FollowJointTrajectoryGoal()
-  goal.trajectory.joint_names = ['joint1']
-  goal.trajectory.points.append(JointTrajectoryPoint([0.0], [0.0], [], [], rospy.Duration(6.0)))
-  goal.trajectory.points.append(JointTrajectoryPoint([100.0], [0.0], [], [], rospy.Duration(9.0)))
-  goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+  # goal = FollowJointTrajectoryGoal()
+  # goal.trajectory.joint_names = ['joint1']
+  # goal.trajectory.points.append(JointTrajectoryPoint([0.0], [0.0], [], [], rospy.Duration(6.0)))
+  # goal.trajectory.points.append(JointTrajectoryPoint([100.0], [0.0], [], [], rospy.Duration(9.0)))
+  # goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
 
-  motor_client.send_goal(goal)
+  # motor_client.send_goal(goal)
 
-  motor_client.wait_for_result()
-  command_result = motor_client.get_result()
+  # motor_client.wait_for_result()
+  # command_result = motor_client.get_result()
     
-  conmanSwitch([], ['ConveyorSplineTrajectoryGeneratorMotor'], True)  
+  # conmanSwitch([], ['ConveyorSplineTrajectoryGeneratorMotor'], True)  
     
   
   #
   # Joint coordinates motion
   #
   
-  conmanSwitch(['ConveyorSplineTrajectoryGeneratorJoint'], [], True)
+  # conmanSwitch(['ConveyorSplineTrajectoryGeneratorJoint'], [], True)
   
   joint_client = actionlib.SimpleActionClient('/conveyor/spline_trajectory_action_joint', FollowJointTrajectoryAction)
   joint_client.wait_for_server()
@@ -98,7 +102,7 @@ if __name__ == '__main__':
   joint_client.wait_for_result()
   command_result = joint_client.get_result()
      
-  conmanSwitch([], ['ConveyorSplineTrajectoryGeneratorJoint'], True)
+  # conmanSwitch([], ['ConveyorSplineTrajectoryGeneratorJoint'], True)
   
   print 'finish'
   

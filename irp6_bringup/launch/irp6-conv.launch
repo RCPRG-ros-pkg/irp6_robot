@@ -10,7 +10,7 @@
   
   <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher"/>
   
-  <group ns="ROS_OROCOS_ROBOT">
+  <group ns="IRP6_CONV_OROCOS_ROBOT">
     <rosparam>
       Irp6HardwareInterface:
         number_of_drives: 16

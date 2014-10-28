@@ -35,7 +35,9 @@ ros.import("port_split")
 //------------------------------------------------------------------------------
 loadComponent("Irp6scheme", "conman::Scheme");
 setActivity("Irp6scheme", 0.002, 5, ORO_SCHED_RT);
-Irp6scheme.loadService("conman_ros");
+
+// Wyłączone ze względu na koniecznosc uruchamiania z irp6.launch
+// Irp6scheme.loadService("conman_ros");
 Irp6scheme.configure();
 
 //------------------------------------------------------------------------------
@@ -202,5 +204,6 @@ ConveyorM2J.start()
 ConveyorJ2M.start()
 ConveyorSplineTrajectoryActionJoint.start()
 ConveyorSplineTrajectoryActionMotor.start()
+# ConveyorSplineTrajectoryGeneratorJoint.start()
 
 
