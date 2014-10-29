@@ -192,6 +192,18 @@ connect("ConveyorSplineTrajectoryGeneratorMotor.JointPositionCommand","ConveyorS
 
 ConveyorSplineTrajectoryActionMotor.configure()
 
+loadComponent("ConveyorJntPub", "JointStatePublisher");
+setActivity("ConveyorJntPub", 0.01, 2, ORO_SCHED_RT);
+ConveyorJntPub.loadService("rosparam");
+ConveyorJntPub.rosparam.getAll();
+
+connect("ConveyorM2J.JointPosition", "ConveyorJntPub.JointPosition", ConnPolicy());
+connect("ConveyorM2J.JointPosition", "ConveyorJntPub.JointVelocity", ConnPolicy());
+connect("ConveyorM2J.JointPosition", "ConveyorJntPub.JointEffort", ConnPolicy());
+
+stream("ConveyorJntPub.joint_state", ros.comm.topic("conveyor/joint_states"));
+
+ConveyorJntPub.configure()
 
 
 ## Start it
@@ -205,5 +217,6 @@ ConveyorJ2M.start()
 ConveyorSplineTrajectoryActionJoint.start()
 ConveyorSplineTrajectoryActionMotor.start()
 # ConveyorSplineTrajectoryGeneratorJoint.start()
+ConveyorJntPub.start()
 
 
