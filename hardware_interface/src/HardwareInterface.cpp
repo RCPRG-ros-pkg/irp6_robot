@@ -108,11 +108,11 @@ bool HardwareInterface::configureHook() {
                            *port_motor_increment_list_[i]);
 
     /*char MotorVoltage_port_name[32];
-    snprintf(MotorVoltage_port_name, sizeof(MotorVoltage_port_name),
-             "MotorVoltage_%s", hi_port_param_[i].label.c_str());
-    port_motor_voltage_list_[i] = new typeof(*port_motor_voltage_list_[i]);
-    this->ports()->addPort(MotorVoltage_port_name,
-                           *port_motor_voltage_list_[i]);*/
+     snprintf(MotorVoltage_port_name, sizeof(MotorVoltage_port_name),
+     "MotorVoltage_%s", hi_port_param_[i].label.c_str());
+     port_motor_voltage_list_[i] = new typeof(*port_motor_voltage_list_[i]);
+     this->ports()->addPort(MotorVoltage_port_name,
+     *port_motor_voltage_list_[i]);*/
 
     char MotorCurrent_port_name[32];
     snprintf(MotorCurrent_port_name, sizeof(MotorCurrent_port_name),
@@ -207,6 +207,12 @@ bool HardwareInterface::configureHook() {
     }
   } catch (std::exception& e) {
     log(Info) << e.what() << endlog();
+
+    std::cout
+        << std::endl << RED
+        << "[error] ERROR configuring HardwareInbterface, check power switches"
+        << std::endl;
+
     return false;
   }
 
