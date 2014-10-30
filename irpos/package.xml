@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <package>
   <name>irpos</name>
-<<<<<<< HEAD
   <version>0.0.0</version>
   <description>The irpos package</description>
 
@@ -54,15 +53,4 @@
 
   </export>
 </package>
-=======
-  <version>0.0.1</version>
-  <description>The irpos package</description>
 
-  <maintainer email="tpokorsk@todo.todo">tpokorsk</maintainer>
-
-  <license>TODO</license>
-
-  <buildtool_depend>catkin</buildtool_depend>
-
-</package>
->>>>>>> 191b54f7fc7b61d2ebc81d38c58e734da403dbe6
