@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(irpos)
 
+<<<<<<< HEAD
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -159,3 +160,16 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+=======
+find_package(catkin REQUIRED)
+
+catkin_python_setup()
+
+
+catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES suros
+#  CATKIN_DEPENDS other_catkin_pkg
+#  DEPENDS system_lib
+)
+>>>>>>> 191b54f7fc7b61d2ebc81d38c58e734da403dbe6
