@@ -48,6 +48,11 @@
         current_mode: true
         current_reg_kp: 120.0
         max_output_current: 15000.0
+      ConveyorDataExport:
+        number_of_drives: 1
+        debug: false
+        hi_port_param_0:
+          label: conveyor
       ConveyorPortDoubleSplit_hw_cp:
         number_of_ports: 1
       ConveyorPortDoubleAggregate_hw_p:

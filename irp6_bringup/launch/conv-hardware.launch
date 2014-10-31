@@ -16,6 +16,10 @@
       Irp6HardwareInterface:
         test_mode: false
         timeouts_to_print: 3
+      ConveyorDataExport:
+        filename: conveyor
+        matfile: false
+        csvfile: false
     </rosparam>
   </group>
 
