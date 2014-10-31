@@ -15,14 +15,6 @@
     <rosparam>
       Irp6HardwareInterface:
         test_mode: true
-      Irp6pmDataExport:
-        filename: irp6pm
-        matfile: false
-        csvfile: false
-      Irp6otDataExport:
-        filename: irp6ot
-        matfile: false
-        csvfile: false
       ATI6284:
         test_mode: true
       ATI3084:
