@@ -14,6 +14,7 @@ ros.import("conman")
 ros.import("rtt_conman_msgs")
 ros.import("conman_ros")
 ros.import("hardware_interface")
+ros.import("data_export")
 ros.import("irp6_regulator")
 ros.import("oro_joint_state_publisher")
 ros.import("internal_space_spline_trajectory_action")
@@ -56,9 +57,15 @@ ConveyorRegulator.loadService("rosparam")
 ConveyorRegulator.rosparam.getAll()
 ConveyorRegulator.configure()
 
+loadComponent("ConveyorDataExport","DataExport")
+ConveyorDataExport.loadService("rosparam")
+ConveyorDataExport.rosparam.getAll()
+ConveyorDataExport.configure()
+
 
 
 addPeer("Irp6HardwareInterface", "ConveyorRegulator")
+addPeer("Irp6HardwareInterface", "ConveyorDataExport")
 
 
 // Conveyor double port spliter
@@ -113,6 +120,7 @@ ConveyorSplineTrajectoryGeneratorMotor.configure()
 
 
 addPeer("Irp6scheme", "Irp6HardwareInterface");
+addPeer("Irp6scheme", "ConveyorDataExport");
 addPeer("Irp6scheme", "ConveyorPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "ConveyorPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "ConveyorM2J");
@@ -130,6 +138,10 @@ Irp6HardwareInterface.configure();
 connect("Irp6HardwareInterface.computedReg_in_conveyor","ConveyorRegulator.computedPwm_out", ConnPolicy())
 connect("ConveyorRegulator.posInc_in","Irp6HardwareInterface.posInc_out_conveyor", ConnPolicy())
 connect("ConveyorRegulator.deltaInc_in","Irp6HardwareInterface.deltaInc_out_conveyor", ConnPolicy())
+
+connect("ConveyorDataExport.MotorPosition_conveyor","Irp6HardwareInterface.MotorPosition_conveyor", ConnPolicy())
+connect("ConveyorDataExport.MotorIncrement_conveyor","Irp6HardwareInterface.MotorIncrement_conveyor", ConnPolicy())
+connect("ConveyorDataExport.MotorCurrent_conveyor","Irp6HardwareInterface.MotorCurrent_conveyor", ConnPolicy())
 
 
 connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorM2J.MotorPosition", ConnPolicy())
@@ -210,6 +222,7 @@ ConveyorJntPub.configure()
 Irp6scheme.start()
 Irp6HardwareInterface.start()
 ConveyorRegulator.start()
+ConveyorDataExport.start()
 ConveyorPortDoubleSplit_hw_cp.start()
 ConveyorPortDoubleAggregate_hw_p.start()
 ConveyorM2J.start()
