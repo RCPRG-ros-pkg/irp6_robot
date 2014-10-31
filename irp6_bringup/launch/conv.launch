@@ -50,7 +50,7 @@
         max_output_current: 15000.0
       ConveyorDataExport:
         number_of_drives: 1
-        debug: true
+        debug: false
         hi_port_param_0:
           label: conveyor
       ConveyorPortDoubleSplit_hw_cp:

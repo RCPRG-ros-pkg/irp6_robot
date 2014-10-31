@@ -18,7 +18,7 @@
       ConveyorDataExport:
         filename: conveyor
         matfile: false
-        csvfile: true
+        csvfile: false
     </rosparam>
   </group>
 
