@@ -232,6 +232,19 @@ Irp6ottfgPortDoubleAggregate_hw_p.loadService("rosparam")
 Irp6ottfgPortDoubleAggregate_hw_p.rosparam.getAll()
 Irp6ottfgPortDoubleAggregate_hw_p.configure()
 
+// Irp6pm double port aggregate
+
+loadComponent("Irp6pmPortDoubleAggregate_hw_curr","PortDoubleAggregate")
+Irp6pmPortDoubleAggregate_hw_curr.loadService("rosparam")
+Irp6pmPortDoubleAggregate_hw_curr.rosparam.getAll()
+Irp6pmPortDoubleAggregate_hw_curr.configure()
+
+// Irp6otm double port aggregate
+
+loadComponent("Irp6otmPortDoubleAggregate_hw_curr","PortDoubleAggregate")
+Irp6otmPortDoubleAggregate_hw_curr.loadService("rosparam")
+Irp6otmPortDoubleAggregate_hw_curr.rosparam.getAll()
+Irp6otmPortDoubleAggregate_hw_curr.configure()
 
 // Irp6pm double to float64 converter
 
@@ -540,6 +553,8 @@ addPeer("Irp6scheme", "Irp6ptfgPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6otmPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6otmPortDoubleAggregate_hw_desired")
 addPeer("Irp6scheme", "Irp6ottfgPortDoubleAggregate_hw_p")
+addPeer("Irp6scheme", "Irp6pmPortDoubleAggregate_hw_curr")
+addPeer("Irp6scheme", "Irp6otmPortDoubleAggregate_hw_curr")
 addPeer("Irp6scheme", "Irp6pmM2J");
 addPeer("Irp6scheme", "Irp6ptfgM2J");
 addPeer("Irp6scheme", "Irp6otmM2J");
@@ -772,6 +787,20 @@ connect("Irp6otmPortDoubleAggregate_hw_desired.InputPort_6","Irp6otmPortDoubleSp
 
 connect("Irp6ottfgPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_irp6ottfg", ConnPolicy())
 
+connect("Irp6pmPortDoubleAggregate_hw_curr.InputPort_0","Irp6HardwareInterface.MotorCurrent_irp6pm_0", ConnPolicy())
+connect("Irp6pmPortDoubleAggregate_hw_curr.InputPort_1","Irp6HardwareInterface.MotorCurrent_irp6pm_1", ConnPolicy())
+connect("Irp6pmPortDoubleAggregate_hw_curr.InputPort_2","Irp6HardwareInterface.MotorCurrent_irp6pm_2", ConnPolicy())
+connect("Irp6pmPortDoubleAggregate_hw_curr.InputPort_3","Irp6HardwareInterface.MotorCurrent_irp6pm_3", ConnPolicy())
+connect("Irp6pmPortDoubleAggregate_hw_curr.InputPort_4","Irp6HardwareInterface.MotorCurrent_irp6pm_4", ConnPolicy())
+connect("Irp6pmPortDoubleAggregate_hw_curr.InputPort_5","Irp6HardwareInterface.MotorCurrent_irp6pm_5", ConnPolicy())
+
+connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_0","Irp6HardwareInterface.MotorCurrent_irp6otm_0", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_1","Irp6HardwareInterface.MotorCurrent_irp6otm_1", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_2","Irp6HardwareInterface.MotorCurrent_irp6otm_2", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_3","Irp6HardwareInterface.MotorCurrent_irp6otm_3", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_4","Irp6HardwareInterface.MotorCurrent_irp6otm_4", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_5","Irp6HardwareInterface.MotorCurrent_irp6otm_5", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_6","Irp6HardwareInterface.MotorCurrent_irp6otm_6", ConnPolicy())
 
 Irp6scheme.addBlock("Irp6pmPortDoubleSplit_hw_cp")
 Irp6scheme.addBlock("Irp6ptfgPortDoubleSplit_hw_cp")
@@ -782,7 +811,8 @@ Irp6scheme.addBlock("Irp6ptfgPortDoubleAggregate_hw_p")
 Irp6scheme.addBlock("Irp6otmPortDoubleAggregate_hw_p")
 Irp6scheme.addBlock("Irp6otmPortDoubleAggregate_hw_desired")
 Irp6scheme.addBlock("Irp6ottfgPortDoubleAggregate_hw_p")
-
+Irp6scheme.addBlock("Irp6pmPortDoubleAggregate_hw_curr")
+Irp6scheme.addBlock("Irp6otmPortDoubleAggregate_hw_curr")
 Irp6scheme.addBlock("Irp6pmM2J");
 Irp6scheme.addBlock("Irp6ptfgM2J");
 Irp6scheme.addBlock("Irp6otmM2J");
@@ -1054,7 +1084,7 @@ Irp6pmJntPub.rosparam.getAll();
 
 connect("Irp6pmM2J.JointPosition", "Irp6pmJntPub.JointPosition", ConnPolicy());
 connect("Irp6pmM2J.JointPosition", "Irp6pmJntPub.JointVelocity", ConnPolicy());
-connect("Irp6pmM2J.JointPosition", "Irp6pmJntPub.JointEffort", ConnPolicy());
+connect("Irp6pmPortDoubleAggregate_hw_curr.OutputPort", "Irp6pmJntPub.JointEffort", ConnPolicy());
 
 stream("Irp6pmJntPub.joint_state", ros.comm.topic("irp6p_arm/joint_states"));
 stream("Irp6pmJntPub.joint_state", ros.comm.topic("/joint_states"));
@@ -1069,7 +1099,7 @@ Irp6otmJntPub.rosparam.getAll();
 
 connect("Irp6otmM2J.JointPosition", "Irp6otmJntPub.JointPosition", ConnPolicy());
 connect("Irp6otmM2J.JointPosition", "Irp6otmJntPub.JointVelocity", ConnPolicy());
-connect("Irp6otmM2J.JointPosition", "Irp6otmJntPub.JointEffort", ConnPolicy());
+connect("Irp6otmPortDoubleAggregate_hw_curr.OutputPort", "Irp6otmJntPub.JointEffort", ConnPolicy());
 
 stream("Irp6otmJntPub.joint_state", ros.comm.topic("irp6ot_arm/joint_states"));
 stream("Irp6otmJntPub.joint_state", ros.comm.topic("/joint_states"));
@@ -1199,6 +1229,8 @@ Irp6ptfgPortDoubleAggregate_hw_p.start()
 Irp6otmPortDoubleAggregate_hw_p.start()
 Irp6otmPortDoubleAggregate_hw_desired.start()
 Irp6ottfgPortDoubleAggregate_hw_p.start()
+Irp6pmPortDoubleAggregate_hw_curr.start()
+Irp6otmPortDoubleAggregate_hw_curr.start()
 Irp6pmM2J.start()
 Irp6ptfgM2J.start()
 Irp6otmM2J.start()
