@@ -422,6 +422,10 @@
         number_of_ports: 1
       Irp6ottfgPortDoubleAggregate_hw_p:
         number_of_ports: 1
+      Irp6pmPortDoubleAggregate_hw_curr:
+        number_of_ports: 6
+      Irp6otmPortDoubleAggregate_hw_curr:
+        number_of_ports: 7
       Irp6pmToolInt:
         activate_pose_init: true
         init_setpoint:
