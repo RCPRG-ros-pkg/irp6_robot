@@ -15,10 +15,6 @@
     <rosparam>
       Irp6HardwareInterface:
         test_mode: true
-      ConveyorDataExport:
-        filename: conveyor
-        matfile: false
-        csvfile: false
     </rosparam>
   </group>
 
