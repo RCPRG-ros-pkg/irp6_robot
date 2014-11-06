@@ -14,7 +14,6 @@ ros.import("conman");
 ros.import("rtt_conman_msgs");
 ros.import("conman_ros");
 ros.import("hardware_interface")
-ros.import("data_export")
 ros.import("sarkofag_regulator")
 ros.import("oro_joint_state_publisher")
 ros.import("internal_space_spline_trajectory_action")
@@ -49,13 +48,7 @@ SarkofagRegulator_0.loadService("rosparam")
 SarkofagRegulator_0.rosparam.getAll()
 SarkofagRegulator_0.configure()
 
-loadComponent("SarkofagDataExport","DataExport")
-SarkofagDataExport.loadService("rosparam")
-SarkofagDataExport.rosparam.getAll()
-SarkofagDataExport.configure()
-
 addPeer("SarkofagHardwareInterface", "SarkofagRegulator_0")
-addPeer("SarkofagHardwareInterface", "SarkofagDataExport")
 
 //SarkofagHardwareInterface.configure()
 
@@ -131,10 +124,6 @@ SarkofagHardwareInterface.configure();
 connect("SarkofagHardwareInterface.computedReg_in_sarkofag_0","SarkofagRegulator_0.computedPwm_out", ConnPolicy())
 connect("SarkofagRegulator_0.posInc_in","SarkofagHardwareInterface.posInc_out_sarkofag_0", ConnPolicy())
 connect("SarkofagRegulator_0.deltaInc_in","SarkofagHardwareInterface.deltaInc_out_sarkofag_0", ConnPolicy())
-
-connect("SarkofagDataExport.MotorPosition_sarkofag_0","SarkofagHardwareInterface.MotorPosition_sarkofag_0", ConnPolicy())
-connect("SarkofagDataExport.MotorIncrement_sarkofag_0","SarkofagHardwareInterface.MotorIncrement_sarkofag_0", ConnPolicy())
-connect("SarkofagDataExport.MotorCurrent_sarkofag_0","SarkofagHardwareInterface.MotorCurrent_sarkofag_0", ConnPolicy())
 
 connect("SarkofagPortDoubleAggregate_hw_p.OutputPort","SarkofagM2J.MotorPosition", ConnPolicy())
 connect("SarkofagJ2M.MotorPosition", "SarkofagPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
@@ -228,7 +217,6 @@ stream("SarkofagKinematicModel.WristOutputPose", ros.comm.topic("/cartesian_posi
 scheme.start()
 SarkofagHardwareInterface.start()
 SarkofagRegulator_0.start()
-SarkofagDataExport.start()
 SarkofagPortDoubleSplit_hw_cp.start()
 SarkofagPortDoubleAggregate_hw_p.start()
 SarkofagM2J.start()
