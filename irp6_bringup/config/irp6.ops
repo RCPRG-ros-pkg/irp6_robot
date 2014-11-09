@@ -25,7 +25,7 @@ ros.import("controller_common")
 ros.import("force_control")
 ros.import("ati3084")
 ros.import("ati6284")
-ros.import("port_split")
+ros.import("port_operations")
 ros.import("irp6_haptic")
 
 

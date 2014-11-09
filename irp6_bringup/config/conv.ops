@@ -20,7 +20,7 @@ ros.import("internal_space_spline_trajectory_action")
 ros.import("internal_space_spline_trajectory_generator")
 ros.import("conveyor_kinematic")
 ros.import("controller_common")
-ros.import("port_split")
+ros.import("port_operations")
 
 
 //------------------------------------------------------------------------------
