@@ -4,22 +4,22 @@
 #include "ImpedanceMotorCurrent.h"
 #include "eigen_conversions/eigen_msg.h"
 
-GravityMotorCurrent::GravityMotorCurrent(const std::string& name)
+ImpedanceMotorCurrent::ImpedanceMotorCurrent(const std::string& name)
     : RTT::TaskContext(name, PreOperational) {
 }
 
-GravityMotorCurrent::~GravityMotorCurrent() {
+ImpedanceMotorCurrent::~ImpedanceMotorCurrent() {
 }
 
-bool GravityMotorCurrent::configureHook() {
+bool ImpedanceMotorCurrent::configureHook() {
   return true;
 }
 
-bool GravityMotorCurrent::startHook() {
+bool ImpedanceMotorCurrent::startHook() {
   return true;
 }
 
-void GravityMotorCurrent::updateHook() {
+void ImpedanceMotorCurrent::updateHook() {
 }
 
 ORO_CREATE_COMPONENT(ImpedanceMotorCurrent)
