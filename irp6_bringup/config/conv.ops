@@ -57,9 +57,6 @@ ConveyorRegulator.rosparam.getAll()
 ConveyorRegulator.configure()
 
 
-addPeer("Irp6HardwareInterface", "ConveyorRegulator")
-
-
 // Conveyor double port spliter
 
 loadComponent("ConveyorPortDoubleSplit_hw_cp","PortDoubleSplit")
@@ -110,7 +107,7 @@ connect("ConveyorSplineTrajectoryGeneratorMotor.JointPositionCommand","ConveyorP
 ConveyorSplineTrajectoryGeneratorMotor.configure()
 
 
-
+addPeer("Irp6scheme", "ConveyorRegulator");
 addPeer("Irp6scheme", "Irp6HardwareInterface");
 addPeer("Irp6scheme", "ConveyorPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "ConveyorPortDoubleAggregate_hw_p")

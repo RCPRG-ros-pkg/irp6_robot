@@ -325,7 +325,6 @@ bool HardwareInterface::startHook() {
     port_motor_current_list_[i]->write(motor_current_[i]);
   }
 
-
   return true;
 }
 
@@ -334,6 +333,23 @@ void HardwareInterface::updateHook() {
   static int iteration_nr = 0;
 
   iteration_nr++;
+
+  if (!test_mode_) {
+    for (int i = 0; i < number_of_drives_; i++) {
+      if (NewData != computedReg_in_list_[i]->read(pwm_or_current_[i])) {
+        RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
+      }
+      if (current_mode_[i]) {
+
+        hi_->set_current(i, pwm_or_current_[i]);
+      } else {
+        hi_->set_pwm(i, pwm_or_current_[i]);
+      }
+    }
+    hi_->write_read_hardware(rwh_nsec_, timeouts_to_print_);
+  } else {
+    test_mode_sleep();
+  }
 
   switch (state_) {
     case NOT_SYNCHRONIZED:
@@ -377,6 +393,28 @@ void HardwareInterface::updateHook() {
         } else {
           pos_inc_[i] = 0.0;
         }
+
+        if (!test_mode_) {
+          motor_position_(i) = (double) hi_->get_position(i)
+              * ((2.0 * M_PI) / enc_res_[i]);
+          motor_increment_(i) = (double) hi_->get_increment(i);
+          //motor_voltage_(i) = (double) hi_->get_voltage(i);
+          motor_current_(i) = (double) hi_->get_current(i);
+
+          port_motor_position_list_[i]->write(motor_position_[i]);
+          port_motor_increment_list_[i]->write(motor_increment_[i]);
+          //port_motor_voltage_list_[i]->write(motor_voltage_[i]);
+          port_motor_current_list_[i]->write(motor_current_[i]);
+
+        } else {
+          motor_position_(i) = motor_position_command_(i);
+
+          port_motor_position_list_[i]->write(motor_position_[i]);
+          port_motor_increment_list_[i]->write(motor_increment_[i]);
+          //port_motor_voltage_list_[i]->write(motor_voltage_[i]);
+          port_motor_current_list_[i]->write(motor_current_[i]);
+        }
+
       }
 
       break;
@@ -532,45 +570,32 @@ void HardwareInterface::updateHook() {
       posInc_out_list_[i]->write(pos_inc_[i]);
 
     }
+    /*
+     for (size_t i = 0; i < servo_list_.size(); i++) {
+     //std::cout << "servo update" << std::endl;
+     servo_list_[i]->update();
+     }
 
-    for (size_t i = 0; i < servo_list_.size(); i++) {
-      //std::cout << "servo update" << std::endl;
-      servo_list_[i]->update();
-    }
+     hi_->write_read_hardware(rwh_nsec_, timeouts_to_print_);
 
-    for (int i = 0; i < number_of_drives_; i++) {
-      if (NewData != computedReg_in_list_[i]->read(pwm_or_current_[i])) {
-        RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
-      }
-      if (current_mode_[i]) {
+     if (state_ == SERVOING) {
 
-        hi_->set_current(i, pwm_or_current_[i]);
-      } else {
-        hi_->set_pwm(i, pwm_or_current_[i]);
-      }
-    }
+     for (int i = 0; i < number_of_drives_; i++) {
+     motor_position_(i) = (double) hi_->get_position(i)
+     * ((2.0 * M_PI) / enc_res_[i]);
+     motor_increment_(i) = (double) hi_->get_increment(i);
+     //motor_voltage_(i) = (double) hi_->get_voltage(i);
+     motor_current_(i) = (double) hi_->get_current(i);
 
-    // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
+     port_motor_position_list_[i]->write(motor_position_[i]);
+     port_motor_increment_list_[i]->write(motor_increment_[i]);
+     //port_motor_voltage_list_[i]->write(motor_voltage_[i]);
+     port_motor_current_list_[i]->write(motor_current_[i]);
+     }
 
 
-      hi_->write_read_hardware(rwh_nsec_, timeouts_to_print_);
-
-
-    if (state_ == SERVOING) {
-
-      for (int i = 0; i < number_of_drives_; i++) {
-        motor_position_(i) = (double) hi_->get_position(i)
-            * ((2.0 * M_PI) / enc_res_[i]);
-        motor_increment_(i) = (double) hi_->get_increment(i);
-        //motor_voltage_(i) = (double) hi_->get_voltage(i);
-        motor_current_(i) = (double) hi_->get_current(i);
-
-        port_motor_position_list_[i]->write(motor_position_[i]);
-        port_motor_increment_list_[i]->write(motor_increment_[i]);
-        //port_motor_voltage_list_[i]->write(motor_voltage_[i]);
-        port_motor_current_list_[i]->write(motor_current_[i]);
-      }
-    }
+     }
+     */
 
   } else {
     for (int i = 0; i < number_of_drives_; i++) {
@@ -580,17 +605,17 @@ void HardwareInterface::updateHook() {
 
       }
     }
+    /*
+     test_mode_sleep();
+     for (int i = 0; i < number_of_drives_; i++) {
+     motor_position_(i) = motor_position_command_(i);
 
-    test_mode_sleep();
-    for (int i = 0; i < number_of_drives_; i++) {
-      motor_position_(i) = motor_position_command_(i);
-
-      port_motor_position_list_[i]->write(motor_position_[i]);
-      port_motor_increment_list_[i]->write(motor_increment_[i]);
-      //port_motor_voltage_list_[i]->write(motor_voltage_[i]);
-      port_motor_current_list_[i]->write(motor_current_[i]);
-    }
-
+     port_motor_position_list_[i]->write(motor_position_[i]);
+     port_motor_increment_list_[i]->write(motor_increment_[i]);
+     //port_motor_voltage_list_[i]->write(motor_voltage_[i]);
+     port_motor_current_list_[i]->write(motor_current_[i]);
+     }
+     */
   }
 
 }

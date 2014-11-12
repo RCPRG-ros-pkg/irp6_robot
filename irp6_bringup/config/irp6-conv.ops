@@ -139,30 +139,6 @@ Irp6ottfgRegulator.rosparam.getAll()
 Irp6ottfgRegulator.configure()
 
 
-addPeer("Irp6HardwareInterface", "IRp6pmRegulator_0")
-addPeer("Irp6HardwareInterface", "IRp6pmRegulator_1")
-addPeer("Irp6HardwareInterface", "IRp6pmRegulator_2")
-addPeer("Irp6HardwareInterface", "IRp6pmRegulator_3")
-addPeer("Irp6HardwareInterface", "IRp6pmRegulator_4")
-addPeer("Irp6HardwareInterface", "IRp6pmRegulator_5")
-
-addPeer("Irp6HardwareInterface", "Irp6ptfgRegulator")
-
-
-addPeer("Irp6HardwareInterface", "ConveyorRegulator")
-
-
-addPeer("Irp6HardwareInterface", "IRp6otmRegulator_0")
-addPeer("Irp6HardwareInterface", "IRp6otmRegulator_1")
-addPeer("Irp6HardwareInterface", "IRp6otmRegulator_2")
-addPeer("Irp6HardwareInterface", "IRp6otmRegulator_3")
-addPeer("Irp6HardwareInterface", "IRp6otmRegulator_4")
-addPeer("Irp6HardwareInterface", "IRp6otmRegulator_5")
-addPeer("Irp6HardwareInterface", "IRp6otmRegulator_6")
-
-addPeer("Irp6HardwareInterface", "Irp6ottfgRegulator")
-
-
 // Irp6pm double port spliter
 
 loadComponent("Irp6pmPortDoubleSplit_hw_cp","PortDoubleSplit")
@@ -566,7 +542,26 @@ connect("Irp6pmForceTransformation.OutputEndEffectorWrench", "Irp6Haptic.Current
 connect("Irp6otmForceControlLaw.CurrentFclParam", "Irp6Haptic.OutputFclParam", ConnPolicy())
 
 
+addPeer("Irp6scheme", "IRp6pmRegulator_0");
+addPeer("Irp6scheme", "IRp6pmRegulator_1");
+addPeer("Irp6scheme", "IRp6pmRegulator_2");
+addPeer("Irp6scheme", "IRp6pmRegulator_3");
+addPeer("Irp6scheme", "IRp6pmRegulator_4");
+addPeer("Irp6scheme", "IRp6pmRegulator_5");
 
+addPeer("Irp6scheme", "Irp6ptfgRegulator");
+
+addPeer("Irp6scheme", "IRp6otmRegulator_0");
+addPeer("Irp6scheme", "IRp6otmRegulator_1");
+addPeer("Irp6scheme", "IRp6otmRegulator_2");
+addPeer("Irp6scheme", "IRp6otmRegulator_3");
+addPeer("Irp6scheme", "IRp6otmRegulator_4");
+addPeer("Irp6scheme", "IRp6otmRegulator_5");
+addPeer("Irp6scheme", "IRp6otmRegulator_6");
+
+addPeer("Irp6scheme", "Irp6ottfgRegulator");
+
+addPeer("Irp6scheme", "ConveyorRegulator")
 
 
 addPeer("Irp6scheme", "Irp6HardwareInterface");
