@@ -21,7 +21,6 @@ HardwareInterface::HardwareInterface(const std::string& name)
       tx_prefix_len_(0),
       synchro_state_(MOVE_TO_SYNCHRO_AREA),
       rwh_nsec_(1200000),
-      burst_mode_(true),
       timeouts_to_print_(1) {
 
   this->addProperty("number_of_drives", number_of_drives_).doc(
@@ -326,9 +325,6 @@ bool HardwareInterface::startHook() {
     port_motor_current_list_[i]->write(motor_current_[i]);
   }
 
-  if (!test_mode_ && (!burst_mode_)) {
-    hi_->write_hardware();
-  }
 
   return true;
 }
@@ -338,12 +334,6 @@ void HardwareInterface::updateHook() {
   static int iteration_nr = 0;
 
   iteration_nr++;
-
-  if (!test_mode_ && (!burst_mode_)) {
-
-    hi_->read_hardware(timeouts_to_print_);
-
-  }
 
   switch (state_) {
     case NOT_SYNCHRONIZED:
@@ -562,9 +552,9 @@ void HardwareInterface::updateHook() {
 
     // std::cout << "aaaa: " << pwm_or_current_[0] << std::endl;
 
-    if (burst_mode_) {
+
       hi_->write_read_hardware(rwh_nsec_, timeouts_to_print_);
-    }
+
 
     if (state_ == SERVOING) {
 
@@ -581,9 +571,7 @@ void HardwareInterface::updateHook() {
         port_motor_current_list_[i]->write(motor_current_[i]);
       }
     }
-    if (!burst_mode_) {
-      hi_->write_hardware();
-    }
+
   } else {
     for (int i = 0; i < number_of_drives_; i++) {
       if (fabs(pos_inc_[i]) > max_desired_increment_[i]) {

@@ -68,7 +68,6 @@ class HardwareInterface : public RTT::TaskContext {
   State state_;
   SynchroState synchro_state_;
   int synchro_drive_;
-  bool burst_mode_;
 
   std::vector<double> pos_inc_;
   std::vector<double> max_pos_inc_;
