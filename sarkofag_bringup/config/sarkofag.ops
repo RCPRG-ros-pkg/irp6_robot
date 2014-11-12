@@ -48,8 +48,6 @@ SarkofagRegulator_0.loadService("rosparam")
 SarkofagRegulator_0.rosparam.getAll()
 SarkofagRegulator_0.configure()
 
-addPeer("SarkofagHardwareInterface", "SarkofagRegulator_0")
-
 //SarkofagHardwareInterface.configure()
 
 // double port spliter
@@ -104,6 +102,8 @@ SarkofagSplineTrajectoryGeneratorMotor.configure()
 
 
 
+
+addPeer("scheme", "SarkofagRegulator_0");
 addPeer("scheme", "SarkofagHardwareInterface");
 addPeer("scheme", "SarkofagPortDoubleSplit_hw_cp")
 addPeer("scheme", "SarkofagPortDoubleAggregate_hw_p")
@@ -136,6 +136,9 @@ scheme.addBlock("SarkofagPortDoubleSplit_hw_cp")
 scheme.addBlock("SarkofagPortDoubleAggregate_hw_p")
 
 
+
+scheme.addBlock("SarkofagRegulator_0");
+scheme.latchConnections("SarkofagHardwareInterface", "SarkofagRegulator_0", true);
 scheme.addBlock("SarkofagM2J");
 scheme.addBlock("SarkofagKinematicModel");
 scheme.latchConnections("SarkofagPortDoubleSplit_hw_cp", "SarkofagHardwareInterface", true);
