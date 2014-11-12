@@ -724,6 +724,48 @@ connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_4","Irp6HardwareInterface.
 connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_5","Irp6HardwareInterface.MotorCurrent_irp6otm_5", ConnPolicy())
 connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_6","Irp6HardwareInterface.MotorCurrent_irp6otm_6", ConnPolicy())
 
+
+Irp6scheme.addBlock("IRp6pmRegulator_0")
+Irp6scheme.addBlock("IRp6pmRegulator_1")
+Irp6scheme.addBlock("IRp6pmRegulator_2")
+Irp6scheme.addBlock("IRp6pmRegulator_3")
+Irp6scheme.addBlock("IRp6pmRegulator_4")
+Irp6scheme.addBlock("IRp6pmRegulator_5")
+
+Irp6scheme.addBlock("Irp6ptfgRegulator")
+
+Irp6scheme.addBlock("IRp6otmRegulator_0")
+Irp6scheme.addBlock("IRp6otmRegulator_1")
+Irp6scheme.addBlock("IRp6otmRegulator_2")
+Irp6scheme.addBlock("IRp6otmRegulator_3")
+Irp6scheme.addBlock("IRp6otmRegulator_4")
+Irp6scheme.addBlock("IRp6otmRegulator_5")
+Irp6scheme.addBlock("IRp6otmRegulator_6")
+
+Irp6scheme.addBlock("Irp6ottfgRegulator")
+
+Irp6scheme.latchConnections("Irp6HardwareInterface", "IRp6pmRegulator_0", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "IRp6pmRegulator_1", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "IRp6pmRegulator_2", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "IRp6pmRegulator_3", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "IRp6pmRegulator_4", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "IRp6pmRegulator_5", true);
+
+Irp6scheme.latchConnections("Irp6HardwareInterface", "Irp6ptfgRegulator", true);
+
+Irp6scheme.latchConnections("Irp6HardwareInterface", "IRp6otmRegulator_0", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "IRp6otmRegulator_1", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "IRp6otmRegulator_2", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "IRp6otmRegulator_3", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "IRp6otmRegulator_4", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "IRp6otmRegulator_5", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "IRp6otmRegulator_6", true);
+
+Irp6scheme.latchConnections("Irp6HardwareInterface", "Irp6ottfgRegulator", true);
+
+
+
+
 Irp6scheme.addBlock("Irp6pmPortDoubleSplit_hw_cp")
 Irp6scheme.addBlock("Irp6ptfgPortDoubleSplit_hw_cp")
 Irp6scheme.addBlock("Irp6otmPortDoubleSplit_hw_cp")

@@ -136,6 +136,9 @@ connect("ConveyorPortDoubleSplit_hw_cp.OutputPort_0","Irp6HardwareInterface.Moto
 connect("ConveyorPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_conveyor", ConnPolicy())
 
 
+Irp6scheme.addBlock("ConveyorRegulator")
+Irp6scheme.latchConnections("Irp6HardwareInterface", "ConveyorRegulator", true);
+
 
 Irp6scheme.addBlock("ConveyorPortDoubleSplit_hw_cp")
 Irp6scheme.addBlock("ConveyorPortDoubleAggregate_hw_p")
