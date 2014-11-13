@@ -27,11 +27,9 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<InputPort<double>*> computedReg_in_list_;
 
   std::vector<OutputPort<double>*> posInc_out_list_;
-  std::vector<OutputPort<double>*> deltaInc_out_list_;
 
   std::vector<OutputPort<double>*> port_motor_position_list_;
   std::vector<OutputPort<double>*> port_motor_increment_list_;
-  //std::vector<OutputPort<double>*> port_motor_voltage_list_;
   std::vector<OutputPort<double>*> port_motor_current_list_;
 
   std::vector<InputPort<double>*> port_motor_position_command_list_;
