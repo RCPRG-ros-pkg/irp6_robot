@@ -348,7 +348,7 @@ class IRPOS:
 	# CARTESIAN POSITION
 
 	def move_to_cartesian_pose(self, time_from_start, pose):
-		print self.BCOLOR+"[IRPOS] Move to cartesian trajctory"+self.ENDC
+		print self.BCOLOR+"[IRPOS] Move to cartesian trajectory"+self.ENDC
 				
 		self.conmanSwitch([self.robot_name+'mPoseInt'], [], True)
 
@@ -366,7 +366,7 @@ class IRPOS:
 		self.conmanSwitch([], [self.robot_name+'mPoseInt'], True)
 
 	def move_rel_to_cartesian_pose(self, time_from_start, rel_pose):
-		print self.BCOLOR+"[IRPOS] Move relative to cartesian trajctory"+self.ENDC
+		print self.BCOLOR+"[IRPOS] Move relative to cartesian trajectory"+self.ENDC
 				
 		self.conmanSwitch([self.robot_name+'mPoseInt'], [], True)
 
@@ -395,7 +395,7 @@ class IRPOS:
 		self.conmanSwitch([], [self.robot_name+'mPoseInt'], True)
 
 	def move_rel_to_cartesian_pose_with_contact(self, time_from_start, rel_pose, wrench_constraint):
-		print self.BCOLOR+"[IRPOS] Move relative to cartesian trajctory with contact"+self.ENDC
+		print self.BCOLOR+"[IRPOS] Move relative to cartesian trajectory with contact"+self.ENDC
 				
 		self.conmanSwitch([self.robot_name+'mPoseInt', self.robot_name+'mForceTransformation'], [], True)
 		time.sleep(0.05)

@@ -30,8 +30,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
       set_value_very_old(0.0),
       step_new(0.0),
       step_old(0.0),
-      step_old_pulse(0.0)
-      {
+      step_old_pulse(0.0) {
 
   this->addEventPort(posInc_in).doc("Receiving a value of position step");
   this->addPort(deltaInc_in).doc("Receiving a value of measured increment.");
@@ -64,8 +63,12 @@ bool IRp6Regulator::configureHook() {
 }
 
 void IRp6Regulator::updateHook() {
-  if (NewData == posInc_in.read(posIncData)
-      && NewData == deltaInc_in.read(deltaIncData)) {
+  if (NewData == deltaInc_in.read(deltaIncData)) {
+
+    if (NewData != posInc_in.read(posIncData)) {
+      posIncData = 0.0;
+    }
+
     computedPwm_out.write(doServo(posIncData, deltaIncData));
   }
 }
