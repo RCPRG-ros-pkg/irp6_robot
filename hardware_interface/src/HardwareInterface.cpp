@@ -23,6 +23,9 @@ HardwareInterface::HardwareInterface(const std::string& name)
       rwh_nsec_(1200000),
       timeouts_to_print_(1) {
 
+  this->ports()->addPort("EmergencyStop", port_emergency_stop_);
+  this->ports()->addPort("IsSynchronised", port_is_synchronised_);
+
   this->addProperty("number_of_drives", number_of_drives_).doc(
       "Number of drives in robot");
   this->addProperty("auto_synchronize", auto_synchronize_).doc("");
@@ -257,6 +260,7 @@ bool HardwareInterface::startHook() {
       hi_->write_read_hardware(rwh_nsec_, 0);
       servo_start_iter_ = 200;
       if (!hi_->robot_synchronized()) {
+        port_is_synchronised_.write(false);
         RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
         if (auto_synchronize_) {
           RTT::log(RTT::Info) << "Auto synchronize" << RTT::endlog();
@@ -271,6 +275,7 @@ bool HardwareInterface::startHook() {
         } else
           state_ = NOT_SYNCHRONIZED;
       } else {
+        port_is_synchronised_.write(true);
         RTT::log(RTT::Info) << "Robot synchronized" << RTT::endlog();
 
         for (int i = 0; i < number_of_drives_; i++) {
@@ -286,6 +291,7 @@ bool HardwareInterface::startHook() {
       }
     } else {
       test_mode_sleep();
+      port_is_synchronised_.write(true);
       RTT::log(RTT::Info) << "HI test mode activated" << RTT::endlog();
 
       for (int i = 0; i < number_of_drives_; i++) {
@@ -353,9 +359,6 @@ void HardwareInterface::updateHook() {
               motor_position_(i) = (double) hi_->get_position(i)
                   * ((2.0 * M_PI) / enc_res_[i]);
           pos_inc_[i] = 0.0;
-          motor_increment_(i) = (double) hi_->get_increment(i);
-          //motor_voltage_(i) = (double) hi_->get_voltage(i);
-          motor_current_(i) = (double) hi_->get_current(i);
         }
 
       }
@@ -383,22 +386,14 @@ void HardwareInterface::updateHook() {
         if (!test_mode_) {
           motor_position_(i) = (double) hi_->get_position(i)
               * ((2.0 * M_PI) / enc_res_[i]);
-          motor_increment_(i) = (double) hi_->get_increment(i);
-
-          motor_current_(i) = (double) hi_->get_current(i);
 
           port_motor_position_list_[i]->write(motor_position_[i]);
           port_motor_increment_list_[i]->write(motor_increment_[i]);
-
-          port_motor_current_list_[i]->write(motor_current_[i]);
 
         } else {
           motor_position_(i) = motor_position_command_(i);
 
           port_motor_position_list_[i]->write(motor_position_[i]);
-          port_motor_increment_list_[i]->write(motor_increment_[i]);
-
-          port_motor_current_list_[i]->write(motor_current_[i]);
         }
 
       }
@@ -509,6 +504,7 @@ void HardwareInterface::updateHook() {
             }
 
             state_ = PRE_SERVOING;
+            port_is_synchronised_.write(true);
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
                                  << " ] SYNCHRONIZING ended" << RTT::endlog();
             std::cout << "synchro finished" << std::endl;
@@ -532,12 +528,20 @@ void HardwareInterface::updateHook() {
 
   }
 
-
-
   if (!test_mode_) {
 
+    bool emergency_stop;
+    if (port_emergency_stop_.read(emergency_stop) == RTT::NewData) {
+      if (emergency_stop) {
+        hi_->set_hardware_panic();
+      }
+    }
+
     for (int i = 0; i < number_of_drives_; i++) {
+      motor_current_(i) = (double) hi_->get_current(i);
+      port_motor_current_list_[i]->write(motor_current_[i]);
       increment_[i] = hi_->get_increment(i);
+      port_motor_increment_list_[i]->write(increment_[i]);
 
       if (fabs(pos_inc_[i]) > max_desired_increment_[i]) {
         std::cout << "very high pos_inc_ i: " << i << " pos_inc: "
@@ -545,10 +549,7 @@ void HardwareInterface::updateHook() {
 
         hi_->set_hardware_panic();
       }
-    }
 
-    for (int i = 0; i < number_of_drives_; i++) {
-      port_motor_increment_list_[i]->write(increment_[i]);
       posInc_out_list_[i]->write(pos_inc_[i]);
 
     }

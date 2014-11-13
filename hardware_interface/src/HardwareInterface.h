@@ -32,6 +32,9 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<OutputPort<double>*> port_motor_increment_list_;
   std::vector<OutputPort<double>*> port_motor_current_list_;
 
+  InputPort<bool> port_emergency_stop_;
+  OutputPort<bool> port_is_synchronised_;
+
   std::vector<InputPort<double>*> port_motor_position_command_list_;
 
   Eigen::VectorXd motor_position_, motor_increment_, motor_current_, motor_position_command_,
