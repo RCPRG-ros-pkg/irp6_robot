@@ -65,7 +65,10 @@ bool IRp6Regulator::configureHook() {
   b0_ = BB0_;
   b1_ = BB1_;
 
+  desired_position_old_ = desired_position_new_ = 0;
+
   return true;
+
 }
 
 void IRp6Regulator::updateHook() {

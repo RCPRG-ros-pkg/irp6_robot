@@ -166,7 +166,7 @@ bool HardwareInterface::configureHook() {
 
   for (int i = 0; i < number_of_drives_; i++) {
     increment_[i] = 0;
-    pwm_or_current_[0] = 0;
+    pwm_or_current_[i] = 0.0;
     max_pos_inc_[i] = 0.0;
   }
 
