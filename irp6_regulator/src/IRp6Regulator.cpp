@@ -12,7 +12,7 @@ const int MAX_PWM = 190;
 
 IRp6Regulator::IRp6Regulator(const std::string& name)
     : TaskContext(name),
-      posInc_in("posInc_in"),
+      posInc_in("DesiredPosition"),
       deltaInc_in("deltaInc_in"),
       computedPwm_out("computedPwm_out"),
       a_(0.0),

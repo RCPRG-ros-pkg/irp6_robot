@@ -580,67 +580,67 @@ Irp6HardwareInterface.configure();
 
 ## Connect
 connect("Irp6HardwareInterface.computedReg_in_irp6pm_0","IRp6pmRegulator_0.computedPwm_out", ConnPolicy())
-connect("IRp6pmRegulator_0.posInc_in","Irp6HardwareInterface.posInc_out_irp6pm_0", ConnPolicy())
+connect("IRp6pmRegulator_0.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6pm_0", ConnPolicy())
 connect("IRp6pmRegulator_0.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6pm_0", ConnPolicy())
 
 connect("Irp6HardwareInterface.computedReg_in_irp6pm_1","IRp6pmRegulator_1.computedPwm_out", ConnPolicy())
-connect("IRp6pmRegulator_1.posInc_in","Irp6HardwareInterface.posInc_out_irp6pm_1", ConnPolicy())
+connect("IRp6pmRegulator_1.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6pm_1", ConnPolicy())
 connect("IRp6pmRegulator_1.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6pm_1", ConnPolicy())
 
 connect("Irp6HardwareInterface.computedReg_in_irp6pm_2","IRp6pmRegulator_2.computedPwm_out", ConnPolicy())
-connect("IRp6pmRegulator_2.posInc_in","Irp6HardwareInterface.posInc_out_irp6pm_2", ConnPolicy())
+connect("IRp6pmRegulator_2.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6pm_2", ConnPolicy())
 connect("IRp6pmRegulator_2.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6pm_2", ConnPolicy())
 
 connect("Irp6HardwareInterface.computedReg_in_irp6pm_3","IRp6pmRegulator_3.computedPwm_out", ConnPolicy())
-connect("IRp6pmRegulator_3.posInc_in","Irp6HardwareInterface.posInc_out_irp6pm_3", ConnPolicy())
+connect("IRp6pmRegulator_3.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6pm_3", ConnPolicy())
 connect("IRp6pmRegulator_3.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6pm_3", ConnPolicy())
 
 connect("Irp6HardwareInterface.computedReg_in_irp6pm_4","IRp6pmRegulator_4.computedPwm_out", ConnPolicy())
-connect("IRp6pmRegulator_4.posInc_in","Irp6HardwareInterface.posInc_out_irp6pm_4", ConnPolicy())
+connect("IRp6pmRegulator_4.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6pm_4", ConnPolicy())
 connect("IRp6pmRegulator_4.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6pm_4", ConnPolicy())
 
 connect("Irp6HardwareInterface.computedReg_in_irp6pm_5","IRp6pmRegulator_5.computedPwm_out", ConnPolicy())
-connect("IRp6pmRegulator_5.posInc_in","Irp6HardwareInterface.posInc_out_irp6pm_5", ConnPolicy())
+connect("IRp6pmRegulator_5.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6pm_5", ConnPolicy())
 connect("IRp6pmRegulator_5.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6pm_5", ConnPolicy())
 
 connect("PortDoubleToFloat64_1.InputPort","Irp6HardwareInterface.MotorIncrement_irp6pm_5", ConnPolicy())
 
 connect("Irp6HardwareInterface.computedReg_in_irp6ptfg","Irp6ptfgRegulator.computedPwm_out", ConnPolicy())
-connect("Irp6ptfgRegulator.posInc_in","Irp6HardwareInterface.posInc_out_irp6ptfg", ConnPolicy())
+connect("Irp6ptfgRegulator.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6ptfg", ConnPolicy())
 connect("Irp6ptfgRegulator.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6ptfg", ConnPolicy())
 
 
 connect("Irp6HardwareInterface.computedReg_in_irp6otm_0","IRp6otmRegulator_0.computedPwm_out", ConnPolicy())
-connect("IRp6otmRegulator_0.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_0", ConnPolicy())
+connect("IRp6otmRegulator_0.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6otm_0", ConnPolicy())
 connect("IRp6otmRegulator_0.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_0", ConnPolicy())
 
 connect("Irp6HardwareInterface.computedReg_in_irp6otm_1","IRp6otmRegulator_1.computedPwm_out", ConnPolicy())
-connect("IRp6otmRegulator_1.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_1", ConnPolicy())
+connect("IRp6otmRegulator_1.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6otm_1", ConnPolicy())
 connect("IRp6otmRegulator_1.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_1", ConnPolicy())
 
 connect("Irp6HardwareInterface.computedReg_in_irp6otm_2","IRp6otmRegulator_2.computedPwm_out", ConnPolicy())
-connect("IRp6otmRegulator_2.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_2", ConnPolicy())
+connect("IRp6otmRegulator_2.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6otm_2", ConnPolicy())
 connect("IRp6otmRegulator_2.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_2", ConnPolicy())
 
 connect("Irp6HardwareInterface.computedReg_in_irp6otm_3","IRp6otmRegulator_3.computedPwm_out", ConnPolicy())
-connect("IRp6otmRegulator_3.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_3", ConnPolicy())
+connect("IRp6otmRegulator_3.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6otm_3", ConnPolicy())
 connect("IRp6otmRegulator_3.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_3", ConnPolicy())
 
 connect("Irp6HardwareInterface.computedReg_in_irp6otm_4","IRp6otmRegulator_4.computedPwm_out", ConnPolicy())
-connect("IRp6otmRegulator_4.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_4", ConnPolicy())
+connect("IRp6otmRegulator_4.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6otm_4", ConnPolicy())
 connect("IRp6otmRegulator_4.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_4", ConnPolicy())
 
 connect("Irp6HardwareInterface.computedReg_in_irp6otm_5","IRp6otmRegulator_5.computedPwm_out", ConnPolicy())
-connect("IRp6otmRegulator_5.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_5", ConnPolicy())
+connect("IRp6otmRegulator_5.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6otm_5", ConnPolicy())
 connect("IRp6otmRegulator_5.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_5", ConnPolicy())
 
 connect("Irp6HardwareInterface.computedReg_in_irp6otm_6","IRp6otmRegulator_6.computedPwm_out", ConnPolicy())
-connect("IRp6otmRegulator_6.posInc_in","Irp6HardwareInterface.posInc_out_irp6otm_6", ConnPolicy())
+connect("IRp6otmRegulator_6.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6otm_6", ConnPolicy())
 connect("IRp6otmRegulator_6.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_6", ConnPolicy())
 
 
 connect("Irp6HardwareInterface.computedReg_in_irp6ottfg","Irp6ottfgRegulator.computedPwm_out", ConnPolicy())
-connect("Irp6ottfgRegulator.posInc_in","Irp6HardwareInterface.posInc_out_irp6ottfg", ConnPolicy())
+connect("Irp6ottfgRegulator.DesiredPosition","Irp6HardwareInterface.posInc_out_irp6ottfg", ConnPolicy())
 connect("Irp6ottfgRegulator.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6ottfg", ConnPolicy())
 
 

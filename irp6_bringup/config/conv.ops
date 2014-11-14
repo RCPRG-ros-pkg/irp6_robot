@@ -124,7 +124,7 @@ Irp6HardwareInterface.configure();
 ## Connect
 
 connect("Irp6HardwareInterface.computedReg_in_conveyor","ConveyorRegulator.computedPwm_out", ConnPolicy())
-connect("ConveyorRegulator.posInc_in","Irp6HardwareInterface.posInc_out_conveyor", ConnPolicy())
+connect("ConveyorRegulator.DesiredPosition","Irp6HardwareInterface.posInc_out_conveyor", ConnPolicy())
 connect("ConveyorRegulator.deltaInc_in","Irp6HardwareInterface.MotorIncrement_conveyor", ConnPolicy())
 
 
