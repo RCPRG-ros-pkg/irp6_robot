@@ -13,6 +13,7 @@ typedef enum {
   PRE_SYNCHRONIZING,
   SYNCHRONIZING
 } State;
+
 typedef enum {
   MOVE_TO_SYNCHRO_AREA,
   STOP,
@@ -26,7 +27,7 @@ class HardwareInterface : public RTT::TaskContext {
 
   std::vector<InputPort<double>*> computedReg_in_list_;
 
-  std::vector<OutputPort<double>*> posInc_out_list_;
+  std::vector<OutputPort<double>*> desired_position_out_list_;
 
   std::vector<OutputPort<double>*> port_motor_position_list_;
   std::vector<OutputPort<double>*> port_motor_increment_list_;
@@ -70,7 +71,8 @@ class HardwareInterface : public RTT::TaskContext {
   SynchroState synchro_state_;
   int synchro_drive_;
 
-  std::vector<double> pos_inc_;
+  std::vector<double> desired_position_;
+  std::vector<double> desired_position_increment_;
   std::vector<double> max_pos_inc_;
 
   std::vector<double> increment_;

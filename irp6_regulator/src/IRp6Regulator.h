@@ -18,13 +18,19 @@ class IRp6Regulator : public RTT::TaskContext {
   bool configureHook();
   void updateHook();
 
-  InputPort<double> posInc_in;
+  InputPort<double> desired_position_;
   InputPort<double> deltaInc_in;
+  InputPort<bool> synchro_state_in_;
 
   OutputPort<double> computedPwm_out;
 
-  double posIncData;
+  double desired_position_increment_;
+  double desired_position_old_, desired_position_new_;
   double deltaIncData;
+
+  bool synchro_state_old_, synchro_state_new_;
+
+  long iteration_number_;
 
   // Properties
   int reg_number_;
@@ -36,6 +42,7 @@ class IRp6Regulator : public RTT::TaskContext {
   double max_output_current_;
   double current_reg_kp_;
   double eint_dif_;
+
 
   double position_increment_old;  // przedosatnio odczytany przyrost polozenie (delta y[k-2]
   // -- mierzone w impulsach)

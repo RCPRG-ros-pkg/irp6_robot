@@ -12,9 +12,10 @@ const int MAX_PWM = 190;
 
 IRp6Regulator::IRp6Regulator(const std::string& name)
     : TaskContext(name),
-      posInc_in("DesiredPosition"),
+      desired_position_("DesiredPosition"),
       deltaInc_in("deltaInc_in"),
       computedPwm_out("computedPwm_out"),
+      synchro_state_in_("SynchroStateIn"),
       a_(0.0),
       b0_(0.0),
       b1_(0.0),
@@ -22,7 +23,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
       delta_eint(0.0),
       deltaIncData(0.0),
       output_value(0.0),
-      posIncData(0.0),
+      desired_position_increment_(0.0),
       position_increment_new(0.0),
       position_increment_old(0.0),
       set_value_new(0.0),
@@ -30,11 +31,16 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
       set_value_very_old(0.0),
       step_new(0.0),
       step_old(0.0),
-      step_old_pulse(0.0) {
+      step_old_pulse(0.0),
+      iteration_number_(0),
+      synchro_state_old_(false) {
 
-  this->addEventPort(posInc_in).doc("Receiving a value of position step");
+  this->addEventPort(desired_position_).doc(
+      "Receiving a value of position step");
   this->addPort(deltaInc_in).doc("Receiving a value of measured increment.");
-  this->addPort(computedPwm_out).doc("Sending value of calculated pwm.");
+  this->addPort(computedPwm_out).doc(
+      "Sending value of calculated pwm or current.");
+  this->addPort(synchro_state_in_).doc("Synchro State from HardwareInterface");
 
   this->addProperty("A", A_).doc("");
   this->addProperty("BB0", BB0_).doc("");
@@ -65,11 +71,25 @@ bool IRp6Regulator::configureHook() {
 void IRp6Regulator::updateHook() {
   if (NewData == deltaInc_in.read(deltaIncData)) {
 
-    if (NewData != posInc_in.read(posIncData)) {
-      posIncData = 0.0;
+    if (NewData == desired_position_.read(desired_position_new_)) {
+      iteration_number_++;
+      if (iteration_number_ == 0) {
+        desired_position_old_ = desired_position_new_;
+      }
     }
 
-    computedPwm_out.write(doServo(posIncData, deltaIncData));
+    if (NewData == synchro_state_in_.read(synchro_state_new_)) {
+      if (synchro_state_new_ != synchro_state_old_) {
+        desired_position_old_ = desired_position_new_;
+        synchro_state_old_ = synchro_state_new_;
+      }
+    }
+
+    desired_position_increment_ = desired_position_new_ - desired_position_old_;
+
+    desired_position_old_ = desired_position_new_;
+
+    computedPwm_out.write(doServo(desired_position_increment_, deltaIncData));
   }
 }
 
