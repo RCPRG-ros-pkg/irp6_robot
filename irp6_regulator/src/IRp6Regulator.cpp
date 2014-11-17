@@ -18,6 +18,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
       deltaInc_in("deltaInc_in"),
       computedPwm_out("computedPwm_out"),
       synchro_state_in_("SynchroStateIn"),
+      emergency_stop_out_("EmergencyStopOut"),
       a_(0.0),
       b0_(0.0),
       b1_(0.0),
@@ -35,7 +36,8 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
       step_old(0.0),
       step_old_pulse(0.0),
       iteration_number_(0),
-      synchro_state_old_(false) {
+      synchro_state_old_(false),
+      max_desired_increment_(0.0) {
 
   this->addEventPort(desired_position_).doc(
       "Receiving a value of position step");
@@ -43,6 +45,8 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addPort(computedPwm_out).doc(
       "Sending value of calculated pwm or current.");
   this->addPort(synchro_state_in_).doc("Synchro State from HardwareInterface");
+  this->addPort(emergency_stop_out_).doc("Emergency Stop Out");
+
 
   this->addProperty("A", A_).doc("");
   this->addProperty("BB0", BB0_).doc("");
@@ -53,6 +57,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addProperty("reg_number", reg_number_).doc("");
   this->addProperty("debug", debug_).doc("");
   this->addProperty("eint_dif", eint_dif_).doc("");
+  this->addProperty("max_desired_increment", max_desired_increment_).doc("");
 
 }
 
@@ -93,6 +98,14 @@ void IRp6Regulator::updateHook() {
     }
 
     desired_position_increment_ = desired_position_new_ - desired_position_old_;
+
+    if (fabs(desired_position_increment_) > max_desired_increment_) {
+        std::cout << "very high pos_inc_: " << reg_number_ << " pos_inc: "
+        << desired_position_increment_ << std::endl;
+
+        emergency_stop_out_.write(true);
+        }
+
 
     desired_position_old_ = desired_position_new_;
     if (!debug_) {

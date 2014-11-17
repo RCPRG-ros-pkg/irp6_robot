@@ -23,6 +23,7 @@ class IRp6Regulator : public RTT::TaskContext {
   InputPort<bool> synchro_state_in_;
 
   OutputPort<double> computedPwm_out;
+  OutputPort<bool> emergency_stop_out_;
 
   double desired_position_increment_;
   double desired_position_old_, desired_position_new_;
@@ -42,6 +43,7 @@ class IRp6Regulator : public RTT::TaskContext {
   double max_output_current_;
   double current_reg_kp_;
   double eint_dif_;
+  double max_desired_increment_;
 
 
   double position_increment_old;  // przedosatnio odczytany przyrost polozenie (delta y[k-2]

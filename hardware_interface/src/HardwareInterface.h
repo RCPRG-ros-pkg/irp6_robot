@@ -44,7 +44,6 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<std::string> ports_adresses_;
   std::vector<int> max_current_;
   std::vector<double> max_increment_;
-  std::vector<double> max_desired_increment_;
   std::vector<unsigned int> card_indexes_;
   std::vector<double> enc_res_;
   std::vector<double> synchro_step_coarse_;

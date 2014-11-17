@@ -23,7 +23,7 @@ HardwareInterface::HardwareInterface(const std::string& name)
       rwh_nsec_(1200000),
       timeouts_to_print_(1) {
 
-  this->ports()->addPort("EmergencyStop", port_emergency_stop_);
+  this->ports()->addPort("EmergencyStopIn", port_emergency_stop_);
   this->ports()->addPort("IsSynchronised", port_is_synchronised_);
 
   this->addProperty("number_of_drives", number_of_drives_).doc(
@@ -117,7 +117,6 @@ bool HardwareInterface::configureHook() {
   ports_adresses_.resize(number_of_drives_);
   max_current_.resize(number_of_drives_);
   max_increment_.resize(number_of_drives_);
-  max_desired_increment_.resize(number_of_drives_);
   card_indexes_.resize(number_of_drives_);
   enc_res_.resize(number_of_drives_);
   synchro_step_coarse_.resize(number_of_drives_);
@@ -135,8 +134,6 @@ bool HardwareInterface::configureHook() {
     //   std::cout << "max_current_: "  << max_current_[i] << std::endl;
     max_increment_[i] = hi_port_param_[i].max_increment;
 //    std::cout << "max_increment_: "  << max_increment_[i] << std::endl;
-    max_desired_increment_[i] = hi_port_param_[i].max_desired_increment;
-//    std::cout << "max_desired_increment_: "  << max_desired_increment_[i] << std::endl;
     card_indexes_[i] = hi_port_param_[i].card_indexes;
     //   std::cout << "ports_adresses_: "  << ports_adresses_[i] << std::endl;
     enc_res_[i] = hi_port_param_[i].enc_res;
@@ -288,7 +285,6 @@ bool HardwareInterface::startHook() {
           motor_position_command_(i) = motor_position_command_old_(i) =
               motor_position_(i);
           motor_increment_(i) = (double) hi_->get_increment(i);
-          //motor_voltage_(i) = (double) hi_->get_voltage(i);
           motor_current_(i) = (double) hi_->get_current(i);
         }
 
@@ -317,7 +313,6 @@ bool HardwareInterface::startHook() {
 
     port_motor_position_list_[i]->write(motor_position_[i]);
     port_motor_increment_list_[i]->write(motor_increment_[i]);
-    //port_motor_voltage_list_[i]->write(motor_voltage_[i]);
     port_motor_current_list_[i]->write(motor_current_[i]);
     desired_position_[i] = motor_position_(i) * enc_res_[i] / (2.0 * M_PI);
   }

@@ -20,7 +20,6 @@
           synchro_needed: 0
           max_current: 18000
           max_increment: 1000.0
-          max_desired_increment: 200.0
           card_indexes: 7
           enc_res: 4000.0
           synchro_step_coarse: -0.03
@@ -48,6 +47,7 @@
         current_mode: true
         current_reg_kp: 120.0
         max_output_current: 15000.0
+        max_desired_increment: 200.0
       ConveyorPortDoubleSplit_hw_cp:
         number_of_ports: 1
       ConveyorPortDoubleAggregate_hw_p:

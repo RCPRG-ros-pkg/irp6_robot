@@ -127,6 +127,8 @@ connect("Irp6HardwareInterface.computedReg_in_conveyor","ConveyorRegulator.compu
 connect("ConveyorRegulator.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_conveyor", ConnPolicy())
 connect("ConveyorRegulator.deltaInc_in","Irp6HardwareInterface.MotorIncrement_conveyor", ConnPolicy())
 connect("ConveyorRegulator.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
+connect("ConveyorRegulator.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
+
 
 
 connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorM2J.MotorPosition", ConnPolicy())
