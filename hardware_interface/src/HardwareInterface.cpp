@@ -496,7 +496,7 @@ void HardwareInterface::updateHook() {
           if ((synchro_stop_iter_--) <= 0) {
 
             for (int i = 0; i < number_of_drives_; i++) {
-              desired_position_[synchro_drive_] = motor_position_command_(i) =
+              desired_position_[i] = motor_position_command_(i) =
                   motor_position_command_old_(i) = motor_position_(i)
                       * (2.0 * M_PI) / enc_res_[i];
             }

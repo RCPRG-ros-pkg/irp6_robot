@@ -6,6 +6,8 @@
 #include <std_srvs/Empty.h>
 #include <ros/ros.h>
 
+#include "../../hardware_interface/src/string_colors.h"
+
 #include "IRp6Regulator.h"
 
 const int MAX_PWM = 190;
@@ -65,7 +67,7 @@ bool IRp6Regulator::configureHook() {
   b0_ = BB0_;
   b1_ = BB1_;
 
-  desired_position_old_ = desired_position_new_ = 0;
+  desired_position_old_ = desired_position_new_ = 0.0;
 
   return true;
 
@@ -76,24 +78,40 @@ void IRp6Regulator::updateHook() {
 
     if (NewData == desired_position_.read(desired_position_new_)) {
       iteration_number_++;
-      if (iteration_number_ == 0) {
+      if (iteration_number_ <= 1) {
         desired_position_old_ = desired_position_new_;
       }
     }
 
     if (NewData == synchro_state_in_.read(synchro_state_new_)) {
+
       if (synchro_state_new_ != synchro_state_old_) {
         desired_position_old_ = desired_position_new_;
         synchro_state_old_ = synchro_state_new_;
+
       }
     }
 
     desired_position_increment_ = desired_position_new_ - desired_position_old_;
 
     desired_position_old_ = desired_position_new_;
+    if (!debug_) {
 
-    computedPwm_out.write(doServo(desired_position_increment_, deltaIncData));
+      int output = doServo(desired_position_increment_, deltaIncData);
+      /*
+       std::cout << std::dec << GREEN << "output: " << output << " pos_inc: "
+       << desired_position_increment_ << " inp_inc: " << deltaIncData
+       << RESET << std::endl;
+
+       if (iteration_number_ > 500) {
+       output = 0;
+       }*/
+      computedPwm_out.write(output);
+    } else {
+      computedPwm_out.write(0.0);
+    }
   }
+
 }
 
 int IRp6Regulator::doServo(double step_new, int pos_inc) {
@@ -152,7 +170,7 @@ int IRp6Regulator::doServo(double step_new, int pos_inc) {
   }
 
   if (debug_) {
-    std::cout << "output_value: " << output_value << std::endl;
+    //   std::cout << "output_value: " << output_value << std::endl;
   }
 
   // przepisanie nowych wartosci zmiennych do zmiennych przechowujacych wartosci poprzednie
