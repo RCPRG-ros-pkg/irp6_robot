@@ -72,6 +72,14 @@ ConveyorPortDoubleAggregate_hw_p.loadService("rosparam")
 ConveyorPortDoubleAggregate_hw_p.rosparam.getAll()
 ConveyorPortDoubleAggregate_hw_p.configure()
 
+// Conveyor double port sum
+
+loadComponent("ConveyorPortDoubleSum","PortDoubleSum")
+ConveyorPortDoubleSum.loadService("rosparam")
+ConveyorPortDoubleSum.rosparam.getAll()
+ConveyorPortDoubleSum.configure()
+
+
 loadComponent("ConveyorM2J","ConveyorM2J")
 ConveyorM2J.configure()
 
@@ -111,6 +119,7 @@ addPeer("Irp6scheme", "ConveyorRegulator");
 addPeer("Irp6scheme", "Irp6HardwareInterface");
 addPeer("Irp6scheme", "ConveyorPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "ConveyorPortDoubleAggregate_hw_p")
+addPeer("Irp6scheme", "ConveyorPortDoubleSum")
 addPeer("Irp6scheme", "ConveyorM2J");
 addPeer("Irp6scheme", "ConveyorJ2M");
 addPeer("Irp6scheme", "ConveyorSplineTrajectoryGeneratorJoint");
@@ -123,7 +132,12 @@ Irp6HardwareInterface.configure();
 
 ## Connect
 
-connect("Irp6HardwareInterface.computedReg_in_conveyor","ConveyorRegulator.computedPwm_out", ConnPolicy())
+connect("ConveyorPortDoubleSum.InputPort_0","ConveyorRegulator.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_conveyor","ConveyorPortDoubleSum.OutputPort", ConnPolicy())
+
+#connect("Irp6HardwareInterface.computedReg_in_conveyor","ConveyorRegulator.computedPwm_out", ConnPolicy())
+
+
 connect("ConveyorRegulator.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_conveyor", ConnPolicy())
 connect("ConveyorRegulator.deltaInc_in","Irp6HardwareInterface.MotorIncrement_conveyor", ConnPolicy())
 connect("ConveyorRegulator.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
@@ -147,7 +161,7 @@ Irp6scheme.latchConnections("Irp6HardwareInterface", "ConveyorRegulator", true);
 
 Irp6scheme.addBlock("ConveyorPortDoubleSplit_hw_cp")
 Irp6scheme.addBlock("ConveyorPortDoubleAggregate_hw_p")
-
+Irp6scheme.addBlock("ConveyorPortDoubleSum")
 
 Irp6scheme.addBlock("ConveyorM2J");
 
@@ -216,6 +230,7 @@ Irp6HardwareInterface.start()
 ConveyorRegulator.start()
 ConveyorPortDoubleSplit_hw_cp.start()
 ConveyorPortDoubleAggregate_hw_p.start()
+ConveyorPortDoubleSum.start()
 ConveyorM2J.start()
 ConveyorJ2M.start()
 ConveyorSplineTrajectoryActionJoint.start()
