@@ -38,8 +38,8 @@ class HardwareInterface : public RTT::TaskContext {
 
   std::vector<InputPort<double>*> port_motor_position_command_list_;
 
-  Eigen::VectorXd motor_position_, motor_increment_, motor_current_, motor_position_command_,
-      motor_position_command_old_;//, motor_voltage_;
+  Eigen::VectorXd motor_position_, motor_increment_, motor_current_,
+      motor_position_command_;
 
   std::vector<std::string> ports_adresses_;
   std::vector<int> max_current_;

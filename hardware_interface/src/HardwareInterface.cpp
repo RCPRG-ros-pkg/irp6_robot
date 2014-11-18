@@ -207,7 +207,6 @@ bool HardwareInterface::configureHook() {
   motor_increment_.resize(number_of_drives_);
   motor_current_.resize(number_of_drives_);
   motor_position_command_.resize(number_of_drives_);
-  motor_position_command_old_.resize(number_of_drives_);
 
   PeerList plist;
 
@@ -282,8 +281,7 @@ bool HardwareInterface::startHook() {
         RTT::log(RTT::Info) << "Robot synchronized" << RTT::endlog();
 
         for (int i = 0; i < number_of_drives_; i++) {
-          motor_position_command_(i) = motor_position_command_old_(i) =
-              motor_position_(i);
+          motor_position_command_(i) = motor_position_(i);
           motor_increment_(i) = (double) hi_->get_increment(i);
           motor_current_(i) = (double) hi_->get_current(i);
         }
@@ -296,8 +294,7 @@ bool HardwareInterface::startHook() {
       RTT::log(RTT::Info) << "HI test mode activated" << RTT::endlog();
 
       for (int i = 0; i < number_of_drives_; i++) {
-        motor_position_command_(i) = motor_position_command_old_(i) =
-            motor_position_(i) = 0.0;
+        motor_position_command_(i) = motor_position_(i) = 0.0;
         motor_increment_(i) = 0.0;
         motor_current_(i) = 0.0;
       }
@@ -314,7 +311,7 @@ bool HardwareInterface::startHook() {
     port_motor_position_list_[i]->write(motor_position_[i]);
     port_motor_increment_list_[i]->write(motor_increment_[i]);
     port_motor_current_list_[i]->write(motor_current_[i]);
-    desired_position_[i] = motor_position_(i) * enc_res_[i] / (2.0 * M_PI);
+    desired_position_[i] = motor_position_(i);
   }
 
   return true;
@@ -356,9 +353,8 @@ void HardwareInterface::updateHook() {
 
       if (!test_mode_) {
         for (int i = 0; i < number_of_drives_; i++) {
-          motor_position_command_(i) = motor_position_command_old_(i) =
-              motor_position_(i);
-
+          motor_position_command_(i) = motor_position_(i);
+          port_motor_position_list_[i]->write(motor_position_[i]);
         }
 
       }
@@ -375,15 +371,13 @@ void HardwareInterface::updateHook() {
       for (int i = 0; i < number_of_drives_; i++) {
         if (port_motor_position_command_list_[i]->read(
             motor_position_command_[i]) == RTT::NewData) {
-          desired_position_[i] = motor_position_command_(i)
-              * (enc_res_[i] / (2.0 * M_PI));
+          desired_position_[i] = motor_position_command_(i);
 
         }
 
         if (!test_mode_) {
 
           port_motor_position_list_[i]->write(motor_position_[i]);
-          port_motor_increment_list_[i]->write(motor_increment_[i]);
 
         } else {
           motor_position_(i) = motor_position_command_(i);
@@ -421,8 +415,7 @@ void HardwareInterface::updateHook() {
                                    << " ] MOVE_TO_SYNCHRO_AREA"
                                    << RTT::endlog();
               desired_position_[synchro_drive_] +=
-                  synchro_step_coarse_[synchro_drive_]
-                      * (enc_res_[synchro_drive_] / (2.0 * M_PI));
+                  synchro_step_coarse_[synchro_drive_];
             }
           } else {
 
@@ -456,8 +449,7 @@ void HardwareInterface::updateHook() {
                                  << " ] MOVE_FROM_SYNCHRO_AREA"
                                  << RTT::endlog();
             desired_position_[synchro_drive_] +=
-                synchro_step_fine_[synchro_drive_]
-                    * (enc_res_[synchro_drive_] / (2.0 * M_PI));
+                synchro_step_fine_[synchro_drive_];
 
           }
           break;
@@ -481,47 +473,29 @@ void HardwareInterface::updateHook() {
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
                                  << " ] WAIT_FOR_IMPULSE" << RTT::endlog();
             desired_position_[synchro_drive_] +=
-                synchro_step_fine_[synchro_drive_]
-                    * (enc_res_[synchro_drive_] / (2.0 * M_PI));
+                synchro_step_fine_[synchro_drive_];
           }
           break;
 
         case SYNCHRO_END:
 
-          if ((synchro_stop_iter_--) <= 0) {
+          if ((synchro_stop_iter_--) == 1) {
 
             for (int i = 0; i < number_of_drives_; i++) {
-              motor_position_command_(i) = motor_position_command_old_(i) =
-                  motor_position_(i);
-              desired_position_[i] = motor_position_(i)
-                  * (enc_res_[i] / (2.0 * M_PI));
+              motor_position_command_(i) = motor_position_(i);
+              desired_position_[i] = motor_position_(i);
             }
 
-            state_ = PRE_SERVOING;
             port_is_synchronised_.write(true);
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
                                  << " ] SYNCHRONIZING ended" << RTT::endlog();
             std::cout << "synchro finished" << std::endl;
+          } else if (synchro_stop_iter_ <= 0) {
+            state_ = PRE_SERVOING;
           }
           break;
       }
       break;
-  }
-
-  // test maksymalnej wartosci zadanej
-  for (int i = 0; i < number_of_drives_; i++) {
-    /*
-     if (fabs(pos_inc_[i]) > max_pos_inc_[i]) {
-     max_pos_inc_[i] = fabs(pos_inc_[i]);
-     }
-     */
-    /*
-     if (iteration_nr % 5000 == 0) {
-     std::cout << "axis i: " << i << " max_pos_inc_: " << max_pos_inc_[i]
-     << std::endl;
-     }
-     */
-
   }
 
   if (!test_mode_) {
@@ -538,31 +512,11 @@ void HardwareInterface::updateHook() {
       port_motor_current_list_[i]->write(motor_current_[i]);
       increment_[i] = hi_->get_increment(i);
       port_motor_increment_list_[i]->write(increment_[i]);
-      /*
-       if (fabs(pos_inc_[i]) > max_desired_increment_[i]) {
-       std::cout << "very high pos_inc_ i: " << i << " pos_inc: "
-       << pos_inc_[i] << std::endl;
-
-       hi_->set_hardware_panic();
-       }
-       */
-      desired_position_out_list_[i]->write(desired_position_[i]);
-
+      if (state_ != SERVOING) {
+        desired_position_out_list_[i]->write(desired_position_[i]);
+      }
     }
-
-  } else {
-    for (int i = 0; i < number_of_drives_; i++) {
-      /*
-       if (fabs(pos_inc_[i]) > max_desired_increment_[i]) {
-       std::cout << "very high pos_inc_ i: " << i << " pos_inc: "
-       << pos_inc_[i] << std::endl;
-
-       }
-       */
-    }
-
   }
-
 }
 
 ORO_CREATE_COMPONENT(HardwareInterface)

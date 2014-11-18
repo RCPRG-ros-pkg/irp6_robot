@@ -47,7 +47,6 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addPort(synchro_state_in_).doc("Synchro State from HardwareInterface");
   this->addPort(emergency_stop_out_).doc("Emergency Stop Out");
 
-
   this->addProperty("A", A_).doc("");
   this->addProperty("BB0", BB0_).doc("");
   this->addProperty("BB1", BB1_).doc("");
@@ -58,6 +57,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addProperty("debug", debug_).doc("");
   this->addProperty("eint_dif", eint_dif_).doc("");
   this->addProperty("max_desired_increment", max_desired_increment_).doc("");
+  this->addProperty("enc_res", enc_res_).doc("");
 
 }
 
@@ -79,6 +79,7 @@ bool IRp6Regulator::configureHook() {
 }
 
 void IRp6Regulator::updateHook() {
+
   if (NewData == deltaInc_in.read(deltaIncData)) {
 
     if (NewData == desired_position_.read(desired_position_new_)) {
@@ -97,17 +98,19 @@ void IRp6Regulator::updateHook() {
       }
     }
 
-    desired_position_increment_ = desired_position_new_ - desired_position_old_;
+    desired_position_increment_ =
+        (desired_position_new_ - desired_position_old_)
+            * (enc_res_ / (2.0 * M_PI));
 
     if (fabs(desired_position_increment_) > max_desired_increment_) {
-        std::cout << "very high pos_inc_: " << reg_number_ << " pos_inc: "
-        << desired_position_increment_ << std::endl;
+      std::cout << "very high pos_inc_: " << reg_number_ << " pos_inc: "
+                << desired_position_increment_ << std::endl;
 
-        emergency_stop_out_.write(true);
-        }
-
+      emergency_stop_out_.write(true);
+    }
 
     desired_position_old_ = desired_position_new_;
+
     if (!debug_) {
 
       int output = doServo(desired_position_increment_, deltaIncData);
@@ -129,43 +132,43 @@ void IRp6Regulator::updateHook() {
 
 int IRp6Regulator::doServo(double step_new, int pos_inc) {
 
-  // algorytm regulacji dla serwomechanizmu
-  // position_increment_old - przedostatnio odczytany przyrost polozenie
-  //                         (delta y[k-2] -- mierzone w impulsach)
-  // position_increment_new - ostatnio odczytany przyrost polozenie
-  //                         (delta y[k-1] -- mierzone w impulsach)
-  // step_old_pulse               - poprzednia wartosc zadana dla jednego kroku
-  //                         regulacji (przyrost wartosci zadanej polozenia --
-  //                         delta r[k-2] -- mierzone w impulsach)
-  // step_new               - nastepna wartosc zadana dla jednego kroku
-  //                         regulacji (przyrost wartosci zadanej polozenia --
-  //                         delta r[k-1] -- mierzone w radianach)
-  // set_value_new          - wielkosc kroku do realizacji przez HIP
-  //                         (wypelnienie PWM -- u[k]): czas trwania jedynki
-  // set_value_old          - wielkosc kroku do realizacji przez HIP
-  //                         (wypelnienie PWM -- u[k-1]): czas trwania jedynki
-  // set_value_very_old     - wielkosc kroku do realizacji przez HIP
-  //                         (wypelnienie PWM -- u[k-2]): czas trwania jedynki
+// algorytm regulacji dla serwomechanizmu
+// position_increment_old - przedostatnio odczytany przyrost polozenie
+//                         (delta y[k-2] -- mierzone w impulsach)
+// position_increment_new - ostatnio odczytany przyrost polozenie
+//                         (delta y[k-1] -- mierzone w impulsach)
+// step_old_pulse               - poprzednia wartosc zadana dla jednego kroku
+//                         regulacji (przyrost wartosci zadanej polozenia --
+//                         delta r[k-2] -- mierzone w impulsach)
+// step_new               - nastepna wartosc zadana dla jednego kroku
+//                         regulacji (przyrost wartosci zadanej polozenia --
+//                         delta r[k-1] -- mierzone w radianach)
+// set_value_new          - wielkosc kroku do realizacji przez HIP
+//                         (wypelnienie PWM -- u[k]): czas trwania jedynki
+// set_value_old          - wielkosc kroku do realizacji przez HIP
+//                         (wypelnienie PWM -- u[k-1]): czas trwania jedynki
+// set_value_very_old     - wielkosc kroku do realizacji przez HIP
+//                         (wypelnienie PWM -- u[k-2]): czas trwania jedynki
 
   double step_new_pulse;  // nastepna wartosc zadana dla jednego kroku regulacji
 
   step_new_pulse = step_new;
   position_increment_new = pos_inc;
 
-  // Przyrost calki uchybu
+// Przyrost calki uchybu
   delta_eint = delta_eint_old
       + (1.0 + eint_dif_) * (step_new_pulse - position_increment_new)
       - (1.0 - eint_dif_) * (step_old_pulse - position_increment_old);
 
-  //std::cout << "POS INCREMENT NEW: " << position_increment_new <<  std::endl;
+//std::cout << "POS INCREMENT NEW: " << position_increment_new <<  std::endl;
 
-  // obliczenie nowej wartosci wypelnienia PWM algorytm PD + I
+// obliczenie nowej wartosci wypelnienia PWM algorytm PD + I
   set_value_new = (1 + a_) * set_value_old - a_ * set_value_very_old
       + b0_ * delta_eint - b1_ * delta_eint_old;
 
-  //std::cout << "PWM VALUE (" << pos_inc << " to " << pos_inc_new << ") IS " << (int)set_value_new << std::endl;
+//std::cout << "PWM VALUE (" << pos_inc << " to " << pos_inc_new << ") IS " << (int)set_value_new << std::endl;
 
-  // ograniczenie na sterowanie
+// ograniczenie na sterowanie
   if (set_value_new > MAX_PWM)
     set_value_new = MAX_PWM;
   if (set_value_new < -MAX_PWM)
@@ -186,7 +189,7 @@ int IRp6Regulator::doServo(double step_new, int pos_inc) {
     //   std::cout << "output_value: " << output_value << std::endl;
   }
 
-  // przepisanie nowych wartosci zmiennych do zmiennych przechowujacych wartosci poprzednie
+// przepisanie nowych wartosci zmiennych do zmiennych przechowujacych wartosci poprzednie
   position_increment_old = position_increment_new;
   delta_eint_old = delta_eint;
   step_old_pulse = step_new_pulse;

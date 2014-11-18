@@ -44,6 +44,7 @@
         A: 0.548946716233
         BB0: 0.9457596
         BB1: 0.8811594
+        enc_res: 4000.0
         current_mode: true
         current_reg_kp: 120.0
         max_output_current: 15000.0

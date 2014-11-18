@@ -256,6 +256,7 @@
         current_reg_kp: 200.0
         max_output_current: 20000.0
         max_desired_increment: 200.0
+        enc_res: 4000.0
       IRp6pmRegulator_1:
         reg_number: 3
         debug: false
@@ -267,6 +268,7 @@
         current_reg_kp: 150.0
         max_output_current: 15000.0
         max_desired_increment: 200.0
+        enc_res: 4000.0
       IRp6pmRegulator_2:
         reg_number: 4
         debug: false
@@ -278,6 +280,7 @@
         current_reg_kp: 180.0
         max_output_current: 15000.0
         max_desired_increment: 200.0
+        enc_res: 4000.0
       IRp6pmRegulator_3:
         reg_number: 5
         debug: false
@@ -289,6 +292,7 @@
         current_reg_kp: 170.0
         max_output_current: 15000.0
         max_desired_increment: 200.0
+        enc_res: 4000.0
       IRp6pmRegulator_4:
         reg_number: 6
         debug: false
@@ -311,6 +315,7 @@
         current_reg_kp: 11.0
         max_output_current: 1000.0
         max_desired_increment: 200.0
+        enc_res: 2000.0
       Irp6ptfgRegulator:
         reg_number: 8
         debug: false
@@ -322,6 +327,7 @@
         current_reg_kp: 0.33
         max_output_current: 80.0
         max_desired_increment: 200.0
+        enc_res: 128.0
       IRp6otmRegulator_0:
         reg_number: 9
         debug: false
@@ -333,6 +339,7 @@
         current_reg_kp: 190.0
         max_output_current: 22000.0
         max_desired_increment: 200.0
+        enc_res: 4000.0
       IRp6otmRegulator_1:
         reg_number: 10
         debug: false
@@ -344,6 +351,7 @@
         current_reg_kp: 200.0
         max_output_current: 20000.0
         max_desired_increment: 200.0
+        enc_res: 4000.0
       IRp6otmRegulator_2:
         reg_number: 11
         debug: false
@@ -355,6 +363,7 @@
         current_reg_kp: 150.0
         max_output_current: 15000.0
         max_desired_increment: 200.0
+        enc_res: 4000.0
       IRp6otmRegulator_3:
         reg_number: 12
         debug: false
@@ -366,6 +375,7 @@
         current_reg_kp: 180.0
         max_output_current: 15000.0
         max_desired_increment: 200.0
+        enc_res: 4000.0
       IRp6otmRegulator_4:
         reg_number: 13
         debug: false
@@ -377,6 +387,7 @@
         current_reg_kp: 170.0
         max_output_current: 15000.0
         max_desired_increment: 200.0
+        enc_res: 4000.0
       IRp6otmRegulator_5:
         reg_number: 14
         debug: false
@@ -388,6 +399,7 @@
         current_reg_kp: 110.0
         max_output_current: 8000.0
         max_desired_increment: 200.0
+        enc_res: 4000.0
       IRp6otmRegulator_6:
         reg_number: 15
         debug: false
@@ -399,6 +411,7 @@
         current_reg_kp: 11.0
         max_output_current: 1000.0
         max_desired_increment: 200.0
+        enc_res: 2000.0
       Irp6ottfgRegulator:
         reg_number: 16
         debug: false
@@ -410,6 +423,7 @@
         current_reg_kp: 0.33
         max_output_current: 80.0
         max_desired_increment: 200.0
+        enc_res: 128.0
       Irp6pmPortDoubleSplit_hw_cp:
         number_of_ports: 6
       Irp6pmPortDoubleAggregate_hw_p:

@@ -135,6 +135,8 @@ connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorM2J.MotorPosition
 connect("ConveyorJ2M.MotorPosition", "ConveyorPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
 connect("ConveyorPortDoubleSplit_hw_cp.OutputPort_0","Irp6HardwareInterface.MotorPositionCommand_conveyor", ConnPolicy())
+connect("ConveyorPortDoubleSplit_hw_cp.OutputPort_0","ConveyorRegulator.DesiredPosition", ConnPolicy())
+
 
 connect("ConveyorPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_conveyor", ConnPolicy())
 
@@ -149,7 +151,7 @@ Irp6scheme.addBlock("ConveyorPortDoubleAggregate_hw_p")
 
 Irp6scheme.addBlock("ConveyorM2J");
 
-Irp6scheme.latchConnections("ConveyorPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "ConveyorPortDoubleAggregate_hw_p", true);
 Irp6scheme.addBlock("ConveyorJ2M");
 Irp6scheme.addBlock("ConveyorSplineTrajectoryGeneratorJoint");
 Irp6scheme.addBlock("ConveyorSplineTrajectoryGeneratorMotor");
