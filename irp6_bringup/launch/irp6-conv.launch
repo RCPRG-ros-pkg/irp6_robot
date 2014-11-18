@@ -436,6 +436,50 @@
         max_output_current: 80.0  
         max_desired_increment: 200.0
         enc_res: 128.0
+      ConveyorRegulator:
+        reg_number: 1
+        debug: false
+        eint_dif: 0.008
+        A: 0.548946716233
+        BB0: 0.9457596
+        BB1: 0.8811594
+        current_mode: true
+        current_reg_kp: 120.0
+        max_output_current: 15000.0
+        max_desired_increment: 200.0
+        enc_res: 4000.0
+      IRp6pmPortDoubleSum_0:
+        number_of_ports: 1
+      IRp6pmPortDoubleSum_1:
+        number_of_ports: 1
+      IRp6pmPortDoubleSum_2:
+        number_of_ports: 1
+      IRp6pmPortDoubleSum_3:
+        number_of_ports: 1
+      IRp6pmPortDoubleSum_4:
+        number_of_ports: 1
+      IRp6pmPortDoubleSum_5:
+        number_of_ports: 1
+      Irp6ptfgPortDoubleSum:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_0:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_1:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_2:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_3:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_4:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_5:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_6:
+        number_of_ports: 1
+      Irp6ottfgPortDoubleSum:
+        number_of_ports: 1
+      ConveyorPortDoubleSum:
+        number_of_ports: 1
       Irp6pmPortDoubleSplit_hw_cp:
         number_of_ports: 6
       Irp6pmPortDoubleAggregate_hw_p:
@@ -526,18 +570,6 @@
         joint_names: [joint1]
         lower_limits: [-100000.0]
         upper_limits: [100000.0]
-      ConveyorRegulator:
-        reg_number: 1
-        debug: false
-        eint_dif: 0.008
-        A: 0.548946716233
-        BB0: 0.9457596
-        BB1: 0.8811594
-        current_mode: true
-        current_reg_kp: 120.0
-        max_output_current: 15000.0
-        max_desired_increment: 200.0
-        enc_res: 4000.0
       ConveyorPortDoubleSplit_hw_cp:
         number_of_ports: 1
       ConveyorPortDoubleAggregate_hw_p:

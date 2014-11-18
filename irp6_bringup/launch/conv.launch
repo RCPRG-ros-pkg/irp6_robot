@@ -54,7 +54,7 @@
       ConveyorPortDoubleAggregate_hw_p:
         number_of_ports: 1
       ConveyorPortDoubleSum:
-        number_of_ports: 1      
+        number_of_ports: 1
       ConveyorJntPub:
         joint_names: [ConveyorJoint]
     </rosparam>

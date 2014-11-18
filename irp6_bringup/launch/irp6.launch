@@ -425,6 +425,36 @@
         max_output_current: 80.0
         max_desired_increment: 200.0
         enc_res: 128.0
+      IRp6pmPortDoubleSum_0:
+	    number_of_ports: 1
+      IRp6pmPortDoubleSum_1:
+        number_of_ports: 1
+      IRp6pmPortDoubleSum_2:
+        number_of_ports: 1
+      IRp6pmPortDoubleSum_3:
+        number_of_ports: 1
+      IRp6pmPortDoubleSum_4:
+        number_of_ports: 1
+      IRp6pmPortDoubleSum_5:
+        number_of_ports: 1
+      Irp6ptfgPortDoubleSum:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_0:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_1:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_2:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_3:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_4:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_5:
+        number_of_ports: 1
+      IRp6otmPortDoubleSum_6:
+        number_of_ports: 1
+      Irp6ottfgPortDoubleSum:
+        number_of_ports: 1
       Irp6pmPortDoubleSplit_hw_cp:
         number_of_ports: 6
       Irp6pmPortDoubleAggregate_hw_p:
