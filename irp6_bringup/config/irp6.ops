@@ -709,6 +709,30 @@ connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_6","Irp6HardwareInterface.Motor
 
 connect("Irp6ottfgPortDoubleSplit_hw_cp.OutputPort_0","Irp6HardwareInterface.MotorPositionCommand_irp6ottfg", ConnPolicy())
 
+connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_0","IRp6pmRegulator_0.DesiredPosition", ConnPolicy())
+connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_1","IRp6pmRegulator_1.DesiredPosition", ConnPolicy())
+connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_2","IRp6pmRegulator_2.DesiredPosition", ConnPolicy())
+connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_3","IRp6pmRegulator_3.DesiredPosition", ConnPolicy())
+connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_4","IRp6pmRegulator_4.DesiredPosition", ConnPolicy())
+connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_5","IRp6pmRegulator_5.DesiredPosition", ConnPolicy())
+
+connect("Irp6ptfgPortDoubleSplit_hw_cp.OutputPort_0","Irp6ptfgRegulator.DesiredPosition", ConnPolicy())
+
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_0","IRp6otmRegulator_0.DesiredPosition", ConnPolicy())
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_1","IRp6otmRegulator_1.DesiredPosition", ConnPolicy())
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_2","IRp6otmRegulator_2.DesiredPosition", ConnPolicy())
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_3","IRp6otmRegulator_3.DesiredPosition", ConnPolicy())
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_4","IRp6otmRegulator_4.DesiredPosition", ConnPolicy())
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_5","IRp6otmRegulator_5.DesiredPosition", ConnPolicy())
+connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_6","IRp6otmRegulator_6.DesiredPosition", ConnPolicy())
+
+connect("Irp6ottfgPortDoubleSplit_hw_cp.OutputPort_0","Regulator.DesiredPosition", ConnPolicy())
+
+
+
+
+
+
 connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_irp6pm_0", ConnPolicy())
 connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_1","Irp6HardwareInterface.MotorPosition_irp6pm_1", ConnPolicy())
 connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_2","Irp6HardwareInterface.MotorPosition_irp6pm_2", ConnPolicy())
@@ -815,10 +839,10 @@ Irp6scheme.addBlock("Irp6pmInverseKinematic");
 Irp6scheme.addBlock("Irp6otmForwardKinematic");
 Irp6scheme.addBlock("Irp6otmInverseKinematic");
 Irp6scheme.latchConnections("Irp6otmPortDoubleAggregate_hw_desired", "Irp6otmM2Jdesired", true);
-Irp6scheme.latchConnections("Irp6pmPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
-Irp6scheme.latchConnections("Irp6ptfgPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
-Irp6scheme.latchConnections("Irp6otmPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
-Irp6scheme.latchConnections("Irp6ottfgPortDoubleSplit_hw_cp", "Irp6HardwareInterface", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "Irp6pmPortDoubleAggregate_hw_p", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "Irp6ptfgPortDoubleAggregate_hw_p", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "Irp6otmPortDoubleAggregate_hw_p", true);
+Irp6scheme.latchConnections("Irp6HardwareInterface", "Irp6ottfgPortDoubleAggregate_hw_p", true);
 Irp6scheme.addBlock("Irp6pmJ2M");
 Irp6scheme.addBlock("Irp6ptfgJ2M");
 Irp6scheme.addBlock("Irp6otmJ2M");
