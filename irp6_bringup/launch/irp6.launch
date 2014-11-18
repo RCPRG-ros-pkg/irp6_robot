@@ -426,7 +426,7 @@
         max_desired_increment: 200.0
         enc_res: 128.0
       IRp6pmPortDoubleSum_0:
-	    number_of_ports: 1
+        number_of_ports: 1
       IRp6pmPortDoubleSum_1:
         number_of_ports: 1
       IRp6pmPortDoubleSum_2:

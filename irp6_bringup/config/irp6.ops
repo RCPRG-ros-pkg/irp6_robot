@@ -50,9 +50,91 @@ Irp6scheme.configure();
 loadComponent("Irp6HardwareInterface","HardwareInterface")
 Irp6HardwareInterface.loadService("rosparam")
 Irp6HardwareInterface.rosparam.getAll()
+//
+// Load PortDoubleSum components for Regulators
+//
+
+loadComponent("IRp6pmPortDoubleSum_0","PortDoubleSum")
+IRp6pmPortDoubleSum_0.loadService("rosparam")
+IRp6pmPortDoubleSum_0.rosparam.getAll()
+IRp6pmPortDoubleSum_0.configure()
+
+loadComponent("IRp6pmPortDoubleSum_1","PortDoubleSum")
+IRp6pmPortDoubleSum_1.loadService("rosparam")
+IRp6pmPortDoubleSum_1.rosparam.getAll()
+IRp6pmPortDoubleSum_1.configure()
+
+loadComponent("IRp6pmPortDoubleSum_2","PortDoubleSum")
+IRp6pmPortDoubleSum_2.loadService("rosparam")
+IRp6pmPortDoubleSum_2.rosparam.getAll()
+IRp6pmPortDoubleSum_2.configure()
+
+loadComponent("IRp6pmPortDoubleSum_3","PortDoubleSum")
+IRp6pmPortDoubleSum_3.loadService("rosparam")
+IRp6pmPortDoubleSum_3.rosparam.getAll()
+IRp6pmPortDoubleSum_3.configure()
+
+loadComponent("IRp6pmPortDoubleSum_4","PortDoubleSum")
+IRp6pmPortDoubleSum_4.loadService("rosparam")
+IRp6pmPortDoubleSum_4.rosparam.getAll()
+IRp6pmPortDoubleSum_4.configure()
+
+loadComponent("IRp6pmPortDoubleSum_5","PortDoubleSum")
+IRp6pmPortDoubleSum_5.loadService("rosparam")
+IRp6pmPortDoubleSum_5.rosparam.getAll()
+IRp6pmPortDoubleSum_5.configure()
+
+loadComponent("Irp6ptfgPortDoubleSum","PortDoubleSum")
+Irp6ptfgPortDoubleSum.loadService("rosparam")
+Irp6ptfgPortDoubleSum.rosparam.getAll()
+Irp6ptfgPortDoubleSum.configure()
 
 
-// Motors Regulators
+loadComponent("IRp6otmPortDoubleSum_0","PortDoubleSum")
+IRp6otmPortDoubleSum_0.loadService("rosparam")
+IRp6otmPortDoubleSum_0.rosparam.getAll()
+IRp6otmPortDoubleSum_0.configure()
+
+loadComponent("IRp6otmPortDoubleSum_1","PortDoubleSum")
+IRp6otmPortDoubleSum_1.loadService("rosparam")
+IRp6otmPortDoubleSum_1.rosparam.getAll()
+IRp6otmPortDoubleSum_1.configure()
+
+loadComponent("IRp6otmPortDoubleSum_2","PortDoubleSum")
+IRp6otmPortDoubleSum_2.loadService("rosparam")
+IRp6otmPortDoubleSum_2.rosparam.getAll()
+IRp6otmPortDoubleSum_2.configure()
+
+loadComponent("IRp6otmPortDoubleSum_3","PortDoubleSum")
+IRp6otmPortDoubleSum_3.loadService("rosparam")
+IRp6otmPortDoubleSum_3.rosparam.getAll()
+IRp6otmPortDoubleSum_3.configure()
+
+loadComponent("IRp6otmPortDoubleSum_4","PortDoubleSum")
+IRp6otmPortDoubleSum_4.loadService("rosparam")
+IRp6otmPortDoubleSum_4.rosparam.getAll()
+IRp6otmPortDoubleSum_4.configure()
+
+loadComponent("IRp6otmPortDoubleSum_5","PortDoubleSum")
+IRp6otmPortDoubleSum_5.loadService("rosparam")
+IRp6otmPortDoubleSum_5.rosparam.getAll()
+IRp6otmPortDoubleSum_5.configure()
+
+loadComponent("IRp6otmPortDoubleSum_6","PortDoubleSum")
+IRp6otmPortDoubleSum_6.loadService("rosparam")
+IRp6otmPortDoubleSum_6.rosparam.getAll()
+IRp6otmPortDoubleSum_6.configure()
+
+loadComponent("Irp6ottfgPortDoubleSum","PortDoubleSum")
+Irp6ottfgPortDoubleSum.loadService("rosparam")
+Irp6ottfgPortDoubleSum.rosparam.getAll()
+Irp6ottfgPortDoubleSum.configure()
+
+
+
+//
+// Load Motors Regulators
+//
 
 loadComponent("IRp6pmRegulator_0","IRp6Regulator")
 IRp6pmRegulator_0.loadService("rosparam")
@@ -502,6 +584,36 @@ connect("Irp6pmForceTransformation.OutputEndEffectorWrench", "Irp6Haptic.Current
 connect("Irp6otmForceControlLaw.CurrentFclParam", "Irp6Haptic.OutputFclParam", ConnPolicy())
 
 
+//
+//  Add PortDoubleSum as Irp6scheme peers
+//
+
+addPeer("Irp6scheme", "IRp6pmPortDoubleSum_0")
+addPeer("Irp6scheme", "IRp6pmPortDoubleSum_1")
+addPeer("Irp6scheme", "IRp6pmPortDoubleSum_2")
+addPeer("Irp6scheme", "IRp6pmPortDoubleSum_3")
+addPeer("Irp6scheme", "IRp6pmPortDoubleSum_4")
+addPeer("Irp6scheme", "IRp6pmPortDoubleSum_5")
+
+addPeer("Irp6scheme", "Irp6ptfgPortDoubleSum")
+
+addPeer("Irp6scheme", "IRp6otmPortDoubleSum_0")
+addPeer("Irp6scheme", "IRp6otmPortDoubleSum_1")
+addPeer("Irp6scheme", "IRp6otmPortDoubleSum_2")
+addPeer("Irp6scheme", "IRp6otmPortDoubleSum_3")
+addPeer("Irp6scheme", "IRp6otmPortDoubleSum_4")
+addPeer("Irp6scheme", "IRp6otmPortDoubleSum_5")
+addPeer("Irp6scheme", "IRp6otmPortDoubleSum_6")
+
+addPeer("Irp6scheme", "Irp6ottfgPortDoubleSum")
+
+
+
+//
+//  Add regulators as Irp6scheme peers
+//
+
+
 
 addPeer("Irp6scheme", "IRp6pmRegulator_0");
 addPeer("Irp6scheme", "IRp6pmRegulator_1");
@@ -521,7 +633,6 @@ addPeer("Irp6scheme", "IRp6otmRegulator_5");
 addPeer("Irp6scheme", "IRp6otmRegulator_6");
 
 addPeer("Irp6scheme", "Irp6ottfgRegulator");
-
 
 
 
@@ -579,37 +690,48 @@ Irp6scheme.addBlock("Irp6HardwareInterface");
 Irp6HardwareInterface.configure();
 
 ## Connect
-connect("Irp6HardwareInterface.computedReg_in_irp6pm_0","IRp6pmRegulator_0.computedPwm_out", ConnPolicy())
+connect("IRp6pmPortDoubleSum_0.InputPort_0","IRp6pmRegulator_0.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6pm_0","IRp6pmPortDoubleSum_0.OutputPort", ConnPolicy())
 connect("IRp6pmRegulator_0.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6pm_0", ConnPolicy())
 connect("IRp6pmRegulator_0.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6pm_0", ConnPolicy())
 connect("IRp6pmRegulator_0.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6pmRegulator_0.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
 
-connect("Irp6HardwareInterface.computedReg_in_irp6pm_1","IRp6pmRegulator_1.computedPwm_out", ConnPolicy())
+
+connect("IRp6pmPortDoubleSum_1.InputPort_0","IRp6pmRegulator_1.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6pm_1","IRp6pmPortDoubleSum_1.OutputPort", ConnPolicy())
 connect("IRp6pmRegulator_1.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6pm_1", ConnPolicy())
 connect("IRp6pmRegulator_1.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6pm_1", ConnPolicy())
 connect("IRp6pmRegulator_1.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6pmRegulator_1.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
 
-connect("Irp6HardwareInterface.computedReg_in_irp6pm_2","IRp6pmRegulator_2.computedPwm_out", ConnPolicy())
+
+connect("IRp6pmPortDoubleSum_2.InputPort_0","IRp6pmRegulator_2.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6pm_2","IRp6pmPortDoubleSum_2.OutputPort", ConnPolicy())
 connect("IRp6pmRegulator_2.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6pm_2", ConnPolicy())
 connect("IRp6pmRegulator_2.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6pm_2", ConnPolicy())
 connect("IRp6pmRegulator_2.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6pmRegulator_2.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
 
-connect("Irp6HardwareInterface.computedReg_in_irp6pm_3","IRp6pmRegulator_3.computedPwm_out", ConnPolicy())
+
+connect("IRp6pmPortDoubleSum_3.InputPort_0","IRp6pmRegulator_3.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6pm_3","IRp6pmPortDoubleSum_3.OutputPort", ConnPolicy())
 connect("IRp6pmRegulator_3.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6pm_3", ConnPolicy())
 connect("IRp6pmRegulator_3.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6pm_3", ConnPolicy())
 connect("IRp6pmRegulator_3.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6pmRegulator_3.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
 
-connect("Irp6HardwareInterface.computedReg_in_irp6pm_4","IRp6pmRegulator_4.computedPwm_out", ConnPolicy())
+
+connect("IRp6pmPortDoubleSum_4.InputPort_0","IRp6pmRegulator_4.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6pm_4","IRp6pmPortDoubleSum_4.OutputPort", ConnPolicy())
 connect("IRp6pmRegulator_4.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6pm_4", ConnPolicy())
 connect("IRp6pmRegulator_4.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6pm_4", ConnPolicy())
 connect("IRp6pmRegulator_4.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6pmRegulator_4.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
 
-connect("Irp6HardwareInterface.computedReg_in_irp6pm_5","IRp6pmRegulator_5.computedPwm_out", ConnPolicy())
+
+connect("IRp6pmPortDoubleSum_5.InputPort_0","IRp6pmRegulator_5.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6pm_5","IRp6pmPortDoubleSum_5.OutputPort", ConnPolicy())
 connect("IRp6pmRegulator_5.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6pm_5", ConnPolicy())
 connect("IRp6pmRegulator_5.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6pm_5", ConnPolicy())
 connect("IRp6pmRegulator_5.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
@@ -617,56 +739,73 @@ connect("IRp6pmRegulator_5.EmergencyStopOut","Irp6HardwareInterface.EmergencySto
 
 connect("PortDoubleToFloat64_1.InputPort","Irp6HardwareInterface.MotorIncrement_irp6pm_5", ConnPolicy())
 
-connect("Irp6HardwareInterface.computedReg_in_irp6ptfg","Irp6ptfgRegulator.computedPwm_out", ConnPolicy())
+
+connect("Irp6ptfgPortDoubleSum.InputPort_0","Irp6ptfgRegulator.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6ptfg","Irp6ptfgPortDoubleSum.OutputPort", ConnPolicy())
 connect("Irp6ptfgRegulator.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6ptfg", ConnPolicy())
 connect("Irp6ptfgRegulator.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6ptfg", ConnPolicy())
 connect("Irp6ptfgRegulator.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
 connect("Irp6ptfgRegulator.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
 
 
-connect("Irp6HardwareInterface.computedReg_in_irp6otm_0","IRp6otmRegulator_0.computedPwm_out", ConnPolicy())
+connect("IRp6otmPortDoubleSum_0.InputPort_0","IRp6otmRegulator_0.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_0","IRp6otmPortDoubleSum_0.OutputPort", ConnPolicy())
 connect("IRp6otmRegulator_0.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6otm_0", ConnPolicy())
 connect("IRp6otmRegulator_0.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_0", ConnPolicy())
 connect("IRp6otmRegulator_0.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6otmRegulator_0.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
 
-connect("Irp6HardwareInterface.computedReg_in_irp6otm_1","IRp6otmRegulator_1.computedPwm_out", ConnPolicy())
+
+connect("IRp6otmPortDoubleSum_1.InputPort_0","IRp6otmRegulator_1.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_1","IRp6otmPortDoubleSum_1.OutputPort", ConnPolicy())
 connect("IRp6otmRegulator_1.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6otm_1", ConnPolicy())
 connect("IRp6otmRegulator_1.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_1", ConnPolicy())
 connect("IRp6otmRegulator_1.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
-connect("IRp6otmRegulator_0.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
+connect("IRp6otmRegulator_1.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
 
-connect("Irp6HardwareInterface.computedReg_in_irp6otm_2","IRp6otmRegulator_2.computedPwm_out", ConnPolicy())
+
+connect("IRp6otmPortDoubleSum_2.InputPort_0","IRp6otmRegulator_2.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_2","IRp6otmPortDoubleSum_2.OutputPort", ConnPolicy())
 connect("IRp6otmRegulator_2.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6otm_2", ConnPolicy())
 connect("IRp6otmRegulator_2.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_2", ConnPolicy())
 connect("IRp6otmRegulator_2.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6otmRegulator_2.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
 
-connect("Irp6HardwareInterface.computedReg_in_irp6otm_3","IRp6otmRegulator_3.computedPwm_out", ConnPolicy())
+
+connect("IRp6otmPortDoubleSum_3.InputPort_0","IRp6otmRegulator_3.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_3","IRp6otmPortDoubleSum_3.OutputPort", ConnPolicy())
 connect("IRp6otmRegulator_3.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6otm_3", ConnPolicy())
 connect("IRp6otmRegulator_3.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_3", ConnPolicy())
 connect("IRp6otmRegulator_3.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6otmRegulator_3.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
 
-connect("Irp6HardwareInterface.computedReg_in_irp6otm_4","IRp6otmRegulator_4.computedPwm_out", ConnPolicy())
+
+connect("IRp6otmPortDoubleSum_4.InputPort_0","IRp6otmRegulator_4.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_4","IRp6otmPortDoubleSum_4.OutputPort", ConnPolicy())
 connect("IRp6otmRegulator_4.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6otm_4", ConnPolicy())
 connect("IRp6otmRegulator_4.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_4", ConnPolicy())
 connect("IRp6otmRegulator_4.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6otmRegulator_4.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
 
-connect("Irp6HardwareInterface.computedReg_in_irp6otm_5","IRp6otmRegulator_5.computedPwm_out", ConnPolicy())
+
+connect("IRp6otmPortDoubleSum_5.InputPort_0","IRp6otmRegulator_5.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_5","IRp6otmPortDoubleSum_5.OutputPort", ConnPolicy())
 connect("IRp6otmRegulator_5.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6otm_5", ConnPolicy())
 connect("IRp6otmRegulator_5.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_5", ConnPolicy())
 connect("IRp6otmRegulator_5.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6otmRegulator_5.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
 
-connect("Irp6HardwareInterface.computedReg_in_irp6otm_6","IRp6otmRegulator_6.computedPwm_out", ConnPolicy())
+
+connect("IRp6otmPortDoubleSum_6.InputPort_0","IRp6otmRegulator_6.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6otm_6","IRp6otmPortDoubleSum_6.OutputPort", ConnPolicy())
 connect("IRp6otmRegulator_6.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6otm_6", ConnPolicy())
 connect("IRp6otmRegulator_6.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6otm_6", ConnPolicy())
 connect("IRp6otmRegulator_6.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6otmRegulator_6.EmergencyStopOut","Irp6HardwareInterface.EmergencyStopIn", ConnPolicy())
 
-connect("Irp6HardwareInterface.computedReg_in_irp6ottfg","Irp6ottfgRegulator.computedPwm_out", ConnPolicy())
+
+connect("Irp6ottfgPortDoubleSum.InputPort_0","Irp6ottfgRegulator.computedPwm_out", ConnPolicy())
+connect("Irp6HardwareInterface.computedReg_in_irp6ottfg","Irp6ottfgPortDoubleSum.OutputPort", ConnPolicy())
 connect("Irp6ottfgRegulator.DesiredPosition","Irp6HardwareInterface.DesiredPosition_out_irp6ottfg", ConnPolicy())
 connect("Irp6ottfgRegulator.deltaInc_in","Irp6HardwareInterface.MotorIncrement_irp6ottfg", ConnPolicy())
 connect("Irp6ottfgRegulator.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
@@ -775,6 +914,37 @@ connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_3","Irp6HardwareInterface.
 connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_4","Irp6HardwareInterface.MotorCurrent_irp6otm_4", ConnPolicy())
 connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_5","Irp6HardwareInterface.MotorCurrent_irp6otm_5", ConnPolicy())
 connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_6","Irp6HardwareInterface.MotorCurrent_irp6otm_6", ConnPolicy())
+
+
+
+//
+//  Add PortDoubleSum as Irp6scheme blocks
+//
+
+
+Irp6scheme.addBlock("IRp6pmPortDoubleSum_0")
+Irp6scheme.addBlock("IRp6pmPortDoubleSum_1")
+Irp6scheme.addBlock("IRp6pmPortDoubleSum_2")
+Irp6scheme.addBlock("IRp6pmPortDoubleSum_3")
+Irp6scheme.addBlock("IRp6pmPortDoubleSum_4")
+Irp6scheme.addBlock("IRp6pmPortDoubleSum_5")
+
+Irp6scheme.addBlock("Irp6ptfgPortDoubleSum")
+
+Irp6scheme.addBlock("IRp6otmPortDoubleSum_0")
+Irp6scheme.addBlock("IRp6otmPortDoubleSum_1")
+Irp6scheme.addBlock("IRp6otmPortDoubleSum_2")
+Irp6scheme.addBlock("IRp6otmPortDoubleSum_3")
+Irp6scheme.addBlock("IRp6otmPortDoubleSum_4")
+Irp6scheme.addBlock("IRp6otmPortDoubleSum_5")
+Irp6scheme.addBlock("IRp6otmPortDoubleSum_6")
+
+Irp6scheme.addBlock("Irp6ottfgPortDoubleSum")
+
+
+//
+//  Add regulators as Irp6scheme blocks
+//
 
 
 Irp6scheme.addBlock("IRp6pmRegulator_0")
@@ -1219,6 +1389,33 @@ stream("Irp6otmForwardKinematic.EndEffectorOutputPose", ros.comm.topic("/irp6ot_
 ## Start it
 Irp6scheme.start()
 Irp6HardwareInterface.start()
+
+//
+//  Start Port Double sums for regulators
+//
+
+
+IRp6pmPortDoubleSum_0.start()
+IRp6pmPortDoubleSum_1.start()
+IRp6pmPortDoubleSum_2.start()
+IRp6pmPortDoubleSum_3.start()
+IRp6pmPortDoubleSum_4.start()
+IRp6pmPortDoubleSum_5.start()
+Irp6ptfgPortDoubleSum.start()
+IRp6otmPortDoubleSum_0.start()
+IRp6otmPortDoubleSum_1.start()
+IRp6otmPortDoubleSum_2.start()
+IRp6otmPortDoubleSum_3.start()
+IRp6otmPortDoubleSum_4.start()
+IRp6otmPortDoubleSum_5.start()
+IRp6otmPortDoubleSum_6.start()
+Irp6ottfgPortDoubleSum.start()
+
+//
+//  Start regulators
+//
+
+
 IRp6pmRegulator_0.start()
 IRp6pmRegulator_1.start()
 IRp6pmRegulator_2.start()
