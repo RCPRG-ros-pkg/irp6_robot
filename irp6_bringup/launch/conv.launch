@@ -11,7 +11,6 @@
   <group ns="CONV_OROCOS_ROBOT">
     <rosparam>
       Irp6HardwareInterface:
-        number_of_drives: 1
         auto_synchronize: true
         rwh_nsec: 1200000
         active_motors: [conveyor]
