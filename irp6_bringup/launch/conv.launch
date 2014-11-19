@@ -14,7 +14,8 @@
         number_of_drives: 1
         auto_synchronize: true
         rwh_nsec: 1200000
-        hi_port_param_0:
+        active_motors: [conveyor]
+        conveyor:
           label: conveyor
           ports_adresses: /dev/ttyMI15
           synchro_needed: 0

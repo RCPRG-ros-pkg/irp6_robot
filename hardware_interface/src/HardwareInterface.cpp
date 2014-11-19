@@ -21,42 +21,54 @@ HardwareInterface::HardwareInterface(const std::string& name)
       tx_prefix_len_(0),
       synchro_state_(MOVE_TO_SYNCHRO_AREA),
       rwh_nsec_(1200000),
-      timeouts_to_print_(1) {
+      timeouts_to_print_(1),
+      number_of_drives_(0) {
 
   this->ports()->addPort("EmergencyStopIn", port_emergency_stop_);
   this->ports()->addPort("IsSynchronised", port_is_synchronised_);
 
-  this->addProperty("number_of_drives", number_of_drives_).doc(
-      "Number of drives in robot");
+  this->addProperty("active_motors", active_motors_).doc("");
   this->addProperty("auto_synchronize", auto_synchronize_).doc("");
   this->addProperty("test_mode", test_mode_).doc("");
   this->addProperty("timeouts_to_print", timeouts_to_print_).doc("");
   this->addProperty("rwh_nsec", rwh_nsec_).doc("");
-  this->addProperty("hi_port_param_0", hi_port_param_[0]).doc("");
-  this->addProperty("hi_port_param_1", hi_port_param_[1]).doc("");
-  this->addProperty("hi_port_param_2", hi_port_param_[2]).doc("");
-  this->addProperty("hi_port_param_3", hi_port_param_[3]).doc("");
-  this->addProperty("hi_port_param_4", hi_port_param_[4]).doc("");
-  this->addProperty("hi_port_param_5", hi_port_param_[5]).doc("");
-  this->addProperty("hi_port_param_6", hi_port_param_[6]).doc("");
-  this->addProperty("hi_port_param_7", hi_port_param_[7]).doc("");
-  this->addProperty("hi_port_param_8", hi_port_param_[8]).doc("");
-  this->addProperty("hi_port_param_9", hi_port_param_[9]).doc("");
-  this->addProperty("hi_port_param_10", hi_port_param_[10]).doc("");
-  this->addProperty("hi_port_param_11", hi_port_param_[11]).doc("");
-  this->addProperty("hi_port_param_12", hi_port_param_[12]).doc("");
-  this->addProperty("hi_port_param_13", hi_port_param_[13]).doc("");
-  this->addProperty("hi_port_param_14", hi_port_param_[14]).doc("");
-  this->addProperty("hi_port_param_15", hi_port_param_[15]).doc("");
+  this->addProperty("irp6pm_0", hi_port_param_[0]).doc("");
+  this->addProperty("irp6pm_1", hi_port_param_[1]).doc("");
+  this->addProperty("irp6pm_2", hi_port_param_[2]).doc("");
+  this->addProperty("irp6pm_3", hi_port_param_[3]).doc("");
+  this->addProperty("irp6pm_4", hi_port_param_[4]).doc("");
+  this->addProperty("irp6pm_5", hi_port_param_[5]).doc("");
+  this->addProperty("irp6ptfg", hi_port_param_[6]).doc("");
+  this->addProperty("conveyor", hi_port_param_[7]).doc("");
+  this->addProperty("irp6otm_0", hi_port_param_[8]).doc("");
+  this->addProperty("irp6otm_1", hi_port_param_[9]).doc("");
+  this->addProperty("irp6otm_2", hi_port_param_[10]).doc("");
+  this->addProperty("irp6otm_3", hi_port_param_[11]).doc("");
+  this->addProperty("irp6otm_4", hi_port_param_[12]).doc("");
+  this->addProperty("irp6otm_5", hi_port_param_[13]).doc("");
+  this->addProperty("irp6otm_6", hi_port_param_[14]).doc("");
+  this->addProperty("irp6ottfg", hi_port_param_[15]).doc("");
+  this->addProperty("sarkofag", hi_port_param_[16]).doc("");
 }
 
 HardwareInterface::~HardwareInterface() {
 }
 
 bool HardwareInterface::configureHook() {
+
+  for (size_t j = 0; j < HI_SERVOS_NR; j++) {
+    if (std::find(active_motors_.begin(), active_motors_.end(),
+                  hi_port_param_[j].label) != active_motors_.end()) {
+
+      number_of_drives_++;
+
+    }
+
+  }
+
   // dynamic ports list initialization
 
-  // std::cout << "SIZE: "  << hi_port_param_[0].label << "enc_res: " << hi_port_param_[0].enc_res << std::endl;
+ // std::cout << "number_of_drives_: " << number_of_drives_ << std::endl;
 
   computedReg_in_list_.resize(number_of_drives_);
   desired_position_out_list_.resize(number_of_drives_);
@@ -64,55 +76,6 @@ bool HardwareInterface::configureHook() {
   port_motor_position_list_.resize(number_of_drives_);
   port_motor_increment_list_.resize(number_of_drives_);
   port_motor_current_list_.resize(number_of_drives_);
-
-  for (size_t i = 0; i < number_of_drives_; i++) {
-    char computedReg_in_port_name[32];
-    snprintf(computedReg_in_port_name, sizeof(computedReg_in_port_name),
-             "computedReg_in_%s", hi_port_param_[i].label.c_str());
-    computedReg_in_list_[i] = new typeof(*computedReg_in_list_[i]);
-    this->ports()->addPort(computedReg_in_port_name, *computedReg_in_list_[i]);
-
-    char DesiredPosition_out_port_name[32];
-    snprintf(DesiredPosition_out_port_name,
-             sizeof(DesiredPosition_out_port_name), "DesiredPosition_out_%s",
-             hi_port_param_[i].label.c_str());
-    desired_position_out_list_[i] = new typeof(*desired_position_out_list_[i]);
-    this->ports()->addPort(DesiredPosition_out_port_name,
-                           *desired_position_out_list_[i]);
-
-    char MotorPositionCommand_port_name[32];
-    snprintf(MotorPositionCommand_port_name,
-             sizeof(MotorPositionCommand_port_name), "MotorPositionCommand_%s",
-             hi_port_param_[i].label.c_str());
-    port_motor_position_command_list_[i] =
-        new typeof(*port_motor_position_command_list_[i]);
-    this->ports()->addPort(MotorPositionCommand_port_name,
-                           *port_motor_position_command_list_[i]);
-
-    char MotorPosition_port_name[32];
-    snprintf(MotorPosition_port_name, sizeof(MotorPosition_port_name),
-             "MotorPosition_%s", hi_port_param_[i].label.c_str());
-    port_motor_position_list_[i] = new typeof(*port_motor_position_list_[i]);
-    this->ports()->addPort(MotorPosition_port_name,
-                           *port_motor_position_list_[i]);
-
-    char MotorIncrement_port_name[32];
-    snprintf(MotorIncrement_port_name, sizeof(MotorIncrement_port_name),
-             "MotorIncrement_%s", hi_port_param_[i].label.c_str());
-    port_motor_increment_list_[i] = new typeof(*port_motor_increment_list_[i]);
-    this->ports()->addPort(MotorIncrement_port_name,
-                           *port_motor_increment_list_[i]);
-
-    char MotorCurrent_port_name[32];
-    snprintf(MotorCurrent_port_name, sizeof(MotorCurrent_port_name),
-             "MotorCurrent_%s", hi_port_param_[i].label.c_str());
-    port_motor_current_list_[i] = new typeof(*port_motor_current_list_[i]);
-    this->ports()->addPort(MotorCurrent_port_name,
-                           *port_motor_current_list_[i]);
-
-  }
-
-  // properties copying to internal buffers
 
   ports_adresses_.resize(number_of_drives_);
   max_current_.resize(number_of_drives_);
@@ -124,28 +87,81 @@ bool HardwareInterface::configureHook() {
   current_mode_.resize(number_of_drives_);
   synchro_needed_.resize(number_of_drives_);
 
-//  std::cout << "HI PARAMS:"  << std::endl;
+  int i = -1;
+  for (size_t j = 0; j < HI_SERVOS_NR; j++) {
+  //  std::cout << "j: " << j << std::endl;
 
-  for (size_t i = 0; i < number_of_drives_; i++) {
-    //   std::cout << "i: "  << i << " label: " << hi_port_param_[i].label << std::endl;
-    ports_adresses_[i] = hi_port_param_[i].ports_adresses;
-    //   std::cout << "ports_adresses_: "  << ports_adresses_[i] << std::endl;
-    max_current_[i] = hi_port_param_[i].max_current;
-    //   std::cout << "max_current_: "  << max_current_[i] << std::endl;
-    max_increment_[i] = hi_port_param_[i].max_increment;
+    if (std::find(active_motors_.begin(), active_motors_.end(),
+                    hi_port_param_[j].label) != active_motors_.end()) {
+      i++;
+    //  std::cout << "i: " << i << std::endl;
+      char computedReg_in_port_name[32];
+      snprintf(computedReg_in_port_name, sizeof(computedReg_in_port_name),
+               "computedReg_in_%s", hi_port_param_[j].label.c_str());
+      computedReg_in_list_[i] = new typeof(*computedReg_in_list_[i]);
+      this->ports()->addPort(computedReg_in_port_name,
+                             *computedReg_in_list_[i]);
+
+      char DesiredPosition_out_port_name[32];
+      snprintf(DesiredPosition_out_port_name,
+               sizeof(DesiredPosition_out_port_name), "DesiredPosition_out_%s",
+               hi_port_param_[j].label.c_str());
+      desired_position_out_list_[i] =
+          new typeof(*desired_position_out_list_[i]);
+      this->ports()->addPort(DesiredPosition_out_port_name,
+                             *desired_position_out_list_[i]);
+
+      char MotorPositionCommand_port_name[32];
+      snprintf(MotorPositionCommand_port_name,
+               sizeof(MotorPositionCommand_port_name),
+               "MotorPositionCommand_%s", hi_port_param_[j].label.c_str());
+      port_motor_position_command_list_[i] =
+          new typeof(*port_motor_position_command_list_[i]);
+      this->ports()->addPort(MotorPositionCommand_port_name,
+                             *port_motor_position_command_list_[i]);
+
+      char MotorPosition_port_name[32];
+      snprintf(MotorPosition_port_name, sizeof(MotorPosition_port_name),
+               "MotorPosition_%s", hi_port_param_[j].label.c_str());
+      port_motor_position_list_[i] = new typeof(*port_motor_position_list_[i]);
+      this->ports()->addPort(MotorPosition_port_name,
+                             *port_motor_position_list_[i]);
+
+      char MotorIncrement_port_name[32];
+      snprintf(MotorIncrement_port_name, sizeof(MotorIncrement_port_name),
+               "MotorIncrement_%s", hi_port_param_[j].label.c_str());
+      port_motor_increment_list_[i] =
+          new typeof(*port_motor_increment_list_[i]);
+      this->ports()->addPort(MotorIncrement_port_name,
+                             *port_motor_increment_list_[i]);
+
+      char MotorCurrent_port_name[32];
+      snprintf(MotorCurrent_port_name, sizeof(MotorCurrent_port_name),
+               "MotorCurrent_%s", hi_port_param_[j].label.c_str());
+      port_motor_current_list_[i] = new typeof(*port_motor_current_list_[i]);
+      this->ports()->addPort(MotorCurrent_port_name,
+                             *port_motor_current_list_[i]);
+
+      //   std::cout << "i: "  << i << " label: " << hi_port_param_[j].label << std::endl;
+      ports_adresses_[i] = hi_port_param_[j].ports_adresses;
+      //   std::cout << "ports_adresses_: "  << ports_adresses_[i] << std::endl;
+      max_current_[i] = hi_port_param_[j].max_current;
+      //   std::cout << "max_current_: "  << max_current_[i] << std::endl;
+      max_increment_[i] = hi_port_param_[j].max_increment;
 //    std::cout << "max_increment_: "  << max_increment_[i] << std::endl;
-    card_indexes_[i] = hi_port_param_[i].card_indexes;
-    //   std::cout << "ports_adresses_: "  << ports_adresses_[i] << std::endl;
-    enc_res_[i] = hi_port_param_[i].enc_res;
-    //  std::cout << "card_indexes_: "  << card_indexes_[i] << std::endl;
-    synchro_step_coarse_[i] = hi_port_param_[i].synchro_step_coarse;
-    //  std::cout << "synchro_step_coarse_: "  << synchro_step_coarse_[i] << std::endl;
-    synchro_step_fine_[i] = hi_port_param_[i].synchro_step_fine;
-    //  std::cout << "synchro_step_fine_: "  << synchro_step_fine_[i] << std::endl;
-    current_mode_[i] = hi_port_param_[i].current_mode;
-    //   std::cout << "current_mode_: "  << current_mode_[i] << std::endl;
-    synchro_needed_[i] = hi_port_param_[i].synchro_needed;
-    //   std::cout << "synchro_needed_: "  << synchro_needed_[i] << std::endl << std::endl;
+      card_indexes_[i] = hi_port_param_[j].card_indexes;
+      //   std::cout << "ports_adresses_: "  << ports_adresses_[i] << std::endl;
+      enc_res_[i] = hi_port_param_[j].enc_res;
+      //  std::cout << "card_indexes_: "  << card_indexes_[i] << std::endl;
+      synchro_step_coarse_[i] = hi_port_param_[j].synchro_step_coarse;
+      //  std::cout << "synchro_step_coarse_: "  << synchro_step_coarse_[i] << std::endl;
+      synchro_step_fine_[i] = hi_port_param_[j].synchro_step_fine;
+      //  std::cout << "synchro_step_fine_: "  << synchro_step_fine_[i] << std::endl;
+      current_mode_[i] = hi_port_param_[j].current_mode;
+      //   std::cout << "current_mode_: "  << current_mode_[i] << std::endl;
+      synchro_needed_[i] = hi_port_param_[j].synchro_needed;
+      //   std::cout << "synchro_needed_: "  << synchro_needed_[i] << std::endl << std::endl;
+    }
   }
 
   if (!test_mode_) {

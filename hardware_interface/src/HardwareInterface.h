@@ -4,6 +4,9 @@
 #include "hi_moxa.h"
 #include <hi_msgs/HardwareInterfacePort.h>
 
+#define HI_SERVOS_NR 17
+
+
 using namespace RTT;
 
 typedef enum {
@@ -51,14 +54,16 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<bool> current_mode_;
   std::vector<bool> synchro_needed_;
 
-  // Properties
   int number_of_drives_;
+
+  // Properties
+  std::vector<std::string> active_motors_;
   bool auto_synchronize_;
   bool test_mode_;
   int timeouts_to_print_;
   int tx_prefix_len_;
   int rwh_nsec_;
-  hi_msgs::HardwareInterfacePort hi_port_param_[hi_moxa::MOXA_SERVOS_NR];
+  hi_msgs::HardwareInterfacePort hi_port_param_[HI_SERVOS_NR];
 
   int synchro_stop_iter_;
   int synchro_start_iter_;

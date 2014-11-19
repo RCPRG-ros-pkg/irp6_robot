@@ -16,7 +16,8 @@
         number_of_drives: 15
         auto_synchronize: true
         rwh_nsec: 1200000
-        hi_port_param_0:
+        active_motors: [irp6pm_0, irp6pm_1, irp6pm_2, irp6pm_3, irp6pm_4, irp6pm_5, irp6ptfg, irp6otm_0, irp6otm_1, irp6otm_2, irp6otm_3, irp6otm_4, irp6otm_5, irp6otm_6, irp6ottfg]
+        irp6pm_0:
           label: irp6pm_0
           ports_adresses: /dev/ttyMI8
           synchro_needed: 1
@@ -27,7 +28,7 @@
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007
           current_mode: 1
-        hi_port_param_1:
+        irp6pm_1:
           label: irp6pm_1
           ports_adresses: /dev/ttyMI9
           synchro_needed: 1
@@ -38,7 +39,7 @@
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007
           current_mode: 1
-        hi_port_param_2:
+        irp6pm_2:
           label: irp6pm_2
           ports_adresses: /dev/ttyMI10
           synchro_needed: 1
@@ -49,7 +50,7 @@
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007
           current_mode:  1
-        hi_port_param_3:
+        irp6pm_3:
           label: irp6pm_3
           ports_adresses: /dev/ttyMI11
           synchro_needed: 1
@@ -60,7 +61,7 @@
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007
           current_mode: 1
-        hi_port_param_4:
+        irp6pm_4:
           label: irp6pm_4
           ports_adresses: /dev/ttyMI12
           synchro_needed: 1
@@ -71,7 +72,7 @@
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007
           current_mode: 0
-        hi_port_param_5:
+        irp6pm_5:
           label: irp6pm_5
           ports_adresses: /dev/ttyMI13
           synchro_needed: 1
@@ -82,7 +83,7 @@
           synchro_step_coarse: -0.05
           synchro_step_fine: 0.05
           current_mode: 0
-        hi_port_param_6:
+        irp6ptfg:
           label: irp6ptfg
           ports_adresses: /dev/ttyMI14
           synchro_needed: 1
@@ -93,7 +94,7 @@
           synchro_step_coarse: -0.5
           synchro_step_fine: 0.2
           current_mode: 1
-        hi_port_param_7:
+        irp6otm_0:
           label: irp6otm_0
           ports_adresses: /dev/ttyMI7
           synchro_needed: 1
@@ -104,7 +105,7 @@
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007
           current_mode: 0
-        hi_port_param_8:
+        irp6otm_1:
           label: irp6otm_1
           ports_adresses: /dev/ttyMI0
           synchro_needed: 1
@@ -115,7 +116,7 @@
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007   
           current_mode: 1
-        hi_port_param_9:
+        irp6otm_2:
           label: irp6otm_2
           ports_adresses: /dev/ttyMI1
           synchro_needed: 1
@@ -126,7 +127,7 @@
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007   
           current_mode: 1
-        hi_port_param_10:
+        irp6otm_3:
           label: irp6otm_3
           ports_adresses: /dev/ttyMI2
           synchro_needed: 1
@@ -137,7 +138,7 @@
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007   
           current_mode: 1
-        hi_port_param_11:
+        irp6otm_4:
           label: irp6otm_4
           ports_adresses: /dev/ttyMI3
           synchro_needed: 1
@@ -148,7 +149,7 @@
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007   
           current_mode: 1
-        hi_port_param_12:
+        irp6otm_5:
           label: irp6otm_5
           ports_adresses: /dev/ttyMI4
           synchro_needed: 1
@@ -159,7 +160,7 @@
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007   
           current_mode: 0
-        hi_port_param_13:
+        irp6otm_6:
           label: irp6otm_6
           ports_adresses: /dev/ttyMI5
           synchro_needed: 1
@@ -170,7 +171,7 @@
           synchro_step_coarse: -0.05
           synchro_step_fine: 0.05  
           current_mode: 0 
-        hi_port_param_14:
+        irp6ottfg:
           label: irp6ottfg
           ports_adresses: /dev/ttyMI6
           synchro_needed: 1
