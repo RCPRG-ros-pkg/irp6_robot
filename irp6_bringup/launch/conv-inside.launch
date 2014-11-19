@@ -1,0 +1,58 @@
+<launch>
+ 
+ #
+ # DO NOT USE THAT FILE DIRECTLY.
+ #
+ # Use conv-hardware.launch or conv-nohardware.launch 
+ #
+   
+  <group>
+    <rosparam>
+      Irp6HardwareInterface:
+        conveyor:
+          label: conveyor
+          ports_adresses: /dev/ttyMI15
+          synchro_needed: 0
+          max_current: 18000
+          max_increment: 1000.0
+          card_indexes: 7
+          enc_res: 4000.0
+          synchro_step_coarse: -0.03
+          synchro_step_fine: 0.007
+          current_mode: 1
+      ConveyorSplineTrajectoryGeneratorJoint:
+        number_of_joints: 1
+      ConveyorSplineTrajectoryActionJoint:
+        joint_names: [joint1]
+        lower_limits: [-1000.0]
+        upper_limits: [1000.0]
+      ConveyorSplineTrajectoryGeneratorMotor:
+        number_of_joints: 1
+      ConveyorSplineTrajectoryActionMotor:
+        joint_names: [joint1]
+        lower_limits: [-100000.0]
+        upper_limits: [100000.0]
+      ConveyorRegulator:
+        reg_number: 1
+        debug: false
+        eint_dif: 0.008
+        A: 0.548946716233
+        BB0: 0.9457596
+        BB1: 0.8811594
+        enc_res: 4000.0
+        current_mode: true
+        current_reg_kp: 120.0
+        max_output_current: 15000.0
+        max_desired_increment: 200.0
+      ConveyorPortDoubleSplit_hw_cp:
+        number_of_ports: 1
+      ConveyorPortDoubleAggregate_hw_p:
+        number_of_ports: 1
+      ConveyorPortDoubleSum:
+        number_of_ports: 1
+      ConveyorJntPub:
+        joint_names: [ConveyorJoint]
+    </rosparam>
+  </group>
+
+</launch>
