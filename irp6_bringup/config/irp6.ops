@@ -865,8 +865,7 @@ connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_4","IRp6otmRegulator_4.DesiredP
 connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_5","IRp6otmRegulator_5.DesiredPosition", ConnPolicy())
 connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_6","IRp6otmRegulator_6.DesiredPosition", ConnPolicy())
 
-connect("Irp6ottfgPortDoubleSplit_hw_cp.OutputPort_0","Regulator.DesiredPosition", ConnPolicy())
-
+connect("Irp6ottfgPortDoubleSplit_hw_cp.OutputPort_0","Irp6ottfgRegulator.DesiredPosition", ConnPolicy())
 
 
 
