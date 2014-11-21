@@ -52,8 +52,8 @@ import tf_conversions.posemath as pm
 
 if __name__ == '__main__':
   rospy.init_node('conveyor_test')
-  # rospy.wait_for_service('/controller_manager/switch_controller')
-  # conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+  rospy.wait_for_service('/conveyor_manager/switch_controller')
+  conmanSwitch = rospy.ServiceProxy('/conveyor_manager/switch_controller', SwitchController)
   
   #
   # Motor coordinates motion
@@ -84,7 +84,7 @@ if __name__ == '__main__':
   # Joint coordinates motion
   #
   
-  # conmanSwitch(['ConveyorSplineTrajectoryGeneratorJoint'], [], True)
+  conmanSwitch(['ConveyorSplineTrajectoryGeneratorJoint'], [], True)
   
   joint_client = actionlib.SimpleActionClient('/conveyor/spline_trajectory_action_joint', FollowJointTrajectoryAction)
   joint_client.wait_for_server()
@@ -102,7 +102,7 @@ if __name__ == '__main__':
   joint_client.wait_for_result()
   command_result = joint_client.get_result()
      
-  # conmanSwitch([], ['ConveyorSplineTrajectoryGeneratorJoint'], True)
+  conmanSwitch([], ['ConveyorSplineTrajectoryGeneratorJoint'], True)
   
   print 'finish'
   

@@ -13,6 +13,8 @@
   
   <group ns="CONV_OROCOS_ROBOT">
     <rosparam>
+      Irp6scheme:
+        scheme_name: conveyor_manager
       Irp6HardwareInterface:
         auto_synchronize: true
         rwh_nsec: 1200000
