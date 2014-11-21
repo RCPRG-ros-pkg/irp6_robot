@@ -11,8 +11,12 @@
   <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher"/>
   
   
-  <include file="$(find irp6_bringup)/launch/irp6-inside.launch" ns="IRP6_CONV_OROCOS_ROBOT">
+  <include file="$(find irp6_bringup)/launch/irp6-p-inside.launch" ns="IRP6_CONV_OROCOS_ROBOT">
   </include>
+  
+  <include file="$(find irp6_bringup)/launch/irp6-ot-inside.launch" ns="IRP6_CONV_OROCOS_ROBOT">
+  </include>
+  
   <include file="$(find irp6_bringup)/launch/conv-inside.launch" ns="IRP6_CONV_OROCOS_ROBOT">
   </include>
   
