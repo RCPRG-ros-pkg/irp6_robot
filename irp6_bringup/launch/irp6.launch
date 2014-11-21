@@ -21,6 +21,8 @@
   
   <group ns="IRP6_OROCOS_ROBOT">
     <rosparam>
+      Irp6scheme:
+        scheme_name: controller_manager
       Irp6HardwareInterface:
         auto_synchronize: true
         rwh_nsec: 1200000

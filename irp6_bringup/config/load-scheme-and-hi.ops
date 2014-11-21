@@ -1,0 +1,18 @@
+//------------------------------------------------------------------------------
+//-- Controller manager
+//------------------------------------------------------------------------------
+loadComponent("Irp6scheme", "conman::Scheme");
+setActivity("Irp6scheme", 0.002, 5, ORO_SCHED_RT);
+Irp6scheme.loadService("rosparam")
+Irp6scheme.rosparam.getAll()
+Irp6scheme.loadService("conman_ros")
+Irp6scheme.configure()
+
+
+//------------------------------------------------------------------------------
+//-- Irp6HardwareInterface
+//------------------------------------------------------------------------------
+loadComponent("Irp6HardwareInterface","HardwareInterface")
+Irp6HardwareInterface.loadService("rosparam")
+Irp6HardwareInterface.rosparam.getAll()
+Irp6HardwareInterface.configure();

@@ -7,7 +7,6 @@ ros.import("rtt_actionlib_msgs")
 ros.import("rtt_trajectory_msgs")
 ros.import("rtt_control_msgs")
 ros.import("rtt_cartesian_trajectory_msgs")
-ros.import("rtt_force_control_msgs")
 ros.import("rtt_hi_msgs")
 ros.import("rtt_rospack")
 
@@ -25,24 +24,7 @@ ros.import("port_operations")
 
 
 
-//------------------------------------------------------------------------------
-//-- Controller manager
-//------------------------------------------------------------------------------
-loadComponent("Irp6scheme", "conman::Scheme");
-setActivity("Irp6scheme", 0.002, 5, ORO_SCHED_RT);
-Irp6scheme.loadService("rosparam")
-Irp6scheme.rosparam.getAll()
-Irp6scheme.loadService("conman_ros")
-Irp6scheme.configure()
-
-
-//------------------------------------------------------------------------------
-//-- Irp6HardwareInterface
-//------------------------------------------------------------------------------
-loadComponent("Irp6HardwareInterface","HardwareInterface")
-Irp6HardwareInterface.loadService("rosparam")
-Irp6HardwareInterface.rosparam.getAll()
-Irp6HardwareInterface.configure();
+runScript( ros.find("irp6_bringup") + "/config/load-scheme-and-hi.ops")
 
 
 runScript( ros.find("irp6_bringup") + "/config/conv-inside-pre-add-scheme-peer.ops")
