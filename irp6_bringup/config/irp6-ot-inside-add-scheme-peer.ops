@@ -3,15 +3,6 @@
 //  Add PortDoubleSum as Irp6scheme peers
 //
 
-addPeer("Irp6scheme", "IRp6pmPortDoubleSum_0")
-addPeer("Irp6scheme", "IRp6pmPortDoubleSum_1")
-addPeer("Irp6scheme", "IRp6pmPortDoubleSum_2")
-addPeer("Irp6scheme", "IRp6pmPortDoubleSum_3")
-addPeer("Irp6scheme", "IRp6pmPortDoubleSum_4")
-addPeer("Irp6scheme", "IRp6pmPortDoubleSum_5")
-
-addPeer("Irp6scheme", "Irp6ptfgPortDoubleSum")
-
 addPeer("Irp6scheme", "IRp6otmPortDoubleSum_0")
 addPeer("Irp6scheme", "IRp6otmPortDoubleSum_1")
 addPeer("Irp6scheme", "IRp6otmPortDoubleSum_2")
@@ -30,15 +21,6 @@ addPeer("Irp6scheme", "Irp6ottfgPortDoubleSum")
 
 
 
-addPeer("Irp6scheme", "IRp6pmRegulator_0");
-addPeer("Irp6scheme", "IRp6pmRegulator_1");
-addPeer("Irp6scheme", "IRp6pmRegulator_2");
-addPeer("Irp6scheme", "IRp6pmRegulator_3");
-addPeer("Irp6scheme", "IRp6pmRegulator_4");
-addPeer("Irp6scheme", "IRp6pmRegulator_5");
-
-addPeer("Irp6scheme", "Irp6ptfgRegulator");
-
 addPeer("Irp6scheme", "IRp6otmRegulator_0");
 addPeer("Irp6scheme", "IRp6otmRegulator_1");
 addPeer("Irp6scheme", "IRp6otmRegulator_2");
@@ -51,45 +33,24 @@ addPeer("Irp6scheme", "Irp6ottfgRegulator");
 
 
 
-
-addPeer("Irp6scheme", "Irp6pmPortDoubleSplit_hw_cp")
-addPeer("Irp6scheme", "Irp6ptfgPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "Irp6otmPortDoubleSplit_hw_cp")
 addPeer("Irp6scheme", "Irp6ottfgPortDoubleSplit_hw_cp")
-addPeer("Irp6scheme", "Irp6pmPortDoubleAggregate_hw_p")
-addPeer("Irp6scheme", "Irp6ptfgPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6otmPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6otmPortDoubleAggregate_hw_desired")
 addPeer("Irp6scheme", "Irp6ottfgPortDoubleAggregate_hw_p")
-addPeer("Irp6scheme", "Irp6pmPortDoubleAggregate_hw_curr")
 addPeer("Irp6scheme", "Irp6otmPortDoubleAggregate_hw_curr")
-addPeer("Irp6scheme", "Irp6pmM2J");
-addPeer("Irp6scheme", "Irp6ptfgM2J");
 addPeer("Irp6scheme", "Irp6otmM2J");
 addPeer("Irp6scheme", "Irp6otmM2Jdesired");
 addPeer("Irp6scheme", "Irp6ottfgM2J");
-addPeer("Irp6scheme", "Irp6pmForwardKinematic");
-addPeer("Irp6scheme", "Irp6pmInverseKinematic");
-addPeer("Irp6scheme", "Irp6pmJ2M");
-addPeer("Irp6scheme", "Irp6ptfgJ2M");
 addPeer("Irp6scheme", "Irp6otmJ2M");
 addPeer("Irp6scheme", "Irp6otmForwardKinematic");
 addPeer("Irp6scheme", "Irp6otmInverseKinematic");
 addPeer("Irp6scheme", "Irp6ottfgJ2M");
-addPeer("Irp6scheme", "Irp6pmForceTransformation");
-addPeer("Irp6scheme", "Irp6pmForceControlLaw");
 addPeer("Irp6scheme", "Irp6otmForceTransformation");
 addPeer("Irp6scheme", "Irp6otmForceControlLaw");
-addPeer("Irp6scheme", "Irp6Haptic");
-addPeer("Irp6scheme", "Irp6pmSplineTrajectoryGeneratorJoint");
-addPeer("Irp6scheme", "Irp6ptfgSplineTrajectoryGeneratorJoint");
 addPeer("Irp6scheme", "Irp6otmSplineTrajectoryGeneratorJoint");
 addPeer("Irp6scheme", "Irp6ottfgSplineTrajectoryGeneratorJoint");
-addPeer("Irp6scheme", "Irp6pmSplineTrajectoryGeneratorMotor");
-addPeer("Irp6scheme", "Irp6ptfgSplineTrajectoryGeneratorMotor");
 addPeer("Irp6scheme", "Irp6otmSplineTrajectoryGeneratorMotor");
 addPeer("Irp6scheme", "Irp6ottfgSplineTrajectoryGeneratorMotor");
-addPeer("Irp6scheme", "Irp6pmPoseInt");
-addPeer("Irp6scheme", "Irp6pmToolInt");
 addPeer("Irp6scheme", "Irp6otmPoseInt");
 addPeer("Irp6scheme", "Irp6otmToolInt");
