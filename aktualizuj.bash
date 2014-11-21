@@ -11,6 +11,9 @@ source /opt/ros/indigo/setup.bash
 export LANG=en
 
 cd ../../../
+
+wget https://raw.githubusercontent.com/RCPRG-ros-pkg/RCPRG_rosinstall/master/irp6.rosinstall -O ./irp6.rosinstall
+
 wstool up
 cd underlay_isolated
 catkin_make_isolated --install -DENABLE_CORBA=ON -DCORBA_IMPLEMENTATION=OMNIORB -DCMAKE_BUILD_TYPE=RelWithDebInfo
