@@ -13,6 +13,8 @@
 
   <group ns="IRP6_CONV_OROCOS_ROBOT">
     <rosparam>
+      Irp6scheme:
+        scheme_name: controller_manager
       Irp6HardwareInterface:
         test_mode: false
         timeouts_to_print: 3
