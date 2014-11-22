@@ -393,17 +393,6 @@ connect("Irp6ottfgPortDoubleSplit_hw_cp.OutputPort_0","Irp6ottfgRegulator.Desire
 
 
 
-
-connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_irp6pm_0", ConnPolicy())
-connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_1","Irp6HardwareInterface.MotorPosition_irp6pm_1", ConnPolicy())
-connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_2","Irp6HardwareInterface.MotorPosition_irp6pm_2", ConnPolicy())
-connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_3","Irp6HardwareInterface.MotorPosition_irp6pm_3", ConnPolicy())
-connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_4","Irp6HardwareInterface.MotorPosition_irp6pm_4", ConnPolicy())
-connect("Irp6pmPortDoubleAggregate_hw_p.InputPort_5","Irp6HardwareInterface.MotorPosition_irp6pm_5", ConnPolicy())
-
-
-connect("Irp6ptfgPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_irp6ptfg", ConnPolicy())
-
 connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_irp6otm_0", ConnPolicy())
 connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_1","Irp6HardwareInterface.MotorPosition_irp6otm_1", ConnPolicy())
 connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_2","Irp6HardwareInterface.MotorPosition_irp6otm_2", ConnPolicy())
@@ -422,12 +411,6 @@ connect("Irp6otmPortDoubleAggregate_hw_desired.InputPort_6","Irp6otmPortDoubleSp
 
 connect("Irp6ottfgPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_irp6ottfg", ConnPolicy())
 
-connect("Irp6pmPortDoubleAggregate_hw_curr.InputPort_0","Irp6HardwareInterface.MotorCurrent_irp6pm_0", ConnPolicy())
-connect("Irp6pmPortDoubleAggregate_hw_curr.InputPort_1","Irp6HardwareInterface.MotorCurrent_irp6pm_1", ConnPolicy())
-connect("Irp6pmPortDoubleAggregate_hw_curr.InputPort_2","Irp6HardwareInterface.MotorCurrent_irp6pm_2", ConnPolicy())
-connect("Irp6pmPortDoubleAggregate_hw_curr.InputPort_3","Irp6HardwareInterface.MotorCurrent_irp6pm_3", ConnPolicy())
-connect("Irp6pmPortDoubleAggregate_hw_curr.InputPort_4","Irp6HardwareInterface.MotorCurrent_irp6pm_4", ConnPolicy())
-connect("Irp6pmPortDoubleAggregate_hw_curr.InputPort_5","Irp6HardwareInterface.MotorCurrent_irp6pm_5", ConnPolicy())
 
 connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_0","Irp6HardwareInterface.MotorCurrent_irp6otm_0", ConnPolicy())
 connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_1","Irp6HardwareInterface.MotorCurrent_irp6otm_1", ConnPolicy())

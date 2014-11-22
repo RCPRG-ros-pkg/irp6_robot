@@ -39,10 +39,6 @@ runScript( ros.find("irp6_bringup") + "/config/load-scheme-and-hi.ops")
 
 runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside-pre-add-scheme-peer.ops")
 
-//
-// Irp6 Haptic
-//
-
 
 
 addPeer("Irp6scheme", "Irp6HardwareInterface");
@@ -59,6 +55,7 @@ runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside-add-scheme-block.op
 runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside-pre-start.ops")
 
 ## Start it
+Irp6scheme.start()
 Irp6HardwareInterface.start()
 PortDoubleToFloat64_1.start()
 

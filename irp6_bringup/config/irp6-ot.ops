@@ -40,12 +40,12 @@ runScript( ros.find("irp6_bringup") + "/config/load-scheme-and-hi.ops")
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-pre-add-scheme-peer.ops")
 
 addPeer("Irp6scheme", "Irp6HardwareInterface");
-addPeer("Irp6scheme", "PortDoubleToFloat64_1");
+
 
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-add-scheme-peer.ops")
 
 Irp6scheme.addBlock("Irp6HardwareInterface");
-Irp6scheme.addBlock("PortDoubleToFloat64_1");
+
 
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-add-scheme-block.ops")
 
@@ -54,7 +54,7 @@ runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-pre-start.ops")
 ## Start it
 Irp6scheme.start()
 Irp6HardwareInterface.start()
-PortDoubleToFloat64_1.start()
+
 
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-start.ops")
 
