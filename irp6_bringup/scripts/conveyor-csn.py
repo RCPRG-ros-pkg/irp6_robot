@@ -52,8 +52,8 @@ import tf_conversions.posemath as pm
 
 if __name__ == '__main__':
   rospy.init_node('conveyor_test')
-  rospy.wait_for_service('/controller_manager/switch_controller')
-  conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+  rospy.wait_for_service('/conveyor_manager/switch_controller')
+  conmanSwitch = rospy.ServiceProxy('/conveyor_manager/switch_controller', SwitchController)
   
   #
   # Motor coordinates motion

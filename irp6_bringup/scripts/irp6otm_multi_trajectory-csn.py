@@ -47,80 +47,82 @@ import PyKDL
 import tf_conversions.posemath as pm
 
 if __name__ == '__main__':
-  rospy.init_node('irp6pm_multi_trajectory')
-  rospy.wait_for_service('/controller_manager/switch_controller')
-  conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+  rospy.init_node('irp6otm_multi_trajectory')
+  rospy.wait_for_service('/irp6ot_manager/switch_controller')
+  conmanSwitch = rospy.ServiceProxy('/irp6ot_manager/switch_controller', SwitchController)
   
   #
   # Deactivate all generators
   #
   
-  conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
-    
+  conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
+  
+  
   #
   # Motor coordinates motion
   #
   
-  conmanSwitch(['Irp6pmSplineTrajectoryGeneratorMotor'], [], True)
+  conmanSwitch(['Irp6otmSplineTrajectoryGeneratorMotor'], [], True)
   
-  motor_client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_motor', FollowJointTrajectoryAction)
+  motor_client = actionlib.SimpleActionClient('/irp6ot_arm/spline_trajectory_action_motor', FollowJointTrajectoryAction)
   motor_client.wait_for_server()
 
   print 'server ok'
-
+  
+  
   # motor_client.cancel_all_goals()
-
   goal = FollowJointTrajectoryGoal()
-  goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
-  goal.trajectory.points.append(JointTrajectoryPoint([0.4, -1.5418065817051163, 0.0, 1.57, 1.57, -2.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
-  goal.trajectory.points.append(JointTrajectoryPoint([10.0, 10.0, 0.0, 10.57, 10.57, -20.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(12.0)))
+  goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6', 'joint7']
+  goal.trajectory.points.append(JointTrajectoryPoint([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
+  goal.trajectory.points.append(JointTrajectoryPoint([50.0, 10.0, 10.0, 0.0, 10.57, 10.57, -20.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(12.0)))
   goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
 
   motor_client.send_goal(goal)
 
   motor_client.wait_for_result()
   command_result = motor_client.get_result()
-  
     
+  conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor'], True)  
+  
+  
   #
   # Joint coordinates motion
   #
   
-  conmanSwitch(['Irp6pmSplineTrajectoryGeneratorJoint'], ['Irp6pmSplineTrajectoryGeneratorMotor'], True)
+  conmanSwitch(['Irp6otmSplineTrajectoryGeneratorJoint'], [], True)
   
-  joint_client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
+  joint_client = actionlib.SimpleActionClient('/irp6ot_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
   joint_client.wait_for_server()
 
   print 'server ok'
-
   # joint_client.cancel_all_goals()
-
   goal = FollowJointTrajectoryGoal()
-  goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
-  goal.trajectory.points.append(JointTrajectoryPoint([0.4, -1.5418065817051163, 0.0, 1.5, 1.57, -2.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(3.0)))
-  goal.trajectory.points.append(JointTrajectoryPoint([0.0, -1.5418065817051163, 0.0, 1.5, 1.57, -1.57], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(6.0)))
+  goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6', 'joint7']
+  goal.trajectory.points.append(JointTrajectoryPoint([0.0, 0.4, -1.5418065817051163, 0.0, 1.5, 1.57, -2.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(3.0)))
+  goal.trajectory.points.append(JointTrajectoryPoint([0.1, 0.0, -1.5418065817051163, 0.0, 1.5, 1.57, -1.57], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(6.0)))
   goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
 
   joint_client.send_goal(goal)
 
   joint_client.wait_for_result()
   command_result = joint_client.get_result()
+    
+  conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorJoint'], True)
   
   
-  
-  conmanSwitch(['Irp6pmPoseInt'], ['Irp6pmSplineTrajectoryGeneratorJoint'], True)
   
   #
   # Cartesian coordinates motion
   #
   
-  pose_client = actionlib.SimpleActionClient('/irp6p_arm/pose_trajectory', CartesianTrajectoryAction)
+  conmanSwitch(['Irp6otmPoseInt'], [], True)
+  
+  pose_client = actionlib.SimpleActionClient('/irp6ot_arm/pose_trajectory', CartesianTrajectoryAction)
   pose_client.wait_for_server()
   
   print 'server ok'
   
-  # pose_client.cancel_all_goals()
-     
+  # pose_client.cancel_all_goals()   
   goal = CartesianTrajectoryGoal()
   
   rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.0, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 1.18029263241))
@@ -136,13 +138,13 @@ if __name__ == '__main__':
   pose_client.wait_for_result()
   command_result = pose_client.get_result()
   
-  conmanSwitch([], ['Irp6pmPoseInt'], True)
+  conmanSwitch([], ['Irp6otmPoseInt'], True)
   
   #
   # Tool motion
   #
   
-  tool_client = actionlib.SimpleActionClient('/irp6p_arm/tool_trajectory', CartesianTrajectoryAction)
+  tool_client = actionlib.SimpleActionClient('/irp6ot_arm/tool_trajectory', CartesianTrajectoryAction)
   tool_client.wait_for_server()
   
   print 'server ok'
@@ -163,15 +165,14 @@ if __name__ == '__main__':
   # Cartesian coordinates motion
   #
   
-  conmanSwitch(['Irp6pmPoseInt'], [], True)
+  conmanSwitch(['Irp6otmPoseInt'], [], True)
   
-  pose_client = actionlib.SimpleActionClient('/irp6p_arm/pose_trajectory', CartesianTrajectoryAction)
+  pose_client = actionlib.SimpleActionClient('/irp6ot_arm/pose_trajectory', CartesianTrajectoryAction)
   pose_client.wait_for_server()
   
   print 'server ok'
-     
-  pose_client.cancel_goal()
-     
+  
+  # pose_client.cancel_all_goals()      
   goal = CartesianTrajectoryGoal()
   
   rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.0, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 1.181029263241))
@@ -188,13 +189,13 @@ if __name__ == '__main__':
   pose_client.wait_for_result()
   command_result = pose_client.get_result()
   
-  conmanSwitch([], ['Irp6pmPoseInt'], True)
+  conmanSwitch([], ['Irp6otmPoseInt'], True)
   
   #
   # Tool motion
   #
   
-  tool_client = actionlib.SimpleActionClient('/irp6p_arm/tool_trajectory', CartesianTrajectoryAction)
+  tool_client = actionlib.SimpleActionClient('/irp6ot_arm/tool_trajectory', CartesianTrajectoryAction)
   tool_client.wait_for_server()
   
   print 'server ok'
@@ -210,6 +211,9 @@ if __name__ == '__main__':
   tool_client.wait_for_result()
   command_result = tool_client.get_result()
   
+  
+  
+    
   print 'finish'
   
   
