@@ -48,8 +48,8 @@ import tf_conversions.posemath as pm
 
 if __name__ == '__main__':
   rospy.init_node('irp6otm_multi_trajectory')
-  rospy.wait_for_service('/controller_manager/switch_controller')
-  conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+  rospy.wait_for_service('/irp6ot_manager/switch_controller')
+  conmanSwitch = rospy.ServiceProxy('/irp6ot_manager/switch_controller', SwitchController)
   
   #
   # Deactivate all generators
