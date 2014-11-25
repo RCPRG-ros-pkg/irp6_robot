@@ -213,7 +213,7 @@ bool HardwareInterface::configureHook() {
 
     std::cout
         << std::endl << RED
-        << "[error] ERROR configuring HardwareInbterface, check power switches"
+        << "[error] ERROR configuring HardwareInterface, check power switches"
         << std::endl;
 
     return false;
