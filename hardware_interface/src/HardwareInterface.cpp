@@ -186,6 +186,23 @@ bool HardwareInterface::configureHook() {
   try {
     struct timespec delay;
     if (!test_mode_) {
+
+      char hostname[128];
+      if (gethostname(hostname, sizeof(hostname)) == -1) {
+        perror("gethostname()");
+        hostname[0] = '\0';
+      }
+
+      if (std::string(hostname)!= std::string("gerwazy")){
+        std::cout
+              << std::endl << RED
+              << "[error] ERROR wrong host_name for hardware_mode"
+                         <<RESET <<std::endl <<std::endl;
+      }
+
+
+      std::cout << "hostname: " << hostname << std::endl;
+
       hi_->init(ports_adresses_);
 
       for (int i = 0; i < number_of_drives_; i++) {
@@ -214,7 +231,7 @@ bool HardwareInterface::configureHook() {
     std::cout
         << std::endl << RED
         << "[error] ERROR configuring HardwareInterface, check power switches"
-        << std::endl;
+        <<RESET <<std::endl <<std::endl;
 
     return false;
   }
