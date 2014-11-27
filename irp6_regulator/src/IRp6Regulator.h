@@ -31,7 +31,8 @@ class IRp6Regulator : public RTT::TaskContext {
 
   bool synchro_state_old_, synchro_state_new_;
 
-  long iteration_number_;
+  long update_hook_iteration_number_;
+  long new_position_iteration_number_;
 
   // Properties
   int reg_number_;

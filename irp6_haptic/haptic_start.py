@@ -205,24 +205,7 @@ if __name__ == '__main__':
    
   print 'Irp6 postument force control parameters'     
   
-  
-  # 
-  # Force controller parameters
-  #
-  
-  pub = rospy.Publisher('/irp6p_arm/fcl_param', ForceControl, queue_size=0)
-  
-  rospy.sleep(0.5)
-  
-  goal = ForceControl()
-  goal.inertia = Inertia(Vector3(0.0, 0.0, 0.0), Vector3(0.5, 0.5, 0.5))
-  goal.reciprocaldamping = ReciprocalDamping(Vector3(0.0025, 0.0025, 0.0025), Vector3(0.05, 0.05, 0.05))
-  goal.wrench = Wrench(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
-  goal.twist = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
-  
-  pub.publish(goal)
-  
-  
+    
   #
   # standard tool gravity param
   #

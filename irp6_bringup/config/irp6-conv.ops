@@ -83,11 +83,10 @@ runScript( ros.find("irp6_bringup") + "/config/conv-inside-pre-start.ops")
 
 ## Start it
 Irp6scheme.start()
-Irp6HardwareInterface.start()
-PortDoubleToFloat64_1.start()
 
 runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside-start.ops")
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-start.ops")
 runScript( ros.find("irp6_bringup") + "/config/conv-inside-start.ops")
 
-ConveyorSplineTrajectoryGeneratorJoint.start()
+Irp6HardwareInterface.start()
+PortDoubleToFloat64_1.start()

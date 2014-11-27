@@ -35,7 +35,8 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
       step_new(0.0),
       step_old(0.0),
       step_old_pulse(0.0),
-      iteration_number_(0),
+      update_hook_iteration_number_(0),
+      new_position_iteration_number_(0),
       synchro_state_old_(false),
       max_desired_increment_(0.0) {
 
@@ -82,9 +83,14 @@ void IRp6Regulator::updateHook() {
 
   if (NewData == deltaInc_in.read(deltaIncData)) {
 
+    update_hook_iteration_number_++;
+    if (update_hook_iteration_number_ <= 1) {
+      deltaIncData = 0.0;
+    }
+
     if (NewData == desired_position_.read(desired_position_new_)) {
-      iteration_number_++;
-      if (iteration_number_ <= 1) {
+      new_position_iteration_number_++;
+      if (new_position_iteration_number_ <= 1) {
         desired_position_old_ = desired_position_new_;
       }
     }
@@ -119,9 +125,10 @@ void IRp6Regulator::updateHook() {
        << desired_position_increment_ << " inp_inc: " << deltaIncData
        << RESET << std::endl;
 
-       if (iteration_number_ > 500) {
+       if (iteration_number_ > 2000) {
        output = 0;
-       }*/
+       }
+       */
       computedPwm_out.write(output);
     } else {
       computedPwm_out.write(0.0);

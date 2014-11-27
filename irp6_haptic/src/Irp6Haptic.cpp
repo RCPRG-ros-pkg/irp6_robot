@@ -39,32 +39,32 @@ void Irp6Haptic::updateHook() {
   force_control_msgs::ForceControl fcl_param;
 
   fcl_param.reciprocaldamping.translation.x = 0.002;
-  fcl_param.inertia.translation.x = 0.0;
+  fcl_param.inertia.translation.x = 20.0;
   fcl_param.wrench.force.x = -current_end_effector_wrench.force.x;
   fcl_param.twist.linear.x = 0.0;
 
   fcl_param.reciprocaldamping.translation.y = 0.002;
-  fcl_param.inertia.translation.y = 0.0;
+  fcl_param.inertia.translation.y = 20.0;
   fcl_param.wrench.force.y = -current_end_effector_wrench.force.y;
   fcl_param.twist.linear.y = 0.0;
 
   fcl_param.reciprocaldamping.translation.z = 0.002;
-  fcl_param.inertia.translation.z = 0.0;
+  fcl_param.inertia.translation.z = 20.0;
   fcl_param.wrench.force.z = -current_end_effector_wrench.force.z;
   fcl_param.twist.linear.z = 0.0;
 
   fcl_param.reciprocaldamping.rotation.x = 0.05;
-  fcl_param.inertia.rotation.x = 0.0;
+  fcl_param.inertia.rotation.x = 0.5;
   fcl_param.wrench.torque.x = -current_end_effector_wrench.torque.x;
   fcl_param.twist.angular.x = 0.0;
 
   fcl_param.reciprocaldamping.rotation.y = 0.05;
-  fcl_param.inertia.rotation.y = 0.0;
+  fcl_param.inertia.rotation.y = 0.5;
   fcl_param.wrench.torque.y = -current_end_effector_wrench.torque.y;
   fcl_param.twist.angular.y = 0.0;
 
   fcl_param.reciprocaldamping.rotation.z = 0.05;
-  fcl_param.inertia.rotation.z = 0.0;
+  fcl_param.inertia.rotation.z = 0.5;
   fcl_param.wrench.torque.z = -current_end_effector_wrench.torque.z;
   fcl_param.twist.angular.z = 0.0;
 
