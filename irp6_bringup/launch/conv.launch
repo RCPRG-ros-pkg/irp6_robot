@@ -17,6 +17,7 @@
         auto_synchronize: true
         rwh_nsec: 1200000
         active_motors: [conveyor]
+        hardware_hostname: gerwazy
     </rosparam>
   </group>
 

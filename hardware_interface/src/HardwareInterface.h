@@ -64,6 +64,7 @@ class HardwareInterface : public RTT::TaskContext {
   int tx_prefix_len_;
   int rwh_nsec_;
   hi_msgs::HardwareInterfacePort hi_port_param_[HI_SERVOS_NR];
+  std::string hardware_hostname_;
 
   int synchro_stop_iter_;
   int synchro_start_iter_;

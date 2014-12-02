@@ -28,6 +28,7 @@ HardwareInterface::HardwareInterface(const std::string& name)
   this->ports()->addPort("IsSynchronised", port_is_synchronised_);
 
   this->addProperty("active_motors", active_motors_).doc("");
+  this->addProperty("hardware_hostname", hardware_hostname_).doc("");
   this->addProperty("auto_synchronize", auto_synchronize_).doc("");
   this->addProperty("test_mode", test_mode_).doc("");
   this->addProperty("timeouts_to_print", timeouts_to_print_).doc("");
@@ -193,7 +194,7 @@ bool HardwareInterface::configureHook() {
         hostname[0] = '\0';
       }
 
-      if (std::string(hostname)!= std::string("gerwazy")){
+      if (std::string(hostname)!= hardware_hostname_){
         std::cout
               << std::endl << RED
               << "[error] ERROR wrong host_name for hardware_mode"
