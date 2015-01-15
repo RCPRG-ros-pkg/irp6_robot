@@ -18,6 +18,9 @@ class Irp6pmM2J : public RTT::TaskContext {
   RTT::InputPort<Eigen::VectorXd> port_motor_position_;
 
   Eigen::VectorXd motor_position_, joint_position_;
+
+  // properties
+  std::vector<double> synchro_motor_position_;
 };
 
 #endif /* Irp6pmM2J_H_ */

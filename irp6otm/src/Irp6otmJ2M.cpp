@@ -1,13 +1,14 @@
 #include <rtt/Component.hpp>
 
 #include "Irp6otmJ2M.h"
-#include "Irp6otmTransmission.h"
 
 Irp6otmJ2M::Irp6otmJ2M(const std::string& name)
     : RTT::TaskContext(name, PreOperational) {
 
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("JointPosition", port_joint_position_);
+
+  this->addProperty("synchro_motor_position", synchro_motor_position_);
 }
 
 Irp6otmJ2M::~Irp6otmJ2M() {
@@ -17,6 +18,16 @@ Irp6otmJ2M::~Irp6otmJ2M() {
 bool Irp6otmJ2M::configureHook() {
   motor_position_.resize(NUMBER_OF_SERVOS);
   joint_position_.resize(NUMBER_OF_SERVOS);
+
+  SYNCHRO_JOINT_POSITION[0] = synchro_motor_position_[0] - GEAR[0] * THETA[0];
+  SYNCHRO_JOINT_POSITION[1] = synchro_motor_position_[1] - GEAR[1] * THETA[1];
+  SYNCHRO_JOINT_POSITION[2] = synchro_motor_position_[2] - GEAR[2] * THETA[2];
+  SYNCHRO_JOINT_POSITION[3] = synchro_motor_position_[3] - GEAR[3] * THETA[3];
+  SYNCHRO_JOINT_POSITION[4] = synchro_motor_position_[4] - GEAR[4] * THETA[4];
+  SYNCHRO_JOINT_POSITION[5] = synchro_motor_position_[5] - GEAR[5] * THETA[5]
+      - synchro_motor_position_[4];
+  SYNCHRO_JOINT_POSITION[6] = synchro_motor_position_[6] - GEAR[6] * THETA[6];
+
   return true;
 }
 
@@ -48,7 +59,9 @@ bool Irp6otmJ2M::i2mp(const double* joints, double* motors) {
 
   // Obliczanie kata obrotu walu silnika napedowego ramienia gornego
   motors[3] = GEAR[3]
-      * sqrt(sl123 + mi3 * cos(joints[3] + joints[2] + M_PI_2) + ni3 * sin(-(joints[3] + joints[2] + M_PI_2)))
+      * sqrt(
+          sl123 + mi3 * cos(joints[3] + joints[2] + M_PI_2)
+              + ni3 * sin(-(joints[3] + joints[2] + M_PI_2)))
       + SYNCHRO_JOINT_POSITION[3];
 
   // Obliczanie kata obrotu walu silnika napedowego obotu kisci T

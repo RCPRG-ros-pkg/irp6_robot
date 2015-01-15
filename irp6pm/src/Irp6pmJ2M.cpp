@@ -1,13 +1,14 @@
 #include <rtt/Component.hpp>
 
 #include "Irp6pmJ2M.h"
-#include "Irp6pmTransmission.h"
 
 Irp6pmJ2M::Irp6pmJ2M(const std::string& name)
     : RTT::TaskContext(name, PreOperational) {
 
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("JointPosition", port_joint_position_);
+
+  this->addProperty("synchro_motor_position", synchro_motor_position_);
 }
 
 Irp6pmJ2M::~Irp6pmJ2M() {
@@ -17,6 +18,16 @@ Irp6pmJ2M::~Irp6pmJ2M() {
 bool Irp6pmJ2M::configureHook() {
   motor_position_.resize(NUMBER_OF_SERVOS);
   joint_position_.resize(NUMBER_OF_SERVOS);
+
+  SYNCHRO_JOINT_POSITION[0] = synchro_motor_position_[0] - GEAR[0] * THETA[0];
+  SYNCHRO_JOINT_POSITION[1] = synchro_motor_position_[1] - GEAR[1] * THETA[1];
+  SYNCHRO_JOINT_POSITION[2] = synchro_motor_position_[2] - GEAR[2] * THETA[2];
+  SYNCHRO_JOINT_POSITION[3] = synchro_motor_position_[3] - GEAR[3] * THETA[3];
+  SYNCHRO_JOINT_POSITION[4] = synchro_motor_position_[4] - GEAR[4] * THETA[4]
+      - synchro_motor_position_[3];
+  SYNCHRO_JOINT_POSITION[5] = synchro_motor_position_[5] - GEAR[5] * THETA[5];
+
+
   return true;
 }
 
@@ -29,43 +40,43 @@ void Irp6pmJ2M::updateHook() {
 }
 
 bool Irp6pmJ2M::i2mp(const double* joints, double* motors) {
-  // Niejednoznacznosc polozenia dla 3-tej osi (obrot kisci < 180).
+// Niejednoznacznosc polozenia dla 3-tej osi (obrot kisci < 180).
   const double joint_3_revolution = M_PI;
-  // Niejednoznacznosc polozenia dla 4-tej osi (obrot kisci > 360).
+// Niejednoznacznosc polozenia dla 4-tej osi (obrot kisci > 360).
   const double axis_4_revolution = 2 * M_PI;
 
-  // Obliczanie kata obrotu walu silnika napedowego kolumny
+// Obliczanie kata obrotu walu silnika napedowego kolumny
   motors[0] = GEAR[0] * joints[0] + SYNCHRO_JOINT_POSITION[0];
 
-  // Obliczanie kata obrotu walu silnika napedowego ramienia dolnego
+// Obliczanie kata obrotu walu silnika napedowego ramienia dolnego
   motors[1] = GEAR[1]
       * sqrt(sl123 + mi1 * cos(joints[1]) + ni1 * sin(-joints[1]))
       + SYNCHRO_JOINT_POSITION[1];
 
-  // Obliczanie kata obrotu walu silnika napedowego ramienia gornego
+// Obliczanie kata obrotu walu silnika napedowego ramienia gornego
   motors[2] = GEAR[2]
       * sqrt(
           sl123 + mi2 * cos(joints[2] + joints[1] + M_PI_2)
               + ni2 * sin(-(joints[2] + joints[1] + M_PI_2)))
       + SYNCHRO_JOINT_POSITION[2];
 
-  // Obliczanie kata obrotu walu silnika napedowego obotu kisci T
-  // jesli jest mniejsze od -pi/2
+// Obliczanie kata obrotu walu silnika napedowego obotu kisci T
+// jesli jest mniejsze od -pi/2
   double joints_tmp3 = joints[3] + joints[2] + joints[1] + M_PI_2;
   if (joints_tmp3 < -M_PI_2)
     joints_tmp3 += joint_3_revolution;
   motors[3] = GEAR[3] * (joints_tmp3 + THETA[3]) + SYNCHRO_JOINT_POSITION[3];
 
-  // Obliczanie kata obrotu walu silnika napedowego obrotu kisci V
+// Obliczanie kata obrotu walu silnika napedowego obrotu kisci V
   motors[4] = GEAR[4] * joints[4] + SYNCHRO_JOINT_POSITION[4] + motors[3];
 
-  // Ograniczenie na obrot.
+// Ograniczenie na obrot.
   while (motors[4] < LOWER_MOTOR_LIMIT[4])
     motors[4] += axis_4_revolution;
   while (motors[4] > UPPER_MOTOR_LIMIT[4])
     motors[4] -= axis_4_revolution;
 
-  // Obliczanie kata obrotu walu silnika napedowego obrotu kisci N
+// Obliczanie kata obrotu walu silnika napedowego obrotu kisci N
   motors[5] = GEAR[5] * joints[5] + SYNCHRO_JOINT_POSITION[5];
 
   return checkMotorPosition(motors);

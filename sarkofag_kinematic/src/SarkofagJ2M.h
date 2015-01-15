@@ -19,6 +19,9 @@ private:
 	RTT::OutputPort<Eigen::VectorXd > port_motor_position_;
 
 	Eigen::VectorXd motor_position_, joint_position_;
+
+	double  SYNCHRO_JOINT_POSITION[1];
+
 };
 
 #endif /* SarkofagJ2M_H_ */

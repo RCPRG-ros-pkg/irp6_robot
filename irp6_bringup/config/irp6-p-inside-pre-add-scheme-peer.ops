@@ -128,6 +128,9 @@ stream("PortDoubleToFloat64_1.OutputPort", ros.comm.topic("/debug"));
 
 
 loadComponent("Irp6pmM2J","Irp6pmM2J")
+Irp6pmM2J.loadService("rosparam")
+Irp6pmM2J.rosparam.getAll()
+Irp6pmM2J.rosparam.getParam("~/Irp6pmSynchroMotorPos/synchro_motor_position", "synchro_motor_position")
 Irp6pmM2J.configure()
 
 loadComponent("Irp6ptfgM2J","Irp6tfgM2J")
@@ -145,6 +148,9 @@ Irp6pmInverseKinematic.configure()
 connect("Irp6pmM2J.JointPosition","Irp6pmInverseKinematic.CurrentJointPosition", ConnPolicy())
 
 loadComponent("Irp6pmJ2M","Irp6pmJ2M")
+Irp6pmJ2M.loadService("rosparam")
+Irp6pmJ2M.rosparam.getAll()
+Irp6pmJ2M.rosparam.getParam("~/Irp6pmSynchroMotorPos/synchro_motor_position", "synchro_motor_position")
 Irp6pmJ2M.configure()
 
 loadComponent("Irp6ptfgJ2M","Irp6tfgJ2M")

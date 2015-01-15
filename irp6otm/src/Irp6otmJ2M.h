@@ -5,6 +5,8 @@
 #include <rtt/Port.hpp>
 #include <Eigen/Dense>
 
+#include "Irp6otmTransmission.h"
+
 class Irp6otmJ2M: public RTT::TaskContext {
 public:
   Irp6otmJ2M(const std::string& name);
@@ -19,6 +21,11 @@ private:
 	RTT::OutputPort<Eigen::VectorXd > port_motor_position_;
 
 	Eigen::VectorXd motor_position_, joint_position_;
+
+	double SYNCHRO_JOINT_POSITION[NUMBER_OF_SERVOS];
+
+  // properties
+  std::vector<double> synchro_motor_position_;
 };
 
 #endif /* Irp6otmJ2M_H_ */

@@ -16,6 +16,10 @@ SarkofagJ2M::~SarkofagJ2M() {
 bool SarkofagJ2M::configureHook() {
 	motor_position_.resize(1);
 	joint_position_.resize(1);
+
+
+	SYNCHRO_JOINT_POSITION[0] =  SYNCHRO_MOTOR_POSITION[0] - GEAR[0] * THETA[0];
+
 	return true;
 }
 
