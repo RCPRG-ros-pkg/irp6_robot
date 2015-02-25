@@ -25,21 +25,21 @@
         number_of_joints: 1
       SarkofagSplineTrajectoryActionJoint:
         joint_names: [joint1]
-        lower_limits: [-1000.0]
-        upper_limits: [1000.0]
+        lower_limits: [-0.45]
+        upper_limits: [2.9670597284]
       SarkofagSplineTrajectoryGeneratorMotor:
         number_of_joints: 1
       SarkofagSplineTrajectoryActionMotor:
         joint_names: [joint1]
-        lower_limits: [-0.45]
-        upper_limits: [2.9670597284]
+        lower_limits: [-470.0]
+        upper_limits: [450.0]
       SarkofagRegulator:
         reg_number: 1
         debug: false
         eint_dif: 0.01
         A: 0.412429378531
-        BB0: 0.5569592
-        BB1: 0.5028614
+        BB0: 1.5569592
+        BB1: 1.5028614
         enc_res: 4000.0
         current_mode: true
         current_reg_kp: 200.0
