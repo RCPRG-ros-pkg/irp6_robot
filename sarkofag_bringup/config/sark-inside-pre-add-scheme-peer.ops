@@ -1,13 +1,4 @@
 
-// Motors Regulators
-
-
-loadComponent("SarkofagRegulator","IRp6Regulator")
-SarkofagRegulator.loadService("rosparam")
-SarkofagRegulator.rosparam.getAll()
-SarkofagRegulator.configure()
-
-
 // Sarkofag double port spliter
 
 loadComponent("SarkofagPortDoubleSplit_hw_cp","PortDoubleSplit")

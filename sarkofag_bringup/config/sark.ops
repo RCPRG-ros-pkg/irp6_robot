@@ -27,6 +27,15 @@ ros.import("port_operations")
 runScript( ros.find("sarkofag_bringup") + "/config/load-scheme-and-hi.ops")
 
 
+// Motors Regulators
+
+
+loadComponent("SarkofagRegulator","IRp6Regulator")
+SarkofagRegulator.loadService("rosparam")
+SarkofagRegulator.rosparam.getAll()
+SarkofagRegulator.configure()
+
+
 runScript( ros.find("sarkofag_bringup") + "/config/sark-inside-pre-add-scheme-peer.ops")
 
 addPeer("SarkofagScheme", "SarkofagHardwareInterface")
