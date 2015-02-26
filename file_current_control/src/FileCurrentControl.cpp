@@ -91,8 +91,7 @@ bool FileCurrentControl::configureHook() {
    filename = filename.erase(ros) + filename_;
    ifstream file(filename.c_str());
 
-   std::cout<<filename<<std::endl;
-   std::cout<<filename_<<std::endl;
+   //std::cout<<filename<<std::endl;
 
    if (file.is_open())
    {
@@ -111,7 +110,7 @@ bool FileCurrentControl::configureHook() {
       currents[0] = 0;
    }
    curr = 0;
-   std::cout<<currents.size()<<std::endl;
+   //std::cout<<currents.size()<<std::endl;
 
    return true;
 
