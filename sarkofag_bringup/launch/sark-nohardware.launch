@@ -2,13 +2,13 @@
 
   <include file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="SARK_OROCOS_ROBOT"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find sarkofag_bringup)/config/sarkofag.ops"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find sarkofag_bringup)/config/sark.ops"/>
     <arg name="LOG_LEVEL" value="Warning"/>
     <arg name="DEBUG" value="false"/>
   </include>
 
 
-  <include file="$(find sarkofag_bringup)/launch/sarkofag.launch">
+  <include file="$(find sarkofag_bringup)/launch/sark.launch">
   </include>
 
   <group ns="SARK_OROCOS_ROBOT">
