@@ -7,7 +7,7 @@
 
 class SarkofagM2J : public RTT::TaskContext {
  public:
-  SarkofagM2J(const std::string& name);
+   SarkofagM2J(const std::string& name);
   virtual ~SarkofagM2J();
 
   bool configureHook();
@@ -20,4 +20,4 @@ class SarkofagM2J : public RTT::TaskContext {
   Eigen::VectorXd motor_position_, joint_position_;
 };
 
-#endif /* SarkofagM2J_H_ */
+#endif /* SarkofagM2J */

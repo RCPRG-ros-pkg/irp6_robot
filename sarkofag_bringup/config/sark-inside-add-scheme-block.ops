@@ -1,0 +1,11 @@
+
+SarkofagScheme.addBlock("SarkofagRegulator")
+SarkofagScheme.latchConnections("SarkofagHardwareInterface", "SarkofagRegulator", true);
+SarkofagScheme.addBlock("SarkofagPortDoubleSplit_hw_cp")
+SarkofagScheme.addBlock("SarkofagPortDoubleAggregate_hw_p")
+SarkofagScheme.addBlock("SarkofagPortDoubleSum")
+SarkofagScheme.addBlock("SarkofagM2J");
+SarkofagScheme.latchConnections("SarkofagHardwareInterface", "SarkofagPortDoubleAggregate_hw_p", true);
+SarkofagScheme.addBlock("SarkofagJ2M");
+SarkofagScheme.addBlock("SarkofagSplineTrajectoryGeneratorJoint");
+SarkofagScheme.addBlock("SarkofagSplineTrajectoryGeneratorMotor");

@@ -16,9 +16,4 @@ orocos_component(sarkofag_j2m src/SarkofagJ2M.cpp)
 target_link_libraries(sarkofag_j2m ${catkin_LIBRARIES})
 
 
-orocos_component(sarkofag_kinematic_model src/SarkofagKinematicModel.cpp)
-target_link_libraries(sarkofag_kinematic_model ${catkin_LIBRARIES})
-
-
-
 orocos_generate_package()

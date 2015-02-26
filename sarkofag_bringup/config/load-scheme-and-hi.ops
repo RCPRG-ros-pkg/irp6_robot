@@ -1,0 +1,18 @@
+//------------------------------------------------------------------------------
+//-- Controller manager
+//------------------------------------------------------------------------------
+loadComponent("SarkofagScheme", "conman::Scheme");
+setActivity("SarkofagScheme", 0.002, 5, ORO_SCHED_RT);
+SarkofagScheme.loadService("rosparam")
+SarkofagScheme.rosparam.getAll()
+SarkofagScheme.loadService("conman_ros")
+SarkofagScheme.configure()
+
+
+//------------------------------------------------------------------------------
+//-- SarkofagHardwareInterface
+//------------------------------------------------------------------------------
+loadComponent("SarkofagHardwareInterface","HardwareInterface")
+SarkofagHardwareInterface.loadService("rosparam")
+SarkofagHardwareInterface.rosparam.getAll()
+SarkofagHardwareInterface.configure();
