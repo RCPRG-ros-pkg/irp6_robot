@@ -113,8 +113,8 @@
         number_of_joints: 1
       Irp6ottfgSplineTrajectoryActionJoint:
         joint_names: [joint1]
-        lower_limits: [0.04]
-        upper_limits: [0.1]
+        lower_limits: [0.053]
+        upper_limits: [0.09]
       Irp6otmSplineTrajectoryGeneratorMotor:
         number_of_joints: 7
       Irp6otmSplineTrajectoryActionMotor:
@@ -125,8 +125,8 @@
         number_of_joints: 1
       Irp6ottfgSplineTrajectoryActionMotor:
         joint_names: [joint1]
-        lower_limits: [-1900.0]
-        upper_limits: [4900.0]
+        lower_limits: [-1800.0]
+        upper_limits: [1200.0]
       IRp6otmRegulator_0:
         reg_number: 9
         debug: false
