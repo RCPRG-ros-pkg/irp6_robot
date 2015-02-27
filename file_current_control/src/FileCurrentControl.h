@@ -15,6 +15,7 @@ class FileCurrentControl : public RTT::TaskContext {
   ~FileCurrentControl();
 
   int doServo(double, int);
+  int doServo_fcc(double, int);
   void reset();
 
  private:

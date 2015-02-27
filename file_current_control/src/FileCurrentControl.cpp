@@ -155,8 +155,13 @@ void FileCurrentControl::updateHook() {
       desired_position_old_ = desired_position_new_;
 
       if (!debug_) {
-
-         int output = doServo(desired_position_increment_, deltaIncData);
+         int output;
+         if (synchro_state_old_){
+            output = doServo_fcc(desired_position_increment_, deltaIncData);
+         }
+         else{
+            output = doServo(desired_position_increment_, deltaIncData);
+         }
          /*
        std::cout << std::dec << GREEN << "output: " << output << " pos_inc: "
        << desired_position_increment_ << " inp_inc: " << deltaIncData
@@ -240,29 +245,75 @@ int FileCurrentControl::doServo(double step_new, int pos_inc) {
    set_value_very_old = set_value_old;
    set_value_old = set_value_new;
 
+   return ((int) output_value);
+}
+
+int FileCurrentControl::doServo_fcc(double step_new, int pos_inc) {
+
+   // algorytm regulacji dla serwomechanizmu
+   // position_increment_old - przedostatnio odczytany przyrost polozenie
+   //                         (delta y[k-2] -- mierzone w impulsach)
+   // position_increment_new - ostatnio odczytany przyrost polozenie
+   //                         (delta y[k-1] -- mierzone w impulsach)
+   // step_old_pulse               - poprzednia wartosc zadana dla jednego kroku
+   //                         regulacji (przyrost wartosci zadanej polozenia --
+   //                         delta r[k-2] -- mierzone w impulsach)
+   // step_new               - nastepna wartosc zadana dla jednego kroku
+   //                         regulacji (przyrost wartosci zadanej polozenia --
+   //                         delta r[k-1] -- mierzone w radianach)
+   // set_value_new          - wielkosc kroku do realizacji przez HIP
+   //                         (wypelnienie PWM -- u[k]): czas trwania jedynki
+   // set_value_old          - wielkosc kroku do realizacji przez HIP
+   //                         (wypelnienie PWM -- u[k-1]): czas trwania jedynki
+   // set_value_very_old     - wielkosc kroku do realizacji przez HIP
+   //                         (wypelnienie PWM -- u[k-2]): czas trwania jedynki
+
+   double step_new_pulse;  // nastepna wartosc zadana dla jednego kroku regulacji
+
+   step_new_pulse = step_new;
+   position_increment_new = pos_inc;
+
+   // Przyrost calki uchybu
+   delta_eint = delta_eint_old
+         + (1.0 + eint_dif_) * (step_new_pulse - position_increment_new)
+         - (1.0 - eint_dif_) * (step_old_pulse - position_increment_old);
+
+   //std::cout << "POS INCREMENT NEW: " << position_increment_new <<  std::endl;
+
    if (curr < currents.size())
    {
       output_value = currents[curr];
       ++curr;
+
+      if (current_mode_) {
+         set_value_new = output_value / current_reg_kp_;
+      } else {
+         set_value_new = output_value;
+      }
+
+      if (output_value > max_output_current_) {
+         output_value = max_output_current_;
+      } else if (output_value < -max_output_current_) {
+         output_value = -max_output_current_;
+      }
    }
    else
    {
+      set_value_new = 0;
       output_value = 0;
+      curr = 0;
    }
 
-   if (output_value > max_output_current_)
-   {
-      output_value = max_output_current_;
-   } else if (output_value < -max_output_current_)
-   {
-      output_value = -max_output_current_;
+   if (debug_) {
+      std::cout << "output_value: " << output_value << std::endl;
    }
 
-
-   if (debug_)
-   {
-      std::cout << "  output_value: " << output_value << "  step_new: " << step_new << "  pos_inc: " << pos_inc << std::endl;
-   }
+   // przepisanie nowych wartosci zmiennych do zmiennych przechowujacych wartosci poprzednie
+   position_increment_old = position_increment_new;
+   delta_eint_old = delta_eint;
+   step_old_pulse = step_new_pulse;
+   set_value_very_old = set_value_old;
+   set_value_old = set_value_new;
 
    return ((int) output_value);
 }
