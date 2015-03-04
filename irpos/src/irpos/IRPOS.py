@@ -69,7 +69,7 @@ class IRPOS:
 	tool_weight = None
 	tool_mass_center = None
 
-	def __init__(self, nodeName, robotName, robotJointNumbers):
+	def __init__(self, nodeName, robotName, robotJointNumbers, option='controller_manager'):
 		self.robot_name = robotName
 		#self.robot_joint_names = robotJointNames
 		self.robot_joint_names = []
@@ -80,10 +80,18 @@ class IRPOS:
 		rospy.init_node(nodeName)
 		
 		robotNameLower = robotName.lower()
-		
-		rospy.wait_for_service('/controller_manager/switch_controller')
 
-		self.conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+		if option == 'controller_manager':
+			rospy.wait_for_service('/controller_manager/switch_controller')
+			self.conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+		
+		if option == 'irp6p_manager':
+			rospy.wait_for_service('/irp6p_manager/switch_controller')
+  			self.conmanSwitch = rospy.ServiceProxy('/irp6p_manager/switch_controller', SwitchController)
+
+		if option == 'irp6ot_manager':
+			rospy.wait_for_service('/irp6ot_manager/switch_controller')
+  			self.conmanSwitch = rospy.ServiceProxy('/irp6ot_manager/switch_controller', SwitchController)
 
 		self.motor_position_subscriber = rospy.Subscriber('/'+robotNameLower+'_arm/motor_states', JointState, self.motor_position_callback)
 		self.joint_position_subscriber = rospy.Subscriber('/'+robotNameLower+'_arm/joint_states', JointState, self.joint_position_callback)
