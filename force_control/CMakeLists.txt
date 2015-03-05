@@ -17,4 +17,7 @@ target_link_libraries(force_control_law ${catkin_LIBRARIES} ${orocos_kdl_LIBRARI
 orocos_component(force_transformation src/ForceTransformation.cpp)
 target_link_libraries(force_transformation ${catkin_LIBRARIES})
 
+orocos_component(wrench_publisher src/WrenchPublisher.cpp)
+target_link_libraries(wrench_publisher ${catkin_LIBRARIES})
+
 orocos_generate_package()
