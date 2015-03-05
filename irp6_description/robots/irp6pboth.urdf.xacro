@@ -37,9 +37,9 @@
     <origin/>
   </inertial>
   <visual>
-    <origin xyz="0 .6045 .07" />
+    <origin xyz="0 .6045 .125" />
     <geometry>
-      <box size=".462 1.609 .2" />
+      <box size=".462 1.609 .25" />
     </geometry>
     <material name="gray">
       <color rgba=".2 .2 .2 1" />
@@ -62,9 +62,9 @@
     <origin/>
   </inertial>
   <visual>
-    <origin xyz="0 0 0" />
+    <origin xyz="0 0 0.075" />
     <geometry>
-      <box size="-0.0 0.0 0.0" />
+      <box size="0.4 0.4 0.15" />
     </geometry>
     <material name="gray">
       <color rgba=".2 .2 .2 1" />
@@ -338,7 +338,7 @@
 <!-- -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.- -->
 
   <joint name="base_joint_p" type="fixed">
-    <origin rpy="0 0 0.0" xyz="0.0 2.11 0.25"/>
+    <origin rpy="0 0 0.0" xyz="0.0 2.11 0.0"/>
     <parent link="world"/>
     <child link="base_link_p"/>
   </joint>
@@ -358,10 +358,19 @@
         <box size="0.4 0.4 0.3" />
       </geometry>
     </collision>
+    <visual>
+      <origin xyz="0 0 0.2" />
+      <geometry>
+        <box size="0.4 0.4 0.4" />
+      </geometry>
+      <material name="gray">
+      <color rgba=".2 .2 .2 1" />
+    </material>
+  </visual>
   </link>
   
   <joint name="Irp6pmJoint1" type="revolute">
-    <origin rpy="0 0 0" xyz="0.0 0.0 0.3"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.55"/>
     <axis xyz="0 0 1"/>
     <limit lower="-2.96705973" upper="2.96705973" effort="10.0" velocity="10.0" />
     <parent link="base_link_p"/>
