@@ -243,7 +243,7 @@
   </link>
 
   <joint name="Irp6otmJoint7" type="revolute">
-    <origin rpy="1.570795 0 0" xyz="0.0 -0.15 0.19"/>
+    <origin rpy="1.570795 0 0" xyz="0.0 0.0 0.19"/>
     <axis xyz="0 0 1"/>
     <limit lower="-3.0" upper="2.9" effort="10.0" velocity="10.0" />
     <parent link="link5"/>
@@ -258,7 +258,7 @@
     </inertial>
 
     <visual>
-      <origin rpy="0 0 0.0" xyz="0 0.0 0.0"/>
+      <origin rpy="0 0 0.0" xyz="0 0.0 0.15"/>
       <geometry>
          <mesh filename="package://irp6_description/meshes/link6.3ds" />
       </geometry>
@@ -273,7 +273,7 @@
   </link>
 
   <joint name="Irp6ottfgJoint1" type="prismatic">
-    <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.15"/>
     <parent link="link6"/>
     <child link="gripper_link_1"/>
     <axis xyz="0 1 0" />
@@ -281,7 +281,7 @@
   </joint>
 
   <joint name="Irp6ottfgJoint1a" type="prismatic">
-    <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.15"/>
     <parent link="link6"/>
     <child link="gripper_link_2"/>
     <axis xyz="0 -1 0" />
@@ -512,7 +512,7 @@
   </link>
 
   <joint name="Irp6pmJoint6" type="revolute">
-    <origin rpy="1.570795 0 0" xyz="0.0 -0.15 0.19"/>
+    <origin rpy="1.570795 0 0" xyz="0.0 0.0 0.19"/>
     <axis xyz="0 0 1"/>
     <limit lower="-3.0" upper="2.9" effort="10.0" velocity="10.0" />
     <parent link="link5_p"/>
@@ -527,7 +527,7 @@
     </inertial>
 
     <visual>
-      <origin rpy="0 0 0.0" xyz="0 0.0 0.0"/>
+      <origin rpy="0 0 0.0" xyz="0 0.0 0.15"/>
       <geometry>
          <mesh filename="package://irp6_description/meshes/link6.3ds" />
       </geometry>
@@ -542,7 +542,7 @@
   </link>
 
   <joint name="Irp6ptfgJoint1" type="prismatic">
-    <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.15"/>
     <parent link="link6_p"/>
     <child link="gripper_link_p_1"/>
     <axis xyz="0 1 0" />
@@ -550,7 +550,7 @@
   </joint>
 
   <joint name="Irp6ptfgJoint1a" type="prismatic">
-    <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.15"/>
     <parent link="link6_p"/>
     <child link="gripper_link_p_2"/>
     <axis xyz="0 -1 0" />
