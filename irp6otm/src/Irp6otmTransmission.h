@@ -21,8 +21,7 @@ const double sl123 = 7.789525e+04;
 const double mi2 = 6.090255e+04;
 const double ni2 = -2.934668e+04;
 
-const double  mi3 = -4.410000e+04;
-const double  ni3 = -5.124000e+04;
-
+const double mi3 = -4.410000e+04;
+const double ni3 = -5.124000e+04;
 
 #endif /* Irp6otmTransmission_H_ */

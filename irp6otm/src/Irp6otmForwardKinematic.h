@@ -44,12 +44,6 @@ class Irp6otmForwardKinematic : public RTT::TaskContext {
   //! D-H kinematic parameters - length of 4th segment.
   double d5;
 
-  //! D-H kinematic parameters - length of 5th segment.
-  double d6;
-
-  //! D-H kinematic parameters - length of 6th segment.
-  double d7;
-
 };
 
 #endif /* Irp6otmForwardKinematic_H_ */

@@ -9,9 +9,7 @@ Irp6otmInverseKinematic::Irp6otmInverseKinematic(const std::string& name)
       d1(0.0),
       a2(0.0),
       a3(0.0),
-      d5(0.0),
-      d6(0.0),
-      d7(0.0) {
+      d5(0.0) {
 
   this->ports()->addPort("CurrentJointPosition", port_current_joint_position_);
   this->ports()->addPort("OutputJointPosition", port_output_joint_position_);
@@ -36,8 +34,6 @@ bool Irp6otmInverseKinematic::configureHook() {
   a2 = a2_const;
   a3 = a3_const;
   d5 = d5_const;
-  d6 = d6_const;
-  d7 = d7_const;
 
   local_desired_joints_.resize(NUMBER_OF_SERVOS);
   local_current_joints_.resize(NUMBER_OF_SERVOS);

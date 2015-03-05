@@ -83,7 +83,7 @@
 <joint name="Irp6otmJoint1" type="prismatic">
   <parent link="base_link"/>
   <child link="postument"/>
-  <origin xyz="0 0 .01" rpy="0 0 0" />
+  <origin xyz="0 0 .25" rpy="0 0 0" />
   <axis xyz="0 1 0" />
   <limit upper="1.209" lower="0" effort="10" velocity=".53" />
 </joint>
@@ -138,7 +138,7 @@
     </inertial>
     
     <visual>
-      <origin rpy="0 0 0.0" xyz="0.45 0.0 0.0"/>
+      <origin rpy="0 0 0.0" xyz="0.455 0.0 0.0"/>
       <geometry>
         <mesh filename="package://irp6_description/meshes/link2.3ds" />
       </geometry>
@@ -153,7 +153,7 @@
   </link>
 
   <joint name="Irp6otmJoint4" type="revolute">
-    <origin rpy="0 0 0.0" xyz="0.45 0.0 0.0"/>
+    <origin rpy="0 0 0.0" xyz="0.455 0.0 0.0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-0.3" upper="0.5" effort="10.0" velocity="10.0" />
     <parent link="link2"/>
@@ -338,7 +338,7 @@
 <!-- -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.- -->
 
   <joint name="base_joint_p" type="fixed">
-    <origin rpy="0 0 0" xyz="0.0 2.11 0.0"/>
+    <origin rpy="0 0 0.0" xyz="0.0 2.11 0.25"/>
     <parent link="world"/>
     <child link="base_link_p"/>
   </joint>
@@ -407,7 +407,7 @@
     </inertial>
     
     <visual>
-      <origin rpy="0 0 0.0" xyz="0.45 0.0 0.0"/>
+      <origin rpy="0 0 0.0" xyz="0.455 0.0 0.0"/>
       <geometry>
         <mesh filename="package://irp6_description/meshes/link2.3ds" />
       </geometry>
@@ -422,7 +422,7 @@
   </link>
 
   <joint name="Irp6pmJoint3" type="revolute">
-    <origin rpy="0 0 0.0" xyz="0.45 0.0 0.0"/>
+    <origin rpy="0 0 0.0" xyz="0.455 0.0 0.0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-0.3" upper="0.5" effort="10.0" velocity="10.0" />
     <parent link="link2_p"/>
