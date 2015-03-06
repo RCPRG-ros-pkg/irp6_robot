@@ -183,6 +183,22 @@ stream("Irp6ptfgMotPub.joint_state", ros.comm.topic("/irp6p_tfg/motor_state"));
 Irp6ptfgMotPub.configure()
 
 
+// WrenchPublisher
+
+
+loadComponent("Irp6pWrenchPublisher", "WrenchPublisher");
+setActivity("Irp6pWrenchPublisher", 0.01, 2, ORO_SCHED_RT);
+Irp6pWrenchPublisher.loadService("rosparam");
+Irp6pWrenchPublisher.rosparam.getAll();
+
+
+connect("Irp6pmForceTransformation.OutputEndEffectorWrench", "Irp6pWrenchPublisher.InputWrench", ConnPolicy())
+
+stream("Irp6pWrenchPublisher.OutputWrenchStamped", ros.comm.topic("/irp6p_arm/wrist_wrench"));
+
+Irp6pWrenchPublisher.configure()
+
+
 // cartesian position
 stream("Irp6pmForwardKinematic.EndEffectorOutputPose", ros.comm.topic("/irp6p_arm/cartesian_position"))
 
