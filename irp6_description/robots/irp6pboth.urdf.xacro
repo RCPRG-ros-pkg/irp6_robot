@@ -26,11 +26,11 @@
 
   <joint name="base_joint" type="fixed">
     <parent link="world"/>
-    <child link="base_link"/>
+    <child link="tl_base"/>
   </joint>
 
 
-<link name="base_link">
+<link name="tl_base">
   <inertial>
     <mass value="1"/>
     <inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
@@ -55,7 +55,7 @@
   </collision>
 </link>
 
-<link name="postument">
+<link name="tl_t">
   <inertial>
     <mass value="1"/>
     <inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
@@ -80,26 +80,25 @@
   </collision>
 </link>
 
+
 <joint name="Irp6otmJoint1" type="prismatic">
-  <parent link="base_link"/>
-  <child link="postument"/>
+  <parent link="tl_base"/>
+  <child link="tl_t"/>
   <origin xyz="0 0 .25" rpy="0 0 0" />
   <axis xyz="0 1 0" />
   <limit upper="1.209" lower="0" effort="10" velocity=".53" />
 </joint>
-
-
 
   
   <joint name="Irp6otmJoint2" type="revolute">
     <origin rpy="0 0 0" xyz="0.0 0.0 0.3"/>
     <axis xyz="0 0 1"/>
     <limit lower="-2.96705973" upper="2.96705973" effort="10.0" velocity="10.0" />
-    <parent link="postument"/>
-    <child link="link1"/>
+    <parent link="tl_t"/>
+    <child link="tl_1"/>
   </joint>
 
-  <link name="link1">
+  <link name="tl_1">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -126,11 +125,11 @@
     <origin rpy="-1.570795 0 0" xyz="0.0 0.0 0.4"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.8" upper="-0.872664626" effort="10.0" velocity="10.0" />
-    <parent link="link1"/>
-    <child link="link2"/>
+    <parent link="tl_1"/>
+    <child link="tl_2"/>
   </joint>
 
-  <link name="link2">
+  <link name="tl_2">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -152,15 +151,17 @@
     </collision>
   </link>
 
+
+
   <joint name="Irp6otmJoint4" type="revolute">
     <origin rpy="0 0 0.0" xyz="0.455 0.0 0.0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-0.3" upper="0.5" effort="10.0" velocity="10.0" />
-    <parent link="link2"/>
-    <child link="link3"/>
+    <parent link="tl_2"/>
+    <child link="tl_3"/>
   </joint>
 
-  <link name="link3">
+  <link name="tl_3">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -182,15 +183,16 @@
     </collision>
   </link>
 
+
   <joint name="Irp6otmJoint5" type="revolute">
     <origin rpy="0 0 0" xyz="0.0 0.67 0.0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.57" upper="1.57" effort="10.0" velocity="10.0" />
-    <parent link="link3"/>
-    <child link="link4"/>
+    <parent link="tl_3"/>
+    <child link="tl_4"/>
   </joint>
 
-  <link name="link4">
+  <link name="tl_4">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -212,15 +214,16 @@
     </collision>
   </link>
 
+
   <joint name="Irp6otmJoint6" type="revolute">
     <origin rpy="-1.570795 0 0" xyz="0.0 0.0 0.0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-0.5" upper="5.14" effort="10.0" velocity="10.0" />
-    <parent link="link4"/>
-    <child link="link5"/>
+    <parent link="tl_4"/>
+    <child link="tl_5"/>
   </joint>
 
-  <link name="link5">
+  <link name="tl_5">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -242,15 +245,16 @@
     </collision>
   </link>
 
+
   <joint name="Irp6otmJoint7" type="revolute">
     <origin rpy="1.570795 0 0" xyz="0.0 0.0 0.19"/>
     <axis xyz="0 0 1"/>
     <limit lower="-3.0" upper="2.9" effort="10.0" velocity="10.0" />
-    <parent link="link5"/>
-    <child link="link6"/>
+    <parent link="tl_5"/>
+    <child link="tl_6"/>
   </joint>
   
-  <link name="link6">
+  <link name="tl_6">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -272,25 +276,28 @@
     </collision>
   </link>
 
+
+
   <joint name="Irp6ottfgJoint1" type="prismatic">
     <origin rpy="0 0 0" xyz="0.0 0.0 0.15"/>
-    <parent link="link6"/>
-    <child link="gripper_link_1"/>
+    <parent link="tl_6"/>
+    <child link="tl_g1"/>
     <axis xyz="0 1 0" />
     <limit upper="0.1" lower="0" effort="10" velocity=".53" />
   </joint>
 
+
   <joint name="Irp6ottfgJoint1a" type="prismatic">
     <origin rpy="0 0 0" xyz="0.0 0.0 0.15"/>
-    <parent link="link6"/>
-    <child link="gripper_link_2"/>
+    <parent link="tl_6"/>
+    <child link="tl_g2"/>
     <axis xyz="0 -1 0" />
     <limit upper="0.1" lower="0" effort="10" velocity=".53" />
     <mimic joint="Irp6ottfgJoint1" />
   </joint>
 
   
-  <link name="gripper_link_1">
+  <link name="tl_g1">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -313,7 +320,7 @@
   </link>
 
 
-<link name="gripper_link_2">
+<link name="tl_g2">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -340,10 +347,10 @@
   <joint name="base_joint_p" type="fixed">
     <origin rpy="0 0 0.0" xyz="0.0 2.11 0.0"/>
     <parent link="world"/>
-    <child link="base_link_p"/>
+    <child link="pl_base"/>
   </joint>
 
-  <link name="base_link_p">
+  <link name="pl_base">
     <inertial>
       <mass value="0" />
       <origin xyz="-0.0 0.0 0.0" />
@@ -373,11 +380,11 @@
     <origin rpy="0 0 0" xyz="0.0 0.0 0.55"/>
     <axis xyz="0 0 1"/>
     <limit lower="-2.96705973" upper="2.96705973" effort="10.0" velocity="10.0" />
-    <parent link="base_link_p"/>
-    <child link="link1_p"/>
+    <parent link="pl_base"/>
+    <child link="pl_1"/>
   </joint>
 
-  <link name="link1_p">
+  <link name="pl_1">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -404,11 +411,11 @@
     <origin rpy="-1.570795 0 0" xyz="0.0 0.0 0.4"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.8" upper="-0.872664626" effort="10.0" velocity="10.0" />
-    <parent link="link1_p"/>
-    <child link="link2_p"/>
+    <parent link="pl_1"/>
+    <child link="pl_2"/>
   </joint>
 
-  <link name="link2_p">
+  <link name="pl_2">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -434,11 +441,11 @@
     <origin rpy="0 0 0.0" xyz="0.455 0.0 0.0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-0.3" upper="0.5" effort="10.0" velocity="10.0" />
-    <parent link="link2_p"/>
-    <child link="link3_p"/>
+    <parent link="pl_2"/>
+    <child link="pl_3"/>
   </joint>
 
-  <link name="link3_p">
+  <link name="pl_3">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -464,11 +471,11 @@
     <origin rpy="0 0 0" xyz="0.0 0.67 0.0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.57" upper="1.57" effort="10.0" velocity="10.0" />
-    <parent link="link3_p"/>
-    <child link="link4_p"/>
+    <parent link="pl_3"/>
+    <child link="pl_4"/>
   </joint>
 
-  <link name="link4_p">
+  <link name="pl_4">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -494,11 +501,11 @@
     <origin rpy="-1.570795 0 0" xyz="0.0 0.0 0.0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-0.5" upper="5.14" effort="10.0" velocity="10.0" />
-    <parent link="link4_p"/>
-    <child link="link5_p"/>
+    <parent link="pl_4"/>
+    <child link="pl_5"/>
   </joint>
 
-  <link name="link5_p">
+  <link name="pl_5">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -524,11 +531,11 @@
     <origin rpy="1.570795 0 0" xyz="0.0 0.0 0.19"/>
     <axis xyz="0 0 1"/>
     <limit lower="-3.0" upper="2.9" effort="10.0" velocity="10.0" />
-    <parent link="link5_p"/>
-    <child link="link6_p"/>
+    <parent link="pl_5"/>
+    <child link="pl_6"/>
   </joint>
   
-  <link name="link6_p">
+  <link name="pl_6">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -552,23 +559,23 @@
 
   <joint name="Irp6ptfgJoint1" type="prismatic">
     <origin rpy="0 0 0" xyz="0.0 0.0 0.15"/>
-    <parent link="link6_p"/>
-    <child link="gripper_link_p_1"/>
+    <parent link="pl_6"/>
+    <child link="pl_g1"/>
     <axis xyz="0 1 0" />
     <limit upper="0.1" lower="0" effort="10" velocity=".53" />
   </joint>
 
   <joint name="Irp6ptfgJoint1a" type="prismatic">
     <origin rpy="0 0 0" xyz="0.0 0.0 0.15"/>
-    <parent link="link6_p"/>
-    <child link="gripper_link_p_2"/>
+    <parent link="pl_6"/>
+    <child link="pl_g2"/>
     <axis xyz="0 -1 0" />
     <limit upper="0.1" lower="0" effort="10" velocity=".53" />
     <mimic joint="Irp6ptfgJoint1" />
   </joint>
 
   
-  <link name="gripper_link_p_1">
+  <link name="pl_g1">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>
@@ -591,7 +598,7 @@
   </link>
 
 
-<link name="gripper_link_p_2">
+<link name="pl_g2">
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0.0 0.0 0.0"/>

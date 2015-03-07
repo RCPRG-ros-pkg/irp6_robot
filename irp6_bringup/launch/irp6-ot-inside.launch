@@ -287,7 +287,7 @@
       Irp6otmSynchroMotorPos:
         synchro_motor_position: [0.0, -16.5, -4.012, -6.219, 159.5, 473.0, 769.7]
       Irp6otWrenchPublisher:
-        frame_id: link6
+        frame_id: tl_6
     </rosparam>
 </group>
 
