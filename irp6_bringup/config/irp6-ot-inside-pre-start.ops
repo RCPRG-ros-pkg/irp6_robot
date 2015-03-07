@@ -198,6 +198,20 @@ stream("Irp6otWrenchPublisher.OutputWrenchStamped", ros.comm.topic("/irp6ot_arm/
 Irp6otWrenchPublisher.configure()
 
 
+// Irp6otTfPublisher
+
+
+loadComponent("Irp6otTfPublisher", "TfPublisher");
+// setActivity("Irp6otTfPublisher", 0.01, 2, ORO_SCHED_RT);
+setActivityOnCPU("Irp6otTfPublisher", 0.01, 1, ORO_SCHED_RT, 0)
+Irp6otTfPublisher.loadService("rosparam");
+Irp6otTfPublisher.rosparam.getAll();
+Irp6otTfPublisher.configure()
+
+connect("Irp6otmToolInt.CartesianPositionCommand", "Irp6otTfPublisher.In0", ConnPolicy())
+
+stream("Irp6otTfPublisher.OutTf", ros.comm.topic("/tf"));
+
 
 // cartesian position
 

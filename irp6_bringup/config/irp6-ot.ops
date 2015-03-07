@@ -25,6 +25,8 @@ ros.import("controller_common")
 ros.import("force_control")
 ros.import("ati3084")
 ros.import("port_operations")
+ros.import("eigen_typekit");
+ros.import("rtt_tf");
 
 
 

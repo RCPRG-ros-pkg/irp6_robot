@@ -260,7 +260,10 @@
       Irp6pmSynchroMotorPos:
         synchro_motor_position: [-15.9, -5.0, -8.527, 151.31, 432.25, 791.0]
       Irp6pWrenchPublisher:
-        frame_id: pl_6
+        frame_id: pl_ef
+      Irp6pTfPublisher:
+        frame_ids: [pl_6]
+        child_frame_ids: [pl_ef]
     </rosparam>
 </group>
 

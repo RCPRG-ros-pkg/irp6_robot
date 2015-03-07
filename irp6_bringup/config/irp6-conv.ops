@@ -29,8 +29,8 @@ ros.import("ati3084")
 ros.import("ati6284")
 ros.import("port_operations")
 ros.import("irp6_haptic")
-
-
+ros.import("eigen_typekit");
+ros.import("rtt_tf");
 
 
 
