@@ -70,12 +70,12 @@ class IRPOS:
 	tool_mass_center = None
 
 	def __init__(self, nodeName, robotName, robotJointNumbers, option='controller_manager'):
+		assert option in set(['controller_manager', 'irp6p_manager', 'irp6ot_manager'])
 		self.robot_name = robotName
 		#self.robot_joint_names = robotJointNames
 		self.robot_joint_names = []
 		for i in range(1,robotJointNumbers+1):
 			self.robot_joint_names.append('joint'+str(i))
-
 
 		rospy.init_node(nodeName)
 		
