@@ -352,6 +352,15 @@
 <link name="t_c">
 </link>
 
+<joint name="tl_camera_optical_frame" type="fixed">
+    <origin rpy="0.0 0.0 3.14" xyz="0.0 0.0 0.0"/>
+    <parent link="t_c"/>
+    <child link="t_c_optical_frame"/>
+  </joint>
+
+<link name="t_c_optical_frame">
+</link>
+
 <!-- -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.- -->
 
   <joint name="base_joint_p" type="fixed">
@@ -629,6 +638,24 @@
       </geometry>
     </collision>
   </link>
+
+<joint name="pl_camera" type="fixed">
+    <origin rpy="0.0 0.0 -1.57" xyz="0.0551 0.0 0.13"/>
+    <parent link="pl_6"/>
+    <child link="p_c"/>
+  </joint>
+
+<link name="p_c">
+</link>
+
+<joint name="pl_camera_optical_frame" type="fixed">
+    <origin rpy="0.0 0.0 3.14" xyz="0.0 0.0 0.0"/>
+    <parent link="p_c"/>
+    <child link="p_c_optical_frame"/>
+  </joint>
+
+<link name="p_c_optical_frame">
+</link>
 
 
 
