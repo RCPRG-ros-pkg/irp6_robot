@@ -4,7 +4,7 @@ find_package(catkin REQUIRED)
 
 catkin_package(CATKIN_DEPENDS xacro)
 
-foreach(dir config launch KRL)
+foreach(dir config launch)
    install(DIRECTORY ${dir}/
       DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
 endforeach(dir)
