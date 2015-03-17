@@ -1,4 +1,4 @@
-#include <ocl/Component.hpp>
+#include <rtt/Component.hpp>
 
 #include "ATI6284.h"
 
