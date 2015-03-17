@@ -6,7 +6,8 @@
 #include <std_srvs/Empty.h>
 #include <ros/ros.h>
 
-#include "../../hardware_interface/src/string_colors.h"
+// to musi byc dodane w includach w devel
+// #include "../../hardware_interface/src/string_colors.h"
 
 #include "IRp6Regulator.h"
 
