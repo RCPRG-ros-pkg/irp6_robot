@@ -1,3 +1,34 @@
+/*
+ * Copyright (c) 2014-2015, Robot Control and Pattern Recognition Group, Warsaw University of Technology.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Robot Control and Pattern Recognition Group,
+ *       Warsaw University of Technology nor the names of its contributors may
+ *       be used to endorse or promote products derived from this software
+ *       without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
 #include <std_msgs/Float64.h>
@@ -6,8 +37,7 @@
 #include <std_srvs/Empty.h>
 #include <ros/ros.h>
 
-// to musi byc dodane w includach w devel
-// #include "../../hardware_interface/src/string_colors.h"
+#include <string>
 
 #include "IRp6Regulator.h"
 
@@ -38,8 +68,11 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
       step_old_pulse(0.0),
       update_hook_iteration_number_(0),
       new_position_iteration_number_(0),
+      max_desired_increment_(0.0),
+      desired_position_old_(0.0),
+      desired_position_new_(0.0),
       synchro_state_old_(false),
-      max_desired_increment_(0.0) {
+      synchro_state_new_(false) {
 
   this->addEventPort(desired_position_).doc(
       "Receiving a value of position step");
@@ -60,11 +93,9 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addProperty("eint_dif", eint_dif_).doc("");
   this->addProperty("max_desired_increment", max_desired_increment_).doc("");
   this->addProperty("enc_res", enc_res_).doc("");
-
 }
 
 IRp6Regulator::~IRp6Regulator() {
-
 }
 
 bool IRp6Regulator::configureHook() {
@@ -77,31 +108,26 @@ bool IRp6Regulator::configureHook() {
   desired_position_old_ = desired_position_new_ = 0.0;
 
   return true;
-
 }
 
 void IRp6Regulator::updateHook() {
-
-  if (NewData == deltaInc_in.read(deltaIncData)) {
-
+  if (RTT::NewData == deltaInc_in.read(deltaIncData)) {
     update_hook_iteration_number_++;
     if (update_hook_iteration_number_ <= 1) {
       deltaIncData = 0.0;
     }
 
-    if (NewData == desired_position_.read(desired_position_new_)) {
+    if (RTT::NewData == desired_position_.read(desired_position_new_)) {
       new_position_iteration_number_++;
       if (new_position_iteration_number_ <= 1) {
         desired_position_old_ = desired_position_new_;
       }
     }
 
-    if (NewData == synchro_state_in_.read(synchro_state_new_)) {
-
+    if (RTT::NewData == synchro_state_in_.read(synchro_state_new_)) {
       if (synchro_state_new_ != synchro_state_old_) {
         desired_position_old_ = desired_position_new_;
         synchro_state_old_ = synchro_state_new_;
-
       }
     }
 
@@ -119,7 +145,6 @@ void IRp6Regulator::updateHook() {
     desired_position_old_ = desired_position_new_;
 
     if (!debug_) {
-
       int output = doServo(desired_position_increment_, deltaIncData);
       /*
        std::cout << std::dec << GREEN << "output: " << output << " pos_inc: "
@@ -135,11 +160,9 @@ void IRp6Regulator::updateHook() {
       computedPwm_out.write(0.0);
     }
   }
-
 }
 
 int IRp6Regulator::doServo(double step_new, int pos_inc) {
-
 // algorytm regulacji dla serwomechanizmu
 // position_increment_old - przedostatnio odczytany przyrost polozenie
 //                         (delta y[k-2] -- mierzone w impulsach)
@@ -168,14 +191,15 @@ int IRp6Regulator::doServo(double step_new, int pos_inc) {
       + (1.0 + eint_dif_) * (step_new_pulse - position_increment_new)
       - (1.0 - eint_dif_) * (step_old_pulse - position_increment_old);
 
-//std::cout << "POS INCREMENT NEW: " << position_increment_new <<  std::endl;
+// std::cout << "POS INCREMENT NEW: " << position_increment_new <<  std::endl;
 
 // obliczenie nowej wartosci wypelnienia PWM algorytm PD + I
   set_value_new = (1 + a_) * set_value_old - a_ * set_value_very_old
       + b0_ * delta_eint - b1_ * delta_eint_old;
-
-//std::cout << "PWM VALUE (" << pos_inc << " to " << pos_inc_new << ") IS " << (int)set_value_new << std::endl;
-
+/*
+  std::cout << "PWM VALUE (" << pos_inc << " to " << pos_inc_new << ") IS "
+  << (int) set_value_new << std::endl;
+*/
 // ograniczenie na sterowanie
   if (set_value_new > MAX_PWM)
     set_value_new = MAX_PWM;
@@ -194,17 +218,18 @@ int IRp6Regulator::doServo(double step_new, int pos_inc) {
   }
 
   if (debug_) {
-    //   std::cout << "output_value: " << output_value << std::endl;
+    // std::cout << "output_value: " << output_value << std::endl;
   }
 
-// przepisanie nowych wartosci zmiennych do zmiennych przechowujacych wartosci poprzednie
+  // przepisanie nowych wartosci zmiennych
+  // do zmiennych przechowujacych wartosci poprzednie
   position_increment_old = position_increment_new;
   delta_eint_old = delta_eint;
   step_old_pulse = step_new_pulse;
   set_value_very_old = set_value_old;
   set_value_old = set_value_new;
 
-  return ((int) output_value);
+  return (static_cast<int> (output_value));
 }
 
 void IRp6Regulator::reset() {
