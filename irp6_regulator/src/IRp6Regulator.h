@@ -28,8 +28,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef IRP6_REGULATOR_SRC_IRP6REGULATOR_H_
-#define IRP6_REGULATOR_SRC_IRP6REGULATOR_H_
+#ifndef IRP6REGULATOR_H_
+#define IRP6REGULATOR_H_
 
 #include <string>
 
@@ -104,4 +104,4 @@ class IRp6Regulator : public RTT::TaskContext {
 
   double a_, b0_, b1_;
 };
-#endif  // IRP6_REGULATOR_SRC_IRP6REGULATOR_H_
+#endif  // IRP6REGULATOR_H_
