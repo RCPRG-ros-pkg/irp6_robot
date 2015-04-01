@@ -127,7 +127,7 @@ uint8_t NF_Interpreter(NF_STRUCT_ComBuf *NFComBuf, uint8_t *rxBuf,
             *(u8TempPt + dataBytesIter) = *(dataPt + rxDataIter*NF_DATABYTES_SetDrivesSpeed + dataBytesIter);
             dataBytesIter++;
           }
-          //NFComBuf->SetDrivesSpeed.data[combufDataIter]  =  ((NF_STRUCT_SetDrivesSpeed*)dataPt)->data[rxDataIter];
+          // NFComBuf->SetDrivesSpeed.data[combufDataIter]  =  ((NF_STRUCT_SetDrivesSpeed*)dataPt)->data[rxDataIter];
           combufDataIter++;
           rxDataIter++;
         }
@@ -486,7 +486,7 @@ uint8_t NF_Interpreter(NF_STRUCT_ComBuf *NFComBuf, uint8_t *rxBuf,
             *(u8TempPt + dataBytesIter) = *(dataPt + rxDataIter*NF_DATABYTES_SetServosMaxSpeed + dataBytesIter);
             dataBytesIter++;
           }
-          //NFComBuf->SetServosMaxSpeed.data[combufDataIter]  =  ((NF_STRUCT_SetServosMaxSpeed*)dataPt)->data[rxDataIter];
+          // NFComBuf->SetServosMaxSpeed.data[combufDataIter]  =  ((NF_STRUCT_SetServosMaxSpeed*)dataPt)->data[rxDataIter];
           combufDataIter++;
           rxDataIter++;
         }
@@ -940,8 +940,7 @@ uint8_t NF_Interpreter(NF_STRUCT_ComBuf *NFComBuf, uint8_t *rxBuf,
           combufDataIter++;
         }
       }
-    }
-    else
+    } else
 #endif
 
     //  ######## Analog  IO
@@ -2009,7 +2008,7 @@ uint8_t NF_MakeCommandFrame(NF_STRUCT_ComBuf *NFComBuf, uint8_t *txBuf,
         txBuf[txBufIter+1] = 0;
         txBufIter += 2;
       }
-    }    else
+    } else
 #endif
 
     //  ######## Analog  IO
