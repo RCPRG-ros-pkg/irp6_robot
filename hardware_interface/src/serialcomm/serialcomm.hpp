@@ -26,26 +26,23 @@
 // port
 #define DEFAULT_PORT = "/dev/ttyACM0"
 
-
-
 class SerialComm {
-public:
-	SerialComm(const std::string& port, int baud = DEFAULT_BAUD);
-	~SerialComm();
-	
-	int write(uint8_t* buf, int len);
-	int read(uint8_t* buf, int len);
-	uint8_t readOneByte();
-	bool isConnected();
-	
+ public:
+  SerialComm(const std::string& port, int baud = DEFAULT_BAUD);
+  ~SerialComm();
 
-private:
-	int fd;
-	struct termios oldtio;
-	bool connected;
-	fd_set rfds;
-	struct timeval tv;
-	
+  int write(uint8_t* buf, int len);
+  int read(uint8_t* buf, int len);
+  uint8_t readOneByte();
+  bool isConnected();
+
+ private:
+  int fd;
+  struct termios oldtio;
+  bool connected;
+  fd_set rfds;
+  struct timeval tv;
+
 };
 
 #endif /* ELEKTRON_HPP_ */

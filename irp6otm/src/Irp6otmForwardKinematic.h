@@ -16,6 +16,7 @@ class Irp6otmForwardKinematic : public RTT::TaskContext {
 
   bool configureHook();
   void updateHook();
+
  private:
   void direct_kinematics_transform(
       const Eigen::VectorXd& local_current_joints,
