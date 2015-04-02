@@ -16,7 +16,7 @@ link_directories(
   ${catkin_LIBRARY_DIRS}
   ${USE_OROCOS_LIBRARY_DIRS})
 
-orocos_component(${PROJECT_NAME} src/HardwareInterface.cpp src/hi_moxa.cpp src/nf/nfv2.c src/serialcomm/serialcomm.cpp)
+orocos_component(${PROJECT_NAME} src/HardwareInterface.cpp src/hi_moxa.cpp src/nf/nfv2.cc src/serialcomm/serialcomm.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 orocos_generate_package()

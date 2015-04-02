@@ -99,7 +99,8 @@ void Irp6pmInverseKinematic::inverse_kinematics_single_iteration(
   // Zmienne pomocnicze.
   double Nx, Ox, Ax, Px;
   double Ny, Oy, Ay, Py;
-  double Nz, Oz, Az, Pz;
+  // double Nz, Oz,
+  double Az, Pz;
   double s0, c0, s1, c1, s3, c3, s4, c4;
   double E, F, K, ro, G, H;
   double t5, t_ok;
@@ -107,10 +108,10 @@ void Irp6pmInverseKinematic::inverse_kinematics_single_iteration(
   // Przepisanie zmiennych.
   Nx = local_desired_end_effector_frame(0, 0);
   Ny = local_desired_end_effector_frame(1, 0);
-  Nz = local_desired_end_effector_frame(2, 0);
+  // Nz = local_desired_end_effector_frame(2, 0);
   Ox = local_desired_end_effector_frame(0, 1);
   Oy = local_desired_end_effector_frame(1, 1);
-  Oz = local_desired_end_effector_frame(2, 1);
+  // Oz = local_desired_end_effector_frame(2, 1);
   Ax = local_desired_end_effector_frame(0, 2);
   Ay = local_desired_end_effector_frame(1, 2);
   Az = local_desired_end_effector_frame(2, 2);
@@ -120,8 +121,8 @@ void Irp6pmInverseKinematic::inverse_kinematics_single_iteration(
 
   //  Wyliczenie Theta1.
   (*local_desired_joints)[0] = (atan2(Py, Px));
-  s0 = sin((double) (*local_desired_joints)[0]);
-  c0 = cos((double) (*local_desired_joints)[0]);
+  s0 = sin(static_cast<double> ((*local_desired_joints)[0]));
+  c0 = cos(static_cast<double> ((*local_desired_joints)[0]));
 
   // Wyliczenie Theta5.
   c4 = Ay * c0 - Ax * s0;
