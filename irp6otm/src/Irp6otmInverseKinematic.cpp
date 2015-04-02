@@ -186,34 +186,51 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
     // Sprawdzenie warunkow.
     t_ok = t6 + (*local_desired_joints)[4];
     if (fabs(t_ok - local_current_joints_tmp_[6])
-        > fabs(t6 - M_PI + (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+        > fabs(
+            t6 - M_PI + (*local_desired_joints)[4]
+                - (local_current_joints_tmp_[6])))
       t_ok = t6 - M_PI + (*local_desired_joints)[4];
     if (fabs(t_ok - local_current_joints_tmp_[6])
-        > fabs(t6 + M_PI + (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+        > fabs(
+            t6 + M_PI + (*local_desired_joints)[4]
+                - (local_current_joints_tmp_[6])))
       t_ok = t6 + M_PI + (*local_desired_joints)[4];
 
     if (fabs(t_ok - local_current_joints_tmp_[6])
-        > fabs(t6 - 2 * M_PI + (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+        > fabs(
+            t6 - 2 * M_PI + (*local_desired_joints)[4]
+                - (local_current_joints_tmp_[6])))
       t_ok = t6 - 2 * M_PI + (*local_desired_joints)[4];
     if (fabs(t_ok - local_current_joints_tmp_[6])
-        > fabs(t6 + 2 * M_PI + (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+        > fabs(
+            t6 + 2 * M_PI + (*local_desired_joints)[4]
+                - (local_current_joints_tmp_[6])))
       t_ok = t6 + 2 * M_PI + (*local_desired_joints)[4];
 
     if (fabs(t_ok - local_current_joints_tmp_[6])
-        > fabs(t6 - (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+        > fabs(
+            t6 - (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
       t_ok = t6 - (*local_desired_joints)[4];
     if (fabs(t_ok - local_current_joints_tmp_[6])
-        > fabs(t6 - M_PI - (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+        > fabs(
+            t6 - M_PI - (*local_desired_joints)[4]
+                - (local_current_joints_tmp_[6])))
       t_ok = t6 - M_PI - (*local_desired_joints)[4];
     if (fabs(t_ok - local_current_joints_tmp_[6])
-        > fabs(t6 + M_PI - (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+        > fabs(
+            t6 + M_PI - (*local_desired_joints)[4]
+                - (local_current_joints_tmp_[6])))
       t_ok = t6 + M_PI - (*local_desired_joints)[4];
 
     if (fabs(t_ok - local_current_joints_tmp_[6])
-        > fabs(t6 - 2 * M_PI - (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+        > fabs(
+            t6 - 2 * M_PI - (*local_desired_joints)[4]
+                - (local_current_joints_tmp_[6])))
       t_ok = t6 - 2 * M_PI - (*local_desired_joints)[4];
     if (fabs(t_ok - local_current_joints_tmp_[6])
-        > fabs(t6 + 2 * M_PI - (*local_desired_joints)[4] - (local_current_joints_tmp_[6])))
+        > fabs(
+            t6 + 2 * M_PI - (*local_desired_joints)[4]
+                - (local_current_joints_tmp_[6])))
       t_ok = t6 + 2 * M_PI - (*local_desired_joints)[4];
 
     //  std::cout << "variant 1" << std::endl;
@@ -224,11 +241,13 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
     t_ok = t6;
     //  std::cout << "variant 2" << std::endl;
     // Sprawdzenie warunkow.
-    if (fabs(t_ok - local_current_joints_tmp_[6]) > fabs(t6 - M_PI - (local_current_joints_tmp_[6]))) {
+    if (fabs(t_ok - local_current_joints_tmp_[6])
+        > fabs(t6 - M_PI - (local_current_joints_tmp_[6]))) {
       //  std::cout << "variant 2 a" << std::endl;
       t_ok = t6 - M_PI;
     }
-    if (fabs(t_ok - local_current_joints_tmp_[6]) > fabs(t6 + M_PI - (local_current_joints_tmp_[6]))) {
+    if (fabs(t_ok - local_current_joints_tmp_[6])
+        > fabs(t6 + M_PI - (local_current_joints_tmp_[6]))) {
       //  std::cout << "variant 2 b" << std::endl;
       t_ok = t6 + M_PI;
     }
@@ -236,11 +255,13 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
     (*local_desired_joints)[6] = t_ok;
     t_ok = atan2(c1 * Ax + s1 * Ay, Az);
 
-    if (fabs(t_ok - local_current_joints_tmp_[4]) > fabs(t_ok - M_PI - (local_current_joints_tmp_[4]))) {
+    if (fabs(t_ok - local_current_joints_tmp_[4])
+        > fabs(t_ok - M_PI - (local_current_joints_tmp_[4]))) {
       //  std::cout << "variant 2 c" << std::endl;
       t_ok = t_ok - M_PI;
     }
-    if (fabs(t_ok - local_current_joints_tmp_[4]) > fabs(t_ok + M_PI - (local_current_joints_tmp_[4]))) {
+    if (fabs(t_ok - local_current_joints_tmp_[4])
+        > fabs(t_ok + M_PI - (local_current_joints_tmp_[4]))) {
       //  std::cout << "variant 2 d" << std::endl;
       t_ok = t_ok + M_PI;
     }
@@ -249,8 +270,8 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
   }  // else
 
   // Wyliczenie Theta2.
-  c4 = cos((*local_desired_joints)[4]);
-  s4 = sin((*local_desired_joints)[4]);
+  c4 = cos(static_cast<double>((*local_desired_joints)[4]));
+  s4 = sin(static_cast<double>((*local_desired_joints)[4]));
 
   E = c1 * Px + s1 * Py - c4 * d5;
   F = -Pz - s4 * d5;
@@ -259,11 +280,12 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
   K = E * E + F * F + a2 * a2 - a3 * a3;
   ro = sqrt(G * G + H * H);
 
-  (*local_desired_joints)[2] = atan2(K / ro, sqrt(1 - ((K * K) / (ro * ro)))) - atan2(G, H);
+  (*local_desired_joints)[2] = atan2(K / ro, sqrt(1 - ((K * K) / (ro * ro))))
+      - atan2(G, H);
 
   // Wyliczenie Theta3.
-  s2 = sin((*local_desired_joints)[2]);
-  c2 = cos((*local_desired_joints)[2]);
+  s2 = sin(static_cast<double>((*local_desired_joints)[2]));
+  c2 = cos(static_cast<double>((*local_desired_joints)[2]));
   (*local_desired_joints)[3] = atan2(F - a2 * s2, E - a2 * c2);
 
   // Tor. Nie bierze udzialu w tym rozwiazaniu.
@@ -271,7 +293,8 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
 
   // poprawka w celu dostosowania do konwencji DH
   (*local_desired_joints)[3] -= (*local_desired_joints)[2] + M_PI_2;
-  (*local_desired_joints)[4] -= (*local_desired_joints)[3] + (*local_desired_joints)[2] + M_PI_2;
+  (*local_desired_joints)[4] -= (*local_desired_joints)[3]
+      + (*local_desired_joints)[2] + M_PI_2;
 }
 
 ORO_CREATE_COMPONENT(Irp6otmInverseKinematic)

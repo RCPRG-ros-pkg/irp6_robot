@@ -282,7 +282,7 @@ bool HardwareInterface::configureHook() {
 }
 
 uint16_t HardwareInterface::convert_to_115(float input) {
-  uint16_t output;
+  uint16_t output = 0;
 
   if (input >= 1.0) {
     printf("convert_to_115 input bigger or equal then 1.0\n");
@@ -365,9 +365,9 @@ bool HardwareInterface::startHook() {
   }
 
   for (int i = 0; i < number_of_drives_; i++) {
-    port_motor_position_list_[i]->write(motor_position_[i]);
-    port_motor_increment_list_[i]->write(motor_increment_[i]);
-    port_motor_current_list_[i]->write(motor_current_[i]);
+    port_motor_position_list_[i]->write(static_cast<double>(motor_position_[i]));
+    port_motor_increment_list_[i]->write(static_cast<double>(motor_increment_[i]));
+    port_motor_current_list_[i]->write(static_cast<double>(motor_current_[i]));
     desired_position_[i] = motor_position_(i);
   }
   return true;
@@ -408,7 +408,7 @@ void HardwareInterface::updateHook() {
       if (!test_mode_) {
         for (int i = 0; i < number_of_drives_; i++) {
           motor_position_command_(i) = motor_position_(i);
-          port_motor_position_list_[i]->write(motor_position_[i]);
+          port_motor_position_list_[i]->write(static_cast<double>(motor_position_[i]));
         }
       }
 
@@ -428,10 +428,10 @@ void HardwareInterface::updateHook() {
         }
 
         if (!test_mode_) {
-          port_motor_position_list_[i]->write(motor_position_[i]);
+          port_motor_position_list_[i]->write(static_cast<double>(motor_position_[i]));
         } else {
           motor_position_(i) = motor_position_command_(i);
-          port_motor_position_list_[i]->write(motor_position_[i]);
+          port_motor_position_list_[i]->write(static_cast<double>(motor_position_[i]));
         }
       }
 
@@ -551,11 +551,11 @@ void HardwareInterface::updateHook() {
 
     for (int i = 0; i < number_of_drives_; i++) {
       motor_current_(i) = static_cast<double> (hi_->get_current(i));
-      port_motor_current_list_[i]->write(motor_current_[i]);
+      port_motor_current_list_[i]->write(static_cast<double>(motor_current_[i]));
       increment_[i] = hi_->get_increment(i);
-      port_motor_increment_list_[i]->write(increment_[i]);
+      port_motor_increment_list_[i]->write(static_cast<double>(increment_[i]));
       if (state_ != SERVOING) {
-        desired_position_out_list_[i]->write(desired_position_[i]);
+        desired_position_out_list_[i]->write(static_cast<double>(desired_position_[i]));
       }
     }
   }

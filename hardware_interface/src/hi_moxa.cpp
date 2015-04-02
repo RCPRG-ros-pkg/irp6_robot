@@ -93,7 +93,7 @@ void HI_moxa::init(std::vector<std::string> ports) {
   // inicjalizacja zmiennych
   NFComBuf.myAddress = NF_MasterAddress;
 
-  for (unsigned int drive_number = 0; drive_number <= MOXA_SERVOS_NR;
+  for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
     NFComBuf.ReadDeviceStatus.addr[drive_number] = 255;
     NFComBuf.ReadDeviceVitals.addr[drive_number] = 255;
@@ -169,7 +169,7 @@ void HI_moxa::init(std::vector<std::string> ports) {
 }
 
 void HI_moxa::reset_counters(void) {
-  for (int i = 0; i < last_drive_number; i++) {
+  for (int i = 0; i <= last_drive_number; i++) {
     servo_data[i].current_absolute_position = 0L;
     servo_data[i].previous_absolute_position = 0L;
     servo_data[i].current_position_inc = 0.0;
@@ -903,7 +903,7 @@ void HI_moxa::clear_buffer(int drive_number) {
 }
 
 uint16_t HI_moxa::convert_to_115(float input) {
-  uint16_t output;
+  uint16_t output = 0;
 
   if (input >= 1.0) {
     printf("convert_to_115 input bigger or equal then 1.0\n");
