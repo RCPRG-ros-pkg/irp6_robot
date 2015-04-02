@@ -263,7 +263,7 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
 // Read data from all drives
   for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
     read_needed[drive_number] = (all_hardware_read
-        || !all_hardware_read && receiveFail[drive_number]);
+        || (!all_hardware_read && receiveFail[drive_number]));
 
     if (read_needed[drive_number]) {
       //  rxCnt = 0;
