@@ -102,7 +102,8 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
   // Zmienne pomocnicze.
   double Nx, Ox, Ax, Px;
   double Ny, Oy, Ay, Py;
-  double Nz, Oz, Az, Pz;
+  // double Nz, Oz,
+  double Az, Pz;
   double s1, c1, s2, c2, s4, c4, s5, c5;
   double E, F, K, ro, G, H;
   double t6, t_ok;
@@ -110,10 +111,10 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
   // Przepisanie zmiennych.
   Nx = local_desired_end_effector_frame(0, 0);
   Ny = local_desired_end_effector_frame(1, 0);
-  Nz = local_desired_end_effector_frame(2, 0);
+  // Nz = local_desired_end_effector_frame(2, 0);
   Ox = local_desired_end_effector_frame(0, 1);
   Oy = local_desired_end_effector_frame(1, 1);
-  Oz = local_desired_end_effector_frame(2, 1);
+  // Oz = local_desired_end_effector_frame(2, 1);
   Ax = local_desired_end_effector_frame(0, 2);
   Ay = local_desired_end_effector_frame(1, 2);
   Az = local_desired_end_effector_frame(2, 2);

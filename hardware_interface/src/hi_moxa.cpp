@@ -1,3 +1,33 @@
+/*
+ * Copyright (c) 2014-2015, Robot Control and Pattern Recognition Group, Warsaw University of Technology.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Robot Control and Pattern Recognition Group,
+ *       Warsaw University of Technology nor the names of its contributors may
+ *       be used to endorse or promote products derived from this software
+ *       without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #include "hi_moxa.h"
 
 #include <sys/types.h>
@@ -9,8 +39,11 @@
 #include <stdexcept>
 #include <cstring>
 
-#include <iostream>
+#include <iostream> // NOLINT
 #include <cstdarg>
+
+#include <vector>
+#include <string>
 
 namespace hi_moxa {
 
@@ -25,16 +58,16 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
       all_hardware_read(true),
       longest_delay_(0),
       longest_read_delay_(0),
-      cycle_nr(0) {
+      cycle_nr(0),
+      error_msg_hardware_panic(0) {
 
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
-
     memset(servo_data + drive_number, 0, sizeof(servo_St));
     memset(oldtio + drive_number, 0, sizeof(termios));
     drive_buff[drive_number].rxCnt = 0;
     receiveFail[drive_number] = false;
-    //clear_buffer(drive_number);
+    // clear_buffer(drive_number);
   }
   memset(&NFComBuf, 0, sizeof(NF_STRUCT_ComBuf));
   memset(txBuf, 0, BUFF_SIZE);
@@ -114,7 +147,6 @@ void HI_moxa::init(std::vector<std::string> ports) {
 
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
-
     SerialPort[drive_number] = new SerialComm(port_names[drive_number].c_str(),
                                               BAUD);
     if (SerialPort[drive_number]->isConnected()) {
@@ -132,7 +164,7 @@ void HI_moxa::init(std::vector<std::string> ports) {
 
     receiveFailCnt[drive_number] = 0;
   }
-  //maxReceiveFailCnt = MAX_RECEIVE_FAIL_CNT;
+  // maxReceiveFailCnt = MAX_RECEIVE_FAIL_CNT;
   reset_counters();
 }
 
@@ -162,7 +194,7 @@ double HI_moxa::get_increment(int drive_number) {
   return ret;
 }
 
-long int HI_moxa::get_position(int drive_number) {
+int64_t HI_moxa::get_position(int drive_number) {
   int ret;
   ret = servo_data[drive_number].current_absolute_position;
   return ret;
@@ -185,16 +217,15 @@ void HI_moxa::set_pwm(int drive_number, double set_value) {
 }
 
 void HI_moxa::set_current(int drive_number, double set_value) {
-  NFComBuf.SetDrivesCurrent.data[drive_number] = (int) set_value;
+  NFComBuf.SetDrivesCurrent.data[drive_number] = static_cast<int>(set_value);
   servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
   NF_COMMAND_SetDrivesCurrent;
 }
 
 uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
-
   cycle_nr++;
 
-  static int accel_limit[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  // static int accel_limit[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
   static int valid_msr_nr[] = { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
       10, 10, 10, 10 };
@@ -227,13 +258,11 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
 
   // Read data from all drives
   for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
-
     read_needed[drive_number] = (all_hardware_read
         || !all_hardware_read && receiveFail[drive_number]);
 
     if (read_needed[drive_number]) {
-
-      //rxCnt = 0;
+      //  rxCnt = 0;
 //    while (1) {
 //      if (SerialPort[drive_number]->read(&(rxBuf[rxCnt]), 1) > 0
 //          && (rxCnt < 255)) {
@@ -264,10 +293,8 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
       receiveFailCnt[drive_number]++;
       receiveFail[drive_number] = true;
       for (int i = 0; i < bytes_received; i++) {
-
         drive_buff[drive_number].rxBuf[drive_buff[drive_number].rxCnt] =
             receive_buffer[i];
-
         if (NF_Interpreter(&NFComBuf, drive_buff[drive_number].rxBuf,
                            &drive_buff[drive_number].rxCnt, rxCommandArray,
                            &rxCommandCnt) > 0) {
@@ -295,13 +322,15 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
          */
 
         valid_msr_nr[drive_number] = 0;
-        if ((int) receiveFailCnt[drive_number] > timeouts_to_print) {
-          std::cout << "[warn] extra receive time: drive " << (int) drive_number
-                    << " event " << (int) receiveFailCnt[drive_number]
+        if (static_cast<int>(receiveFailCnt[drive_number])
+            > timeouts_to_print) {
+          std::cout << "[warn] extra receive time: drive "
+                    << static_cast<int>(drive_number) << " event "
+                    << static_cast<int>(receiveFailCnt[drive_number])
                     << " bytes_received: " << bytes_received << " cycle: "
                     << cycle_nr << std::endl;
         }
-        //}
+        // }
       }
 
       if (receive_success) {
@@ -312,7 +341,7 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
           //   std::cout << "[error] timeout in " << (int) receive_attempts << " communication cycle on drives";
         }
         // std::cout << " " << (int) drive_number << "(" << port_names[drive_number].c_str() << ")";
-        //break;
+        // break;
       }
     }
   }
@@ -351,7 +380,7 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
     if (comm_timeouts[drive_number] >= MAX_COMM_TIMEOUTS) {
       hardware_panic = true;
       temp_message << "[error] multiple communication timeouts on drive "
-                   << (int) drive_number << "("
+                   << static_cast<int>(drive_number) << "("
                    << port_names[drive_number].c_str() << "): limit = "
                    << MAX_COMM_TIMEOUTS << std::endl;
       // master.msg->message(lib::FATAL_ERROR, temp_message.str());
@@ -391,7 +420,7 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
         servo_data[drive_number].first_hardware_reads--;
       }
 
-      double cpi = (double) rdp
+      double cpi = static_cast<double>(rdp)
           - servo_data[drive_number].previous_absolute_position;
 
       // pierwszy pomiar jest spóźniony więc nadal interpolujemy
@@ -400,13 +429,12 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
             servo_data[drive_number].previous_absolute_position
                 + servo_data[drive_number].current_position_inc;
       } else {
-
         servo_data[drive_number].current_position_inc = cpi;
         servo_data[drive_number].current_absolute_position = rdp;
       }
 
       if ((robot_synchronized)
-          && ((int) ridiculous_increment[drive_number] != 0)) {
+          && (static_cast<int>(ridiculous_increment[drive_number]) != 0)) {
         /*if (drive_number == 0) {
 
          std::cout << "inc: " << servo_data[drive_number].current_position_inc << " cur: "
@@ -422,9 +450,9 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
           hardware_panic = true;
           temp_message << std::endl << RED
                        << "[error] RIDICOLOUS INCREMENT on drive "
-                       << (int) drive_number << ", "
+                       << static_cast<int>(drive_number) << ", "
                        << port_names[drive_number].c_str() << ", c.cycle "
-                       << (int) receive_attempts << ": read = "
+                       << static_cast<int>(receive_attempts) << ": read = "
                        << servo_data[drive_number].current_position_inc
                        << ", max = " << ridiculous_increment[drive_number]
                        << RESET << std::endl << std::endl;
@@ -439,7 +467,7 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
         if (error_msg_overcurrent == 0) {
           // master.msg->message(lib::NON_FATAL_ERROR, "Overcurrent");
           std::cout << std::endl << RED << "[error] OVERCURRENT on drive "
-                    << (int) drive_number << ", "
+                    << static_cast<int>(drive_number) << ", "
                     << port_names[drive_number].c_str() << ": read = "
                     << NFComBuf.ReadDrivesCurrent.data[drive_number] << "mA"
                     << RESET << std::endl << std::endl;
@@ -453,8 +481,10 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
         hardware_panic = true;
         if (error_limit_switch == 0) {
           // master.msg->message(lib::NON_FATAL_ERROR, "Overcurrent");
-          std::cout << std::endl << RED << "[error] UPPER LIMIT SWITCH on drive "
-                    << (int) drive_number << RESET << std::endl << std::endl;
+          std::cout << std::endl << RED
+                    << "[error] UPPER LIMIT SWITCH on drive "
+                    << static_cast<int>(drive_number) << RESET << std::endl
+                    << std::endl;
           error_limit_switch++;
         }
       }
@@ -465,14 +495,15 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
         hardware_panic = true;
         if (error_limit_switch == 0) {
           // master.msg->message(lib::NON_FATAL_ERROR, "Overcurrent");
-          std::cout << std::endl << RED << "[error] LOWER LIMIT SWITCH on drive "
-                    << (int) drive_number << RESET << std::endl << std::endl;
+          std::cout << std::endl << RED
+                    << "[error] LOWER LIMIT SWITCH on drive "
+                    << static_cast<int>(drive_number) << RESET << std::endl
+                    << std::endl;
           error_limit_switch++;
         }
       }
 
     } else {
-
       // jak nie odbierzemy biezacej pozycji to zakladamy, ze robot porusza sie ze stala predkoscia
       // wygladza to trajektorie w sytuacji zaklocen w komunikacji z kartami,
       // gdyz wczesniej zakladala sie wowczas bezruch
@@ -481,7 +512,6 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
           servo_data[drive_number].previous_absolute_position
               + servo_data[drive_number].current_position_inc;
       valid_msr_nr[drive_number] = 0;
-
     }
   }
 
@@ -529,12 +559,9 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
     status_disp_cnt = 0;
   }
   return ret;
-
 }
 
 uint64_t HI_moxa::write_hardware(void) {
-
-  static int error_msg_hardware_panic = 0;
   uint64_t ret = 0;
   uint8_t drive_number;
 // static std::stringstream temp_message;
@@ -572,10 +599,9 @@ uint64_t HI_moxa::write_hardware(void) {
   } else {
     // przygotowanie pod test zablokowania komunikacji po bledzie
     if (all_hardware_read)
-    //if (1)
-    {
-
-      // Make command frames and send them to drives
+    // if (1)
+    {  // NOLINT
+       // Make command frames and send them to drives
       for (drive_number = 0; drive_number <= last_drive_number;
           drive_number++) {
         // Set communication requests
@@ -602,7 +628,6 @@ uint64_t HI_moxa::write_hardware(void) {
 
       for (drive_number = 0; drive_number <= last_drive_number;
           drive_number++) {
-
         // Send command frame
         if (receiveFailCnt[drive_number] == 0)
           SerialPort[drive_number]->write(
@@ -627,7 +652,6 @@ uint64_t HI_moxa::write_hardware(void) {
       }
     } else {
       // std::cout << "write hardware !all_hardware_read " << std::endl;
-
     }
   }
 
@@ -636,34 +660,31 @@ uint64_t HI_moxa::write_hardware(void) {
 }
 
 // do communication cycle
-uint64_t HI_moxa::write_read_hardware(long int nsec, int timeouts_to_print) {
-
+uint64_t HI_moxa::write_read_hardware(uint64_t nsec,
+                                      uint64_t timeouts_to_print) {
   struct timespec start_time, current_time, read_time;
   clock_gettime(CLOCK_MONOTONIC, &start_time);
 
   uint64_t ret;
   if ((ret = write_hardware()) != 0) {
-
     clock_gettime(CLOCK_MONOTONIC, &current_time);
-
-    long int current_delay = (current_time.tv_sec - start_time.tv_sec)
+    int64_t current_delay = (current_time.tv_sec - start_time.tv_sec)
         * 1000000000 + (current_time.tv_nsec - start_time.tv_nsec);
 
     if (current_delay > longest_delay_) {
-
       longest_delay_ = current_delay;
-      //  std::cout << std::dec << "longest_delay_: " << longest_delay_ << std::endl;
+//  std::cout << std::dec << "longest_delay_: " << longest_delay_ << std::endl;
     }
 
     struct timespec delay;
     delay.tv_nsec = nsec;
     delay.tv_sec = 0;
 
-    // clock_nanosleep(CLOCK_MONOTONIC,0, &delay, NULL);
+// clock_nanosleep(CLOCK_MONOTONIC,0, &delay, NULL);
 
     nanosleep(&delay, NULL);
 
-    // std::cout << std::dec << "longest_delay_: " << longest_delay_ << std::endl;
+// std::cout << std::dec << "longest_delay_: " << longest_delay_ << std::endl;
     /*
      hi_sleep(nsec);
      */
@@ -671,14 +692,13 @@ uint64_t HI_moxa::write_read_hardware(long int nsec, int timeouts_to_print) {
     ret = read_hardware(timeouts_to_print);
     clock_gettime(CLOCK_MONOTONIC, &read_time);
 
-    long int read_delay = (read_time.tv_sec - current_time.tv_sec) * 1000000000
+    int64_t read_delay = (read_time.tv_sec - current_time.tv_sec) * 1000000000
         + (read_time.tv_nsec - current_time.tv_nsec);
 
     if (read_delay > longest_read_delay_) {
       longest_read_delay_ = read_delay;
-      //  std::cout << std::dec << "longest_read_delay_: " << longest_read_delay_    << std::endl;
+//  std::cout << std::dec << "longest_read_delay_: " << longest_read_delay_    << std::endl;
     }
-
   }
 
 // std::cout <<"write_read_hardware ret: " << ret << std::endl;
@@ -728,7 +748,7 @@ int HI_moxa::set_parameter_now(int drive_number, const int parameter, ...) {
       break;
     default:
       std::cout << "[error] HI_moxa::set_parameter_now() invalid parameter "
-                << (int) parameter << std::endl;
+                << static_cast<int>(parameter) << std::endl;
       return -1;
       break;
   }
@@ -777,7 +797,6 @@ int HI_moxa::set_parameter_now(int drive_number, const int parameter, ...) {
         if (NF_Interpreter(&NFComBuf, drive_buff[drive_number].rxBuf,
                            &drive_buff[drive_number].rxCnt, rxCommandArray,
                            &rxCommandCnt) > 0) {
-          // TODO: Check status;
           drive_buff[drive_number].rxCnt = 0;
           return 0;
         }
@@ -797,12 +816,13 @@ int HI_moxa::set_parameter_now(int drive_number, const int parameter, ...) {
 void HI_moxa::start_synchro(int drive_number) {
   if (NFComBuf.SetDrivesMode.data[drive_number] == NF_DrivesMode_PWM)
     NFComBuf.SetDrivesMode.data[drive_number] = NF_DrivesMode_SYNC_PWM0;
-  else if (NFComBuf.SetDrivesMode.data[drive_number] == NF_DrivesMode_CURRENT)
+  else if (NFComBuf.SetDrivesMode.data[drive_number] == NF_DrivesMode_CURRENT) {
     NFComBuf.SetDrivesMode.data[drive_number] = NF_DrivesMode_SYNC_CURRENT0;
-  else {
+  } else {
     hardware_panic = true;
     std::stringstream temp_message;
-    temp_message << "[error] unknown mode on drive " << (int) drive_number
+    temp_message << "[error] unknown mode on drive "
+                 << static_cast<int>(drive_number)
                  << " when start_synchro() called" << std::endl;
     std::cout << temp_message.str();
   }
@@ -816,12 +836,13 @@ void HI_moxa::finish_synchro(int drive_number) {
   if (NFComBuf.SetDrivesMode.data[drive_number] == NF_DrivesMode_SYNC_PWM0)
     NFComBuf.SetDrivesMode.data[drive_number] = NF_DrivesMode_PWM;
   else if (NFComBuf.SetDrivesMode.data[drive_number]
-      == NF_DrivesMode_SYNC_CURRENT0)
+      == NF_DrivesMode_SYNC_CURRENT0) {
     NFComBuf.SetDrivesMode.data[drive_number] = NF_DrivesMode_CURRENT;
-  else {
+  } else {
     hardware_panic = true;
     std::stringstream temp_message;
-    temp_message << "[error] unknown mode on drive " << (int) drive_number
+    temp_message << "[error] unknown mode on drive "
+                 << static_cast<int>(drive_number)
                  << " when finish_synchro() called" << std::endl;
     std::cout << temp_message.str();
   }
@@ -860,8 +881,9 @@ bool HI_moxa::drive_synchronized(int drive_number) {
   if ((NFComBuf.ReadDrivesStatus.data[drive_number]
       & NF_DrivesStatus_Synchronized) == 0) {
     return false;
-  } else
+  } else {
     return true;
+  }
 }
 
 void HI_moxa::reset_position(int drive_number) {
@@ -890,12 +912,12 @@ uint16_t HI_moxa::convert_to_115(float input) {
     printf("convert_to_115 input lower then -1.0\n");
     return 0;
   } else if (input < 0.0) {
-    output = 65535 + (int) (input * 32768.0);
+    output = 65535 + static_cast<int>(input * 32768.0);
   } else if (input >= 0.0) {
     output = (uint16_t) (input * 32768.0);
   }
   return output;
 }
 
-}
+}  // namespace hi_moxa
 

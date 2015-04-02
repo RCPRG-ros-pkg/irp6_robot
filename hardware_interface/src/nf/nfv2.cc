@@ -47,7 +47,7 @@ uint8_t NF_Interpreter(NF_STRUCT_ComBuf *NFComBuf, uint8_t *rxBuf,
   static uint8_t n;
   uint8_t rxAddress, rxParamsCnt;
   uint8_t rxBufIter, combufDataIter, rxDataIter, dataBytesIter;
-  uint8_t *dataPt, *u8TempPt;
+  uint8_t *u8TempPt;
 
   if ((*rxPt) == 0 && rxBuf[0] != '#') {
     return 0;
@@ -80,7 +80,7 @@ uint8_t NF_Interpreter(NF_STRUCT_ComBuf *NFComBuf, uint8_t *rxBuf,
   rxBufIter = 4;  //  First  command  starts  here
   *commandCnt = 0;
   while (rxBufIter < n) {
-    dataPt = rxBuf + rxBufIter + 2;
+    uint8_t *dataPt = rxBuf + rxBufIter + 2;
 
     //  ###############  "WRITE"  Type  Commands
     //  if  rxAddress  ==  NFComBuf->myAddress  ||  rxAddress  ==  NF_BroadcastAddress
@@ -1093,7 +1093,7 @@ uint8_t NF_MakeCommandFrame(NF_STRUCT_ComBuf *NFComBuf, uint8_t *txBuf,
                             uint8_t txAddress) {
   uint8_t txBufIter, commandIter, txDataIter, combufDataIter, dataBytesIter;
 
-  uint8_t *dataPt;
+
   uint8_t *u8TempPt;
 
   txBuf[0] = '#';
@@ -1104,7 +1104,7 @@ uint8_t NF_MakeCommandFrame(NF_STRUCT_ComBuf *NFComBuf, uint8_t *txBuf,
 
   while (commandIter < commandCnt) {
 
-    dataPt = txBuf + txBufIter + 2;
+    uint8_t * dataPt = txBuf + txBufIter + 2;
 
     //  ######## Drives
     //  ####  Set  Mode
