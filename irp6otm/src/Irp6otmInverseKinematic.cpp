@@ -1,6 +1,35 @@
-// Copyright WUT 2014
-#include <rtt/Component.hpp>
+/*
+ * Copyright (c) 2014-2015, Robot Control and Pattern Recognition Group, Warsaw University of Technology.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Robot Control and Pattern Recognition Group,
+ *       Warsaw University of Technology nor the names of its contributors may
+ *       be used to endorse or promote products derived from this software
+ *       without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 
+#include <rtt/Component.hpp>
+#include <string>
 #include "Irp6otmInverseKinematic.h"
 #include "eigen_conversions/eigen_msg.h"
 
@@ -18,15 +47,12 @@ Irp6otmInverseKinematic::Irp6otmInverseKinematic(const std::string& name)
 
   this->ports()->addPort("InputWristPose", port_input_wrist_pose_);
   this->ports()->addPort("InputEndEffectorPose", port_input_end_effector_pose_);
-
 }
 
 Irp6otmInverseKinematic::~Irp6otmInverseKinematic() {
-
 }
 
 bool Irp6otmInverseKinematic::configureHook() {
-
   /* -----------------------------------------------------------------------
    Dlugosci czlonow robota [m].
    ------------------------------------------------------------------------- */
@@ -40,18 +66,13 @@ bool Irp6otmInverseKinematic::configureHook() {
   local_current_joints_tmp_.resize(NUMBER_OF_SERVOS);
 
   if (port_tool_.read(tool_msgs_) == RTT::NewData) {
-
     return false;
-
   }
-
   return true;
 }
 
 void Irp6otmInverseKinematic::updateHook() {
-
   if (port_input_wrist_pose_.read(wrist_pose_) == RTT::NewData) {
-
     Eigen::Affine3d trans;
     tf::poseMsgToEigen(wrist_pose_, trans);
 
@@ -64,7 +85,6 @@ void Irp6otmInverseKinematic::updateHook() {
 
   } else if (port_input_end_effector_pose_.read(end_effector_pose_)
       == RTT::NewData) {
-
     port_tool_.read(tool_msgs_);
 
     Eigen::Affine3d tool;
@@ -88,8 +108,6 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
     const Eigen::VectorXd& local_current_joints,
     const Eigen::Affine3d& local_desired_end_effector_frame,
     Eigen::VectorXd* local_desired_joints) {
-
-
   // poprawka w celu uwzglednienia konwencji DH
   local_current_joints_tmp_ = local_current_joints;
 
@@ -228,7 +246,7 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
     }
 
     (*local_desired_joints)[4] = t_ok;
-  } //: else
+  }  // else
 
   // Wyliczenie Theta2.
   c4 = cos((*local_desired_joints)[4]);
@@ -254,7 +272,6 @@ void Irp6otmInverseKinematic::inverse_kinematics_single_iteration(
   // poprawka w celu dostosowania do konwencji DH
   (*local_desired_joints)[3] -= (*local_desired_joints)[2] + M_PI_2;
   (*local_desired_joints)[4] -= (*local_desired_joints)[3] + (*local_desired_joints)[2] + M_PI_2;
-
 }
 
 ORO_CREATE_COMPONENT(Irp6otmInverseKinematic)
