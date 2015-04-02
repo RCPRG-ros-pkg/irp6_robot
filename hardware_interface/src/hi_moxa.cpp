@@ -48,21 +48,22 @@
 namespace hi_moxa {
 
 HI_moxa::HI_moxa(unsigned int numberOfDrivers,
-                 std::vector<unsigned int> card_addresses,
-                 std::vector<double> max_increments, int tx_prefix_len)
-    : howMuchItSucks(tx_prefix_len),
-      last_drive_number(numberOfDrivers),
-      drives_addresses(card_addresses),
-      ridiculous_increment(max_increments),
-      hardware_panic(false),
-      all_hardware_read(true),
-      longest_delay_(0),
-      longest_read_delay_(0),
-      cycle_nr(0),
-      error_msg_hardware_panic(0),
-      SerialPort { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-          NULL, NULL, NULL, NULL, NULL, NULL },
-      receiveFailCnt { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } {
+    std::vector<unsigned int> card_addresses,
+    std::vector<double> max_increments, int tx_prefix_len)
+: howMuchItSucks(tx_prefix_len),
+last_drive_number(numberOfDrivers),
+drives_addresses(card_addresses),
+ridiculous_increment(max_increments),
+hardware_panic(false),
+all_hardware_read(true),
+longest_delay_(0),
+longest_read_delay_(0),
+cycle_nr(0),
+      error_msg_hardware_panic(0)
+// SerialPort { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+// NULL, NULL, NULL, NULL, NULL, NULL},
+// receiveFailCnt { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+{
 
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
@@ -75,7 +76,7 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
   memset(&NFComBuf, 0, sizeof(NF_STRUCT_ComBuf));
   memset(txBuf, 0, BUFF_SIZE);
   txCnt = 0;
-  // memset(rxBuf, 0, BUFF_SIZE);
+// memset(rxBuf, 0, BUFF_SIZE);
 
   memset(rxCommandArray, 0, BUFF_SIZE);
   rxCommandCnt = 0;
@@ -87,13 +88,13 @@ HI_moxa::~HI_moxa() {
 void HI_moxa::init(std::vector<std::string> ports) {
   port_names = ports;
 
-  // inicjalizacja crcTable[]
+// inicjalizacja crcTable[]
   NFv2_CrcInit();
 
-  // zerowanie danych i ustawienie neutralnych adresow
+// zerowanie danych i ustawienie neutralnych adresow
   NF_ComBufReset(&NFComBuf);
 
-  // inicjalizacja zmiennych
+// inicjalizacja zmiennych
   NFComBuf.myAddress = NF_MasterAddress;
 
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
@@ -167,7 +168,7 @@ void HI_moxa::init(std::vector<std::string> ports) {
 
     receiveFailCnt[drive_number] = 0;
   }
-  // maxReceiveFailCnt = MAX_RECEIVE_FAIL_CNT;
+// maxReceiveFailCnt = MAX_RECEIVE_FAIL_CNT;
   reset_counters();
 }
 
@@ -213,7 +214,7 @@ void HI_moxa::set_current_mode(int drive_number) {
 }
 
 void HI_moxa::set_pwm(int drive_number, double set_value) {
-  // sklaowanie w celu dostosowania do starych regulatorow pozycyjnych
+// sklaowanie w celu dostosowania do starych regulatorow pozycyjnych
   NFComBuf.SetDrivesPWM.data[drive_number] = set_value * (1000.0 / 255.0);
   servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
   NF_COMMAND_SetDrivesPWM;
@@ -228,13 +229,13 @@ void HI_moxa::set_current(int drive_number, double set_value) {
 uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
   cycle_nr++;
 
-  // static int accel_limit[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+// static int accel_limit[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
   static int valid_msr_nr[] = { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
       10, 10, 10, 10 };
 
   static int64_t receive_attempts = 0;
-  // UNUSED: static int64_t receive_timeouts = 0;
+// UNUSED: static int64_t receive_timeouts = 0;
   static int error_msg_power_stage = 0;
 
   static int error_msg_overcurrent = 0;
@@ -255,11 +256,11 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
 
   receive_attempts++;
 
-  // Tu kiedys byl SELECT
+// Tu kiedys byl SELECT
   bool current_all_hardware_read = true;
   bool read_needed[MOXA_SERVOS_NR];
 
-  // Read data from all drives
+// Read data from all drives
   for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
     read_needed[drive_number] = (all_hardware_read
         || !all_hardware_read && receiveFail[drive_number]);
