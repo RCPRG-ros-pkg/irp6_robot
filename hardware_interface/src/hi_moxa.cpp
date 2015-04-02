@@ -59,7 +59,10 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
       longest_delay_(0),
       longest_read_delay_(0),
       cycle_nr(0),
-      error_msg_hardware_panic(0) {
+      error_msg_hardware_panic(0),
+      SerialPort { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+          NULL, NULL, NULL, NULL, NULL, NULL },
+      receiveFailCnt { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } {
 
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
