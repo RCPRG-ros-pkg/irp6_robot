@@ -63,8 +63,7 @@ cycle_nr(0),
 // SerialPort { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 // NULL, NULL, NULL, NULL, NULL, NULL},
 // receiveFailCnt { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-{
-
+{ // NOLINT
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
     memset(servo_data + drive_number, 0, sizeof(servo_St));

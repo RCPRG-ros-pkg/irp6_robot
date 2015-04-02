@@ -36,8 +36,7 @@
 Irp6pmJ2M::Irp6pmJ2M(const std::string& name)
     : RTT::TaskContext(name, PreOperational)
 //   SYNCHRO_JOINT_POSITION { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }
-{
-
+{ // NOLINT
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("JointPosition", port_joint_position_);
 
