@@ -35,6 +35,7 @@
 #include <rtt/extras/SlaveActivity.hpp>
 
 #include <Eigen/Dense>
+#include <string>
 
 #include "HardwareInterface.h"
 
@@ -213,7 +214,6 @@ bool HardwareInterface::configureHook() {
   try {
     struct timespec delay;
     if (!test_mode_) {
-
       char hostname[128];
       if (gethostname(hostname, sizeof(hostname)) == -1) {
         perror("gethostname()");
@@ -291,7 +291,7 @@ uint16_t HardwareInterface::convert_to_115(float input) {
     printf("convert_to_115 input lower then -1.0\n");
     return 0;
   } else if (input < 0.0) {
-    output = 65535 + (int) (input * 32768.0);
+    output = 65535 + static_cast<int> (input * 32768.0);
   } else if (input >= 0.0) {
     output = (uint16_t) (input * 32768.0);
   }
@@ -315,7 +315,7 @@ bool HardwareInterface::startHook() {
       hi_->write_read_hardware(rwh_nsec_, 0);
       servo_start_iter_ = 200;
       for (int i = 0; i < number_of_drives_; i++) {
-        motor_position_(i) = (double) hi_->get_position(i)
+        motor_position_(i) = static_cast<double> (hi_->get_position(i))
             * ((2.0 * M_PI) / enc_res_[i]);
       }
       if (!hi_->robot_synchronized()) {
@@ -340,8 +340,8 @@ bool HardwareInterface::startHook() {
 
         for (int i = 0; i < number_of_drives_; i++) {
           motor_position_command_(i) = motor_position_(i);
-          motor_increment_(i) = (double) hi_->get_increment(i);
-          motor_current_(i) = (double) hi_->get_current(i);
+          motor_increment_(i) = static_cast<double>  (hi_->get_increment(i));
+          motor_current_(i) = static_cast<double>  (hi_->get_current(i));
         }
 
         state_ = PRE_SERVOING;
@@ -365,7 +365,6 @@ bool HardwareInterface::startHook() {
   }
 
   for (int i = 0; i < number_of_drives_; i++) {
-
     port_motor_position_list_[i]->write(motor_position_[i]);
     port_motor_increment_list_[i]->write(motor_increment_[i]);
     port_motor_current_list_[i]->write(motor_current_[i]);
@@ -375,7 +374,6 @@ bool HardwareInterface::startHook() {
 }
 
 void HardwareInterface::updateHook() {
-
   static int iteration_nr = 0;
 
   iteration_nr++;
@@ -386,7 +384,6 @@ void HardwareInterface::updateHook() {
         RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
       }
       if (current_mode_[i]) {
-
         hi_->set_current(i, pwm_or_current_[i]);
       } else {
         hi_->set_pwm(i, pwm_or_current_[i]);
@@ -394,7 +391,7 @@ void HardwareInterface::updateHook() {
     }
     hi_->write_read_hardware(rwh_nsec_, timeouts_to_print_);
     for (int i = 0; i < number_of_drives_; i++) {
-      motor_position_(i) = (double) hi_->get_position(i)
+      motor_position_(i) = static_cast<double> (hi_->get_position(i))
           * ((2.0 * M_PI) / enc_res_[i]);
     }
   } else {
@@ -413,7 +410,6 @@ void HardwareInterface::updateHook() {
           motor_position_command_(i) = motor_position_(i);
           port_motor_position_list_[i]->write(motor_position_[i]);
         }
-
       }
 
       if ((servo_start_iter_--) <= 0) {
@@ -429,25 +425,19 @@ void HardwareInterface::updateHook() {
         if (port_motor_position_command_list_[i]->read(
             motor_position_command_[i]) == RTT::NewData) {
           desired_position_[i] = motor_position_command_(i);
-
         }
 
         if (!test_mode_) {
-
           port_motor_position_list_[i]->write(motor_position_[i]);
-
         } else {
           motor_position_(i) = motor_position_command_(i);
-
           port_motor_position_list_[i]->write(motor_position_[i]);
         }
-
       }
 
       break;
 
     case PRE_SYNCHRONIZING:
-
       if ((synchro_start_iter_--) <= 0) {
         state_ = SYNCHRONIZING;
         std::cout << "Synchronization started" << std::endl;
@@ -455,7 +445,6 @@ void HardwareInterface::updateHook() {
       break;
 
     case SYNCHRONIZING:
-
       switch (synchro_state_) {
         case MOVE_TO_SYNCHRO_AREA:
 
@@ -475,7 +464,6 @@ void HardwareInterface::updateHook() {
                   synchro_step_coarse_[synchro_drive_];
             }
           } else {
-
             hi_->set_parameter_now(synchro_drive_, NF_COMMAND_SetDrivesMisc,
             NF_DrivesMisc_SetSynchronized);
             hi_->reset_position(synchro_drive_);
@@ -507,7 +495,6 @@ void HardwareInterface::updateHook() {
                                  << RTT::endlog();
             desired_position_[synchro_drive_] +=
                 synchro_step_fine_[synchro_drive_];
-
           }
           break;
 
@@ -537,7 +524,6 @@ void HardwareInterface::updateHook() {
         case SYNCHRO_END:
 
           if ((synchro_stop_iter_--) == 1) {
-
             for (int i = 0; i < number_of_drives_; i++) {
               motor_position_command_(i) = motor_position_(i);
               desired_position_[i] = motor_position_(i);
@@ -556,7 +542,6 @@ void HardwareInterface::updateHook() {
   }
 
   if (!test_mode_) {
-
     bool emergency_stop;
     if (port_emergency_stop_.read(emergency_stop) == RTT::NewData) {
       if (emergency_stop) {
@@ -565,7 +550,7 @@ void HardwareInterface::updateHook() {
     }
 
     for (int i = 0; i < number_of_drives_; i++) {
-      motor_current_(i) = (double) hi_->get_current(i);
+      motor_current_(i) = static_cast<double> (hi_->get_current(i));
       port_motor_current_list_[i]->write(motor_current_[i]);
       increment_[i] = hi_->get_increment(i);
       port_motor_increment_list_[i]->write(increment_[i]);
