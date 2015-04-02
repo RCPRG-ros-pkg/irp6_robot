@@ -32,7 +32,7 @@
 #define FILECURRENTCONTROL_H_
 
 #include <vector>
-#include <fstream>
+#include <fstream> // NOLINT
 #include <string>
 
 class FileCurrentControl : public RTT::TaskContext {
