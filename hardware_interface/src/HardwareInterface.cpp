@@ -1,3 +1,33 @@
+/*
+ * Copyright (c) 2014-2015, Robot Control and Pattern Recognition Group, Warsaw University of Technology.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Robot Control and Pattern Recognition Group,
+ *       Warsaw University of Technology nor the names of its contributors may
+ *       be used to endorse or promote products derived from this software
+ *       without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
 #include <rtt/Component.hpp>
@@ -56,20 +86,16 @@ HardwareInterface::~HardwareInterface() {
 }
 
 bool HardwareInterface::configureHook() {
-
   for (size_t j = 0; j < HI_SERVOS_NR; j++) {
     if (std::find(active_motors_.begin(), active_motors_.end(),
                   hi_port_param_[j].label) != active_motors_.end()) {
-
       number_of_drives_++;
-
     }
-
   }
 
   // dynamic ports list initialization
 
- // std::cout << "number_of_drives_: " << number_of_drives_ << std::endl;
+// std::cout << "number_of_drives_: " << number_of_drives_ << std::endl;
 
   computedReg_in_list_.resize(number_of_drives_);
   desired_position_out_list_.resize(number_of_drives_);
@@ -90,12 +116,12 @@ bool HardwareInterface::configureHook() {
 
   int i = -1;
   for (size_t j = 0; j < HI_SERVOS_NR; j++) {
-  //  std::cout << "j: " << j << std::endl;
+    //  std::cout << "j: " << j << std::endl;
 
     if (std::find(active_motors_.begin(), active_motors_.end(),
-                    hi_port_param_[j].label) != active_motors_.end()) {
+                  hi_port_param_[j].label) != active_motors_.end()) {
       i++;
-    //  std::cout << "i: " << i << std::endl;
+      //  std::cout << "i: " << i << std::endl;
       char computedReg_in_port_name[32];
       snprintf(computedReg_in_port_name, sizeof(computedReg_in_port_name),
                "computedReg_in_%s", hi_port_param_[j].label.c_str());
@@ -194,13 +220,11 @@ bool HardwareInterface::configureHook() {
         hostname[0] = '\0';
       }
 
-      if (std::string(hostname)!= hardware_hostname_){
-        std::cout
-              << std::endl << RED
-              << "[error] ERROR wrong host_name for hardware_mode"
-                         <<RESET <<std::endl <<std::endl;
+      if (std::string(hostname) != hardware_hostname_) {
+        std::cout << std::endl << RED
+                  << "[error] ERROR wrong host_name for hardware_mode" << RESET
+                  << std::endl << std::endl;
       }
-
 
       std::cout << "hostname: " << hostname << std::endl;
 
@@ -227,12 +251,12 @@ bool HardwareInterface::configureHook() {
       }
     }
   } catch (std::exception& e) {
-    log(Info) << e.what() << endlog();
+    log(RTT::Info) << e.what() << RTT::endlog();
 
     std::cout
         << std::endl << RED
         << "[error] ERROR configuring HardwareInterface, check power switches"
-        <<RESET <<std::endl <<std::endl;
+        << RESET << std::endl << std::endl;
 
     return false;
   }
@@ -347,7 +371,6 @@ bool HardwareInterface::startHook() {
     port_motor_current_list_[i]->write(motor_current_[i]);
     desired_position_[i] = motor_position_(i);
   }
-
   return true;
 }
 
@@ -359,7 +382,7 @@ void HardwareInterface::updateHook() {
 
   if (!test_mode_) {
     for (int i = 0; i < number_of_drives_; i++) {
-      if (NewData != computedReg_in_list_[i]->read(pwm_or_current_[i])) {
+      if (RTT::NewData != computedReg_in_list_[i]->read(pwm_or_current_[i])) {
         RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
       }
       if (current_mode_[i]) {
