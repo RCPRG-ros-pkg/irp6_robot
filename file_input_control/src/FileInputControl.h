@@ -56,8 +56,7 @@ class FileInputControl : public RTT::TaskContext {
   std::string input_type_;
   std::string filename_;
 
-  enum e_type
-  {
+  enum e_type {
     defalt,
     current,
     increment

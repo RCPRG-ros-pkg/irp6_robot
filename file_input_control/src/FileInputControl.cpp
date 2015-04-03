@@ -14,32 +14,32 @@
 const int MAX_PWM = 190;
 
 FileInputControl::FileInputControl(const std::string& name)
-: TaskContext(name),
-  desired_position_("DesiredPosition"),
-  deltaInc_in("deltaInc_in"),
-  computedPwm_out("computedPwm_out"),
-  synchro_state_in_("SynchroStateIn"),
-  emergency_stop_out_("EmergencyStopOut"),
-  a_(0.0),
-  b0_(0.0),
-  b1_(0.0),
-  delta_eint_old(0.0),
-  delta_eint(0.0),
-  deltaIncData(0.0),
-  output_value(0.0),
-  desired_position_increment_(0.0),
-  position_increment_new(0.0),
-  position_increment_old(0.0),
-  set_value_new(0.0),
-  set_value_old(0.0),
-  set_value_very_old(0.0),
-  step_new(0.0),
-  step_old(0.0),
-  step_old_pulse(0.0),
-  update_hook_iteration_number_(0),
-  new_position_iteration_number_(0),
-  synchro_state_old_(false),
-  max_desired_increment_(0.0) {
+    : TaskContext(name),
+      desired_position_("DesiredPosition"),
+      deltaInc_in("deltaInc_in"),
+      computedPwm_out("computedPwm_out"),
+      synchro_state_in_("SynchroStateIn"),
+      emergency_stop_out_("EmergencyStopOut"),
+      a_(0.0),
+      b0_(0.0),
+      b1_(0.0),
+      delta_eint_old(0.0),
+      delta_eint(0.0),
+      deltaIncData(0.0),
+      output_value(0.0),
+      desired_position_increment_(0.0),
+      position_increment_new(0.0),
+      position_increment_old(0.0),
+      set_value_new(0.0),
+      set_value_old(0.0),
+      set_value_very_old(0.0),
+      step_new(0.0),
+      step_old(0.0),
+      step_old_pulse(0.0),
+      update_hook_iteration_number_(0),
+      new_position_iteration_number_(0),
+      synchro_state_old_(false),
+      max_desired_increment_(0.0) {
 
   this->addEventPort(desired_position_).doc(
       "Receiving a value of position step");
@@ -78,8 +78,7 @@ bool FileInputControl::configureHook() {
   desired_position_old_ = desired_position_new_ = 0.0;
 
   char cCurrentPath[FILENAME_MAX];
-  if (!getcwd(cCurrentPath, sizeof(cCurrentPath)))
-  {
+  if (!getcwd(cCurrentPath, sizeof(cCurrentPath))) {
     return errno;
   }
 
@@ -89,26 +88,24 @@ bool FileInputControl::configureHook() {
   filename = filename.erase(ros) + filename_;
   ifstream file(filename.c_str());
 
-  if (file.is_open())
-  {
+  if (file.is_open()) {
     std::string line;
 
-    while ( getline (file,line) )
-    {
+    while (getline(file, line)) {
       inputs.push_back(strtol(line.c_str(), NULL, 10));
     }
 
     file.close();
-  }
-  else
-  {
+  } else {
     inputs.resize(1);
     inputs[0] = 0;
   }
   idx = 0;
   type = defalt;
-  if (input_type_=="current") type = current;
-  if (input_type_=="increment") type = increment;
+  if (input_type_ == "current")
+    type = current;
+  if (input_type_ == "increment")
+    type = increment;
 
   return true;
 
@@ -141,7 +138,7 @@ void FileInputControl::updateHook() {
 
     desired_position_increment_ =
         (desired_position_new_ - desired_position_old_)
-        * (enc_res_ / (2.0 * M_PI));
+            * (enc_res_ / (2.0 * M_PI));
 
     if (fabs(desired_position_increment_) > max_desired_increment_) {
       std::cout << "very high pos_inc_: " << reg_number_ << " pos_inc: "
@@ -154,8 +151,7 @@ void FileInputControl::updateHook() {
 
     if (!debug_) {
       int output;
-      if (synchro_state_old_)
-      {
+      if (synchro_state_old_) {
         switch (type) {
           case current:
             output = doServo_fcc(desired_position_increment_, deltaIncData);
@@ -167,8 +163,7 @@ void FileInputControl::updateHook() {
             output = doServo(desired_position_increment_, deltaIncData);
             break;
         }
-      }
-      else{
+      } else {
         output = doServo(desired_position_increment_, deltaIncData);
       }
       /*
@@ -244,7 +239,7 @@ int FileInputControl::doServo(double step_new, int pos_inc) {
   }
 
   if (debug_) {
-    //   std::cout << "output_value: " << output_value << std::endl;
+    std::cout << "output_value: " << output_value << std::endl;
   }
 
   // przepisanie nowych wartosci zmiennych do zmiennych przechowujacych wartosci poprzednie
@@ -279,13 +274,10 @@ int FileInputControl::doServo_fic(double step_new, int pos_inc) {
 
   double step_new_pulse;  // nastepna wartosc zadana dla jednego kroku regulacji
 
-  if (idx < inputs.size())
-  {
+  if (idx < inputs.size()) {
     step_new_pulse = inputs[idx];
     ++idx;
-  }
-  else
-  {
+  } else {
     step_new_pulse = 0;
     idx = 0;
   }
@@ -311,26 +303,19 @@ int FileInputControl::doServo_fic(double step_new, int pos_inc) {
   if (set_value_new < -MAX_PWM)
     set_value_new = -MAX_PWM;
 
-  if (current_mode_)
-  {
+  if (current_mode_) {
     output_value = set_value_new * current_reg_kp_;
-    if (output_value > max_output_current_)
-    {
+    if (output_value > max_output_current_) {
       output_value = max_output_current_;
-    }
-    else if (output_value < -max_output_current_)
-    {
+    } else if (output_value < -max_output_current_) {
       output_value = -max_output_current_;
     }
-  }
-  else
-  {
+  } else {
     output_value = set_value_new;
   }
 
-  if (debug_)
-  {
-    //   std::cout << "output_value: " << output_value << std::endl;
+  if (debug_) {
+    std::cout << "output_value: " << output_value << std::endl;
   }
 
   // przepisanie nowych wartosci zmiennych do zmiennych przechowujacych wartosci poprzednie
@@ -345,69 +330,26 @@ int FileInputControl::doServo_fic(double step_new, int pos_inc) {
 
 int FileInputControl::doServo_fcc(double step_new, int pos_inc) {
 
-  // algorytm regulacji dla serwomechanizmu
-  // position_increment_old - przedostatnio odczytany przyrost polozenie
-  //                         (delta y[k-2] -- mierzone w impulsach)
-  // position_increment_new - ostatnio odczytany przyrost polozenie
-  //                         (delta y[k-1] -- mierzone w impulsach)
-  // step_old_pulse               - poprzednia wartosc zadana dla jednego kroku
-  //                         regulacji (przyrost wartosci zadanej polozenia --
-  //                         delta r[k-2] -- mierzone w impulsach)
-  // step_new               - nastepna wartosc zadana dla jednego kroku
-  //                         regulacji (przyrost wartosci zadanej polozenia --
-  //                         delta r[k-1] -- mierzone w radianach)
-  // set_value_new          - wielkosc kroku do realizacji przez HIP
-  //                         (wypelnienie PWM -- u[k]): czas trwania jedynki
-  // set_value_old          - wielkosc kroku do realizacji przez HIP
-  //                         (wypelnienie PWM -- u[k-1]): czas trwania jedynki
-  // set_value_very_old     - wielkosc kroku do realizacji przez HIP
-  //                         (wypelnienie PWM -- u[k-2]): czas trwania jedynki
-
-  double step_new_pulse;  // nastepna wartosc zadana dla jednego kroku regulacji
-
-  step_new_pulse = step_new;
-  position_increment_new = pos_inc;
-
-  // Przyrost calki uchybu
-  delta_eint = delta_eint_old
-      + (1.0 + eint_dif_) * (step_new_pulse - position_increment_new)
-      - (1.0 - eint_dif_) * (step_old_pulse - position_increment_old);
-
-  //std::cout << "POS INCREMENT NEW: " << position_increment_new <<  std::endl;
-
-  if (idx < inputs.size())
-  {
+  if (idx < inputs.size()) {
     output_value = inputs[idx];
     ++idx;
 
     set_value_new = output_value;
 
-    if (output_value > max_output_current_)
-    {
+    if (output_value > max_output_current_) {
       output_value = max_output_current_;
-    } else if (output_value < -max_output_current_)
-    {
+    } else if (output_value < -max_output_current_) {
       output_value = -max_output_current_;
     }
-  }
-  else
-  {
+  } else {
     set_value_new = 0;
     output_value = 0;
     idx = 0;
   }
 
-  if (debug_)
-  {
+  if (debug_) {
     std::cout << "output_value: " << output_value << std::endl;
   }
-
-  // przepisanie nowych wartosci zmiennych do zmiennych przechowujacych wartosci poprzednie
-  position_increment_old = position_increment_new;
-  delta_eint_old = delta_eint;
-  step_old_pulse = step_new_pulse;
-  set_value_very_old = set_value_old;
-  set_value_old = set_value_new;
 
   return ((int) output_value);
 }
