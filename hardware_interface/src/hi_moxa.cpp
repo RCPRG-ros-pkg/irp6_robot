@@ -60,19 +60,20 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
       longest_read_delay_(0),
       cycle_nr(0),
       error_msg_hardware_panic(0) {
-
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
     memset(servo_data + drive_number, 0, sizeof(servo_St));
     memset(oldtio + drive_number, 0, sizeof(termios));
     drive_buff[drive_number].rxCnt = 0;
     receiveFail[drive_number] = false;
+    receiveFailCnt[drive_number] = 0;
+    SerialPort[drive_number] = NULL;
     // clear_buffer(drive_number);
   }
   memset(&NFComBuf, 0, sizeof(NF_STRUCT_ComBuf));
   memset(txBuf, 0, BUFF_SIZE);
   txCnt = 0;
-  // memset(rxBuf, 0, BUFF_SIZE);
+// memset(rxBuf, 0, BUFF_SIZE);
 
   memset(rxCommandArray, 0, BUFF_SIZE);
   rxCommandCnt = 0;
@@ -84,16 +85,16 @@ HI_moxa::~HI_moxa() {
 void HI_moxa::init(std::vector<std::string> ports) {
   port_names = ports;
 
-  // inicjalizacja crcTable[]
+// inicjalizacja crcTable[]
   NFv2_CrcInit();
 
-  // zerowanie danych i ustawienie neutralnych adresow
+// zerowanie danych i ustawienie neutralnych adresow
   NF_ComBufReset(&NFComBuf);
 
-  // inicjalizacja zmiennych
+// inicjalizacja zmiennych
   NFComBuf.myAddress = NF_MasterAddress;
 
-  for (unsigned int drive_number = 0; drive_number <= MOXA_SERVOS_NR;
+  for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
     NFComBuf.ReadDeviceStatus.addr[drive_number] = 255;
     NFComBuf.ReadDeviceVitals.addr[drive_number] = 255;
@@ -164,12 +165,12 @@ void HI_moxa::init(std::vector<std::string> ports) {
 
     receiveFailCnt[drive_number] = 0;
   }
-  // maxReceiveFailCnt = MAX_RECEIVE_FAIL_CNT;
+// maxReceiveFailCnt = MAX_RECEIVE_FAIL_CNT;
   reset_counters();
 }
 
 void HI_moxa::reset_counters(void) {
-  for (int i = 0; i < last_drive_number; i++) {
+  for (int i = 0; i <= last_drive_number; i++) {
     servo_data[i].current_absolute_position = 0L;
     servo_data[i].previous_absolute_position = 0L;
     servo_data[i].current_position_inc = 0.0;
@@ -210,7 +211,7 @@ void HI_moxa::set_current_mode(int drive_number) {
 }
 
 void HI_moxa::set_pwm(int drive_number, double set_value) {
-  // sklaowanie w celu dostosowania do starych regulatorow pozycyjnych
+// sklaowanie w celu dostosowania do starych regulatorow pozycyjnych
   NFComBuf.SetDrivesPWM.data[drive_number] = set_value * (1000.0 / 255.0);
   servo_data[drive_number].commandArray[servo_data[drive_number].commandCnt++] =
   NF_COMMAND_SetDrivesPWM;
@@ -225,13 +226,13 @@ void HI_moxa::set_current(int drive_number, double set_value) {
 uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
   cycle_nr++;
 
-  // static int accel_limit[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+// static int accel_limit[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
   static int valid_msr_nr[] = { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
       10, 10, 10, 10 };
 
   static int64_t receive_attempts = 0;
-  // UNUSED: static int64_t receive_timeouts = 0;
+// UNUSED: static int64_t receive_timeouts = 0;
   static int error_msg_power_stage = 0;
 
   static int error_msg_overcurrent = 0;
@@ -252,14 +253,14 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
 
   receive_attempts++;
 
-  // Tu kiedys byl SELECT
+// Tu kiedys byl SELECT
   bool current_all_hardware_read = true;
   bool read_needed[MOXA_SERVOS_NR];
 
-  // Read data from all drives
+// Read data from all drives
   for (drive_number = 0; drive_number <= last_drive_number; drive_number++) {
     read_needed[drive_number] = (all_hardware_read
-        || !all_hardware_read && receiveFail[drive_number]);
+        || (!all_hardware_read && receiveFail[drive_number]));
 
     if (read_needed[drive_number]) {
       //  rxCnt = 0;
@@ -903,7 +904,7 @@ void HI_moxa::clear_buffer(int drive_number) {
 }
 
 uint16_t HI_moxa::convert_to_115(float input) {
-  uint16_t output;
+  uint16_t output = 0;
 
   if (input >= 1.0) {
     printf("convert_to_115 input bigger or equal then 1.0\n");

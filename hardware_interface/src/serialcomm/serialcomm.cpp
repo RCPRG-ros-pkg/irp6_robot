@@ -34,11 +34,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <cstring>
-#include <iostream>
+#include <iostream> // NOLINT
+#include <string>
 
 #include "serialcomm.hpp"
-
-using namespace std;
 
 SerialComm::SerialComm(const std::string& port, int baud) {
   connected = false;
@@ -54,7 +53,7 @@ SerialComm::SerialComm(const std::string& port, int baud) {
     newtio.c_iflag = INPCK | IGNPAR;
     newtio.c_oflag = 0;
     newtio.c_lflag = 0;
-    //newtio.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG); //####
+    // newtio.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG); //####
     if (cfsetispeed(&newtio, baud) < 0 || cfsetospeed(&newtio, baud) < 0) {
       fprintf(stderr, "Failed to set serial baud rate: %d\n", baud);
       tcsetattr(fd, TCSANOW, &oldtio);
@@ -65,7 +64,7 @@ SerialComm::SerialComm(const std::string& port, int baud) {
     // activate new settings
     tcflush(fd, TCIFLUSH);
     tcsetattr(fd, TCSANOW, &newtio);
-    //fcntl(fd, F_SETFL, FNDELAY);	//####
+    // fcntl(fd, F_SETFL, FNDELAY); //####
     connected = true;
   }
 }
@@ -83,18 +82,19 @@ int SerialComm::write(uint8_t* buf, int len) {
 }
 
 int SerialComm::read(uint8_t* buf, int len) {
-  return ::read(fd, (char*) buf, len);
+  return ::read(fd, reinterpret_cast<char*>(buf), len);
 }
 
 uint8_t SerialComm::readOneByte() {
   uint8_t ret;
-  int sel;
+
   struct timeval tv;
 
   // Prepare mask for select - Watch fd to see when it has input
   FD_ZERO(&rfds);
   FD_SET(fd, &rfds);
   do {
+    int sel;
     printf("Read attempt.\n");
     // Prepare imeout struct for select - Wait up to five seconds
     tv.tv_sec = 5;
@@ -107,7 +107,7 @@ uint8_t SerialComm::readOneByte() {
       perror("select()");
     else if (sel == 0)
       printf("No data within five seconds.\n");
-  } while (::read(fd, (char*) (&ret), 1) < 1);
+  } while (::read(fd, reinterpret_cast<char*>(&ret), 1) < 1);
   return ret;
 }
 

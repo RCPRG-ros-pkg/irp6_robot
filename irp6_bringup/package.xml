@@ -1,7 +1,7 @@
 <package>
   <name>irp6_bringup</name>
   <version>0.0.1</version>
-  <description>IRP6 bringup.</description>
+  <description>IRP6 bringup</description>
   <maintainer email="konradb3@gmail.com">Konrad Banachowicz</maintainer>
 
   <license>BSD</license>

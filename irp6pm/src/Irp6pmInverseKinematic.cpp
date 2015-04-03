@@ -1,5 +1,35 @@
-// Copyright WUT 2014
+/*
+ * Copyright (c) 2014-2015, Robot Control and Pattern Recognition Group, Warsaw University of Technology.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Robot Control and Pattern Recognition Group,
+ *       Warsaw University of Technology nor the names of its contributors may
+ *       be used to endorse or promote products derived from this software
+ *       without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #include <rtt/Component.hpp>
+#include <string>
 
 #include "Irp6pmInverseKinematic.h"
 #include "eigen_conversions/eigen_msg.h"
@@ -17,15 +47,12 @@ Irp6pmInverseKinematic::Irp6pmInverseKinematic(const std::string& name)
 
   this->ports()->addPort("InputWristPose", port_input_wrist_pose_);
   this->ports()->addPort("InputEndEffectorPose", port_input_end_effector_pose_);
-
 }
 
 Irp6pmInverseKinematic::~Irp6pmInverseKinematic() {
-
 }
 
 bool Irp6pmInverseKinematic::configureHook() {
-
   /* -----------------------------------------------------------------------
    Dlugosci czlonow robota [m].
    ------------------------------------------------------------------------- */
@@ -38,18 +65,14 @@ bool Irp6pmInverseKinematic::configureHook() {
   local_current_joints_tmp_.resize(NUMBER_OF_SERVOS);
 
   if (port_tool_.read(tool_msgs_) == RTT::NewData) {
-
     return false;
-
   }
 
   return true;
 }
 
 void Irp6pmInverseKinematic::updateHook() {
-
   if (port_input_wrist_pose_.read(wrist_pose_) == RTT::NewData) {
-
     Eigen::Affine3d trans;
     tf::poseMsgToEigen(wrist_pose_, trans);
 
@@ -62,7 +85,6 @@ void Irp6pmInverseKinematic::updateHook() {
 
   } else if (port_input_end_effector_pose_.read(end_effector_pose_)
       == RTT::NewData) {
-
     port_tool_.read(tool_msgs_);
 
     Eigen::Affine3d tool;
@@ -86,7 +108,6 @@ void Irp6pmInverseKinematic::inverse_kinematics_single_iteration(
     const Eigen::VectorXd& local_current_joints,
     const Eigen::Affine3d& local_desired_end_effector_frame,
     Eigen::VectorXd* local_desired_joints) {
-
   // poprawka w celu uwzglednienia konwencji DH
   local_current_joints_tmp_ = local_current_joints;
 
@@ -121,8 +142,8 @@ void Irp6pmInverseKinematic::inverse_kinematics_single_iteration(
 
   //  Wyliczenie Theta1.
   (*local_desired_joints)[0] = (atan2(Py, Px));
-  s0 = sin(static_cast<double> ((*local_desired_joints)[0]));
-  c0 = cos(static_cast<double> ((*local_desired_joints)[0]));
+  s0 = sin(static_cast<double>((*local_desired_joints)[0]));
+  c0 = cos(static_cast<double>((*local_desired_joints)[0]));
 
   // Wyliczenie Theta5.
   c4 = Ay * c0 - Ax * s0;
@@ -164,51 +185,52 @@ void Irp6pmInverseKinematic::inverse_kinematics_single_iteration(
 
     // Sprawdzenie warunkow.
     t_ok = t5 + (*local_desired_joints)[3];
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 - M_PI + (*local_desired_joints)[3]
+    if (fabs(static_cast<double> (t_ok - local_current_joints_tmp_[5]))
+        > fabs(
+            static_cast<double>(t5 - M_PI + (*local_desired_joints)[3]
                 - (local_current_joints_tmp_[5]))))
       t_ok = t5 - M_PI + (*local_desired_joints)[3];
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 + M_PI + (*local_desired_joints)[3]
+    if (fabs(static_cast<double> (t_ok - local_current_joints_tmp_[5]))
+        > fabs(
+            static_cast<double> (t5 + M_PI + (*local_desired_joints)[3]
                 - (local_current_joints_tmp_[5]))))
       t_ok = t5 + M_PI + (*local_desired_joints)[3];
 
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 - 2 * M_PI + (*local_desired_joints)[3]
+    if (fabs(static_cast<double> (t_ok - local_current_joints_tmp_[5]))
+        > fabs(
+            static_cast<double> (t5 - 2 * M_PI + (*local_desired_joints)[3]
                 - (local_current_joints_tmp_[5]))))
       t_ok = t5 - 2 * M_PI + (*local_desired_joints)[3];
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 + 2 * M_PI + (*local_desired_joints)[3]
+    if (fabs(static_cast<double> (t_ok - local_current_joints_tmp_[5]))
+        > fabs(
+            static_cast<double> (t5 + 2 * M_PI + (*local_desired_joints)[3]
                 - (local_current_joints_tmp_[5]))))
       t_ok = t5 + 2 * M_PI + (*local_desired_joints)[3];
 
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 - (*local_desired_joints)[3] - (local_current_joints_tmp_[5]))))
+    if (fabs(static_cast<double> (t_ok - local_current_joints_tmp_[5]))
+        > fabs(
+            static_cast<double> (t5 - (*local_desired_joints)[3]
+                - (local_current_joints_tmp_[5]))))
       t_ok = t5 - (*local_desired_joints)[3];
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 - M_PI - (*local_desired_joints)[3]
+    if (fabs(static_cast<double>(t_ok - local_current_joints_tmp_[5]))
+        > fabs(
+            static_cast<double>(t5 - M_PI - (*local_desired_joints)[3]
                 - (local_current_joints_tmp_[5]))))
       t_ok = t5 - M_PI - (*local_desired_joints)[3];
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 + M_PI - (*local_desired_joints)[3]
+    if (fabs(static_cast<double>(t_ok - local_current_joints_tmp_[5]))
+        > fabs(
+            static_cast<double>(t5 + M_PI - (*local_desired_joints)[3]
                 - (local_current_joints_tmp_[5]))))
       t_ok = t5 + M_PI - (*local_desired_joints)[3];
 
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 - 2 * M_PI - (*local_desired_joints)[3]
+    if (fabs(static_cast<double>(t_ok - local_current_joints_tmp_[5]))
+        > fabs(
+            static_cast<double>(t5 - 2 * M_PI - (*local_desired_joints)[3]
                 - (local_current_joints_tmp_[5]))))
       t_ok = t5 - 2 * M_PI - (*local_desired_joints)[3];
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(
-            t5 + 2 * M_PI - (*local_desired_joints)[3]
+    if (fabs(static_cast<double>(t_ok - local_current_joints_tmp_[5]))
+        > fabs(
+            static_cast<double>(t5 + 2 * M_PI - (*local_desired_joints)[3]
                 - (local_current_joints_tmp_[5]))))
       t_ok = t5 + 2 * M_PI - (*local_desired_joints)[3];
 
@@ -218,28 +240,30 @@ void Irp6pmInverseKinematic::inverse_kinematics_single_iteration(
     t_ok = t5;
 
     // Sprawdzenie warunkow.
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(t5 - M_PI - (local_current_joints_tmp_[5]))))
+    if (fabs(static_cast<double>(t_ok - local_current_joints_tmp_[5]))
+        > fabs(static_cast<double>(t5 - M_PI - (local_current_joints_tmp_[5]))))
       t_ok = t5 - M_PI;
-    if (fabs((double)(t_ok - local_current_joints_tmp_[5]))
-        > fabs((double)(t5 + M_PI - (local_current_joints_tmp_[5]))))
+    if (fabs(static_cast<double>(t_ok - local_current_joints_tmp_[5]))
+        > fabs(static_cast<double>(t5 + M_PI - (local_current_joints_tmp_[5]))))
       t_ok = t5 + M_PI;
 
     (*local_desired_joints)[5] = t_ok;
     t_ok = atan2(c0 * Ax + s0 * Ay, Az);
 
-    if (fabs((double)(t_ok - local_current_joints_tmp_[3]))
-        > fabs((double)(t_ok - M_PI - (local_current_joints_tmp_[3]))))
+    if (fabs(static_cast<double>(t_ok - local_current_joints_tmp_[3]))
+        > fabs(
+            static_cast<double>(t_ok - M_PI - (local_current_joints_tmp_[3]))))
       t_ok = t_ok - M_PI;
-    if (fabs((double)(t_ok - local_current_joints_tmp_[3]))
-        > fabs((double)(t_ok + M_PI - (local_current_joints_tmp_[3]))))
+    if (fabs(static_cast<double>(t_ok - local_current_joints_tmp_[3]))
+        > fabs(
+            static_cast<double>(t_ok + M_PI - (local_current_joints_tmp_[3]))))
       t_ok = t_ok + M_PI;
     (*local_desired_joints)[3] = t_ok;
-  }  //: else
+  }  // else
 
   // Wyliczenie Theta2.
-  c3 = cos((double)(*local_desired_joints)[3]);
-  s3 = sin((double)(*local_desired_joints)[3]);
+  c3 = cos((*local_desired_joints)[3]);
+  s3 = sin((*local_desired_joints)[3]);
 
   E = c0 * Px + s0 * Py - c3 * d5;
   F = -Pz - s3 * d5;
@@ -252,15 +276,14 @@ void Irp6pmInverseKinematic::inverse_kinematics_single_iteration(
       - atan2(G, H);
 
   // Wyliczenie Theta3.
-  s1 = sin((double)(*local_desired_joints)[1]);
-  c1 = cos((double)(*local_desired_joints)[1]);
+  s1 = sin((*local_desired_joints)[1]);
+  c1 = cos((*local_desired_joints)[1]);
   (*local_desired_joints)[2] = atan2(F - a2 * s1, E - a2 * c1);
 
   // poprawka w celu dostosowania do konwencji DH
   (*local_desired_joints)[2] -= (*local_desired_joints)[1] + M_PI_2;
   (*local_desired_joints)[3] -= (*local_desired_joints)[2]
       + (*local_desired_joints)[1] + M_PI_2;
-
 }
 
 ORO_CREATE_COMPONENT(Irp6pmInverseKinematic)
