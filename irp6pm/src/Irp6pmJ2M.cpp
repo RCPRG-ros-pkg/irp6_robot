@@ -37,7 +37,6 @@ Irp6pmJ2M::Irp6pmJ2M(const std::string& name)
     : RTT::TaskContext(name, PreOperational) {
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("JointPosition", port_joint_position_);
-
   this->addProperty("synchro_motor_position", synchro_motor_position_);
 
   for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
