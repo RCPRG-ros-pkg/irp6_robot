@@ -48,28 +48,26 @@
 namespace hi_moxa {
 
 HI_moxa::HI_moxa(unsigned int numberOfDrivers,
-    std::vector<unsigned int> card_addresses,
-    std::vector<double> max_increments, int tx_prefix_len)
-: howMuchItSucks(tx_prefix_len),
-last_drive_number(numberOfDrivers),
-drives_addresses(card_addresses),
-ridiculous_increment(max_increments),
-hardware_panic(false),
-all_hardware_read(true),
-longest_delay_(0),
-longest_read_delay_(0),
-cycle_nr(0),
-      error_msg_hardware_panic(0)
-// SerialPort { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-// NULL, NULL, NULL, NULL, NULL, NULL},
-// receiveFailCnt { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-{ // NOLINT
+                 std::vector<unsigned int> card_addresses,
+                 std::vector<double> max_increments, int tx_prefix_len)
+    : howMuchItSucks(tx_prefix_len),
+      last_drive_number(numberOfDrivers),
+      drives_addresses(card_addresses),
+      ridiculous_increment(max_increments),
+      hardware_panic(false),
+      all_hardware_read(true),
+      longest_delay_(0),
+      longest_read_delay_(0),
+      cycle_nr(0),
+      error_msg_hardware_panic(0) {
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
     memset(servo_data + drive_number, 0, sizeof(servo_St));
     memset(oldtio + drive_number, 0, sizeof(termios));
     drive_buff[drive_number].rxCnt = 0;
     receiveFail[drive_number] = false;
+    receiveFailCnt[drive_number] = 0;
+    SerialPort[drive_number] = NULL;
     // clear_buffer(drive_number);
   }
   memset(&NFComBuf, 0, sizeof(NF_STRUCT_ComBuf));

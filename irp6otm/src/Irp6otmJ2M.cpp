@@ -33,13 +33,15 @@
 #include "Irp6otmJ2M.h"
 
 Irp6otmJ2M::Irp6otmJ2M(const std::string& name)
-    : RTT::TaskContext(name, PreOperational)
-// SYNCHRO_JOINT_POSITION { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  }
-{ // NOLINT
+    : RTT::TaskContext(name, PreOperational) {
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("JointPosition", port_joint_position_);
 
   this->addProperty("synchro_motor_position", synchro_motor_position_);
+
+  for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
+    SYNCHRO_JOINT_POSITION[i] = 0.0;
+  }
 }
 
 Irp6otmJ2M::~Irp6otmJ2M() {
