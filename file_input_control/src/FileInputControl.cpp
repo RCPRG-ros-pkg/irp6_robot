@@ -41,6 +41,7 @@ FileInputControl::FileInputControl(const std::string& name)
       computedPwm_out("computedPwm_out"),
       synchro_state_in_("SynchroStateIn"),
       emergency_stop_out_("EmergencyStopOut"),
+      current_mode_(true),
       a_(0.0),
       b0_(0.0),
       b1_(0.0),
@@ -59,8 +60,13 @@ FileInputControl::FileInputControl(const std::string& name)
       step_old_pulse(0.0),
       update_hook_iteration_number_(0),
       new_position_iteration_number_(0),
+      max_desired_increment_(0.0),
+      desired_position_old_(0.0),
+      desired_position_new_(0.0),
       synchro_state_old_(false),
-      max_desired_increment_(0.0) {
+      synchro_state_new_(false),
+      idx(0),
+      type(defalt)  {
 
   this->addEventPort(desired_position_).doc(
       "Receiving a value of position step");
