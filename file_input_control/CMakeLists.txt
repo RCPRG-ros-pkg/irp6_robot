@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-project(file_current_control)
+project(file_input_control)
 
 find_package(catkin REQUIRED COMPONENTS rtt_ros cmake_modules)
 
@@ -12,7 +12,7 @@ catkin_package(
   CATKIN_DEPENDS rtt_ros 
 )
 
-orocos_component(${PROJECT_NAME} src/FileCurrentControl.cpp)
+orocos_component(${PROJECT_NAME} src/FileInputControl.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 orocos_generate_package()

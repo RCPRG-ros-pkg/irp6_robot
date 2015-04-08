@@ -14,7 +14,7 @@ ros.import("conman")
 ros.import("rtt_conman_msgs")
 ros.import("conman_ros")
 ros.import("hardware_interface")
-ros.import("irp6_regulator")
+ros.import("sarkofag_regulator")
 ros.import("oro_joint_state_publisher")
 ros.import("internal_space_spline_trajectory_action")
 ros.import("internal_space_spline_trajectory_generator")
@@ -30,7 +30,7 @@ runScript( ros.find("sarkofag_bringup") + "/config/load-scheme-and-hi.ops")
 // Motors Regulators
 
 
-loadComponent("SarkofagRegulator","IRp6Regulator")
+loadComponent("SarkofagRegulator","SarkofagRegulator")
 SarkofagRegulator.loadService("rosparam")
 SarkofagRegulator.rosparam.getAll()
 SarkofagRegulator.configure()

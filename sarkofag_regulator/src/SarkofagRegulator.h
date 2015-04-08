@@ -28,20 +28,26 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef FILECURRENTCONTROL_H_
-#define FILECURRENTCONTROL_H_
+#ifndef SARKOFAGREGULATOR_H_
+#define SARKOFAGREGULATOR_H_
 
-#include <vector>
-#include <fstream> // NOLINT
+#include <rtt/TaskContext.hpp>
+#include <rtt/Port.hpp>
+#include <std_msgs/Float64.h>
+#include <std_msgs/Int64.h>
+#include <rtt/Component.hpp>
+#include <std_srvs/Empty.h>
+#include <ros/ros.h>
+#include <math.h>       /* pow */
 #include <string>
 
-class FileCurrentControl : public RTT::TaskContext {
+class SarkofagRegulator : public RTT::TaskContext {
  public:
-  explicit FileCurrentControl(const std::string& name);
-  ~FileCurrentControl();
+  explicit SarkofagRegulator(const std::string& name);
+  ~SarkofagRegulator();
 
   int doServo(double, int);
-  int doServo_fcc(double, int);
+  int doServo_friction_test(double, int);
   void reset();
 
  private:
@@ -77,6 +83,14 @@ class FileCurrentControl : public RTT::TaskContext {
   double max_desired_increment_;
   double enc_res_;
 
+  std::string regulator_type_;
+
+  enum reg_type {
+    irp6,
+    friction_test,
+    pos_inc
+  } type;
+
   double position_increment_old;  // przedosatnio odczytany przyrost polozenie (delta y[k-2]
   // -- mierzone w impulsach)
   double position_increment_new;  // ostatnio odczytany przyrost polozenie (delta y[k-1]
@@ -100,10 +114,5 @@ class FileCurrentControl : public RTT::TaskContext {
   double output_value;
 
   double a_, b0_, b1_;
-
-  std::string filename_;
-
-  int curr;
-  std::vector<double> currents;
 };
-#endif  // FILECURRENTCONTROL_H_
+#endif  // SARKOFAGREGULATOR_H_

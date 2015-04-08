@@ -28,27 +28,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <rtt/TaskContext.hpp>
-#include <rtt/Port.hpp>
-#include <std_msgs/Float64.h>
-#include <std_msgs/Int64.h>
-#include <rtt/Component.hpp>
-#include <std_srvs/Empty.h>
-#include <ros/ros.h>
 #include <string>
+#include "FileInputControl.h"
 #include "../../hardware_interface/src/string_colors.h"
-
-#include "FileCurrentControl.h"
 
 const int MAX_PWM = 190;
 
-FileCurrentControl::FileCurrentControl(const std::string& name)
+FileInputControl::FileInputControl(const std::string& name)
     : TaskContext(name),
       desired_position_("DesiredPosition"),
       deltaInc_in("deltaInc_in"),
       computedPwm_out("computedPwm_out"),
       synchro_state_in_("SynchroStateIn"),
       emergency_stop_out_("EmergencyStopOut"),
+      current_mode_(true),
       a_(0.0),
       b0_(0.0),
       b1_(0.0),
@@ -72,7 +65,9 @@ FileCurrentControl::FileCurrentControl(const std::string& name)
       desired_position_new_(0.0),
       synchro_state_old_(false),
       synchro_state_new_(false),
-      curr(0) {
+      idx(0),
+      type(defalt)  {
+
   this->addEventPort(desired_position_).doc(
       "Receiving a value of position step");
   this->addPort(deltaInc_in).doc("Receiving a value of measured increment.");
@@ -92,56 +87,55 @@ FileCurrentControl::FileCurrentControl(const std::string& name)
   this->addProperty("eint_dif", eint_dif_).doc("");
   this->addProperty("max_desired_increment", max_desired_increment_).doc("");
   this->addProperty("enc_res", enc_res_).doc("");
+  this->addProperty("input_type", input_type_).doc("");
   this->addProperty("filename", filename_).doc("");
 }
 
-FileCurrentControl::~FileCurrentControl() {
+FileInputControl::~FileInputControl() {
 }
 
-bool FileCurrentControl::configureHook() {
+bool FileInputControl::configureHook() {
   reset();
 
   a_ = A_;
   b0_ = BB0_;
   b1_ = BB1_;
-
   desired_position_old_ = desired_position_new_ = 0.0;
 
   char cCurrentPath[FILENAME_MAX];
-
   if (!getcwd(cCurrentPath, sizeof(cCurrentPath))) {
     return errno;
   }
 
   cCurrentPath[sizeof(cCurrentPath) - 1] = '\0';
-
   std::string filename = std::string(cCurrentPath);
   int ros = filename.find(".ros");
-
   filename = filename.erase(ros) + filename_;
   std::ifstream file(filename.c_str());
-
-  // std::cout<<filename<<std::endl;
 
   if (file.is_open()) {
     std::string line;
 
     while (getline(file, line)) {
-      currents.push_back(strtol(line.c_str(), NULL, 10));
+      inputs.push_back(strtol(line.c_str(), NULL, 10));
     }
 
     file.close();
   } else {
-    currents.resize(1);
-    currents[0] = 0;
+    inputs.resize(1);
+    inputs[0] = 0;
   }
-  curr = 0;
-  // std::cout<<currents.size()<<std::endl;
+  idx = 0;
+  type = defalt;
+  if (input_type_ == "current")
+    type = current;
+  if (input_type_ == "increment")
+    type = increment;
 
   return true;
 }
 
-void FileCurrentControl::updateHook() {
+void FileInputControl::updateHook() {
   if (RTT::NewData == deltaInc_in.read(deltaIncData)) {
     update_hook_iteration_number_++;
     if (update_hook_iteration_number_ <= 1) {
@@ -168,7 +162,7 @@ void FileCurrentControl::updateHook() {
 
     if (fabs(desired_position_increment_) > max_desired_increment_) {
       std::cout << "very high pos_inc_: " << reg_number_ << " pos_inc: "
-                << desired_position_increment_ << std::endl;
+          << desired_position_increment_ << std::endl;
 
       emergency_stop_out_.write(true);
     }
@@ -178,7 +172,17 @@ void FileCurrentControl::updateHook() {
     if (!debug_) {
       int output;
       if (synchro_state_old_) {
-        output = doServo_fcc(desired_position_increment_, deltaIncData);
+        switch (type) {
+          case current:
+            output = doServo_fcc(desired_position_increment_, deltaIncData);
+            break;
+          case increment:
+            output = doServo_fic(desired_position_increment_, deltaIncData);
+            break;
+          default:
+            output = doServo(desired_position_increment_, deltaIncData);
+            break;
+        }
       } else {
         output = doServo(desired_position_increment_, deltaIncData);
       }
@@ -198,7 +202,7 @@ void FileCurrentControl::updateHook() {
   }
 }
 
-int FileCurrentControl::doServo(double step_new, int pos_inc) {
+int FileInputControl::doServo(double step_new, int pos_inc) {
   // algorytm regulacji dla serwomechanizmu
   // position_increment_old - przedostatnio odczytany przyrost polozenie
   //                         (delta y[k-2] -- mierzone w impulsach)
@@ -253,7 +257,7 @@ int FileCurrentControl::doServo(double step_new, int pos_inc) {
   }
 
   if (debug_) {
-    //   std::cout << "output_value: " << output_value << std::endl;
+    std::cout << "output_value: " << output_value << std::endl;
   }
 
   // przepisanie nowych wartosci zmiennych do zmiennych przechowujacych wartosci poprzednie
@@ -266,7 +270,7 @@ int FileCurrentControl::doServo(double step_new, int pos_inc) {
   return (static_cast<int>(output_value));
 }
 
-int FileCurrentControl::doServo_fcc(double step_new, int pos_inc) {
+int FileInputControl::doServo_fic(double step_new, int pos_inc) {
   // algorytm regulacji dla serwomechanizmu
   // position_increment_old - przedostatnio odczytany przyrost polozenie
   //                         (delta y[k-2] -- mierzone w impulsach)
@@ -287,7 +291,14 @@ int FileCurrentControl::doServo_fcc(double step_new, int pos_inc) {
 
   double step_new_pulse;  // nastepna wartosc zadana dla jednego kroku regulacji
 
-  step_new_pulse = step_new;
+  if (idx < inputs.size()) {
+    step_new_pulse = inputs[idx];
+    ++idx;
+  } else {
+    step_new_pulse = 0;
+    idx = 0;
+  }
+
   position_increment_new = pos_inc;
 
   // Przyrost calki uchybu
@@ -297,25 +308,27 @@ int FileCurrentControl::doServo_fcc(double step_new, int pos_inc) {
 
   // std::cout << "POS INCREMENT NEW: " << position_increment_new <<  std::endl;
 
-  if (curr < currents.size()) {
-    output_value = currents[curr];
-    ++curr;
+  // obliczenie nowej wartosci wypelnienia PWM algorytm PD + I
+  set_value_new = (1 + a_) * set_value_old - a_ * set_value_very_old
+      + b0_ * delta_eint - b1_ * delta_eint_old;
 
-    if (current_mode_) {
-      set_value_new = output_value / current_reg_kp_;
-    } else {
-      set_value_new = output_value;
-    }
+  // std::cout << "PWM VALUE (" << pos_inc << " to " << pos_inc_new << ") IS " << (int)set_value_new << std::endl;
 
+  // ograniczenie na sterowanie
+  if (set_value_new > MAX_PWM)
+    set_value_new = MAX_PWM;
+  if (set_value_new < -MAX_PWM)
+    set_value_new = -MAX_PWM;
+
+  if (current_mode_) {
+    output_value = set_value_new * current_reg_kp_;
     if (output_value > max_output_current_) {
       output_value = max_output_current_;
     } else if (output_value < -max_output_current_) {
       output_value = -max_output_current_;
     }
   } else {
-    set_value_new = 0;
-    output_value = 0;
-    curr = 0;
+    output_value = set_value_new;
   }
 
   if (debug_) {
@@ -332,7 +345,32 @@ int FileCurrentControl::doServo_fcc(double step_new, int pos_inc) {
   return (static_cast<int>(output_value));
 }
 
-void FileCurrentControl::reset() {
+int FileInputControl::doServo_fcc(double step_new, int pos_inc) {
+  if (idx < inputs.size()) {
+    output_value = inputs[idx];
+    ++idx;
+
+    set_value_new = output_value;
+
+    if (output_value > max_output_current_) {
+      output_value = max_output_current_;
+    } else if (output_value < -max_output_current_) {
+      output_value = -max_output_current_;
+    }
+  } else {
+    set_value_new = 0;
+    output_value = 0;
+    idx = 0;
+  }
+
+  if (debug_) {
+    std::cout << "output_value: " << output_value << std::endl;
+  }
+
+  return (static_cast<int>(output_value));
+}
+
+void FileInputControl::reset() {
   position_increment_old = 0.0;
   position_increment_new = 0.0;
   step_old_pulse = 0.0;
@@ -344,4 +382,4 @@ void FileCurrentControl::reset() {
   delta_eint_old = 0.0;
 }
 
-ORO_CREATE_COMPONENT(FileCurrentControl)
+ORO_CREATE_COMPONENT(FileInputControl)

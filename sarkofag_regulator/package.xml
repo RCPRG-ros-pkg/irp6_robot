@@ -1,7 +1,7 @@
 <package>
-  <name>file_current_control</name>
+  <name>sarkofag_regulator</name>
   <version>0.0.3</version>
-  <description>File current control.</description>
+  <description>Sarkofag regulator.</description>
   <maintainer email="bartswis@gmail.com">Bartosz Świstak</maintainer>
 
   <license>BSD</license>
