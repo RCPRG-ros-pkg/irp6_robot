@@ -45,6 +45,7 @@
         current_reg_kp: 200.0
         max_output_current: 20000.0
         max_desired_increment: 200.0
+        regulator_type: irp6
       SarkofagPortDoubleSplit_hw_cp:
         number_of_ports: 1
       SarkofagPortDoubleAggregate_hw_p:
