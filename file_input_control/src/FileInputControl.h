@@ -29,19 +29,22 @@
  */
 
 #ifndef FILEINPUTCONTROL_H_
-#define FILEINPUTONTROL_H_
+#define FILEINPUTCONTROL_H_
 
-#include <fstream>
+#include <rtt/TaskContext.hpp>
+#include <rtt/Port.hpp>
+#include <std_msgs/Float64.h>
+#include <std_msgs/Int64.h>
+#include <rtt/Component.hpp>
+#include <std_srvs/Empty.h>
+#include <ros/ros.h>
+#include <fstream> // NOLINT
 #include <string>
-
-using namespace std;
-using namespace RTT;
+#include <vector>
 
 class FileInputControl : public RTT::TaskContext {
-
  public:
-
-  FileInputControl(const std::string& name);
+  explicit FileInputControl(const std::string& name);
   ~FileInputControl();
 
   int doServo(double, int);
@@ -50,16 +53,15 @@ class FileInputControl : public RTT::TaskContext {
   void reset();
 
  private:
-
   bool configureHook();
   void updateHook();
 
-  InputPort<double> desired_position_;
-  InputPort<double> deltaInc_in;
-  InputPort<bool> synchro_state_in_;
+  RTT::InputPort<double> desired_position_;
+  RTT::InputPort<double> deltaInc_in;
+  RTT::InputPort<bool> synchro_state_in_;
 
-  OutputPort<double> computedPwm_out;
-  OutputPort<bool> emergency_stop_out_;
+  RTT::OutputPort<double> computedPwm_out;
+  RTT::OutputPort<bool> emergency_stop_out_;
 
   double desired_position_increment_;
   double desired_position_old_, desired_position_new_;
@@ -67,8 +69,8 @@ class FileInputControl : public RTT::TaskContext {
 
   bool synchro_state_old_, synchro_state_new_;
 
-  long update_hook_iteration_number_;
-  long new_position_iteration_number_;
+  int64_t update_hook_iteration_number_;
+  int64_t new_position_iteration_number_;
 
   // Properties
   int reg_number_;
@@ -118,6 +120,5 @@ class FileInputControl : public RTT::TaskContext {
 
   int idx;
   std::vector<double> inputs;
-
 };
-#endif
+#endif  // FILEINPUTCONTROL_H_

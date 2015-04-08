@@ -20,7 +20,7 @@
         timeouts_to_print: 3
       SarkofagRegulator:
         filename: sarkofag_test.csv
-        input_type: current
+        input_type: increment
     </rosparam>
   </group>
 
