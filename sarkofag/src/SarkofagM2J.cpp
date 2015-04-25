@@ -49,9 +49,10 @@ bool SarkofagM2J::configureHook() {
 }
 
 void SarkofagM2J::updateHook() {
-  port_motor_position_.read(motor_position_);
-  mp2i(&motor_position_(0), &joint_position_(0));
-  port_joint_position_.write(joint_position_);
+  if (RTT::NewData == port_motor_position_.read(motor_position_)) {
+    mp2i(&motor_position_(0), &joint_position_(0));
+    port_joint_position_.write(joint_position_);
+  }
 }
 
 void SarkofagM2J::mp2i(const double* motors, double* joints) {
