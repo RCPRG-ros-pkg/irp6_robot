@@ -369,8 +369,8 @@ connect("Irp6ottfgRegulator.EmergencyStopOut","Irp6HardwareInterface.EmergencySt
 
 connect("Irp6otmPortDoubleAggregate_hw_p.OutputPort","Irp6otmM2J.MotorPosition", ConnPolicy())
 
-
-connect("Irp6otmPortDoubleAggregate_hw_desired.OutputPort","Irp6otmM2Jdesired.MotorPosition", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_p.OutputPort","Irp6otmM2Jdesired.MotorPosition", ConnPolicy())
+connect("Irp6otmPortDoubleAggregate_hw_desired.OutputPort","Irp6otmM2Jdesired.DesiredMotorPosition", ConnPolicy())
 
 
 

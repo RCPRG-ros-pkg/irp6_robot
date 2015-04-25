@@ -34,8 +34,10 @@
 #include "Irp6otmTransmission.h"
 
 Irp6otmM2J::Irp6otmM2J(const std::string& name)
-    : RTT::TaskContext(name, PreOperational) {
+    : RTT::TaskContext(name, PreOperational),
+      desired_motor_pos_initiated_(false) {
   this->ports()->addPort("MotorPosition", port_motor_position_);
+  this->ports()->addPort("DesiredMotorPosition", port_desired_motor_position_);
   this->ports()->addPort("JointPosition", port_joint_position_);
 
   this->addProperty("synchro_motor_position", synchro_motor_position_);
@@ -47,13 +49,20 @@ Irp6otmM2J::~Irp6otmM2J() {
 bool Irp6otmM2J::configureHook() {
   motor_position_.resize(NUMBER_OF_SERVOS);
   joint_position_.resize(NUMBER_OF_SERVOS);
+
   return true;
 }
 
 void Irp6otmM2J::updateHook() {
-  port_motor_position_.read(motor_position_);
-  mp2i(&motor_position_(0), &joint_position_(0));
-  port_joint_position_.write(joint_position_);
+  if (RTT::NewData == port_desired_motor_position_.read(motor_position_)) {
+    mp2i(&motor_position_(0), &joint_position_(0));
+    port_joint_position_.write(joint_position_);
+    desired_motor_pos_initiated_ = true;
+  } else if ((!desired_motor_pos_initiated_)
+      && (RTT::NewData == port_motor_position_.read(motor_position_))) {
+    mp2i(&motor_position_(0), &joint_position_(0));
+    port_joint_position_.write(joint_position_);
+  }
 }
 
 void Irp6otmM2J::mp2i(const double* motors, double* joints) {

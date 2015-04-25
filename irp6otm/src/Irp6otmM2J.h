@@ -48,8 +48,11 @@ class Irp6otmM2J : public RTT::TaskContext {
   void mp2i(const double* motors, double* joints);
   RTT::OutputPort<Eigen::VectorXd> port_joint_position_;
   RTT::InputPort<Eigen::VectorXd> port_motor_position_;
+  RTT::InputPort<Eigen::VectorXd> port_desired_motor_position_;
 
   Eigen::VectorXd motor_position_, joint_position_;
+
+  bool desired_motor_pos_initiated_;
 
   // properties
   std::vector<double> synchro_motor_position_;
