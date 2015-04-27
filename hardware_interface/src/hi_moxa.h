@@ -120,7 +120,7 @@ class HI_moxa {
 #endif
   const int howMuchItSucks;
 
-  int error_msg_hardware_panic;
+  int error_msg_hardware_panic_;
 
   /// (number of drives)-1
   std::size_t last_drive_number;

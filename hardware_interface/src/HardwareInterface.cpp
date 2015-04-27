@@ -53,7 +53,8 @@ HardwareInterface::HardwareInterface(const std::string& name)
       synchro_state_(MOVE_TO_SYNCHRO_AREA),
       rwh_nsec_(1200000),
       timeouts_to_print_(1),
-      number_of_drives_(0) {
+      number_of_drives_(0),
+      error_msg_hardware_panic_(0) {
 
   this->ports()->addPort("EmergencyStopIn", port_emergency_stop_);
   this->ports()->addPort("IsSynchronised", port_is_synchronised_);
@@ -291,7 +292,7 @@ uint16_t HardwareInterface::convert_to_115(float input) {
     printf("convert_to_115 input lower then -1.0\n");
     return 0;
   } else if (input < 0.0) {
-    output = 65535 + static_cast<int> (input * 32768.0);
+    output = 65535 + static_cast<int>(input * 32768.0);
   } else if (input >= 0.0) {
     output = (uint16_t) (input * 32768.0);
   }
@@ -315,7 +316,7 @@ bool HardwareInterface::startHook() {
       hi_->write_read_hardware(rwh_nsec_, 0);
       servo_start_iter_ = 200;
       for (int i = 0; i < number_of_drives_; i++) {
-        motor_position_(i) = static_cast<double> (hi_->get_position(i))
+        motor_position_(i) = static_cast<double>(hi_->get_position(i))
             * ((2.0 * M_PI) / enc_res_[i]);
       }
       if (!hi_->robot_synchronized()) {
@@ -340,8 +341,8 @@ bool HardwareInterface::startHook() {
 
         for (int i = 0; i < number_of_drives_; i++) {
           motor_position_command_(i) = motor_position_(i);
-          motor_increment_(i) = static_cast<double>  (hi_->get_increment(i));
-          motor_current_(i) = static_cast<double>  (hi_->get_current(i));
+          motor_increment_(i) = static_cast<double>(hi_->get_increment(i));
+          motor_current_(i) = static_cast<double>(hi_->get_current(i));
         }
 
         state_ = PRE_SERVOING;
@@ -365,8 +366,10 @@ bool HardwareInterface::startHook() {
   }
 
   for (int i = 0; i < number_of_drives_; i++) {
-    port_motor_position_list_[i]->write(static_cast<double>(motor_position_[i]));
-    port_motor_increment_list_[i]->write(static_cast<double>(motor_increment_[i]));
+    port_motor_position_list_[i]->write(
+        static_cast<double>(motor_position_[i]));
+    port_motor_increment_list_[i]->write(
+        static_cast<double>(motor_increment_[i]));
     port_motor_current_list_[i]->write(static_cast<double>(motor_current_[i]));
     desired_position_[i] = motor_position_(i);
   }
@@ -391,7 +394,7 @@ void HardwareInterface::updateHook() {
     }
     hi_->write_read_hardware(rwh_nsec_, timeouts_to_print_);
     for (int i = 0; i < number_of_drives_; i++) {
-      motor_position_(i) = static_cast<double> (hi_->get_position(i))
+      motor_position_(i) = static_cast<double>(hi_->get_position(i))
           * ((2.0 * M_PI) / enc_res_[i]);
     }
   } else {
@@ -408,7 +411,8 @@ void HardwareInterface::updateHook() {
       if (!test_mode_) {
         for (int i = 0; i < number_of_drives_; i++) {
           motor_position_command_(i) = motor_position_(i);
-          port_motor_position_list_[i]->write(static_cast<double>(motor_position_[i]));
+          port_motor_position_list_[i]->write(
+              static_cast<double>(motor_position_[i]));
         }
       }
 
@@ -428,10 +432,12 @@ void HardwareInterface::updateHook() {
         }
 
         if (!test_mode_) {
-          port_motor_position_list_[i]->write(static_cast<double>(motor_position_[i]));
+          port_motor_position_list_[i]->write(
+              static_cast<double>(motor_position_[i]));
         } else {
           motor_position_(i) = motor_position_command_(i);
-          port_motor_position_list_[i]->write(static_cast<double>(motor_position_[i]));
+          port_motor_position_list_[i]->write(
+              static_cast<double>(motor_position_[i]));
         }
       }
 
@@ -541,22 +547,30 @@ void HardwareInterface::updateHook() {
       break;
   }
 
-  if (!test_mode_) {
-    bool emergency_stop;
-    if (port_emergency_stop_.read(emergency_stop) == RTT::NewData) {
-      if (emergency_stop) {
+  bool emergency_stop;
+  if (port_emergency_stop_.read(emergency_stop) == RTT::NewData) {
+    if (emergency_stop) {
+      if (!test_mode_) {
         hi_->set_hardware_panic();
+      } else if (error_msg_hardware_panic_ == 0) {
+        std::cout << RED << std::endl << "[error] hardware panic" << RESET << std::endl << std::endl;
+        error_msg_hardware_panic_++;
       }
     }
+  }
 
-    for (int i = 0; i < number_of_drives_; i++) {
-      motor_current_(i) = static_cast<double> (hi_->get_current(i));
-      port_motor_current_list_[i]->write(static_cast<double>(motor_current_[i]));
+  for (int i = 0; i < number_of_drives_; i++) {
+    if (!test_mode_) {
+      motor_current_(i) = static_cast<double>(hi_->get_current(i));
+    }
+    port_motor_current_list_[i]->write(static_cast<double>(motor_current_[i]));
+    if (!test_mode_) {
       increment_[i] = hi_->get_increment(i);
-      port_motor_increment_list_[i]->write(static_cast<double>(increment_[i]));
-      if (state_ != SERVOING) {
-        desired_position_out_list_[i]->write(static_cast<double>(desired_position_[i]));
-      }
+    }
+    port_motor_increment_list_[i]->write(static_cast<double>(increment_[i]));
+    if (state_ != SERVOING) {
+      desired_position_out_list_[i]->write(
+          static_cast<double>(desired_position_[i]));
     }
   }
 }

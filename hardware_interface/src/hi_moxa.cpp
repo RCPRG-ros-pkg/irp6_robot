@@ -59,7 +59,7 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
       longest_delay_(0),
       longest_read_delay_(0),
       cycle_nr(0),
-      error_msg_hardware_panic(0) {
+      error_msg_hardware_panic_(0) {
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
     memset(servo_data + drive_number, 0, sizeof(servo_St));
@@ -584,9 +584,9 @@ uint64_t HI_moxa::write_hardware(void) {
       // Send command frame
       SerialPort[drive_number]->write(txBuf, txCnt);
     }
-    if (error_msg_hardware_panic == 0) {
-      std::cout << "[error] hardware panic" << std::endl;
-      error_msg_hardware_panic++;
+    if (error_msg_hardware_panic_ == 0) {
+      std::cout << RED << std::endl << "[error] hardware panic" << RESET << std::endl << std::endl;
+      error_msg_hardware_panic_++;
     }
     // std::cout << temp_message.str() << std::endl;
     /*

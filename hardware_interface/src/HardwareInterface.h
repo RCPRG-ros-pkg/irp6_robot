@@ -85,6 +85,7 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<bool> synchro_needed_;
 
   int number_of_drives_;
+  int error_msg_hardware_panic_;
 
   // Properties
   std::vector<std::string> active_motors_;
