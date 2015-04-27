@@ -52,8 +52,13 @@ def generateCircle(P1, P2, P3, T):
 # MAIN
 
 rospy.init_node('irp6pm_circle')
-rospy.wait_for_service('/controller_manager/switch_controller')
-conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+
+  if len(sys.argv) > 1 and sys.argv[1]=="csn":
+      rospy.wait_for_service('/irp6p_manager/switch_controller')
+      conmanSwitch = rospy.ServiceProxy('/irp6p_manager/switch_controller', SwitchController)
+  else :
+    rospy.wait_for_service('/controller_manager/switch_controller')
+    conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
 
   #
   # Deactivate all generators
