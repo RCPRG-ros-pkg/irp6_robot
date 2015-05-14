@@ -46,7 +46,6 @@ class Irp6tfgJ2M : public RTT::TaskContext {
 
  private:
   bool i2mp(const double* joints, double* motors);
-  bool checkMotorPosition(const double * motor_position);
   RTT::InputPort<Eigen::VectorXd> port_joint_position_;
   RTT::OutputPort<Eigen::VectorXd> port_motor_position_;
 

@@ -44,6 +44,7 @@ Irp6scheme.latchConnections("Irp6HardwareInterface", "Irp6ptfgRegulator", true);
 Irp6scheme.addBlock("Irp6pmPortDoubleSplit_hw_cp")
 Irp6scheme.addBlock("IRp6pmLimitDetector")
 Irp6scheme.addBlock("Irp6ptfgPortDoubleSplit_hw_cp")
+Irp6scheme.addBlock("IRp6ptfgLimitDetector")
 Irp6scheme.addBlock("Irp6pmPortDoubleAggregate_hw_p")
 Irp6scheme.addBlock("Irp6ptfgPortDoubleAggregate_hw_p")
 Irp6scheme.addBlock("Irp6pmPortDoubleAggregate_hw_curr")

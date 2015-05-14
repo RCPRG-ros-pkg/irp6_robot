@@ -64,15 +64,6 @@ void Irp6tfgJ2M::updateHook() {
 bool Irp6tfgJ2M::i2mp(const double* joints, double* motors) {
   // Obliczenie kata obrotu walu silnika napedowego chwytaka.
   motors[0] = inv_a_7 * sqrt(inv_b_7 + inv_c_7 * joints[0]) + inv_d_7;
-  return checkMotorPosition(motors);
-}
-
-bool Irp6tfgJ2M::checkMotorPosition(const double * motor_position) {
-  if (motor_position[0] < LOWER_MOTOR_LIMIT[0])  // Kat f1 mniejszy od minimalnego
-    return false;  // throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_0);
-  else if (motor_position[0] > UPPER_MOTOR_LIMIT[0])  // Kat f1 wiekszy od maksymalnego
-    return false;  // throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_0);
-
   return true;
 }
 

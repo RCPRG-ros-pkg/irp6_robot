@@ -124,6 +124,14 @@
         joint_names: [joint1]
         lower_limits: [-1800.0]
         upper_limits: [1200.0]
+      IRp6ptfgLimitDetector:
+        detector_name: IRp6ptfg
+        console_notification_active: true
+        lower_pos_limit: [-1800.0]
+        upper_pos_limit: [1200.0]
+        pos_inc_limit: [1000.0]
+        pos_limit_active: [true]
+        pos_inc_limit_active: [true]
       IRp6pmRegulator_0:
         reg_number: 2
         debug: false
