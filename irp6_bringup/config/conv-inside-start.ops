@@ -1,5 +1,6 @@
 ConveyorRegulator.start()
 ConveyorPortDoubleSplit_hw_cp.start()
+ConveyorLimitDetector.start()
 ConveyorPortDoubleAggregate_hw_p.start()
 ConveyorPortDoubleSum.start()
 ConveyorM2J.start()

@@ -32,6 +32,14 @@
         joint_names: [joint1]
         lower_limits: [-100000.0]
         upper_limits: [100000.0]
+      ConveyorLimitDetector:
+        detector_name: Conveyor
+        console_notification_active: true
+        lower_pos_limit: [0.0]
+        upper_pos_limit: [0.0]
+        pos_inc_limit: [0.0]
+        pos_limit_active: [false]
+        pos_inc_limit_active: [false]
       ConveyorRegulator:
         reg_number: 1
         debug: false

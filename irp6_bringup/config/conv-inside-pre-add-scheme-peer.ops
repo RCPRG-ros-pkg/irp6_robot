@@ -1,4 +1,11 @@
 
+
+loadComponent("ConveyorLimitDetector","LimitDetector")
+ConveyorLimitDetector.loadService("rosparam")
+ConveyorLimitDetector.rosparam.getAll()
+ConveyorLimitDetector.configure()
+
+
 // Motors Regulators
 
 
@@ -56,8 +63,11 @@ ConveyorSplineTrajectoryGeneratorJoint.configure()
 loadComponent("ConveyorSplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
 ConveyorSplineTrajectoryGeneratorMotor.loadService("rosparam");
 ConveyorSplineTrajectoryGeneratorMotor.rosparam.getAll();
+
+connect("ConveyorLimitDetector.OutputPort","Irp6pmPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+
 connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
-connect("ConveyorSplineTrajectoryGeneratorMotor.JointPositionCommand","ConveyorPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+connect("ConveyorSplineTrajectoryGeneratorMotor.JointPositionCommand","ConveyorLimitDetector.InputPort", ConnPolicy())
 ConveyorSplineTrajectoryGeneratorMotor.configure()
 
 
@@ -72,7 +82,7 @@ connect("ConveyorRegulator.EmergencyStopOut","Irp6HardwareInterface.EmergencySto
 
 
 connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorM2J.MotorPosition", ConnPolicy())
-connect("ConveyorJ2M.MotorPosition", "ConveyorPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+connect("ConveyorJ2M.MotorPosition", "ConveyorLimitDetector.InputPort", ConnPolicy())
 connect("ConveyorPortDoubleSplit_hw_cp.OutputPort_0","Irp6HardwareInterface.MotorPositionCommand_conveyor", ConnPolicy())
 connect("ConveyorPortDoubleSplit_hw_cp.OutputPort_0","ConveyorRegulator.DesiredPosition", ConnPolicy())
 connect("ConveyorPortDoubleAggregate_hw_p.InputPort_0","Irp6HardwareInterface.MotorPosition_conveyor", ConnPolicy())
