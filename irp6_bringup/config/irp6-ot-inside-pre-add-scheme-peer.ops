@@ -1,4 +1,24 @@
 
+
+//
+// Load IRp6otmLimitDetector components for Regulators
+//
+
+loadComponent("IRp6otmLimitDetector","LimitDetector")
+IRp6otmLimitDetector.loadService("rosparam")
+IRp6otmLimitDetector.rosparam.getAll()
+IRp6otmLimitDetector.configure()
+
+//
+// Load IRp6ottfgLimitDetector components for Regulators
+//
+
+loadComponent("IRp6ottfgLimitDetector","LimitDetector")
+IRp6ottfgLimitDetector.loadService("rosparam")
+IRp6ottfgLimitDetector.rosparam.getAll()
+IRp6ottfgLimitDetector.configure()
+
+
 //
 // Load PortDoubleSum components for Regulators
 //
@@ -219,8 +239,10 @@ loadComponent("Irp6otmSplineTrajectoryGeneratorMotor", "InternalSpaceSplineTraje
 Irp6otmSplineTrajectoryGeneratorMotor.loadService("rosparam");
 Irp6otmSplineTrajectoryGeneratorMotor.rosparam.getAll();
 
+connect("IRp6otmLimitDetector.OutputPort","Irp6otmPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+
 connect("Irp6otmPortDoubleAggregate_hw_p.OutputPort","Irp6otmSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
-connect("Irp6otmSplineTrajectoryGeneratorMotor.JointPositionCommand","Irp6otmPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+connect("Irp6otmSplineTrajectoryGeneratorMotor.JointPositionCommand","IRp6otmLimitDetector.InputPort", ConnPolicy())
 
 Irp6otmSplineTrajectoryGeneratorMotor.configure()
 
@@ -231,8 +253,10 @@ Irp6otmSplineTrajectoryGeneratorMotor.configure()
 Irp6ottfgSplineTrajectoryGeneratorMotor.loadService("rosparam");
 Irp6ottfgSplineTrajectoryGeneratorMotor.rosparam.getAll();
 
+connect("IRp6ottfgLimitDetector.OutputPort","Irp6ottfgPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+
 connect("Irp6ottfgPortDoubleAggregate_hw_p.OutputPort","Irp6ottfgSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
-connect("Irp6ottfgSplineTrajectoryGeneratorMotor.JointPositionCommand","Irp6ottfgPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+connect("Irp6ottfgSplineTrajectoryGeneratorMotor.JointPositionCommand","IRp6ottfgLimitDetector.InputPort", ConnPolicy())
 
 Irp6ottfgSplineTrajectoryGeneratorMotor.configure()
 
@@ -374,10 +398,10 @@ connect("Irp6otmPortDoubleAggregate_hw_desired.OutputPort","Irp6otmM2Jdesired.De
 
 
 
-connect("Irp6otmJ2M.MotorPosition", "Irp6otmPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+connect("Irp6otmJ2M.MotorPosition", "IRp6otmLimitDetector.InputPort", ConnPolicy())
 
 connect("Irp6ottfgPortDoubleAggregate_hw_p.OutputPort","Irp6ottfgM2J.MotorPosition", ConnPolicy())
-connect("Irp6ottfgJ2M.MotorPosition", "Irp6ottfgPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+connect("Irp6ottfgJ2M.MotorPosition", "IRp6ottfgLimitDetector.InputPort", ConnPolicy())
 
 connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_0","Irp6HardwareInterface.MotorPositionCommand_irp6otm_0", ConnPolicy())
 connect("Irp6otmPortDoubleSplit_hw_cp.OutputPort_1","Irp6HardwareInterface.MotorPositionCommand_irp6otm_1", ConnPolicy())

@@ -34,7 +34,9 @@ addPeer("Irp6scheme", "Irp6ottfgRegulator");
 
 
 addPeer("Irp6scheme", "Irp6otmPortDoubleSplit_hw_cp")
+addPeer("Irp6scheme", "IRp6otmLimitDetector")
 addPeer("Irp6scheme", "Irp6ottfgPortDoubleSplit_hw_cp")
+addPeer("Irp6scheme", "IRp6ottfgLimitDetector")
 addPeer("Irp6scheme", "Irp6otmPortDoubleAggregate_hw_p")
 addPeer("Irp6scheme", "Irp6otmPortDoubleAggregate_hw_desired")
 addPeer("Irp6scheme", "Irp6ottfgPortDoubleAggregate_hw_p")

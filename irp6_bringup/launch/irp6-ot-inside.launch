@@ -126,7 +126,7 @@
         console_notification_active: true
         lower_pos_limit: [-1000.0, -470.0, -110.0, -80.0, -70.0, -80.0, -1000.0]
         upper_pos_limit: [2000.0, 450.0, 100.0, 100.0, 380.0, 490.0, 3000.0]
-        pos_inc_limit: [1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]
+        pos_inc_limit: [1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]
         pos_limit_active: [true, true, true, true, true, true, true]
         pos_inc_limit_active: [true, true, true, true, true, true, true]
       Irp6ottfgSplineTrajectoryGeneratorMotor:
