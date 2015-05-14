@@ -110,42 +110,9 @@ bool Irp6pmJ2M::i2mp(const double* joints, double* motors) {
 // Obliczanie kata obrotu walu silnika napedowego obrotu kisci N
   motors[5] = GEAR[5] * joints[5] + SYNCHRO_JOINT_POSITION[5];
 
-  return checkMotorPosition(motors);
+  return true;
 }
 
-bool Irp6pmJ2M::checkMotorPosition(const double * motor_position) {
-  if (motor_position[0] < LOWER_MOTOR_LIMIT[0])  // Kat f1 mniejszy od minimalnego
-    return false;  // throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_0);
-  else if (motor_position[0] > UPPER_MOTOR_LIMIT[0])  // Kat f1 wiekszy od maksymalnego
-    return false;  // throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_0);
-
-  if (motor_position[1] < LOWER_MOTOR_LIMIT[1])  // Kat f2 mniejszy od minimalnego
-    return false;  // throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_1);
-  else if (motor_position[1] > UPPER_MOTOR_LIMIT[1])  // Kat f2 wiekszy od maksymalnego
-    return false;  // throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_1);
-
-  if (motor_position[2] < LOWER_MOTOR_LIMIT[2])  // Kat f3 mniejszy od minimalnego
-    return false;  // throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_2);
-  else if (motor_position[2] > UPPER_MOTOR_LIMIT[2])  // Kat f3 wiekszy od maksymalnego
-    return false;  // throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_2);
-
-  if (motor_position[3] < LOWER_MOTOR_LIMIT[3])  // Kat f4 mniejszy od minimalnego
-    return false;  // throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_3);
-  else if (motor_position[3] > UPPER_MOTOR_LIMIT[3])  // Kat f4 wiekszy od maksymalnego
-    return false;  // throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_3);
-
-  if (motor_position[4] < LOWER_MOTOR_LIMIT[4])  // Kat f5 mniejszy od minimalnego
-    return false;  // throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_4);
-  else if (motor_position[4] > UPPER_MOTOR_LIMIT[4])  // Kat f5 wiekszy od maksymalnego
-    return false;  // throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_4);
-
-  if (motor_position[5] < LOWER_MOTOR_LIMIT[5])  // Kat f6 mniejszy od minimalnego
-    return false;  // throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_5);
-  else if (motor_position[5] > UPPER_MOTOR_LIMIT[5])  // Kat f6 wiekszy od maksymalnego
-    return false;  // throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_5);
-
-  return true;
-}  // check_motor_position
 
 ORO_CREATE_COMPONENT(Irp6pmJ2M)
 

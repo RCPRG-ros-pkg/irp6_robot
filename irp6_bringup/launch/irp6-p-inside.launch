@@ -98,6 +98,14 @@
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
         lower_limits: [-0.45, -2.2689280276, -0.6108652382, -1.5707963268, -10.0, -2.88]
         upper_limits: [2.9670597284, -0.872664626, 0.6981317008, 1.6057029118, 10.0, 2.93]
+      IRp6pmLimitDetector:
+        detector_name: IRp6pm
+        console_notification_active: true
+        lower_pos_limit: [-470.0, -110.0, -80.0, -70.0, -80.0, -1000.0]
+        upper_pos_limit: [450.0, 100.0, 100.0, 380.0, 490.0, 3000.0]
+        pos_inc_limit: [1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]
+        pos_limit_active: [true, true, true, true, true, true]
+        pos_inc_limit_active: [true, true, true, true, true, true]
       Irp6ptfgSplineTrajectoryGeneratorJoint:
         number_of_joints: 1
       Irp6ptfgSplineTrajectoryActionJoint:

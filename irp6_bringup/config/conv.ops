@@ -23,6 +23,7 @@ ros.import("controller_common")
 ros.import("port_operations")
 ros.import("eigen_typekit");
 ros.import("rtt_tf");
+ros.import("limit_detector");
 
 
 
