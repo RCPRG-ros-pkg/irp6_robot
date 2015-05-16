@@ -51,6 +51,8 @@ loadComponent("Irp6pmSplineTrajectoryActionMotor", "InternalSpaceSplineTrajector
 setActivity("Irp6pmSplineTrajectoryActionMotor",0.01 ,2 ,ORO_SCHED_RT)
 Irp6pmSplineTrajectoryActionMotor.loadService("rosparam");
 Irp6pmSplineTrajectoryActionMotor.rosparam.getAll();
+Irp6pmSplineTrajectoryActionMotor.rosparam.getParam("~/Irp6pmMotorParameters/upper_limits", "upper_limits")
+Irp6pmSplineTrajectoryActionMotor.rosparam.getParam("~/Irp6pmMotorParameters/lower_limits", "lower_limits")
 
 Irp6pmSplineTrajectoryActionMotor.loadService("actionlib")
 Irp6pmSplineTrajectoryActionMotor.actionlib.connect("/irp6p_arm/spline_trajectory_action_motor")
@@ -70,6 +72,8 @@ loadComponent("Irp6ptfgSplineTrajectoryActionMotor", "InternalSpaceSplineTraject
 setActivity("Irp6ptfgSplineTrajectoryActionMotor",0.01 ,2 ,ORO_SCHED_RT)
 Irp6ptfgSplineTrajectoryActionMotor.loadService("rosparam");
 Irp6ptfgSplineTrajectoryActionMotor.rosparam.getAll();
+Irp6ptfgSplineTrajectoryActionMotor.rosparam.getParam("~/Irp6ptfgMotorParameters/upper_limits", "upper_limits")
+Irp6ptfgSplineTrajectoryActionMotor.rosparam.getParam("~/Irp6ptfgMotorParameters/lower_limits", "lower_limits")
 
 Irp6ptfgSplineTrajectoryActionMotor.loadService("actionlib")
 Irp6ptfgSplineTrajectoryActionMotor.actionlib.connect("/irp6p_tfg/spline_trajectory_action_motor")

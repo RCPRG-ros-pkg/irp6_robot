@@ -3,6 +3,8 @@
 loadComponent("ConveyorLimitDetector","LimitDetector")
 ConveyorLimitDetector.loadService("rosparam")
 ConveyorLimitDetector.rosparam.getAll()
+ConveyorLimitDetector.rosparam.getParam("~/ConveyorMotorParameters/upper_limits", "upper_limits")
+ConveyorLimitDetector.rosparam.getParam("~/ConveyorMotorParameters/lower_limits", "lower_limits")
 ConveyorLimitDetector.configure()
 
 

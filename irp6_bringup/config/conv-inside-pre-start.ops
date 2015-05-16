@@ -27,7 +27,8 @@ loadComponent("ConveyorSplineTrajectoryActionMotor", "InternalSpaceSplineTraject
 setActivity("ConveyorSplineTrajectoryActionMotor",0.01 ,2 ,ORO_SCHED_RT)
 ConveyorSplineTrajectoryActionMotor.loadService("rosparam");
 ConveyorSplineTrajectoryActionMotor.rosparam.getAll();
-
+ConveyorSplineTrajectoryActionMotor.rosparam.getParam("~/ConveyorMotorParameters/upper_limits", "upper_limits")
+ConveyorSplineTrajectoryActionMotor.rosparam.getParam("~/ConveyorMotorParameters/lower_limits", "lower_limits")
 ConveyorSplineTrajectoryActionMotor.loadService("actionlib")
 ConveyorSplineTrajectoryActionMotor.actionlib.connect("/conveyor/spline_trajectory_action_motor")
 

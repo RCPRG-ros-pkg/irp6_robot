@@ -7,6 +7,8 @@
 loadComponent("IRp6pmLimitDetector","LimitDetector")
 IRp6pmLimitDetector.loadService("rosparam")
 IRp6pmLimitDetector.rosparam.getAll()
+IRp6pmLimitDetector.rosparam.getParam("~/Irp6pmMotorParameters/upper_limits", "upper_limits")
+IRp6pmLimitDetector.rosparam.getParam("~/Irp6pmMotorParameters/lower_limits", "lower_limits")
 IRp6pmLimitDetector.configure()
 
 //
@@ -16,6 +18,8 @@ IRp6pmLimitDetector.configure()
 loadComponent("IRp6ptfgLimitDetector","LimitDetector")
 IRp6ptfgLimitDetector.loadService("rosparam")
 IRp6ptfgLimitDetector.rosparam.getAll()
+IRp6ptfgLimitDetector.rosparam.getParam("~/Irp6ptfgMotorParameters/upper_limits", "upper_limits")
+IRp6ptfgLimitDetector.rosparam.getParam("~/Irp6ptfgMotorParameters/lower_limits", "lower_limits")
 IRp6ptfgLimitDetector.configure()
 
 
