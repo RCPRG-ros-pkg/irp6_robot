@@ -107,6 +107,7 @@
       Irp6pmMotorParameters:
         lower_limits: [-470.0, -110.0, -80.0, -70.0, -80.0, -1000.0]
         upper_limits: [450.0, 100.0, 100.0, 380.0, 490.0, 3000.0]
+        synchro_motor_position: [-15.9, -5.0, -8.527, 151.31, 432.25, 791.0]
       Irp6pmSplineTrajectoryGeneratorMotor:
         number_of_joints: 6
       Irp6pmSplineTrajectoryActionMotor:
@@ -271,8 +272,6 @@
         force_limits: [65.0, 65.0, 130.0, 5.0, 5.0, 5.0]
         slow_buffer_size: 100
         fast_buffer_size: 2
-      Irp6pmSynchroMotorPos:
-        synchro_motor_position: [-15.9, -5.0, -8.527, 151.31, 432.25, 791.0]
       Irp6pWrenchPublisher:
         frame_id: pl_ef
       Irp6pTfPublisher:
