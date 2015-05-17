@@ -1,37 +1,15 @@
 import("rtt_ros")
-ros.import("rtt_rosnode")
-ros.import("rtt_actionlib")
-ros.import("rtt_std_msgs")
-ros.import("rtt_sensor_msgs")
-ros.import("rtt_actionlib_msgs")
-ros.import("rtt_trajectory_msgs")
-ros.import("rtt_control_msgs")
-ros.import("rtt_cartesian_trajectory_msgs")
-ros.import("rtt_force_control_msgs")
-ros.import("rtt_hi_msgs")
 ros.import("rtt_rospack")
 
-ros.import("conman")
-ros.import("rtt_conman_msgs")
-ros.import("conman_ros")
-ros.import("hardware_interface")
-ros.import("irp6_regulator")
-ros.import("oro_joint_state_publisher")
-ros.import("internal_space_spline_trajectory_action")
-ros.import("internal_space_spline_trajectory_generator")
+runScript( ros.find("irp6_bringup") + "/config/common-imports.ops")
+
 ros.import("irp6pm_kinematic")
 ros.import("irp6otm_kinematic")
 ros.import("irp6tfg_kinematic")
 ros.import("conveyor_kinematic")
-ros.import("controller_common")
 ros.import("force_control")
 ros.import("irp6_force_sensor")
-ros.import("port_operations")
 ros.import("irp6_haptic")
-ros.import("eigen_typekit");
-ros.import("rtt_tf");
-ros.import("limit_detector");
-
 
 
 //------------------------------------------------------------------------------
