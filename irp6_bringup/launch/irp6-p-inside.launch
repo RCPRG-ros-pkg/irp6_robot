@@ -132,7 +132,6 @@
         pos_limit_active: [true]
         pos_inc_limit_active: [true]
       IRp6pmRegulator_0:
-        reg_number: 2
         debug: false
         eint_dif: 0.01
         A: 0.412429378531
@@ -144,7 +143,6 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6pmRegulator_1:
-        reg_number: 3
         debug: false
         eint_dif: 0.008
         A: 0.655629139073
@@ -156,7 +154,6 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6pmRegulator_2:
-        reg_number: 4
         debug: false
         eint_dif: 0.008
         A: 0.315789473684
@@ -168,7 +165,6 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6pmRegulator_3:
-        reg_number: 5
         debug: false
         eint_dif: 0.01
         A: 0.548946716233
@@ -180,7 +176,6 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6pmRegulator_4:
-        reg_number: 6
         debug: false
         eint_dif: 0.02
         A: 0.391982182628
@@ -192,7 +187,6 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6pmRegulator_5:
-        reg_number: 7
         debug: false
         eint_dif: 0.005
         A: 0.3
@@ -204,7 +198,6 @@
         max_desired_increment: 200.0
         enc_res: 2000.0
       Irp6ptfgRegulator:
-        reg_number: 8
         debug: false
         eint_dif: 0.02
         A: 0.2

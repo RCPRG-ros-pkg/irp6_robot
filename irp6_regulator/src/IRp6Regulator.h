@@ -62,7 +62,6 @@ class IRp6Regulator : public RTT::TaskContext {
   int64_t new_position_iteration_number_;
 
   // Properties
-  int reg_number_;
   bool debug_;
   double A_;
   double BB0_;
