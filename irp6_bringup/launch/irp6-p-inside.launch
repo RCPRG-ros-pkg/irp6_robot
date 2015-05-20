@@ -197,7 +197,7 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6pmRegulator_5:
-      label: irp6pm_5
+        label: irp6pm_5
         reg_number: 7
         debug: false
         eint_dif: 0.005
