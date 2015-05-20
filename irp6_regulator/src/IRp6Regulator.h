@@ -63,6 +63,7 @@ class IRp6Regulator : public RTT::TaskContext {
 
   // Properties
   int reg_number_;
+  std::string label_;
   bool debug_;
   double A_;
   double BB0_;

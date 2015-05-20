@@ -40,6 +40,7 @@
         pos_limit_active: [false]
         pos_inc_limit_active: [false]
       ConveyorRegulator:
+        label: conveyor
         reg_number: 1
         debug: false
         eint_dif: 0.008

@@ -93,6 +93,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addProperty("eint_dif", eint_dif_).doc("");
   this->addProperty("max_desired_increment", max_desired_increment_).doc("");
   this->addProperty("enc_res", enc_res_).doc("");
+  this->addProperty("label", label_).doc("");
 }
 
 IRp6Regulator::~IRp6Regulator() {
@@ -136,7 +137,7 @@ void IRp6Regulator::updateHook() {
             * (enc_res_ / (2.0 * M_PI));
 
     if (fabs(desired_position_increment_) > max_desired_increment_) {
-      std::cout << "very high pos_inc_: " << reg_number_ << " pos_inc: "
+      std::cout << "very high pos_inc_: " << label_<< " rn: " << reg_number_ << " pos_inc: "
                 << desired_position_increment_ << std::endl;
 
       emergency_stop_out_.write(true);
