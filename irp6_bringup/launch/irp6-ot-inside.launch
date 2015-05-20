@@ -169,7 +169,7 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6otmRegulator_2:
-      label: irp6otm_2
+        label: irp6otm_2
         reg_number: 11
         debug: false
         eint_dif: 0.008
