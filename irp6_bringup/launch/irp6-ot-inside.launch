@@ -143,7 +143,6 @@
         pos_limit_active: [true]
         pos_inc_limit_active: [true]
       IRp6otmRegulator_0:
-        label: irp6otm_0
         reg_number: 9
         debug: false
         eint_dif: 0.01
@@ -156,7 +155,6 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6otmRegulator_1:
-        label: irp6otm_1
         reg_number: 10
         debug: false
         eint_dif: 0.01
@@ -169,7 +167,6 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6otmRegulator_2:
-        label: irp6otm_2
         reg_number: 11
         debug: false
         eint_dif: 0.008
@@ -182,7 +179,6 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6otmRegulator_3:
-        label: irp6otm_3
         reg_number: 12
         debug: false
         eint_dif: 0.008
@@ -195,7 +191,6 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6otmRegulator_4:
-        label: irp6otm_4
         reg_number: 13
         debug: false
         eint_dif: 0.01
@@ -208,7 +203,6 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6otmRegulator_5:
-        label: irp6otm_5
         reg_number: 14
         debug: false
         eint_dif: 0.02
@@ -221,7 +215,6 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6otmRegulator_6:
-        label: irp6otm_6
         reg_number: 15
         debug: false
         eint_dif: 0.005
@@ -234,7 +227,6 @@
         max_desired_increment: 200.0
         enc_res: 2000.0
       Irp6ottfgRegulator:
-        label: irp6ottfg
         reg_number: 16
         debug: false
         eint_dif: 0.02

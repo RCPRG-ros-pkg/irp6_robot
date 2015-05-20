@@ -28,7 +28,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
 #include <std_msgs/Float64.h>
@@ -93,7 +92,6 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addProperty("eint_dif", eint_dif_).doc("");
   this->addProperty("max_desired_increment", max_desired_increment_).doc("");
   this->addProperty("enc_res", enc_res_).doc("");
-  this->addProperty("label", label_).doc("");
 }
 
 IRp6Regulator::~IRp6Regulator() {
@@ -137,8 +135,8 @@ void IRp6Regulator::updateHook() {
             * (enc_res_ / (2.0 * M_PI));
 
     if (fabs(desired_position_increment_) > max_desired_increment_) {
-      std::cout << "very high pos_inc_: " << label_<< " rn: " << reg_number_ << " pos_inc: "
-                << desired_position_increment_ << std::endl;
+      std::cout << "very high pos_inc_: " << getName() << " rn: " << reg_number_
+                << " pos_inc: " << desired_position_increment_ << std::endl;
 
       emergency_stop_out_.write(true);
     }
@@ -197,10 +195,10 @@ int IRp6Regulator::doServo(double step_new, int pos_inc) {
 // obliczenie nowej wartosci wypelnienia PWM algorytm PD + I
   set_value_new = (1 + a_) * set_value_old - a_ * set_value_very_old
       + b0_ * delta_eint - b1_ * delta_eint_old;
-/*
-  std::cout << "PWM VALUE (" << pos_inc << " to " << pos_inc_new << ") IS "
-  << (int) set_value_new << std::endl;
-*/
+  /*
+   std::cout << "PWM VALUE (" << pos_inc << " to " << pos_inc_new << ") IS "
+   << (int) set_value_new << std::endl;
+   */
 // ograniczenie na sterowanie
   if (set_value_new > MAX_PWM)
     set_value_new = MAX_PWM;
@@ -230,7 +228,7 @@ int IRp6Regulator::doServo(double step_new, int pos_inc) {
   set_value_very_old = set_value_old;
   set_value_old = set_value_new;
 
-  return (static_cast<int> (output_value));
+  return (static_cast<int>(output_value));
 }
 
 void IRp6Regulator::reset() {
