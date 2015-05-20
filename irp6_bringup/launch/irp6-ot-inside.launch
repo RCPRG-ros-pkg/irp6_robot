@@ -124,7 +124,6 @@
       Irp6otmSplineTrajectoryActionMotor:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6, joint7]
       IRp6otmLimitDetector:
-        detector_name: IRp6otm
         console_notification_active: true
         pos_inc_limit: [1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]
         pos_limit_active: [true, true, true, true, true, true, true]
@@ -137,7 +136,6 @@
       Irp6ottfgSplineTrajectoryActionMotor:
         joint_names: [joint1]
       IRp6ottfgLimitDetector:
-        detector_name: IRp6ottfg
         console_notification_active: true
         pos_inc_limit: [1000.0]
         pos_limit_active: [true]

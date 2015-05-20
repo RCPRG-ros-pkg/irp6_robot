@@ -34,7 +34,6 @@
       ConveyorSplineTrajectoryActionMotor:
         joint_names: [joint1]
       ConveyorLimitDetector:
-        detector_name: Conveyor
         console_notification_active: true
         pos_inc_limit: [0.0]
         pos_limit_active: [false]
