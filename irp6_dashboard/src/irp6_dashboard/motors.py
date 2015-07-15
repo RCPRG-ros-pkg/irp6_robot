@@ -67,6 +67,7 @@ class Motors(MenuDashWidget):
         super(Motors, self).__init__('Motors', icons)
         self.update_state(3)
 
+        self.add_action('Motion one', self.on_motion_one)
         self.add_action('Init pose', self.on_init_pose)
         self.add_action('Sit down && remove stiffness', self.on_sit_down)
         self.add_action('Remove stiffness immediately', self.on_remove_stiffness)
@@ -91,7 +92,11 @@ class Motors(MenuDashWidget):
     def on_init_pose(self):
         self.stiffnessEnableClient.call()
         self.bodyPoseClient.send_goal_and_wait(BodyPoseGoal(pose_name = 'init'))
-  
+
+    def on_motion_one(self):
+        QMessageBox.information(self, 'Caution', 
+                     'Irpos motion one', QMessageBox.Ok)
+
     def on_sit_down(self):
         self.bodyPoseClient.send_goal_and_wait(BodyPoseGoal(pose_name = 'crouch'))
         state = self.bodyPoseClient.get_state()
