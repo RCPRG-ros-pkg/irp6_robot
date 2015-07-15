@@ -31,7 +31,7 @@ CartesianTrajectoryPoint(rospy.Duration(6.0), pm.toMsg(rot), Twist()),CartesianT
 	toolParams = Pose(Point(0.0, 0.0, 0.25), Quaternion(0.0, 0.0, 0.0, 1.0))
 	irpos.set_tool_geometry_params(toolParams)
 
-	print "Irp6p 'multi_trajectory' test compleated"
+	print "Irp6p 'multi_trajectory' test completed"
 
 def irp6p_multi_trajectory2():
 	irpos = IRPOS("IRpOS", "Irp6p", 6)
@@ -59,7 +59,7 @@ def irp6p_multi_trajectory2():
 	toolParams = Pose(Point(0.0, 0.0, 0.25), Quaternion(0.0, 0.0, 0.0, 1.0))
 	irpos.set_tool_geometry_params(toolParams)
 
-	print "Irp6p 'multi_trajectory2' test compleated"
+	print "Irp6p 'multi_trajectory2' test completed"
 
 def irp6p_get_status():
 	irpos = IRPOS("IRpOS", "Irp6p", 6)
@@ -73,20 +73,20 @@ def irp6p_get_status():
 	print('[Wrench]')
 	print str(irpos.get_force_readings())
 
-	print "Irp6p 'get_status test compleated"
+	print "Irp6p 'get_status test completed"
 
 def irp6p_synchro_position():
 	irpos = IRPOS("IRpOS", "Irp6p", 6)
 
 	irpos.move_to_synchro_position(10.0)
 
-	print "Irp6p 'synchro_position' test compleated"
+	print "Irp6p 'synchro_position' test completed"
 
 # TRACK DEMOS
 
 def irp6otm_multi_trajectory():
 		
-	print "Irp6otm 'multi_trajectory' test compleated"
+	print "Irp6otm 'multi_trajectory' test completed"
 
 def irp6otm_multi_trajectory2():
 	irpos = IRPOS("IRpOS", "Irp6ot", 7)
@@ -97,7 +97,7 @@ def irp6otm_multi_trajectory2():
 	irpos.move_to_joint_position([0.0, 0.4, -1.5418065817051163, 0.0, 1.5, 1.57, -2.0], 3.0)
 	irpos.move_to_joint_position([0.1, 0.0, -1.5418065817051163, 0.0, 1.5, 1.57, -1.57], 3.0)
 
-	print "Irp6otm 'multi_trajectory2' test compleated"
+	print "Irp6otm 'multi_trajectory2' test completed"
 
 def irp6otm_get_status():
 	irpos = IRPOS("IRpOS", "Irp6ot", 7)
@@ -111,14 +111,14 @@ def irp6otm_get_status():
 	print('[Wrench]')
 	print str(irpos.get_force_readings())
 
-	print "Irp6otm 'get_status' test compleated"
+	print "Irp6otm 'get_status' test completed"
 
 def irp6otm_synchro_position():
 	irpos = IRPOS("IRpOS", "Irp6ot", 7)
 
 	irpos.move_to_synchro_position(10.0)
 
-	print "Irp6otm 'synchro_position' test compleated"
+	print "Irp6otm 'synchro_position' test completed"
 	
 def test():
 	print 'START TEST'

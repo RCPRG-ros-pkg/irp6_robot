@@ -76,8 +76,8 @@ class IRPOS:
 		self.robot_joint_names = []
 		for i in range(1,robotJointNumbers+1):
 			self.robot_joint_names.append('joint'+str(i))
-
-		rospy.init_node(nodeName)
+		if nodeName != '':
+			rospy.init_node(nodeName)
 		
 		robotNameLower = robotName.lower()
 
