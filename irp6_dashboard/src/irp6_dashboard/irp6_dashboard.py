@@ -7,6 +7,7 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtGui import QWidget
 
+from .motors import Motors
 
 from rqt_robot_dashboard.dashboard import Dashboard
 from rqt_robot_dashboard.monitor_dash_widget import MonitorDashWidget
@@ -22,10 +23,13 @@ class Irp6Dashboard(Dashboard):
 
         # Rosout
         self._console = ConsoleDashWidget(self.context, minimal=False)
+        
+        ## Motors
+        self._motors_button = Motors(self.context)
 
     def get_widgets(self):
         return [
-                [self._monitor, self._console]
+                [self._monitor, self._console, self._motors_button]
                ]
 
     def shutdown_dashboard(self):
