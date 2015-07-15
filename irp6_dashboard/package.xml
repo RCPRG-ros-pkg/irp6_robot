@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>rqt_irp6</name>
+  <name>irp6_dashboard</name>
   <version>0.0.0</version>
-  <description>The rqt_irp6 package to show irp6 status and interact with the irp6 robot</description>
+  <description>The irp6_dashboard package to show irp6 status and interact with the irp6 robot using rqt</description>
 
   <maintainer email="tomrobotics@gmail.com">Tomasz Winiarski</maintainer>
 

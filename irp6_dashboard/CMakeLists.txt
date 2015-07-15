@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(rqt_irp6)
+project(irp6_dashboard)
 
 
 find_package(catkin REQUIRED COMPONENTS
@@ -23,7 +23,7 @@ catkin_python_setup()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES rqt_irp6
+#  LIBRARIES irp6_dashboard
 #  CATKIN_DEPENDS rospy rqt_gui rqt_gui_py
 #  DEPENDS system_lib
 )
@@ -45,7 +45,7 @@ include_directories(
 #############
 
 
-install(PROGRAMS scripts/rqt_irp6
+install(PROGRAMS scripts/irp6_dashboard
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
