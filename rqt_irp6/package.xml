@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package>
+  <name>rqt_irp6</name>
+  <version>0.0.0</version>
+  <description>The rqt_irp6 package to show irp6 status and interact with the irp6 robot</description>
+
+  <maintainer email="tomrobotics@gmail.com">Tomasz Winiarski</maintainer>
+
+
+  <license>TODO</license>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>rqt_gui</run_depend>
+  <run_depend>rqt_gui_py</run_depend>
+
+
+ <export>
+    <architecture_independent/>
+    <rqt_gui plugin="${prefix}/plugin.xml"/>
+  </export>
+</package>
