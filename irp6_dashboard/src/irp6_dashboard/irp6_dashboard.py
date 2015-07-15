@@ -12,9 +12,9 @@ from rqt_robot_dashboard.dashboard import Dashboard
 from rqt_robot_dashboard.monitor_dash_widget import MonitorDashWidget
 from rqt_robot_dashboard.console_dash_widget import ConsoleDashWidget
 
-class MyPlugin(Dashboard):
+class Irp6Dashboard(Dashboard):
     def setup(self, context):
-        self.name = 'NAO Dashboard (%s)'%rosenv.get_master_uri()
+        self.name = 'Irp6 Dashboard (%s)'%rosenv.get_master_uri()
 
         
         # Diagnostics

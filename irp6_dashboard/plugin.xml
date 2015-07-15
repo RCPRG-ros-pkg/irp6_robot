@@ -1,7 +1,7 @@
 <library path="src">
-  <class name="My Plugin" type="irp6_dashboard.my_module.MyPlugin" base_class_type="rqt_gui_py::Plugin">
+  <class name="Irp6Dashboard" type="irp6_dashboard.irp6_dashboard.Irp6Dashboard" base_class_type="rqt_gui_py::Plugin">
     <description>
-      An example Python GUI plugin to create a great user interface.
+      A Python GUI plugin for displaying a dashboard that displays and interacts with irp6 robot.
     </description>
     <qtgui>
       <!-- optional grouping...
@@ -12,9 +12,9 @@
         <label>Subgroup</label>
       </group>
       -->
-      <label>My first Python Plugin</label>
+      <label>Irp6 Dashboard</label>
       <icon type="theme">system-help</icon>
-      <statustip>Great user interface to provide real value.</statustip>
+      <statustip>A Python GUI plugin for displaying a dashboard that displays and interacts with irp6 robot.</statustip>
     </qtgui>
   </class>
 </library>
