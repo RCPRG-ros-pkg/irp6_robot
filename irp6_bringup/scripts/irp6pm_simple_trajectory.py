@@ -3,6 +3,7 @@
 import rospy
 import tf
 import actionlib
+import time
 
 from controller_manager_msgs.srv import *
 from std_msgs.msg import *
@@ -15,6 +16,10 @@ from cartesian_trajectory_msgs.msg import *
 from tf.transformations import *
 
 from PyKDL import Rotation
+
+def done_callback(state, result):
+	print "Done callback"
+	conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorJoint'], True)
 
 if __name__ == '__main__':
   rospy.init_node('irp6pm_simple_trajectory')
@@ -29,6 +34,8 @@ if __name__ == '__main__':
   #
   # Deactivate all generators
   #
+  
+  # done_callback()
   
   conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
   
@@ -48,12 +55,18 @@ if __name__ == '__main__':
   goal.trajectory.points.append(JointTrajectoryPoint([1.57, -1.5418065817051163, 0.0, 1.57, 1.57, -2.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
   goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
 
-  client.send_goal(goal)
+  client.send_goal(goal, done_callback)
+  
+  print 'za send goal'
 
-  client.wait_for_result()
-  command_result = client.get_result()
+  # client.wait_for_result()
+  # command_result = client.get_result()
   
-  conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorJoint'], True)
+  # conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorJoint'], True)
   
+  
+  time.sleep(20)
   print 'finish'
+  
+
 

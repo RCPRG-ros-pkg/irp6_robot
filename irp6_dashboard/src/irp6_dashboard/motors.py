@@ -44,7 +44,6 @@ import std_srvs.srv
 from irpos import *
 # from naoqi_msgs.msg import BodyPoseAction, BodyPoseGoal
 
-
 class Motors(MenuDashWidget):
     """
     Dashboard widget to display motor state and allow interaction.
@@ -67,11 +66,13 @@ class Motors(MenuDashWidget):
 
         super(Motors, self).__init__('Motors', icons)
         self.update_state(3)
-
-        self.add_action('Motion one', self.on_motion_one)
-        self.add_action('Init pose', self.on_init_pose)
-        self.add_action('Sit down && remove stiffness', self.on_sit_down)
-        self.add_action('Remove stiffness immediately', self.on_remove_stiffness)
+        
+        self.add_action('Irp6p move to synchro pos', self.irp6p_move_to_synchro_pos)
+        self.add_action('Irp6ot move to synchro pos', self.irp6ot_move_to_synchro_pos)
+        # self.add_action('Motion one', self.on_motion_one)
+        # self.add_action('Init pose', self.on_init_pose)
+        # self.add_action('Sit down && remove stiffness', self.on_sit_down)
+        # self.add_action('Remove stiffness immediately', self.on_remove_stiffness)
 
         # clients for controlling the robot
         # self.bodyPoseClient = actionlib.SimpleActionClient('body_pose', BodyPoseAction)
@@ -79,7 +80,18 @@ class Motors(MenuDashWidget):
         # self.stiffnessDisableClient = rospy.ServiceProxy("body_stiffness/disable", std_srvs.srv.Empty)
 
         self.irpos = IRPOS("", "Irp6p", 6)
-
+        
+    def irp6p_done_callback(self,state, result):
+        print "self Done callback"
+        self.conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
+        self.set_ok()
+        
+        
+    def irp6ot_done_callback(self,state, result):
+        print "self Done callback"
+        self.conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
+        self.set_ok()
+        
     def set_ok(self):
         self.update_state(0)
 
@@ -95,6 +107,65 @@ class Motors(MenuDashWidget):
     def on_init_pose(self):
         self.stiffnessEnableClient.call()
         self.bodyPoseClient.send_goal_and_wait(BodyPoseGoal(pose_name = 'init'))
+
+    def irp6p_move_to_synchro_pos(self):
+        rospy.wait_for_service('/controller_manager/switch_controller')
+        self.conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+        self.conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
+  
+  
+        self.conmanSwitch(['Irp6pmSplineTrajectoryGeneratorMotor'], [], True)
+    
+        self.client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_motor', FollowJointTrajectoryAction)
+        self.client.wait_for_server()
+
+        print 'server ok'
+
+        goal = FollowJointTrajectoryGoal()
+        goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
+        goal.trajectory.points.append(JointTrajectoryPoint([0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
+        goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+
+        self.client.send_goal(goal, self.irp6p_done_callback)
+  
+        print 'za send goal'
+        self.set_warn()
+        # client.wait_for_result()
+        # command_result = client.get_result()
+  
+        # conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorJoint'], True)
+        # time.sleep(20)
+        print "Irp6p move to synchro pos finish"
+
+
+    def irp6ot_move_to_synchro_pos(self):
+        rospy.wait_for_service('/controller_manager/switch_controller')
+        self.conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+        self.conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
+  
+  
+        self.conmanSwitch(['Irp6otmSplineTrajectoryGeneratorMotor'], [], True)
+    
+        self.client = actionlib.SimpleActionClient('/irp6ot_arm/spline_trajectory_action_motor', FollowJointTrajectoryAction)
+        self.client.wait_for_server()
+
+        print 'server ok'
+
+        goal = FollowJointTrajectoryGoal()
+        goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6', 'joint7']
+        goal.trajectory.points.append(JointTrajectoryPoint([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
+        goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+
+        self.client.send_goal(goal, self.irp6ot_done_callback)
+  
+        print 'za send goal'
+        self.set_warn()
+        # client.wait_for_result()
+        # command_result = client.get_result()
+  
+        # conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorJoint'], True)
+        # time.sleep(20)
+        print "Irp6ot move to synchro pos finish"
 
     def on_motion_one(self):
         QMessageBox.information(self, 'Caution', 
