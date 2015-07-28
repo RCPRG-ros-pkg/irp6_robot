@@ -1,2 +1,2 @@
 Irp6HardwareInterface.start()
-Irp6Diag.start();
+Irp6Diag.start()

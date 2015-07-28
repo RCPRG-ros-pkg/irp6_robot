@@ -29,7 +29,7 @@ class Irp6Dashboard(Dashboard):
         self._motors_button = Motors(self.context)
         
         self._agg_sub = rospy.Subscriber('diagnostics_agg', DiagnosticArray, self.new_diagnostic_message)
-        self._motors_button.add_post_synchro_actions()
+        
 
     def get_widgets(self):
         return [
@@ -57,10 +57,10 @@ class Irp6Dashboard(Dashboard):
         if self._motors_button.motion_in_progress_state != self._motors_button.motion_in_progress_state_previous:
             if self._motors_button.motion_in_progress_state == True:
                 self._motors_button.set_stale()
-                self._motors_button.clear_actions()
+                # self._motors_button.clear_actions()
             else:
                 self._motors_button.set_ok()
-                self._motors_button.add_post_synchro_actions()
+                # self._motors_button.add_post_synchro_actions()
             self._motors_button.motion_in_progress_state_previous = self._motors_button.motion_in_progress_state
             
 

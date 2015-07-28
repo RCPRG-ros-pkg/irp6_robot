@@ -67,31 +67,34 @@ class Motors(MenuDashWidget):
         super(Motors, self).__init__('Motors', icons)
         self.update_state(3)
         
-        # self.add_post_synchro_actions()
-        self.add_action('Motion one', self.on_motion_one)
+        self.irp6p_move_to_synchro_pos_action = self.add_action('Irp6p move to synchro pos', self.irp6p_move_to_synchro_pos)
+        self.irp6ot_move_to_synchro_pos_action = self.add_action('Irp6ot move to synchro pos', self.irp6ot_move_to_synchro_pos)
+        # self.add_action('Motion one', self.on_motion_one)
         self.motion_in_progress_state = False
         self.motion_in_progress_state_previous = False
 
         self.irpos = IRPOS("", "Irp6p", 6)
         
         
-    def add_post_synchro_actions(self):
-        self.clear_actions()
-        self.add_action('Irp6p move to synchro pos', self.irp6p_move_to_synchro_pos)
-        self.add_action('Irp6ot move to synchro pos', self.irp6ot_move_to_synchro_pos)
+    def enable_post_synchro_actions(self):
+         self.irp6p_move_to_synchro_pos_action.setDisabled(False)
+         self.irp6ot_move_to_synchro_pos_action.setDisabled(False)
         
-    def clear_actions(self):
-        self._menu.clear()
+    def disable_all_actions(self):
+        self.irp6p_move_to_synchro_pos_action.setDisabled(True)
+        self.irp6ot_move_to_synchro_pos_action.setDisabled(True)
 
     def irp6p_done_callback(self,state, result):
         print "self Done callback"
         self.conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
         self.motion_in_progress_state = False
+        self.enable_post_synchro_actions()
         
     def irp6ot_done_callback(self,state, result):
         print "self Done callback"
         self.conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
         self.motion_in_progress_state = False
+        self.enable_post_synchro_actions()
 
         
     def set_ok(self):
@@ -129,6 +132,7 @@ class Motors(MenuDashWidget):
     
         print 'za send goal'
         self.motion_in_progress_state = True
+        self.disable_all_actions()
         # client.wait_for_result()
         # command_result = client.get_result()
   
@@ -160,6 +164,7 @@ class Motors(MenuDashWidget):
         print 'za send goal'
 
         self.motion_in_progress_state = True
+        self.disable_all_actions()
         # client.wait_for_result()
         # command_result = client.get_result()
   
