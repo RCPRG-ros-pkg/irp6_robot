@@ -42,7 +42,7 @@ from rqt_robot_dashboard.widgets import MenuDashWidget
 import std_srvs.srv
 
 from irpos import *
-# from naoqi_msgs.msg import BodyPoseAction, BodyPoseGoal
+
 
 class Motors(MenuDashWidget):
     """
@@ -67,30 +67,32 @@ class Motors(MenuDashWidget):
         super(Motors, self).__init__('Motors', icons)
         self.update_state(3)
         
-        self.add_action('Irp6p move to synchro pos', self.irp6p_move_to_synchro_pos)
-        self.add_action('Irp6ot move to synchro pos', self.irp6ot_move_to_synchro_pos)
-        # self.add_action('Motion one', self.on_motion_one)
-        # self.add_action('Init pose', self.on_init_pose)
-        # self.add_action('Sit down && remove stiffness', self.on_sit_down)
-        # self.add_action('Remove stiffness immediately', self.on_remove_stiffness)
-
-        # clients for controlling the robot
-        # self.bodyPoseClient = actionlib.SimpleActionClient('body_pose', BodyPoseAction)
-        # self.stiffnessEnableClient = rospy.ServiceProxy("body_stiffness/enable", std_srvs.srv.Empty)
-        # self.stiffnessDisableClient = rospy.ServiceProxy("body_stiffness/disable", std_srvs.srv.Empty)
+        # self.add_post_synchro_actions()
+        self.add_action('Motion one', self.on_motion_one)
+        self.motion_in_progress_state = False
+        self.motion_in_progress_state_previous = False
 
         self.irpos = IRPOS("", "Irp6p", 6)
         
+        
+    def add_post_synchro_actions(self):
+        self.clear_actions()
+        self.add_action('Irp6p move to synchro pos', self.irp6p_move_to_synchro_pos)
+        self.add_action('Irp6ot move to synchro pos', self.irp6ot_move_to_synchro_pos)
+        
+    def clear_actions(self):
+        self._menu.clear()
+
     def irp6p_done_callback(self,state, result):
         print "self Done callback"
         self.conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
-        self.set_ok()
-        
+        self.motion_in_progress_state = False
         
     def irp6ot_done_callback(self,state, result):
         print "self Done callback"
         self.conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
-        self.set_ok()
+        self.motion_in_progress_state = False
+
         
     def set_ok(self):
         self.update_state(0)
@@ -103,10 +105,6 @@ class Motors(MenuDashWidget):
 
     def set_stale(self):
         self.update_state(3)
-      
-    def on_init_pose(self):
-        self.stiffnessEnableClient.call()
-        self.bodyPoseClient.send_goal_and_wait(BodyPoseGoal(pose_name = 'init'))
 
     def irp6p_move_to_synchro_pos(self):
         rospy.wait_for_service('/controller_manager/switch_controller')
@@ -127,15 +125,16 @@ class Motors(MenuDashWidget):
         goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
 
         self.client.send_goal(goal, self.irp6p_done_callback)
-  
+        
+    
         print 'za send goal'
-        self.set_warn()
+        self.motion_in_progress_state = True
         # client.wait_for_result()
         # command_result = client.get_result()
   
         # conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorJoint'], True)
         # time.sleep(20)
-        print "Irp6p move to synchro pos finish"
+        # print "Irp6p move to synchro pos finish"
 
 
     def irp6ot_move_to_synchro_pos(self):
@@ -159,13 +158,14 @@ class Motors(MenuDashWidget):
         self.client.send_goal(goal, self.irp6ot_done_callback)
   
         print 'za send goal'
-        self.set_warn()
+
+        self.motion_in_progress_state = True
         # client.wait_for_result()
         # command_result = client.get_result()
   
         # conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorJoint'], True)
         # time.sleep(20)
-        print "Irp6ot move to synchro pos finish"
+        # print "Irp6ot move to synchro pos finish"
 
     def on_motion_one(self):
         QMessageBox.information(self, 'Caution', 
@@ -194,27 +194,3 @@ class Motors(MenuDashWidget):
         self.irpos.set_tool_geometry_params(toolParams)
 
         print "Irp6p 'multi_trajectory' test completed"
-
-    def on_sit_down(self):
-        self.bodyPoseClient.send_goal_and_wait(BodyPoseGoal(pose_name = 'crouch'))
-        state = self.bodyPoseClient.get_state()
-        if state == actionlib.GoalStatus.SUCCEEDED:
-            self.stiffnessDisableClient.call()
-        else:
-            QMessageBox(self, 'Error', 'crouch pose did not succeed: %s - cannot remove stiffness' % self.bodyPoseClient.get_goal_status_text())
-            rospy.logerror("crouch pose did not succeed: %s", self.bodyPoseClient.get_goal_status_text())
-
-    def on_remove_stiffness(self):
-      reply = QMessageBox.question(self, 'Caution', 
-                     'Robot may fall. Continue to remove stiffness?', QMessageBox.Yes, QMessageBox.No)
-      if(reply == QMessageBox.Yes):
-          self.stiffnessDisableClient.call()
-
-    def on_halt_motors(self, evt):
-        halt = rospy.ServiceProxy("pr2_etherCAT/halt_motors", std_srvs.srv.Empty)
-        
-        try:
-            halt()
-        except rospy.ServiceException, e:
-            QMessageBox(self, 'Error',
-                     'Failed to halt the motors: service call failed with error: %s'%(e))

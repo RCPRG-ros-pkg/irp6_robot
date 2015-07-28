@@ -68,4 +68,4 @@ runScript( ros.find("irp6_bringup") + "/config/conv-inside-start.ops")
 
 Irp6HardwareInterface.start()
 PortDoubleToFloat64_1.start()
-Irp6Diag.start();
+
