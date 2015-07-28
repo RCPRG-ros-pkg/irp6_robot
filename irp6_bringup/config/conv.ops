@@ -25,6 +25,4 @@ runScript( ros.find("irp6_bringup") + "/config/conv-inside-pre-start.ops")
 Irp6scheme.start()
 
 runScript( ros.find("irp6_bringup") + "/config/conv-inside-start.ops")
-Irp6HardwareInterface.start()
-
-
+runScript( ros.find("irp6_bringup") + "/config/start-hi.ops")

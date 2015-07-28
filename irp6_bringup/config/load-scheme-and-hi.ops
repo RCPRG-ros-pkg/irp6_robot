@@ -16,3 +16,12 @@ loadComponent("Irp6HardwareInterface","HardwareInterface")
 Irp6HardwareInterface.loadService("rosparam")
 Irp6HardwareInterface.rosparam.getAll()
 Irp6HardwareInterface.configure();
+
+loadComponent("Irp6Diag", "Irp6Diagnostic")
+setActivity("Irp6Diag", 0.1, 1, ORO_SCHED_RT)
+Irp6Diag.loadService("rosparam");
+Irp6Diag.rosparam.getAll();
+
+connect("Irp6Diag.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
+stream("Irp6Diag.Diagnostics", ros.comm.topic("/diagnostics_agg"));
+Irp6Diag.configure()

@@ -18,6 +18,7 @@ ros.import("limit_detector");
 ros.import("port_operations")
 ros.import("hardware_interface")
 ros.import("irp6_regulator")
+ros.import("irp6_diagnostic")
 ros.import("oro_joint_state_publisher")
 ros.import("internal_space_spline_trajectory_action")
 ros.import("internal_space_spline_trajectory_generator")

@@ -39,7 +39,7 @@ Irp6scheme.start()
 
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-start.ops")
 
-Irp6HardwareInterface.start()
+runScript( ros.find("irp6_bringup") + "/config/start-hi.ops")
 
 
 
