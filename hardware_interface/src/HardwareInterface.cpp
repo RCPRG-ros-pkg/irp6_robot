@@ -324,7 +324,6 @@ bool HardwareInterface::startHook() {
         RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
         if (auto_synchronize_) {
           RTT::log(RTT::Info) << "Auto synchronize" << RTT::endlog();
-          state_ = SERVOING;
           synchro_start_iter_ = 500;
           synchro_stop_iter_ = 1000;
           synchro_state_ = MOVE_TO_SYNCHRO_AREA;
@@ -553,7 +552,8 @@ void HardwareInterface::updateHook() {
       if (!test_mode_) {
         hi_->set_hardware_panic();
       } else if (error_msg_hardware_panic_ == 0) {
-        std::cout << RED << std::endl << "[error] hardware panic" << RESET << std::endl << std::endl;
+        std::cout << RED << std::endl << "[error] hardware panic" << RESET
+                  << std::endl << std::endl;
         error_msg_hardware_panic_++;
       }
     }
