@@ -30,6 +30,10 @@ class Irp6Dashboard(Dashboard):
         
         self._agg_sub = rospy.Subscriber('diagnostics_agg', DiagnosticArray, self.new_diagnostic_message)
         
+        self.is_synchronised_state = False
+        self.is_synchronised_state_previous = False
+        self.is_emergency_stop_activated_state = False
+        self.is_emergency_stop_activated_state_previous = False
 
     def get_widgets(self):
         return [
@@ -42,8 +46,6 @@ class Irp6Dashboard(Dashboard):
     def new_diagnostic_message(self, msg):
         """
         callback to process dashboard_agg messages
-        :param msg: dashboard_agg DashboardState message
-        :type msg: pr2_msgs.msg.DashboardState
         """
         self._dashboard_message = msg
         for status in msg.status:
@@ -51,19 +53,42 @@ class Irp6Dashboard(Dashboard):
                 for kv in status.values:
                      if kv.key == 'Synchro':
                          if kv.value == 'TRUE':
-                             my_state = "Synchro true"
-                             # print my_state
-                  
-        if self._motors_button.motion_in_progress_state != self._motors_button.motion_in_progress_state_previous:
-            if self._motors_button.motion_in_progress_state == True:
-                self._motors_button.set_stale()
-                # self._motors_button.clear_actions()
-            else:
-                self._motors_button.set_ok()
-                # self._motors_button.add_post_synchro_actions()
-            self._motors_button.motion_in_progress_state_previous = self._motors_button.motion_in_progress_state
-            
+                             self.is_synchronised_state = True
+                         else:
+                             self.is_synchronised_state = False
+                     elif kv.key == 'Emergency Stop':
+                         if kv.value == 'TRUE':
+                             self.is_emergency_stop_activated_state = True
+                         else:
+                             self.is_emergency_stop_activated_state = False
+        
+        if ((self._motors_button.motion_in_progress_state != self._motors_button.motion_in_progress_state_previous)
+        or (self.is_emergency_stop_activated_state != self.is_emergency_stop_activated_state_previous)
+        or (self.is_synchronised_state != self.is_synchronised_state_previous)):
+            self.change_motors_widget_state()
+        
+        self._motors_button.motion_in_progress_state_previous = self._motors_button.motion_in_progress_state
+        self.is_emergency_stop_activated_state_previous = self.is_emergency_stop_activated_state
+        self.is_synchronised_state_previous = self.is_synchronised_state
+        
 
+    def change_motors_widget_state(self):
+        print "change_motors_widget_state"
+        if self.is_emergency_stop_activated_state == True:
+            self._motors_button.set_error()
+            self._motors_button.disable_all_actions()
+            self._motors_button.setToolTip(self.tr("Motors: Emergency Stop activated, Restart the deployer and the rqt"))
+        elif self.is_synchronised_state == False:
+            self._motors_button.set_warn()
+            self._motors_button.enable_pre_synchro_actions()
+            self._motors_button.setToolTip(self.tr("Motors: Robot not synchronised, Execute synchronisation and wait for operation finish"))
+        elif self._motors_button.motion_in_progress_state == True:
+            self._motors_button.set_stale()
+            self._motors_button.disable_all_actions()
+            self._motors_button.setToolTip(self.tr("Motors: Motion in progress, wait for execution finish"))
+        elif self._motors_button.motion_in_progress_state == False:
+            self._motors_button.set_ok()
+            self._motors_button.enable_post_synchro_actions()
+            self._motors_button.setToolTip(self.tr("Motors: Robot synchronised and waiting for command"))
             
-
 	

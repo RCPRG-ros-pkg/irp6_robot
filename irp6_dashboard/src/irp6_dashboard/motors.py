@@ -65,8 +65,8 @@ class Motors(MenuDashWidget):
         icons = [ok_icon, warn_icon, err_icon, stale_icon]
 
         super(Motors, self).__init__('Motors', icons)
-        self.update_state(3)
         
+        self.synchronise_action = self.add_action('Synchronise', self.synchronise)
         self.irp6p_move_to_synchro_pos_action = self.add_action('Irp6p move to synchro pos', self.irp6p_move_to_synchro_pos)
         self.irp6ot_move_to_synchro_pos_action = self.add_action('Irp6ot move to synchro pos', self.irp6ot_move_to_synchro_pos)
         # self.add_action('Motion one', self.on_motion_one)
@@ -75,27 +75,6 @@ class Motors(MenuDashWidget):
 
         self.irpos = IRPOS("", "Irp6p", 6)
         
-        
-    def enable_post_synchro_actions(self):
-         self.irp6p_move_to_synchro_pos_action.setDisabled(False)
-         self.irp6ot_move_to_synchro_pos_action.setDisabled(False)
-        
-    def disable_all_actions(self):
-        self.irp6p_move_to_synchro_pos_action.setDisabled(True)
-        self.irp6ot_move_to_synchro_pos_action.setDisabled(True)
-
-    def irp6p_done_callback(self,state, result):
-        print "self Done callback"
-        self.conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
-        self.motion_in_progress_state = False
-        self.enable_post_synchro_actions()
-        
-    def irp6ot_done_callback(self,state, result):
-        print "self Done callback"
-        self.conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
-        self.motion_in_progress_state = False
-        self.enable_post_synchro_actions()
-
         
     def set_ok(self):
         self.update_state(0)
@@ -108,6 +87,36 @@ class Motors(MenuDashWidget):
 
     def set_stale(self):
         self.update_state(3)
+
+    def enable_post_synchro_actions(self):
+        self.irp6p_move_to_synchro_pos_action.setDisabled(False)
+        self.irp6ot_move_to_synchro_pos_action.setDisabled(False)
+        self.synchronise_action.setDisabled(True)
+         
+    def enable_pre_synchro_actions(self):
+        self.irp6p_move_to_synchro_pos_action.setDisabled(True)
+        self.irp6ot_move_to_synchro_pos_action.setDisabled(True)
+        self.synchronise_action.setDisabled(False)
+
+    def disable_all_actions(self):
+        self.irp6p_move_to_synchro_pos_action.setDisabled(True)
+        self.irp6ot_move_to_synchro_pos_action.setDisabled(True)
+        self.synchronise_action.setDisabled(True)
+
+    def synchronise(self):
+        print "Synchronise"
+        # Bedziemy wysylac rozkaz na topiku do komponentu hardware interface
+
+    def irp6p_done_callback(self,state, result):
+        print "self Done callback"
+        self.conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
+        self.motion_in_progress_state = False
+        
+    def irp6ot_done_callback(self,state, result):
+        print "self Done callback"
+        self.conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
+        self.motion_in_progress_state = False
+
 
     def irp6p_move_to_synchro_pos(self):
         rospy.wait_for_service('/controller_manager/switch_controller')
@@ -132,7 +141,6 @@ class Motors(MenuDashWidget):
     
         print 'za send goal'
         self.motion_in_progress_state = True
-        self.disable_all_actions()
         # client.wait_for_result()
         # command_result = client.get_result()
   
@@ -164,7 +172,6 @@ class Motors(MenuDashWidget):
         print 'za send goal'
 
         self.motion_in_progress_state = True
-        self.disable_all_actions()
         # client.wait_for_result()
         # command_result = client.get_result()
   
