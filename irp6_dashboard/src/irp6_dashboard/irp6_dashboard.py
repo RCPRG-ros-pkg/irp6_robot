@@ -37,13 +37,16 @@ class Irp6Dashboard(Dashboard):
         
         self.change_motors_widget_state()
 
+
     def get_widgets(self):
         return [
                 [self._monitor, self._console, self._motors_button]
                ]
 
+
     def shutdown_dashboard(self):
         self._agg_sub.unregister()
+
 
     def new_diagnostic_message(self, msg):
         """
@@ -74,7 +77,7 @@ class Irp6Dashboard(Dashboard):
         self.is_emergency_stop_activated_state_previous = self.is_emergency_stop_activated_state
         self.is_synchronised_state_previous = self.is_synchronised_state
         self._motors_button.synchro_in_progress_state_previous = self._motors_button.synchro_in_progress_state
-        
+
 
     def change_motors_widget_state(self):
         # print "change_motors_widget_state"

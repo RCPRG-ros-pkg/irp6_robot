@@ -77,16 +77,22 @@ void Irp6Diagnostic::updateHook() {
   if (RTT::NewData == hardware_panic_in_.read(hardware_panic_state)) {
     if (hardware_panic_state) {
       diagnostic_.status[0].values[1].value = "TRUE";
-      diagnostic_.status[0].level = diagnostic_msgs::DiagnosticStatus::ERROR;
-      diagnostic_.status[0].message = "Hardware Interface ERROR";
     } else {
       diagnostic_.status[0].values[1].value = "FALSE";
-      diagnostic_.status[0].level = diagnostic_msgs::DiagnosticStatus::OK;
-      diagnostic_.status[0].message = "Hardware Interface OK";
     }
   }
 
-
+  if (hardware_panic_state) {
+    diagnostic_.status[0].level = diagnostic_msgs::DiagnosticStatus::ERROR;
+    diagnostic_.status[0].message = "Hardware Interface ERROR";
+  } else if (!synchro_state) {
+    diagnostic_.status[0].level = diagnostic_msgs::DiagnosticStatus::WARN;
+    diagnostic_.status[0].message =
+        "Hardware Interface WARNING - NOT SYNCHRONISED";
+  } else {
+    diagnostic_.status[0].level = diagnostic_msgs::DiagnosticStatus::OK;
+    diagnostic_.status[0].message = "Hardware Interface OK";
+  }
 
   port_Diagnostics.write(diagnostic_);
 }
