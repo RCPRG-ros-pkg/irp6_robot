@@ -74,6 +74,8 @@ class Motors(MenuDashWidget):
         # self.add_action('Motion one', self.on_motion_one)
         self.motion_in_progress_state = False
         self.motion_in_progress_state_previous = False
+        self.synchro_in_progress_state = False
+        self.synchro_in_progress_state_previous = False
 
         self.irpos = IRPOS("", "Irp6p", 6)
         
@@ -108,13 +110,11 @@ class Motors(MenuDashWidget):
     def synchronise(self):
         print "Synchronise"
         pub = rospy.Publisher('/hardware_interface/do_synchro_in', std_msgs.msg.Bool, queue_size=0)
-  
         rospy.sleep(0.5)
-  
         goal = std_msgs.msg.Bool()
         goal.data = True
-  
         pub.publish(goal)
+        self.synchro_in_progress_state = True
 
     def irp6p_done_callback(self,state, result):
         print "self Done callback"
