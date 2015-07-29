@@ -57,6 +57,7 @@ HardwareInterface::HardwareInterface(const std::string& name)
       error_msg_hardware_panic_(0) {
 
   this->ports()->addPort("EmergencyStopIn", port_emergency_stop_);
+  this->ports()->addPort("DoSynchroIn", port_do_synchro_);
   this->ports()->addPort("IsSynchronised", port_is_synchronised_);
 
   this->addProperty("active_motors", active_motors_).doc("");
@@ -322,16 +323,17 @@ bool HardwareInterface::startHook() {
       if (!hi_->robot_synchronized()) {
         port_is_synchronised_.write(false);
         RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
+        synchro_start_iter_ = 500;
+        synchro_stop_iter_ = 1000;
+        synchro_state_ = MOVE_TO_SYNCHRO_AREA;
+        synchro_drive_ = 0;
         if (auto_synchronize_) {
           RTT::log(RTT::Info) << "Auto synchronize" << RTT::endlog();
-          synchro_start_iter_ = 500;
-          synchro_stop_iter_ = 1000;
-          synchro_state_ = MOVE_TO_SYNCHRO_AREA;
-          synchro_drive_ = 0;
           std::cout << "Auto synchronize" << std::endl;
           state_ = PRE_SYNCHRONIZING;
-
         } else {
+          RTT::log(RTT::Info) << "Manual synchronize" << RTT::endlog();
+          std::cout << "Manual synchronize" << std::endl;
           state_ = NOT_SYNCHRONIZED;
         }
       } else {
@@ -402,7 +404,14 @@ void HardwareInterface::updateHook() {
 
   switch (state_) {
     case NOT_SYNCHRONIZED:
-
+      bool do_synchro;
+      if (port_do_synchro_.read(do_synchro) == RTT::NewData) {
+        if (do_synchro) {
+          if (!test_mode_) {
+            state_ = PRE_SYNCHRONIZING;
+          }
+        }
+      }
       break;
 
     case PRE_SERVOING:

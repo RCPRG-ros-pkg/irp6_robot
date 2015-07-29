@@ -34,6 +34,8 @@ class Irp6Dashboard(Dashboard):
         self.is_synchronised_state_previous = False
         self.is_emergency_stop_activated_state = False
         self.is_emergency_stop_activated_state_previous = False
+        
+        self.change_motors_widget_state()
 
     def get_widgets(self):
         return [
