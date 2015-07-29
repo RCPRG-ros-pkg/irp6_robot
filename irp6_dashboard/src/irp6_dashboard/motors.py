@@ -42,6 +42,8 @@ from rqt_robot_dashboard.widgets import MenuDashWidget
 import std_srvs.srv
 
 from irpos import *
+from std_msgs.msg import *
+
 
 
 class Motors(MenuDashWidget):
@@ -105,7 +107,14 @@ class Motors(MenuDashWidget):
 
     def synchronise(self):
         print "Synchronise"
-        # Bedziemy wysylac rozkaz na topiku do komponentu hardware interface
+        pub = rospy.Publisher('/hardware_interface/do_synchro_in', std_msgs.msg.Bool, queue_size=0)
+  
+        rospy.sleep(0.5)
+  
+        goal = std_msgs.msg.Bool()
+        goal.data = True
+  
+        pub.publish(goal)
 
     def irp6p_done_callback(self,state, result):
         print "self Done callback"

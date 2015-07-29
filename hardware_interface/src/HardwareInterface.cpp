@@ -403,15 +403,17 @@ void HardwareInterface::updateHook() {
   }
 
   switch (state_) {
-    case NOT_SYNCHRONIZED:
-      bool do_synchro;
+    case NOT_SYNCHRONIZED: {
+      std_msgs::Bool do_synchro;
       if (port_do_synchro_.read(do_synchro) == RTT::NewData) {
-        if (do_synchro) {
+        if (do_synchro.data) {
           if (!test_mode_) {
             state_ = PRE_SYNCHRONIZING;
           }
+          std::cout << "NOT_SYNCHRONIZED" << std::endl;
         }
       }
+    }
       break;
 
     case PRE_SERVOING:
