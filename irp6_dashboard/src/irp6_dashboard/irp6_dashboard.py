@@ -58,7 +58,7 @@ class Irp6Dashboard(Dashboard):
                              self.is_synchronised_state = True
                          else:
                              self.is_synchronised_state = False
-                     elif kv.key == 'Emergency Stop':
+                     elif kv.key == 'HardwarePanic':
                          if kv.value == 'TRUE':
                              self.is_emergency_stop_activated_state = True
                          else:
@@ -77,11 +77,11 @@ class Irp6Dashboard(Dashboard):
         
 
     def change_motors_widget_state(self):
-        print "change_motors_widget_state"
+        # print "change_motors_widget_state"
         if self.is_emergency_stop_activated_state == True:
             self._motors_button.set_error()
             self._motors_button.disable_all_actions()
-            self._motors_button.setToolTip(self.tr("Motors: Emergency Stop activated, Restart the deployer and the rqt"))
+            self._motors_button.setToolTip(self.tr("Motors: Hardware Panic, Check emergency stop, Restart hardware, deployer and rqt"))
         elif self.is_synchronised_state == False:
             if self._motors_button.synchro_in_progress_state == False:
                 self._motors_button.set_warn()

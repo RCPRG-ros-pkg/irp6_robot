@@ -40,6 +40,8 @@ Irp6Diagnostic::Irp6Diagnostic(const std::string& name)
   this->ports()->addPort("Diagnostics", port_Diagnostics).doc("");
   this->ports()->addPort("SynchroStateIn", synchro_state_in_).doc(
       "Synchro State from HardwareInterface");
+  this->ports()->addPort("HardwaPanicIn", hardware_panic_in_).doc(
+      "Hardware Panic from HardwareInterface");
 }
 
 Irp6Diagnostic::~Irp6Diagnostic() {
@@ -47,10 +49,11 @@ Irp6Diagnostic::~Irp6Diagnostic() {
 
 bool Irp6Diagnostic::configureHook() {
   diagnostic_.status.resize(1);
-  diagnostic_.status[0].values.resize(1);
+  diagnostic_.status[0].values.resize(2);
 
   diagnostic_.status[0].name = "Hardware Interface";
   diagnostic_.status[0].values[0].key = "Synchro";
+  diagnostic_.status[0].values[1].key = "HardwarePanic";
 
   return true;
 }
@@ -61,6 +64,8 @@ bool Irp6Diagnostic::startHook() {
 
 void Irp6Diagnostic::updateHook() {
   bool synchro_state;
+  bool hardware_panic_state;
+
   if (RTT::NewData == synchro_state_in_.read(synchro_state)) {
     if (synchro_state) {
       diagnostic_.status[0].values[0].value = "TRUE";
@@ -69,8 +74,19 @@ void Irp6Diagnostic::updateHook() {
     }
   }
 
-  diagnostic_.status[0].level = diagnostic_msgs::DiagnosticStatus::OK;
-  diagnostic_.status[0].message = "Hardware Interface OK";
+  if (RTT::NewData == hardware_panic_in_.read(hardware_panic_state)) {
+    if (hardware_panic_state) {
+      diagnostic_.status[0].values[1].value = "TRUE";
+      diagnostic_.status[0].level = diagnostic_msgs::DiagnosticStatus::ERROR;
+      diagnostic_.status[0].message = "Hardware Interface ERROR";
+    } else {
+      diagnostic_.status[0].values[1].value = "FALSE";
+      diagnostic_.status[0].level = diagnostic_msgs::DiagnosticStatus::OK;
+      diagnostic_.status[0].message = "Hardware Interface OK";
+    }
+  }
+
+
 
   port_Diagnostics.write(diagnostic_);
 }

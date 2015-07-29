@@ -24,5 +24,6 @@ Irp6Diag.loadService("rosparam");
 Irp6Diag.rosparam.getAll();
 
 connect("Irp6Diag.SynchroStateIn","Irp6HardwareInterface.IsSynchronised", ConnPolicy())
+connect("Irp6Diag.HardwaPanicIn","Irp6HardwareInterface.IsHardwarePanic", ConnPolicy())
 stream("Irp6Diag.Diagnostics", ros.comm.topic("/diagnostics_agg"));
 Irp6Diag.configure()

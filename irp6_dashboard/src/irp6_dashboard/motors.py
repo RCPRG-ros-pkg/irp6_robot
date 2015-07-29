@@ -41,8 +41,8 @@ import rospy
 from rqt_robot_dashboard.widgets import MenuDashWidget
 import std_srvs.srv
 
-from irpos import *
 from std_msgs.msg import *
+from irpos import *
 
 
 
@@ -71,13 +71,11 @@ class Motors(MenuDashWidget):
         self.synchronise_action = self.add_action('Synchronise', self.synchronise)
         self.irp6p_move_to_synchro_pos_action = self.add_action('Irp6p move to synchro pos', self.irp6p_move_to_synchro_pos)
         self.irp6ot_move_to_synchro_pos_action = self.add_action('Irp6ot move to synchro pos', self.irp6ot_move_to_synchro_pos)
-        # self.add_action('Motion one', self.on_motion_one)
         self.motion_in_progress_state = False
         self.motion_in_progress_state_previous = False
         self.synchro_in_progress_state = False
         self.synchro_in_progress_state_previous = False
 
-        self.irpos = IRPOS("", "Irp6p", 6)
         
         
     def set_ok(self):
@@ -108,7 +106,6 @@ class Motors(MenuDashWidget):
         self.synchronise_action.setDisabled(True)
 
     def synchronise(self):
-        print "Synchronise"
         pub = rospy.Publisher('/hardware_interface/do_synchro_in', std_msgs.msg.Bool, queue_size=0)
         rospy.sleep(0.5)
         goal = std_msgs.msg.Bool()
@@ -117,12 +114,10 @@ class Motors(MenuDashWidget):
         self.synchro_in_progress_state = True
 
     def irp6p_done_callback(self,state, result):
-        print "self Done callback"
         self.conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
         self.motion_in_progress_state = False
         
     def irp6ot_done_callback(self,state, result):
-        print "self Done callback"
         self.conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
         self.motion_in_progress_state = False
 
@@ -138,8 +133,6 @@ class Motors(MenuDashWidget):
         self.client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_motor', FollowJointTrajectoryAction)
         self.client.wait_for_server()
 
-        print 'server ok'
-
         goal = FollowJointTrajectoryGoal()
         goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
         goal.trajectory.points.append(JointTrajectoryPoint([0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
@@ -148,7 +141,6 @@ class Motors(MenuDashWidget):
         self.client.send_goal(goal, self.irp6p_done_callback)
         
     
-        print 'za send goal'
         self.motion_in_progress_state = True
         # client.wait_for_result()
         # command_result = client.get_result()
@@ -169,8 +161,6 @@ class Motors(MenuDashWidget):
         self.client = actionlib.SimpleActionClient('/irp6ot_arm/spline_trajectory_action_motor', FollowJointTrajectoryAction)
         self.client.wait_for_server()
 
-        print 'server ok'
-
         goal = FollowJointTrajectoryGoal()
         goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6', 'joint7']
         goal.trajectory.points.append(JointTrajectoryPoint([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
@@ -178,8 +168,6 @@ class Motors(MenuDashWidget):
 
         self.client.send_goal(goal, self.irp6ot_done_callback)
   
-        print 'za send goal'
-
         self.motion_in_progress_state = True
         # client.wait_for_result()
         # command_result = client.get_result()
@@ -188,30 +176,3 @@ class Motors(MenuDashWidget):
         # time.sleep(20)
         # print "Irp6ot move to synchro pos finish"
 
-    def on_motion_one(self):
-        QMessageBox.information(self, 'Caution', 
-                     'Irpos motion one', QMessageBox.Ok)
-
-        motor_trajectory = [JointTrajectoryPoint([0.4, -1.5418065817051163, 0.0, 1.57, 1.57, -2.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)), JointTrajectoryPoint([10.0, 10.0, 0.0, 10.57, 10.57, -20.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(12.0))]
-        self.irpos.move_along_motor_trajectory(motor_trajectory)
-
-        joint_trajectory = [JointTrajectoryPoint([0.4, -1.5418065817051163, 0.0, 1.5, 1.57, -2.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(3.0)),JointTrajectoryPoint([0.0, -1.5418065817051163, 0.0, 1.5, 1.57, -2.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(6.0))]
-        self.irpos.move_along_joint_trajectory(joint_trajectory)
-
-        rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.0, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 1.18029263241))
-        rot2 = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.3, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 1.181029263241))
-        cartesianTrajectory = [CartesianTrajectoryPoint(rospy.Duration(3.0), Pose(Point(0.705438961242, -0.1208864692291, 1.181029263241), Quaternion(0.675351045979, 0.0892025112399, 0.698321120995, 0.219753244928)), Twist()), CartesianTrajectoryPoint(rospy.Duration(6.0), pm.toMsg(rot), Twist()),CartesianTrajectoryPoint(rospy.Duration(9.0), pm.toMsg(rot2), Twist())]
-        self.irpos.move_along_cartesian_trajectory(cartesianTrajectory)
-
-        toolParams = Pose(Point(0.0, 0.0, 0.0), Quaternion(0.0, 0.0, 0.0, 1.0))
-        self.irpos.set_tool_geometry_params(toolParams)
-
-        rot = PyKDL.Frame(PyKDL.Rotation.EulerZYZ(0.0, 1.4, 3.14), PyKDL.Vector(0.705438961242, -0.1208864692291, 1.181029263241))
-        cartesianTrajectory = [CartesianTrajectoryPoint(rospy.Duration(3.0), Pose(Point(0.705438961242, -0.1208864692291, 1.181029263241), Quaternion(0.675351045979, 0.0892025112399, 0.698321120995, 0.219753244928)), Twist()),
-        CartesianTrajectoryPoint(rospy.Duration(6.0), pm.toMsg(rot), Twist()),CartesianTrajectoryPoint(rospy.Duration(9.0), Pose(Point(0.705438961242, -0.1208864692291, 1.181029263241), Quaternion(0.63691, 0.096783, 0.75634, -0.11369)), Twist())]
-        self.irpos.move_along_cartesian_trajectory(cartesianTrajectory)
-
-        toolParams = Pose(Point(0.0, 0.0, 0.25), Quaternion(0.0, 0.0, 0.0, 1.0))
-        self.irpos.set_tool_geometry_params(toolParams)
-
-        print "Irp6p 'multi_trajectory' test completed"

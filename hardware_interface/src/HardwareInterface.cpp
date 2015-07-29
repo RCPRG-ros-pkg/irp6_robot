@@ -59,6 +59,7 @@ HardwareInterface::HardwareInterface(const std::string& name)
   this->ports()->addPort("EmergencyStopIn", port_emergency_stop_);
   this->ports()->addPort("DoSynchroIn", port_do_synchro_);
   this->ports()->addPort("IsSynchronised", port_is_synchronised_);
+  this->ports()->addPort("IsHardwarePanic", port_is_hardware_panic_);
 
   this->addProperty("active_motors", active_motors_).doc("");
   this->addProperty("hardware_hostname", hardware_hostname_).doc("");
@@ -393,13 +394,20 @@ void HardwareInterface::updateHook() {
         hi_->set_pwm(i, pwm_or_current_[i]);
       }
     }
-    hi_->write_read_hardware(rwh_nsec_, timeouts_to_print_);
+
+    bool hi_status = hi_->write_read_hardware(rwh_nsec_, timeouts_to_print_);
+    if (hi_status == 0) {
+      port_is_hardware_panic_.write(true);
+    } else {
+      port_is_hardware_panic_.write(false);
+    }
     for (int i = 0; i < number_of_drives_; i++) {
       motor_position_(i) = static_cast<double>(hi_->get_position(i))
           * ((2.0 * M_PI) / enc_res_[i]);
     }
   } else {
     test_mode_sleep();
+    port_is_hardware_panic_.write(false);
   }
 
   switch (state_) {
