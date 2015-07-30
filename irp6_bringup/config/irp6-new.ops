@@ -14,7 +14,20 @@ runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside-new.ops")
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-new.ops")
 PortDoubleToFloat64_1.start()
 
+//
+// Irp6 Haptic
+//
+// - Docelowo mozna wprowadzic trzeciego schema dla haptica
 
 
+loadComponent("Irp6Haptic", "Irp6Haptic")
+setActivity("Irp6Haptic", 0.002, 4, ORO_SCHED_RT);
+Irp6Haptic.configure()
+
+connect("Irp6otmForwardKinematic.EndEffectorOutputPose", "Irp6Haptic.CurrentEndEffectorPose", ConnPolicy())
+connect("Irp6pmInverseKinematic.InputEndEffectorPose", "Irp6Haptic.OutputEndEffectorPose", ConnPolicy())
+
+connect("Irp6pmForceTransformation.OutputEndEffectorWrench", "Irp6Haptic.CurrentEndEffectorWrench", ConnPolicy())
+connect("Irp6otmForceControlLaw.CurrentFclParam", "Irp6Haptic.OutputFclParam", ConnPolicy())
 
 
