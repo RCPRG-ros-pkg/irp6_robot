@@ -44,7 +44,12 @@ import std_srvs.srv
 from std_msgs.msg import *
 from irpos import *
 
-
+class MotorStatus():
+    def __init__(self, context):
+        self.motion_in_progress = False
+        self.motion_in_progress_previous = False
+        self.synchro_in_progress = False
+        self.synchro_in_progress_previous = False
 
 class Motors(MenuDashWidget):
     """
@@ -71,12 +76,11 @@ class Motors(MenuDashWidget):
         self.synchronise_action = self.add_action('Synchronise', self.synchronise)
         self.irp6p_move_to_synchro_pos_action = self.add_action('Irp6p move to synchro pos', self.irp6p_move_to_synchro_pos)
         self.irp6ot_move_to_synchro_pos_action = self.add_action('Irp6ot move to synchro pos', self.irp6ot_move_to_synchro_pos)
-        self.motion_in_progress_state = False
-        self.motion_in_progress_state_previous = False
-        self.synchro_in_progress_state = False
-        self.synchro_in_progress_state_previous = False
-
         
+        self.status = MotorStatus(self)
+        
+
+
     def set_ok(self):
         self.update_state(0)
 
@@ -117,17 +121,17 @@ class Motors(MenuDashWidget):
         goal = std_msgs.msg.Bool()
         goal.data = True
         pub.publish(goal)
-        self.synchro_in_progress_state = True
+        self.status.synchro_in_progress = True
 
 
     def irp6p_done_callback(self,state, result):
         self.conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
-        self.motion_in_progress_state = False
+        self.status.motion_in_progress = False
 
 
     def irp6ot_done_callback(self,state, result):
         self.conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
-        self.motion_in_progress_state = False
+        self.status.motion_in_progress = False
 
 
     def irp6p_move_to_synchro_pos(self):
@@ -147,7 +151,7 @@ class Motors(MenuDashWidget):
 
         self.client.send_goal(goal, self.irp6p_done_callback)
 
-        self.motion_in_progress_state = True
+        self.status.motion_in_progress = True
 
 
     def irp6ot_move_to_synchro_pos(self):
@@ -167,6 +171,6 @@ class Motors(MenuDashWidget):
 
         self.client.send_goal(goal, self.irp6ot_done_callback)
   
-        self.motion_in_progress_state = True
+        self.status.motion_in_progress = True
 
 
