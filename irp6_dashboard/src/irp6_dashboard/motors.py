@@ -75,10 +75,11 @@ class Motors(MenuDashWidget):
         
         self.synchronise_action = self.add_action('Synchronise', self.synchronise)
         self.irp6p_move_to_synchro_pos_action = self.add_action('Irp6p move to synchro pos', self.irp6p_move_to_synchro_pos)
+        self.irp6p_move_to_front_pos_action = self.add_action('Irp6p move to front pos', self.irp6p_move_to_front_pos)
         self.irp6ot_move_to_synchro_pos_action = self.add_action('Irp6ot move to synchro pos', self.irp6ot_move_to_synchro_pos)
+        self.irp6ot_move_to_front_pos_action = self.add_action('Irp6ot move to front pos', self.irp6ot_move_to_front_pos)
         
         self.status = MotorStatus(self)
-        
 
 
     def set_ok(self):
@@ -99,19 +100,25 @@ class Motors(MenuDashWidget):
 
     def enable_post_synchro_actions(self):
         self.irp6p_move_to_synchro_pos_action.setDisabled(False)
+        self.irp6p_move_to_front_pos_action.setDisabled(False)
         self.irp6ot_move_to_synchro_pos_action.setDisabled(False)
+        self.irp6ot_move_to_front_pos_action.setDisabled(False)
         self.synchronise_action.setDisabled(True)
          
          
     def enable_pre_synchro_actions(self):
         self.irp6p_move_to_synchro_pos_action.setDisabled(True)
+        self.irp6p_move_to_front_pos_action.setDisabled(True)
         self.irp6ot_move_to_synchro_pos_action.setDisabled(True)
+        self.irp6ot_move_to_front_pos_action.setDisabled(True)
         self.synchronise_action.setDisabled(False)
 
 
     def disable_all_actions(self):
         self.irp6p_move_to_synchro_pos_action.setDisabled(True)
+        self.irp6p_move_to_front_pos_action.setDisabled(True)
         self.irp6ot_move_to_synchro_pos_action.setDisabled(True)
+        self.irp6ot_move_to_front_pos_action.setDisabled(True)
         self.synchronise_action.setDisabled(True)
 
 
@@ -134,9 +141,13 @@ class Motors(MenuDashWidget):
         self.status.motion_in_progress = False
 
 
-    def irp6p_move_to_synchro_pos(self):
+    def init_conman(self):
         rospy.wait_for_service('/controller_manager/switch_controller')
         self.conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+
+
+    def irp6p_move_to_synchro_pos(self):
+        self.init_conman()
         self.conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
   
         self.conmanSwitch(['Irp6pmSplineTrajectoryGeneratorMotor'], [], True)
@@ -154,9 +165,26 @@ class Motors(MenuDashWidget):
         self.status.motion_in_progress = True
 
 
+    def irp6p_move_to_front_pos(self):
+        self.init_conman()
+        self.conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
+  
+        self.conmanSwitch(['Irp6pmSplineTrajectoryGeneratorJoint'], [], True)
+    
+        self.client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
+        self.client.wait_for_server()
+
+        goal = FollowJointTrajectoryGoal()
+        goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
+        goal.trajectory.points.append(JointTrajectoryPoint([0.0, -1.57, 0.0, 1.5, 1.57, -1.57], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
+        goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+        
+        self.client.send_goal(goal, self.irp6p_done_callback)
+        self.status.motion_in_progress = True
+
+
     def irp6ot_move_to_synchro_pos(self):
-        rospy.wait_for_service('/controller_manager/switch_controller')
-        self.conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+        self.init_conman()
         self.conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
   
         self.conmanSwitch(['Irp6otmSplineTrajectoryGeneratorMotor'], [], True)
@@ -171,6 +199,24 @@ class Motors(MenuDashWidget):
 
         self.client.send_goal(goal, self.irp6ot_done_callback)
   
+        self.status.motion_in_progress = True
+
+
+    def irp6ot_move_to_front_pos(self):
+        self.init_conman()
+        self.conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
+  
+        self.conmanSwitch(['Irp6otmSplineTrajectoryGeneratorJoint'], [], True)
+    
+        self.client = actionlib.SimpleActionClient('/irp6ot_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
+        self.client.wait_for_server()
+
+        goal = FollowJointTrajectoryGoal()
+        goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6', 'joint7']
+        goal.trajectory.points.append(JointTrajectoryPoint([0.0, 0.0, -1.57, 0.0, 1.5, 1.57, -1.57], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
+        goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+        
+        self.client.send_goal(goal, self.irp6ot_done_callback)
         self.status.motion_in_progress = True
 
 
