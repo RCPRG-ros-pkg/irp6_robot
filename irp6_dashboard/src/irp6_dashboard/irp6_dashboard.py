@@ -9,6 +9,9 @@ from python_qt_binding import loadUi
 from python_qt_binding.QtGui import QWidget
 
 from .motors import Motors
+from .hi_motors import HiMotors
+from .irp6p_motors import Irp6pMotors
+from .irp6ot_motors import Irp6otMotors
 
 from rqt_robot_dashboard.dashboard import Dashboard
 from rqt_robot_dashboard.monitor_dash_widget import MonitorDashWidget
@@ -34,6 +37,9 @@ class Irp6Dashboard(Dashboard):
         self._console = ConsoleDashWidget(self.context, minimal=False)
         
         ## Motors
+        self._hi_motors_button = HiMotors(self.context)
+        self._irp6p_motors_button = Irp6pMotors(self.context)
+        self._irp6ot_motors_button = Irp6otMotors(self.context)
         self._motors_button = Motors(self.context)
         
         self._agg_sub = rospy.Subscriber('diagnostics_agg', DiagnosticArray, self.new_diagnostic_message)
@@ -45,7 +51,7 @@ class Irp6Dashboard(Dashboard):
 
     def get_widgets(self):
         return [
-                [self._monitor, self._console, self._motors_button]
+                [self._monitor, self._console, self._hi_motors_button, self._irp6p_motors_button, self._irp6ot_motors_button, self._motors_button]
                ]
 
 
