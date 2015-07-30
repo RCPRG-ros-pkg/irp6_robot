@@ -49,7 +49,7 @@ class Irp6Dashboard(Dashboard):
 
     def get_widgets(self):
         return [
-                [self._monitor, self._console, self._hi_motors_button, self._irp6p_motors_button, self._irp6ot_motors_button]
+                [self._monitor, self._console, self._hi_motors_button, self._irp6ot_motors_button, self._irp6p_motors_button]
                ]
 
 
@@ -93,13 +93,13 @@ class Irp6Dashboard(Dashboard):
     def emergency_stop_activated_ui_state(self):
         self._hi_motors_button.set_error()
         self._hi_motors_button.disable_all_actions()
-        self._hi_motors_button.setToolTip(self.tr("Hi Motors: Hardware Panic, Check emergency stop, Restart hardware, deployer and rqt"))
+        self._hi_motors_button.setToolTip(self.tr("Hi Motors: Hardware Panic, Check emergency stop, Restart hardware and deployer"))
         self._irp6p_motors_button.set_error()
         self._irp6p_motors_button.disable_all_actions()
-        self._irp6p_motors_button.setToolTip(self.tr("Irp6p Motors: Hardware Panic, Check emergency stop, Restart hardware, deployer and rqt"))
+        self._irp6p_motors_button.setToolTip(self.tr("Irp6p Motors: Hardware Panic, Check emergency stop, Restart hardware and deployer"))
         self._irp6ot_motors_button.set_error()
         self._irp6ot_motors_button.disable_all_actions()
-        self._irp6ot_motors_button.setToolTip(self.tr("Irp6ot Motors: Hardware Panic, Check emergency stop, Restart hardware, deployer and rqt"))
+        self._irp6ot_motors_button.setToolTip(self.tr("Irp6ot Motors: Hardware Panic, Check emergency stop, Restart hardware and deployer"))
 
 
     def not_synchronised_no_motion_ui_state(self):
