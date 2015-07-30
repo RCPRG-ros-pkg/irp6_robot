@@ -6,10 +6,6 @@
  # Use irp6-conv-hardware.launch or irp6-con-nohardware.launch 
  #
  
-  <param name="robot_description" command="$(find xacro)/xacro.py '$(find irp6_description)/robots/irp6pboth.urdf.xacro'" />
-  
-  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher"/>
-  
 
     
   <group ns="IRP6_OT_OROCOS_ROBOT">
