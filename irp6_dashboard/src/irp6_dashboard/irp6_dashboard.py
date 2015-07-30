@@ -8,7 +8,6 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtGui import QWidget
 
-from .motors import Motors
 from .hi_motors import HiMotors
 from .irp6p_motors import Irp6pMotors
 from .irp6ot_motors import Irp6otMotors
@@ -40,7 +39,6 @@ class Irp6Dashboard(Dashboard):
         self._hi_motors_button = HiMotors(self.context)
         self._irp6p_motors_button = Irp6pMotors(self.context)
         self._irp6ot_motors_button = Irp6otMotors(self.context)
-        self._motors_button = Motors(self.context)
         
         self._agg_sub = rospy.Subscriber('diagnostics_agg', DiagnosticArray, self.new_diagnostic_message)
         
@@ -51,7 +49,7 @@ class Irp6Dashboard(Dashboard):
 
     def get_widgets(self):
         return [
-                [self._monitor, self._console, self._hi_motors_button, self._irp6p_motors_button, self._irp6ot_motors_button, self._motors_button]
+                [self._monitor, self._console, self._hi_motors_button, self._irp6p_motors_button, self._irp6ot_motors_button]
                ]
 
 
@@ -78,42 +76,89 @@ class Irp6Dashboard(Dashboard):
                          else:
                              self.status.is_emergency_stop_activated = False
         
-        if ((self._motors_button.status.motion_in_progress != self._motors_button.status.motion_in_progress_previous)
+        if ((self._irp6p_motors_button.status.motion_in_progress != self._irp6p_motors_button.status.motion_in_progress_previous)
+        or (self._irp6ot_motors_button.status.motion_in_progress != self._irp6ot_motors_button.status.motion_in_progress_previous)
         or (self.status.is_emergency_stop_activated != self.status.is_emergency_stop_activated_previous)
         or (self.status.is_synchronised != self.status.is_synchronised_previous)
-        or (self._motors_button.status.synchro_in_progress != self._motors_button.status.synchro_in_progress_previous)):
+        or (self._hi_motors_button.status.synchro_in_progress != self._hi_motors_button.status.synchro_in_progress_previous)):
             self.change_motors_widget_state()
         
-        self._motors_button.status.motion_in_progress_previous = self._motors_button.status.motion_in_progress
+        self._hi_motors_button.status.synchro_in_progress_previous = self._hi_motors_button.status.synchro_in_progress
+        self._irp6p_motors_button.status.motion_in_progress_previous = self._irp6p_motors_button.status.motion_in_progress
+        self._irp6ot_motors_button.status.motion_in_progress_previous = self._irp6ot_motors_button.status.motion_in_progress
         self.status.is_emergency_stop_activated_previous = self.status.is_emergency_stop_activated
         self.status.is_synchronised_previous = self.status.is_synchronised
-        self._motors_button.status.synchro_in_progress_previous = self._motors_button.status.synchro_in_progress
+
+
+    def emergency_stop_activated_ui_state(self):
+        self._hi_motors_button.set_error()
+        self._hi_motors_button.disable_all_actions()
+        self._hi_motors_button.setToolTip(self.tr("Hi Motors: Hardware Panic, Check emergency stop, Restart hardware, deployer and rqt"))
+        self._irp6p_motors_button.set_error()
+        self._irp6p_motors_button.disable_all_actions()
+        self._irp6p_motors_button.setToolTip(self.tr("Irp6p Motors: Hardware Panic, Check emergency stop, Restart hardware, deployer and rqt"))
+        self._irp6ot_motors_button.set_error()
+        self._irp6ot_motors_button.disable_all_actions()
+        self._irp6ot_motors_button.setToolTip(self.tr("Irp6ot Motors: Hardware Panic, Check emergency stop, Restart hardware, deployer and rqt"))
+
+
+    def not_synchronised_no_motion_ui_state(self):
+        self._hi_motors_button.set_warn()
+        self._hi_motors_button.enable_pre_synchro_actions()
+        self._hi_motors_button.setToolTip(self.tr("Hi Motors: Robot not synchronised, Execute synchronisation and wait for operation finish"))
+        self._irp6p_motors_button.set_warn()
+        self._irp6p_motors_button.enable_pre_synchro_actions()
+        self._irp6p_motors_button.setToolTip(self.tr("Irp6p Motors: Robot not synchronised, Execute synchronisation and wait for operation finish"))
+        self._irp6ot_motors_button.set_warn()
+        self._irp6ot_motors_button.enable_pre_synchro_actions()
+        self._irp6ot_motors_button.setToolTip(self.tr("Irp6ot Motors: Robot not synchronised, Execute synchronisation and wait for operation finish"))
+
+
+    def synchro_in_progress_ui_state(self):
+        self._hi_motors_button.set_stale()
+        self._hi_motors_button.disable_all_actions()
+        self._hi_motors_button.setToolTip(self.tr("Hi Motors: Synchronisation in progress"))
+        self._irp6p_motors_button.set_stale()
+        self._irp6p_motors_button.disable_all_actions()
+        self._irp6p_motors_button.setToolTip(self.tr("Irp6p Motors: Synchronisation in progress"))
+        self._irp6ot_motors_button.set_stale()
+        self._irp6ot_motors_button.disable_all_actions()
+        self._irp6ot_motors_button.setToolTip(self.tr("Irp6ot Motors: Synchronisation in progress"))
+
+
+    def robot_synchronised_ui_state(self):
+        self._hi_motors_button.set_stale()
+        self._hi_motors_button.disable_all_actions()
+        self._hi_motors_button.setToolTip(self.tr("Hi Motors: Robot synchronised"))
+        self._hi_motors_button.status.synchro_in_progress = False
+        if self._irp6p_motors_button.status.motion_in_progress == True:
+            self._irp6p_motors_button.set_stale()
+            self._irp6p_motors_button.disable_all_actions()
+            self._irp6p_motors_button.setToolTip(self.tr("Irp6p Motors: Robot in motion"))
+        else:
+            self._irp6p_motors_button.set_ok()
+            self._irp6p_motors_button.enable_post_synchro_actions()
+            self._irp6p_motors_button.setToolTip(self.tr("Irp6p Motors: Robot synchronised and waiting for command"))
+        if self._irp6ot_motors_button.status.motion_in_progress == True:
+            self._irp6ot_motors_button.set_stale()
+            self._irp6ot_motors_button.disable_all_actions()
+            self._irp6ot_motors_button.setToolTip(self.tr("Irp6ot Motors: Robot in motion"))
+        else:
+            self._irp6ot_motors_button.set_ok()
+            self._irp6ot_motors_button.enable_post_synchro_actions()
+            self._irp6ot_motors_button.setToolTip(self.tr("Irp6ot Motors: Robot synchronised and waiting for command"))
 
 
     def change_motors_widget_state(self):
         # print "change_motors_widget_state"
         if self.status.is_emergency_stop_activated == True:
-            self._motors_button.set_error()
-            self._motors_button.disable_all_actions()
-            self._motors_button.setToolTip(self.tr("Motors: Hardware Panic, Check emergency stop, Restart hardware, deployer and rqt"))
+            self.emergency_stop_activated_ui_state()
         elif self.status.is_synchronised == False:
-            if self._motors_button.status.synchro_in_progress == False:
-                self._motors_button.set_warn()
-                self._motors_button.enable_pre_synchro_actions()
-                self._motors_button.setToolTip(self.tr("Motors: Robot not synchronised, Execute synchronisation and wait for operation finish"))
+            if self._hi_motors_button.status.synchro_in_progress == False:
+                self.not_synchronised_no_motion_ui_state()
             else:
-                self._motors_button.set_stale()
-                self._motors_button.disable_all_actions()
-                self._motors_button.setToolTip(self.tr("Motors: Synchronisation in progress"))
-        elif self._motors_button.status.motion_in_progress == True:
-            self._motors_button.set_stale()
-            self._motors_button.disable_all_actions()
-            self._motors_button.setToolTip(self.tr("Motors: Motion in progress, wait for execution finish"))
-            self._motors_button.status.synchro_in_progress = False
-        elif self._motors_button.status.motion_in_progress == False:
-            self._motors_button.set_ok()
-            self._motors_button.enable_post_synchro_actions()
-            self._motors_button.setToolTip(self.tr("Motors: Robot synchronised and waiting for command"))
-            self._motors_button.status.synchro_in_progress = False
-            
-	
+                self.synchro_in_progress_ui_state()
+        else:
+            self.robot_synchronised_ui_state()
+
+
