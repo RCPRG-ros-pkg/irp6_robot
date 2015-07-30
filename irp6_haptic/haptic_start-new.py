@@ -56,7 +56,12 @@ if __name__ == '__main__':
   rospy.wait_for_service('/irp6ot_manager/switch_controller')
   conmanSwitchIrp6ot = rospy.ServiceProxy('/irp6ot_manager/switch_controller', SwitchController)
   
-  print "servers ok"
+  print "servers irp6ot ok"
+  
+  rospy.wait_for_service('/haptic_manager/switch_controller')
+  conmanSwitchHaptic = rospy.ServiceProxy('/haptic_manager/switch_controller', SwitchController)
+  
+  print "haptic server ok"
   
   #
   # Deactivate all generators
@@ -231,7 +236,7 @@ if __name__ == '__main__':
    
   conmanSwitchIrp6ot(['Irp6otmForceTransformation','Irp6otmForceControlLaw'], [], True)
   conmanSwitchIrp6p(['Irp6pmForceTransformation'], [], True)
-    
+  conmanSwitchHaptic(['Irp6Haptic'], [], True)  
     
   print 'finish'
   

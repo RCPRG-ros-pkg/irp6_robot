@@ -28,6 +28,8 @@
         test_mode: true
       ATI3084:
         test_mode: true
+      HapticScheme:
+        scheme_name: haptic_manager
     </rosparam>
   </group>
 

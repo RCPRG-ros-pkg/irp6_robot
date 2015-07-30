@@ -1,11 +1,19 @@
 //
-// Irp6 Haptic
+// Irp6 Haptic inside - do not call directly
 //
-// - Docelowo mozna wprowadzic trzeciego schema dla haptica
+
+//------------------------------------------------------------------------------
+//-- Controller manager
+//------------------------------------------------------------------------------
+loadComponent("HapticScheme", "conman::Scheme");
+setActivity("ConvScheme", 0.002, 5, ORO_SCHED_RT);
+HapticScheme.loadService("rosparam")
+HapticScheme.rosparam.getAll()
+HapticScheme.loadService("conman_ros")
+HapticScheme.configure()
 
 
 loadComponent("Irp6Haptic", "Irp6Haptic")
-setActivity("Irp6Haptic", 0.002, 4, ORO_SCHED_RT);
 Irp6Haptic.configure()
 
 connect("Irp6otmForwardKinematic.EndEffectorOutputPose", "Irp6Haptic.CurrentEndEffectorPose", ConnPolicy())
@@ -13,5 +21,10 @@ connect("Irp6pmInverseKinematic.InputEndEffectorPose", "Irp6Haptic.OutputEndEffe
 
 connect("Irp6pmForceTransformation.OutputEndEffectorWrench", "Irp6Haptic.CurrentEndEffectorWrench", ConnPolicy())
 connect("Irp6otmForceControlLaw.CurrentFclParam", "Irp6Haptic.OutputFclParam", ConnPolicy())
+
+addPeer("HapticScheme", "Irp6Haptic")
+HapticScheme.addBlock("Irp6Haptic");
+
+HapticScheme.start()
 
 
