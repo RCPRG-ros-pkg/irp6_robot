@@ -13,7 +13,7 @@
   
 
 
-  <include file="$(find irp6_bringup)/launch/irp6-ot-new.launch">
+  <include file="$(find irp6_bringup)/launch/irp6-ot-new.launch" ns="IRP6_OT_OROCOS_ROBOT">
   </include>
 
   <group ns="IRP6_OT_OROCOS_ROBOT">

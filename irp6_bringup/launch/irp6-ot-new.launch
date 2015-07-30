@@ -8,7 +8,7 @@
  
 
     
-  <group ns="IRP6_OT_OROCOS_ROBOT">
+  <group>
     <rosparam>
       Irp6otScheme:
         scheme_name: irp6ot_manager
