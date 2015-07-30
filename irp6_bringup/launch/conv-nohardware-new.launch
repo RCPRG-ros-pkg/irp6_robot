@@ -1,0 +1,23 @@
+<launch>
+
+  <include file="$(find rtt_ros)/launch/deployer.launch">
+    <arg name="NAME" value="CONV_OROCOS_ROBOT"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find irp6_bringup)/config/conv-new.ops"/>
+    <arg name="LOG_LEVEL" value="Warning"/>
+    <arg name="DEBUG" value="false"/>
+  </include>
+
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find irp6_description)/robots/irp6pboth.urdf.xacro'" />
+
+
+  <include file="$(find irp6_bringup)/launch/conv-new.launch" ns="CONV_OROCOS_ROBOT">
+  </include>
+
+  <group ns="CONV_OROCOS_ROBOT">
+    <rosparam>
+      ConvHardwareInterface:
+        test_mode: true
+    </rosparam>
+  </group>
+
+</launch>
