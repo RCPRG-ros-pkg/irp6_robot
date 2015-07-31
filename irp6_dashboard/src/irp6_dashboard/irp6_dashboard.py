@@ -59,12 +59,15 @@ class Irp6Dashboard(Dashboard):
         
         self._dashboard_message = msg
         for status in msg.status:
-            if status.name == 'Irp6p Hardware Interface':
-                self._irp6p_motors_button.interpret_diagnostic_message(status)
-            elif status.name == 'Irp6ot Hardware Interface':
-                self._irp6ot_motors_button.interpret_diagnostic_message(status)
-            elif status.name == 'Conveyor Hardware Interface':
-                self._conveyor_motors_button.interpret_diagnostic_message(status)
+            if status.name == '/HardwareInterfaces/Irp6p/Irp6p Hardware Interface':
+                if (status.level != 3):
+                    self._irp6p_motors_button.interpret_diagnostic_message(status)
+            elif status.name == '/HardwareInterfaces/Irp6ot/Irp6ot Hardware Interface':
+                if (status.level != 3):
+                    self._irp6ot_motors_button.interpret_diagnostic_message(status)
+            elif status.name == '/HardwareInterfaces/Conveyor/Conveyor Hardware Interface':
+                if (status.level != 3):
+                    self._conveyor_motors_button.interpret_diagnostic_message(status)
 
 
     def save_settings(self, plugin_settings, instance_settings):
