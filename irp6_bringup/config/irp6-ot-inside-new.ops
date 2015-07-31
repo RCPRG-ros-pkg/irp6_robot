@@ -21,7 +21,7 @@ loadComponent("Irp6otHardwareInterface","HardwareInterface")
 Irp6otHardwareInterface.loadService("rosparam")
 Irp6otHardwareInterface.rosparam.getAll()
 Irp6otHardwareInterface.configure()
-stream("Irp6otHardwareInterface.DoSynchroIn", ros.comm.topic("/hardware_interface/do_synchro_in"))
+stream("Irp6otHardwareInterface.DoSynchroIn", ros.comm.topic("/irp6ot_hardware_interface/do_synchro_in"))
 
 loadComponent("Irp6otDiag", "Irp6Diagnostic")
 setActivity("Irp6otDiag", 0.1, 1, ORO_SCHED_RT)

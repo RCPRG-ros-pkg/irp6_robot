@@ -43,12 +43,7 @@ import std_srvs.srv
 
 from std_msgs.msg import *
 from irpos import *
-
-class Irp6pMotorStatus():
-    def __init__(self, context):
-        self.motion_in_progress = False
-        self.motion_in_progress_previous = False
-
+from .irp6_motor_status import Irp6MotorStatus
 
 class Irp6pMotors(MenuDashWidget):
     """
@@ -74,9 +69,13 @@ class Irp6pMotors(MenuDashWidget):
         
         self.irp6p_move_to_synchro_pos_action = self.add_action('Irp6p move to synchro pos', self.irp6p_move_to_synchro_pos)
         self.irp6p_move_to_front_pos_action = self.add_action('Irp6p move to front pos', self.irp6p_move_to_front_pos)
+        self.synchronise_action = self.add_action('Synchronise', self.synchronise)
 
         
-        self.status = Irp6pMotorStatus(self)
+        self.status = Irp6MotorStatus(self)
+        self.previous_status = Irp6MotorStatus(self)
+        
+        self.change_motors_widget_state()
 
 
     def set_ok(self):
@@ -98,16 +97,19 @@ class Irp6pMotors(MenuDashWidget):
     def enable_post_synchro_actions(self):
         self.irp6p_move_to_synchro_pos_action.setDisabled(False)
         self.irp6p_move_to_front_pos_action.setDisabled(False)
+        self.synchronise_action.setDisabled(True)
          
          
     def enable_pre_synchro_actions(self):
         self.irp6p_move_to_synchro_pos_action.setDisabled(True)
         self.irp6p_move_to_front_pos_action.setDisabled(True)
+        self.synchronise_action.setDisabled(False)
 
 
     def disable_all_actions(self):
         self.irp6p_move_to_synchro_pos_action.setDisabled(True)
         self.irp6p_move_to_front_pos_action.setDisabled(True)
+        self.synchronise_action.setDisabled(True)
 
 
     def irp6p_done_callback(self,state, result):
@@ -157,3 +159,39 @@ class Irp6pMotors(MenuDashWidget):
         self.status.motion_in_progress = True
 
 
+    def synchronise(self):
+        pub = rospy.Publisher('/irp6p_hardware_interface/do_synchro_in', std_msgs.msg.Bool, queue_size=0)
+        rospy.sleep(0.5)
+        goal = std_msgs.msg.Bool()
+        goal.data = True
+        pub.publish(goal)
+        self.status.synchro_in_progress = True
+
+
+    def change_motors_widget_state(self):
+        # print "change_motors_widget_state"
+        if self.status.is_emergency_stop_activated == True:
+            self.set_error()
+            self.disable_all_actions()
+            self.setToolTip(self.tr("Irp6p Motors: Hardware Panic, Check emergency stop, Restart hardware and deployer"))
+        elif self.status.is_synchronised == False:
+            if self.status.synchro_in_progress == False:
+                self.set_warn()
+                self.enable_pre_synchro_actions()
+                self.setToolTip(self.tr("Irp6p Motors: Robot not synchronised, Execute synchronisation and wait for operation finish"))
+            else:
+                self.set_stale()
+                self.disable_all_actions()
+                self.setToolTip(self.tr("Irp6p Motors: Synchronisation in progress"))
+        else:
+            if self.status.motion_in_progress == True:
+                self.set_stale()
+                self.disable_all_actions()
+                self.setToolTip(self.tr("Irp6p Motors: Robot in motion"))
+            else:
+                self.set_ok()
+                self.enable_post_synchro_actions()
+                self.setToolTip(self.tr("Irp6p Motors: Robot synchronised and waiting for command"))
+                
+        
+        self.previous_status.assign(self.status)
