@@ -43,7 +43,7 @@ import std_srvs.srv
 
 from std_msgs.msg import *
 from irpos import *
-from .irp6_motor_status import Irp6MotorStatus
+from .irp6_motors import Irp6MotorStatus, Irp6Motors
 
 class Irp6pMotors(MenuDashWidget):
     """
