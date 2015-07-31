@@ -52,38 +52,8 @@ class Irp6Dashboard(Dashboard):
         self._dashboard_message = msg
         for status in msg.status:
             if status.name == 'Irp6p Hardware Interface':
-                # Ponizsze rozwiazanie nei bedzie dzialalo po wylaczeniu robota - do poprawy
-                self._irp6p_motors_button.status.is_responding = True 
-                for kv in status.values:
-                     if kv.key == 'Synchro':
-                         if kv.value == 'TRUE':
-                             self._irp6p_motors_button.is_synchronised = True
-                         else:
-                             self._irp6p_motors_button.is_synchronised = False
-                     elif kv.key == 'HardwarePanic':
-                         if kv.value == 'TRUE':
-                             self._irp6p_motors_button.status.is_emergency_stop_activated = True
-                         else:
-                             self._irp6p_motors_button.status.is_emergency_stop_activated = False
-                             
+                self._irp6p_motors_button.interpret_diagnostic_message(status)
             elif status.name == 'Irp6ot Hardware Interface':
-                # Ponizsze rozwiazanie nei bedzie dzialalo po wylaczeniu robota - do poprawy
-                self._irp6ot_motors_button.status.is_responding = True 
-                for kv in status.values:
-                     if kv.key == 'Synchro':
-                         if kv.value == 'TRUE':
-                             self._irp6ot_motors_button.is_synchronised = True
-                         else:
-                             self._irp6ot_motors_button.is_synchronised = False
-                     elif kv.key == 'HardwarePanic':
-                         if kv.value == 'TRUE':
-                             self._irp6ot_motors_button.status.is_emergency_stop_activated = True
-                         else:
-                             self._irp6ot_motors_button.status.is_emergency_stop_activated = False
-        
-        if (not self._irp6p_motors_button.status.is_eq(self._irp6p_motors_button.previous_status)):
-            self._irp6p_motors_button.change_motors_widget_state()
-        if (not self._irp6ot_motors_button.status.is_eq(self._irp6ot_motors_button.previous_status)):
-            self._irp6ot_motors_button.change_motors_widget_state()
+                self._irp6ot_motors_button.interpret_diagnostic_message(status)
 
 

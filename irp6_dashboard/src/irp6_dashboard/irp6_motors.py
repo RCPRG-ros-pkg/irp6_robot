@@ -74,7 +74,7 @@ class Irp6Motors(MenuDashWidget):
     """
     Dashboard widget to display motor state and allow interaction.
     """
-    def __init__(self, name):
+    def __init__(self, name_):
         """
         :param context: the plugin context
         :type context: qt_gui.plugin.Plugin
@@ -83,6 +83,9 @@ class Irp6Motors(MenuDashWidget):
         :param halt_callback: calback for the "reset" action
         :type halt_callback: function
         """
+        
+        self.name = name_
+        
         ok_icon = ['bg-green.svg', 'ic-motors.svg']
         warn_icon = ['bg-yellow.svg', 'ic-motors.svg', 'ol-warn-badge.svg']
         err_icon = ['bg-red.svg', 'ic-motors.svg', 'ol-err-badge.svg']
@@ -90,7 +93,7 @@ class Irp6Motors(MenuDashWidget):
 
         icons = [ok_icon, warn_icon, err_icon, stale_icon]
         
-        super(Irp6Motors, self).__init__(name, icons)
+        super(Irp6Motors, self).__init__(self.name, icons)
         
         self.status = Irp6MotorStatus(self)
         self.previous_status = Irp6MotorStatus(self)
@@ -137,7 +140,7 @@ class Irp6Motors(MenuDashWidget):
         if self.status.is_emergency_stop_activated == True:
             self.set_error()
             self.disable_all_actions()
-            self.setToolTip(self.tr("Irp6ot Motors: Hardware Panic, Check emergency stop, Restart hardware and deployer"))
+            self.setToolTip(self.tr(self.name + ": Hardware Panic, Check emergency stop, Restart hardware and deployer"))
         elif self.status.is_synchronised == False:
             if self.status.synchro_in_progress == False:
                 self.set_warn()
@@ -157,7 +160,25 @@ class Irp6Motors(MenuDashWidget):
                 self.enable_post_synchro_actions()
                 self.setToolTip(self.tr("Irp6ot Motors: Robot synchronised and waiting for command"))
                 
-        
         self.previous_status.assign(self.status)
+
+
+    def interpret_diagnostic_message(self,status):
+        # Ponizsze rozwiazanie nei bedzie dzialalo po wylaczeniu robota - do poprawy
+        self.status.is_responding = True 
+        for kv in status.values:
+            if kv.key == 'Synchro':
+                if kv.value == 'TRUE':
+                    self.is_synchronised = True
+                else:
+                    self.is_synchronised = False
+            elif kv.key == 'HardwarePanic':
+                if kv.value == 'TRUE':
+                    self.status.is_emergency_stop_activated = True
+                else:
+                    self.status.is_emergency_stop_activated = False
+                    
+            if (not self.status.is_eq(self.previous_status)):
+                self.change_motors_widget_state()
 
 
