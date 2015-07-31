@@ -1,0 +1,228 @@
+
+//------------------------------------------------------------------------------
+//-- Controller manager
+//------------------------------------------------------------------------------
+loadComponent("ConvScheme", "conman::Scheme");
+setActivity("ConvScheme", 0.002, 5, ORO_SCHED_RT);
+ConvScheme.loadService("rosparam")
+ConvScheme.rosparam.getAll()
+ConvScheme.loadService("conman_ros")
+ConvScheme.configure()
+
+
+//------------------------------------------------------------------------------
+//-- ConvHardwareInterface
+//------------------------------------------------------------------------------
+loadComponent("ConvHardwareInterface","HardwareInterface")
+ConvHardwareInterface.loadService("rosparam")
+ConvHardwareInterface.rosparam.getAll()
+ConvHardwareInterface.configure()
+stream("ConvHardwareInterface.DoSynchroIn", ros.comm.topic("/conv_hardware_interface/do_synchro_in"))
+
+loadComponent("ConvDiag", "Irp6Diagnostic")
+setActivity("ConvDiag", 0.1, 1, ORO_SCHED_RT)
+ConvDiag.loadService("rosparam");
+ConvDiag.rosparam.getAll();
+
+connect("ConvDiag.SynchroStateIn","ConvHardwareInterface.IsSynchronised", ConnPolicy())
+connect("ConvDiag.HardwaPanicIn","ConvHardwareInterface.IsHardwarePanic", ConnPolicy())
+stream("ConvDiag.Diagnostics", ros.comm.topic("/diagnostics_agg"));
+ConvDiag.configure()
+
+
+
+
+
+loadComponent("ConveyorLimitDetector","LimitDetector")
+ConveyorLimitDetector.loadService("rosparam")
+ConveyorLimitDetector.rosparam.getAll()
+ConveyorLimitDetector.rosparam.getParam("~/ConveyorMotorParameters/upper_limits", "upper_limits")
+ConveyorLimitDetector.rosparam.getParam("~/ConveyorMotorParameters/lower_limits", "lower_limits")
+ConveyorLimitDetector.configure()
+
+
+// Motors Regulators
+
+
+loadComponent("ConveyorRegulator","IRp6Regulator")
+ConveyorRegulator.loadService("rosparam")
+ConveyorRegulator.rosparam.getAll()
+ConveyorRegulator.configure()
+
+
+// Conveyor double port spliter
+
+loadComponent("ConveyorPortDoubleSplit_hw_cp","PortDoubleSplit")
+ConveyorPortDoubleSplit_hw_cp.loadService("rosparam")
+ConveyorPortDoubleSplit_hw_cp.rosparam.getAll()
+ConveyorPortDoubleSplit_hw_cp.configure()
+
+
+// Conveyor double port aggregate
+
+loadComponent("ConveyorPortDoubleAggregate_hw_p","PortDoubleAggregate")
+ConveyorPortDoubleAggregate_hw_p.loadService("rosparam")
+ConveyorPortDoubleAggregate_hw_p.rosparam.getAll()
+ConveyorPortDoubleAggregate_hw_p.configure()
+
+// Conveyor double port sum
+
+loadComponent("ConveyorPortDoubleSum","PortDoubleSum")
+ConveyorPortDoubleSum.loadService("rosparam")
+ConveyorPortDoubleSum.rosparam.getAll()
+ConveyorPortDoubleSum.configure()
+
+// ConveyorM2J
+
+loadComponent("ConveyorM2J","ConveyorM2J")
+ConveyorM2J.configure()
+
+// ConveyorJ2M
+
+loadComponent("ConveyorJ2M","ConveyorJ2M")
+ConveyorJ2M.configure()
+
+
+// ConveyorSplineTrajectoryGeneratorJoint
+
+loadComponent("ConveyorSplineTrajectoryGeneratorJoint", "InternalSpaceSplineTrajectoryGenerator")
+ConveyorSplineTrajectoryGeneratorJoint.loadService("rosparam");
+ConveyorSplineTrajectoryGeneratorJoint.rosparam.getAll();
+connect("ConveyorM2J.JointPosition","ConveyorSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
+connect("ConveyorSplineTrajectoryGeneratorJoint.JointPositionCommand","ConveyorJ2M.JointPosition", ConnPolicy())
+ConveyorSplineTrajectoryGeneratorJoint.configure()
+
+
+// ConveyorSplineTrajectoryGeneratorMotor
+
+loadComponent("ConveyorSplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
+ConveyorSplineTrajectoryGeneratorMotor.loadService("rosparam");
+ConveyorSplineTrajectoryGeneratorMotor.rosparam.getAll();
+
+connect("ConveyorLimitDetector.OutputPort","ConveyorPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
+
+connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
+connect("ConveyorSplineTrajectoryGeneratorMotor.JointPositionCommand","ConveyorLimitDetector.InputPort", ConnPolicy())
+ConveyorSplineTrajectoryGeneratorMotor.configure()
+
+
+
+connect("ConveyorPortDoubleSum.InputPort_0","ConveyorRegulator.computedPwm_out", ConnPolicy())
+connect("ConvHardwareInterface.computedReg_in_conveyor","ConveyorPortDoubleSum.OutputPort", ConnPolicy())
+connect("ConveyorRegulator.DesiredPosition","ConvHardwareInterface.DesiredPosition_out_conveyor", ConnPolicy())
+connect("ConveyorRegulator.deltaInc_in","ConvHardwareInterface.MotorIncrement_conveyor", ConnPolicy())
+connect("ConveyorRegulator.SynchroStateIn","ConvHardwareInterface.IsSynchronised", ConnPolicy())
+connect("ConveyorRegulator.EmergencyStopOut","ConvHardwareInterface.EmergencyStopIn", ConnPolicy())
+
+
+
+connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorM2J.MotorPosition", ConnPolicy())
+connect("ConveyorJ2M.MotorPosition", "ConveyorLimitDetector.InputPort", ConnPolicy())
+connect("ConveyorPortDoubleSplit_hw_cp.OutputPort_0","ConvHardwareInterface.MotorPositionCommand_conveyor", ConnPolicy())
+connect("ConveyorPortDoubleSplit_hw_cp.OutputPort_0","ConveyorRegulator.DesiredPosition", ConnPolicy())
+connect("ConveyorPortDoubleAggregate_hw_p.InputPort_0","ConvHardwareInterface.MotorPosition_conveyor", ConnPolicy())
+
+
+
+
+addPeer("ConvScheme", "ConvHardwareInterface")
+
+
+addPeer("ConvScheme", "ConveyorRegulator");
+addPeer("ConvScheme", "ConveyorPortDoubleSplit_hw_cp")
+addPeer("ConvScheme", "ConveyorPortDoubleAggregate_hw_p")
+addPeer("ConvScheme", "ConveyorLimitDetector")
+addPeer("ConvScheme", "ConveyorPortDoubleSum")
+addPeer("ConvScheme", "ConveyorM2J");
+addPeer("ConvScheme", "ConveyorJ2M");
+addPeer("ConvScheme", "ConveyorSplineTrajectoryGeneratorJoint");
+addPeer("ConvScheme", "ConveyorSplineTrajectoryGeneratorMotor");
+
+
+ConvScheme.addBlock("ConvHardwareInterface");
+
+
+ConvScheme.addBlock("ConveyorRegulator")
+ConvScheme.latchConnections("ConvHardwareInterface", "ConveyorRegulator", true);
+ConvScheme.addBlock("ConveyorPortDoubleSplit_hw_cp")
+ConvScheme.addBlock("ConveyorLimitDetector")
+ConvScheme.addBlock("ConveyorPortDoubleAggregate_hw_p")
+ConvScheme.addBlock("ConveyorPortDoubleSum")
+ConvScheme.addBlock("ConveyorM2J");
+ConvScheme.latchConnections("ConvHardwareInterface", "ConveyorPortDoubleAggregate_hw_p", true);
+ConvScheme.addBlock("ConveyorJ2M");
+ConvScheme.addBlock("ConveyorSplineTrajectoryGeneratorJoint");
+ConvScheme.addBlock("ConveyorSplineTrajectoryGeneratorMotor");
+
+
+
+//
+// ConveyorSplineTrajectoryActionJoint
+// 
+
+loadComponent("ConveyorSplineTrajectoryActionJoint", "InternalSpaceSplineTrajectoryAction")
+setActivity("ConveyorSplineTrajectoryActionJoint",0.01 ,2 ,ORO_SCHED_RT)
+ConveyorSplineTrajectoryActionJoint.loadService("rosparam");
+ConveyorSplineTrajectoryActionJoint.rosparam.getAll();
+
+ConveyorSplineTrajectoryActionJoint.loadService("actionlib")
+ConveyorSplineTrajectoryActionJoint.actionlib.connect("/conveyor/spline_trajectory_action_joint")
+
+connect("ConveyorSplineTrajectoryActionJoint.trajectoryPtr","ConveyorSplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
+connect("ConveyorM2J.JointPosition","ConveyorSplineTrajectoryActionJoint.JointPosition", ConnPolicy())
+connect("ConveyorSplineTrajectoryGeneratorJoint.JointPositionCommand","ConveyorSplineTrajectoryActionJoint.JointPositionCommand", ConnPolicy())
+
+
+ConveyorSplineTrajectoryActionJoint.configure()
+
+
+//
+// ConveyorSplineTrajectoryActionMotor
+// 
+
+loadComponent("ConveyorSplineTrajectoryActionMotor", "InternalSpaceSplineTrajectoryAction")
+setActivity("ConveyorSplineTrajectoryActionMotor",0.01 ,2 ,ORO_SCHED_RT)
+ConveyorSplineTrajectoryActionMotor.loadService("rosparam");
+ConveyorSplineTrajectoryActionMotor.rosparam.getAll();
+ConveyorSplineTrajectoryActionMotor.rosparam.getParam("~/ConveyorMotorParameters/upper_limits", "upper_limits")
+ConveyorSplineTrajectoryActionMotor.rosparam.getParam("~/ConveyorMotorParameters/lower_limits", "lower_limits")
+ConveyorSplineTrajectoryActionMotor.loadService("actionlib")
+ConveyorSplineTrajectoryActionMotor.actionlib.connect("/conveyor/spline_trajectory_action_motor")
+
+connect("ConveyorSplineTrajectoryActionMotor.trajectoryPtr","ConveyorSplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
+connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorSplineTrajectoryActionMotor.JointPosition", ConnPolicy())
+connect("ConveyorSplineTrajectoryGeneratorMotor.JointPositionCommand","ConveyorSplineTrajectoryActionMotor.JointPositionCommand", ConnPolicy())
+
+ConveyorSplineTrajectoryActionMotor.configure()
+
+loadComponent("ConveyorJntPub", "JointStatePublisher");
+setActivity("ConveyorJntPub", 0.01, 2, ORO_SCHED_RT);
+ConveyorJntPub.loadService("rosparam");
+ConveyorJntPub.rosparam.getAll();
+
+connect("ConveyorM2J.JointPosition", "ConveyorJntPub.JointPosition", ConnPolicy());
+connect("ConveyorM2J.JointPosition", "ConveyorJntPub.JointVelocity", ConnPolicy());
+connect("ConveyorM2J.JointPosition", "ConveyorJntPub.JointEffort", ConnPolicy());
+
+stream("ConveyorJntPub.joint_state", ros.comm.topic("conveyor/joint_states"));
+
+ConveyorJntPub.configure()
+
+
+
+
+ConvScheme.start()
+
+ConveyorRegulator.start()
+ConveyorPortDoubleSplit_hw_cp.start()
+ConveyorLimitDetector.start()
+ConveyorPortDoubleAggregate_hw_p.start()
+ConveyorPortDoubleSum.start()
+ConveyorM2J.start()
+ConveyorJ2M.start()
+ConveyorSplineTrajectoryActionJoint.start()
+ConveyorSplineTrajectoryActionMotor.start()
+ConveyorJntPub.start()
+
+ConvHardwareInterface.start()
+ConvDiag.start()
