@@ -1,14 +1,22 @@
 
 
 analyzers:
-  irp6:
+  HardwareInterfaces:
     type: diagnostic_aggregator/AnalyzerGroup
-    path: Irp6
+    path: HardwareInterfaces
     analyzers:
-      CPU:
+      Conveyor:
         type: diagnostic_aggregator/GenericAnalyzer
         path: Conveyor
-        find_and_remove_prefix: Conveyor
-        num_items: 3
+        startswith: 'Conveyor'
+      Irp6ot:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Irp6ot
+        startswith: 'Irp6ot'
+      Irp6p:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Irp6p
+        startswith: 'Irp6p'
+
      
 
