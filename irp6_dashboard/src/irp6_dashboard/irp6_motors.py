@@ -187,7 +187,6 @@ class Irp6Motors(MenuDashWidget):
 
     def interpret_diagnostic_message(self,status):
         self.diagnostic_messages_number += 1
-        # Ponizsze rozwiazanie nei bedzie dzialalo po wylaczeniu robota - do poprawy
         self.status.is_responding = True 
         for kv in status.values:
             if kv.key == 'Synchro':
