@@ -49,6 +49,7 @@ class Irp6Dashboard(Dashboard):
         """
         callback to process dashboard_agg messages
         """
+        
         self._dashboard_message = msg
         for status in msg.status:
             if status.name == 'Irp6p Hardware Interface':

@@ -136,7 +136,7 @@ class Irp6Motors(MenuDashWidget):
         
         
     def change_motors_widget_state(self):
-        # print "change_motors_widget_state"
+        # print self.name + ": change_motors_widget_state"
         if self.status.is_emergency_stop_activated == True:
             self.set_error()
             self.disable_all_actions()
@@ -169,9 +169,9 @@ class Irp6Motors(MenuDashWidget):
         for kv in status.values:
             if kv.key == 'Synchro':
                 if kv.value == 'TRUE':
-                    self.is_synchronised = True
+                    self.status.is_synchronised = True
                 else:
-                    self.is_synchronised = False
+                    self.status.is_synchronised = False
             elif kv.key == 'HardwarePanic':
                 if kv.value == 'TRUE':
                     self.status.is_emergency_stop_activated = True
@@ -180,5 +180,7 @@ class Irp6Motors(MenuDashWidget):
                     
             if (not self.status.is_eq(self.previous_status)):
                 self.change_motors_widget_state()
+                
+#        print self.name + ": new diag message, synchro: " + str(self.status.is_synchronised) + " hardware panic: " + str(self.status.is_emergency_stop_activated)
 
 
