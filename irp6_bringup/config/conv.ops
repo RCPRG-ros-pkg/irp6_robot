@@ -5,4 +5,4 @@ runScript( ros.find("irp6_bringup") + "/config/common-imports.ops")
 
 ros.import("conveyor_kinematic")
 
-runScript( ros.find("irp6_bringup") + "/config/conv-inside-new.ops")
+runScript( ros.find("irp6_bringup") + "/config/conv-inside.ops")

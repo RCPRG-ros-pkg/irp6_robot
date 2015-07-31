@@ -10,8 +10,8 @@ ros.import("force_control")
 ros.import("irp6_force_sensor")
 ros.import("irp6_haptic")
 
-runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside-new.ops")
-runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-new.ops")
+runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside.ops")
+runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside.ops")
 PortDoubleToFloat64_1.start()
 
 runScript( ros.find("irp6_bringup") + "/config/haptic-inside.ops")

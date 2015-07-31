@@ -69,7 +69,6 @@ class Irp6otMotors(Irp6Motors):
                 
         self.change_motors_widget_state()
         
-        print "ok"
 
 
     def done_callback(self,state, result):

@@ -2,7 +2,7 @@
 
   <include file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="IRP6_CONV_OROCOS_ROBOT"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find irp6_bringup)/config/irp6-conv-new.ops"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find irp6_bringup)/config/irp6-conv.ops"/>
     <arg name="LOG_LEVEL" value="Warning"/>
     <arg name="DEBUG" value="false"/>
   </include>
@@ -11,13 +11,13 @@
   
   <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher"/>
   
-  <include file="$(find irp6_bringup)/launch/irp6-p-new.launch" ns="IRP6_CONV_OROCOS_ROBOT">
+  <include file="$(find irp6_bringup)/launch/irp6-p-inside.launch" ns="IRP6_CONV_OROCOS_ROBOT">
   </include>
   
-  <include file="$(find irp6_bringup)/launch/irp6-ot-new.launch" ns="IRP6_CONV_OROCOS_ROBOT">
+  <include file="$(find irp6_bringup)/launch/irp6-ot-inside.launch" ns="IRP6_CONV_OROCOS_ROBOT">
   </include>
   
-  <include file="$(find irp6_bringup)/launch/conv-new.launch" ns="IRP6_CONV_OROCOS_ROBOT">
+  <include file="$(find irp6_bringup)/launch/conv-inside.launch" ns="IRP6_CONV_OROCOS_ROBOT">
   </include>
 
   <group ns="IRP6_CONV_OROCOS_ROBOT">

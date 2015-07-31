@@ -9,7 +9,7 @@
 
   <param name="robot_description" command="$(find xacro)/xacro.py '$(find irp6_description)/robots/irp6pboth.urdf.xacro'" />
 
-  <include file="$(find irp6_bringup)/launch/conv-new.launch" ns="CONV_OROCOS_ROBOT">
+  <include file="$(find irp6_bringup)/launch/conv-inside.launch" ns="CONV_OROCOS_ROBOT">
   </include>
 
   <group ns="CONV_OROCOS_ROBOT">
