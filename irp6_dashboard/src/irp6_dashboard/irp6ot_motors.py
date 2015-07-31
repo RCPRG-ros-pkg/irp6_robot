@@ -68,6 +68,9 @@ class Irp6otMotors(Irp6Motors):
         self.synchronise_action = self.add_action('Irp6ot Synchronise', self.synchronise)
                 
         self.change_motors_widget_state()
+        timerThread = threading.Thread(target=self.monitor_robot_activity)
+        timerThread.daemon = True
+        timerThread.start()
         
 
 

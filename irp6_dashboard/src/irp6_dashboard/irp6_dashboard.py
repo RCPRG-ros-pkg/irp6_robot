@@ -3,6 +3,7 @@ import rospy
 from rosgraph import rosenv
 import rospkg
 
+
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -35,6 +36,10 @@ class Irp6Dashboard(Dashboard):
         
 
 
+
+
+
+
     def get_widgets(self):
         return [
                 [self._monitor, self._console, self._irp6ot_motors_button, self._irp6p_motors_button]
@@ -56,5 +61,15 @@ class Irp6Dashboard(Dashboard):
                 self._irp6p_motors_button.interpret_diagnostic_message(status)
             elif status.name == 'Irp6ot Hardware Interface':
                 self._irp6ot_motors_button.interpret_diagnostic_message(status)
+
+
+    def save_settings(self, plugin_settings, instance_settings):
+        self._console.save_settings(plugin_settings, instance_settings)
+        self._monitor.save_settings(plugin_settings, instance_settings)
+
+
+    def restore_settings(self, plugin_settings, instance_settings):
+        self._console.restore_settings(plugin_settings, instance_settings)
+        self._monitor.restore_settings(plugin_settings, instance_settings)
 
 

@@ -69,6 +69,10 @@ class Irp6pMotors(Irp6Motors):
         
         
         self.change_motors_widget_state()
+        
+        timerThread = threading.Thread(target=self.monitor_robot_activity)
+        timerThread.daemon = True
+        timerThread.start()
 
 
     def done_callback(self,state, result):
