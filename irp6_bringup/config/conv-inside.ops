@@ -26,7 +26,7 @@ ConvDiag.rosparam.getAll();
 
 connect("ConvDiag.SynchroStateIn","ConvHardwareInterface.IsSynchronised", ConnPolicy())
 connect("ConvDiag.HardwaPanicIn","ConvHardwareInterface.IsHardwarePanic", ConnPolicy())
-stream("ConvDiag.Diagnostics", ros.comm.topic("/diagnostics_agg"));
+stream("ConvDiag.Diagnostics", ros.comm.topic("/diagnostics"));
 ConvDiag.configure()
 
 

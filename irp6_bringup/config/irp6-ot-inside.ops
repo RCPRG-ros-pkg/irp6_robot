@@ -30,7 +30,7 @@ Irp6otDiag.rosparam.getAll();
 
 connect("Irp6otDiag.SynchroStateIn","Irp6otHardwareInterface.IsSynchronised", ConnPolicy())
 connect("Irp6otDiag.HardwaPanicIn","Irp6otHardwareInterface.IsHardwarePanic", ConnPolicy())
-stream("Irp6otDiag.Diagnostics", ros.comm.topic("/diagnostics_agg"));
+stream("Irp6otDiag.Diagnostics", ros.comm.topic("/conv/diagnostics_agg"));
 Irp6otDiag.configure()
 
 
