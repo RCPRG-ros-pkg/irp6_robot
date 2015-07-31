@@ -72,9 +72,6 @@ class Irp6otMotors(Irp6Motors):
         print "ok"
 
 
-
-
-
     def done_callback(self,state, result):
         self.conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
         self.status.motion_in_progress = False
