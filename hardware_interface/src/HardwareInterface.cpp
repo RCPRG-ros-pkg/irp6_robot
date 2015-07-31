@@ -197,7 +197,7 @@ bool HardwareInterface::configureHook() {
 
   if (!test_mode_) {
     hi_ = new hi_moxa::HI_moxa(number_of_drives_ - 1, card_indexes_,
-                               max_increment_, tx_prefix_len_);
+                               max_increment_, tx_prefix_len_, getName());
   }
   counter_ = 0.0;
 
@@ -224,12 +224,12 @@ bool HardwareInterface::configureHook() {
       }
 
       if (std::string(hostname) != hardware_hostname_) {
-        std::cout << std::endl << RED
-                  << "[error] ERROR wrong host_name for hardware_mode" << RESET
+        std::cout << std::endl << RED << getName()
+                  << " [error] ERROR wrong host_name for hardware_mode" << RESET
                   << std::endl << std::endl;
       }
 
-      std::cout << "hostname: " << hostname << std::endl;
+      std::cout << getName() << " hostname: " << hostname << std::endl;
 
       hi_->init(ports_adresses_);
 
@@ -257,8 +257,8 @@ bool HardwareInterface::configureHook() {
     log(RTT::Info) << e.what() << RTT::endlog();
 
     std::cout
-        << std::endl << RED
-        << "[error] ERROR configuring HardwareInterface, check power switches"
+        << std::endl << RED << getName()
+        << " [error] ERROR configuring HardwareInterface, check power switches"
         << RESET << std::endl << std::endl;
 
     return false;
@@ -330,11 +330,11 @@ bool HardwareInterface::startHook() {
         synchro_drive_ = 0;
         if (auto_synchronize_) {
           RTT::log(RTT::Info) << "Auto synchronize" << RTT::endlog();
-          std::cout << "Auto synchronize" << std::endl;
+          std::cout << getName() << " Auto synchronize" << std::endl;
           state_ = PRE_SYNCHRONIZING;
         } else {
           RTT::log(RTT::Info) << "Manual synchronize" << RTT::endlog();
-          std::cout << "Manual synchronize" << std::endl;
+          std::cout << getName() << " Manual synchronize" << std::endl;
           state_ = NOT_SYNCHRONIZED;
         }
       } else {
@@ -398,6 +398,11 @@ void HardwareInterface::updateHook() {
     hi_->write_read_hardware(rwh_nsec_, timeouts_to_print_);
     if (hi_->hardware_panic) {
       port_is_hardware_panic_.write(true);
+      if (error_msg_hardware_panic_ == 0) {
+        std::cout << RED << std::endl << getName() << " [error] hardware panic"
+                  << RESET << std::endl << std::endl;
+        error_msg_hardware_panic_++;
+      }
     } else {
       port_is_hardware_panic_.write(false);
     }
@@ -418,7 +423,7 @@ void HardwareInterface::updateHook() {
           if (!test_mode_) {
             state_ = PRE_SYNCHRONIZING;
           }
-          std::cout << "NOT_SYNCHRONIZED" << std::endl;
+          std::cout << getName() << " NOT_SYNCHRONIZED" << std::endl;
         }
       }
     }
@@ -436,7 +441,7 @@ void HardwareInterface::updateHook() {
 
       if ((servo_start_iter_--) <= 0) {
         state_ = SERVOING;
-        std::cout << "Servoing started" << std::endl;
+        std::cout << getName() << " Servoing started" << std::endl;
       }
 
       break;
@@ -464,7 +469,7 @@ void HardwareInterface::updateHook() {
     case PRE_SYNCHRONIZING:
       if ((synchro_start_iter_--) <= 0) {
         state_ = SYNCHRONIZING;
-        std::cout << "Synchronization started" << std::endl;
+        std::cout << getName() << " Synchronization started" << std::endl;
       }
       break;
 
@@ -556,7 +561,7 @@ void HardwareInterface::updateHook() {
             port_is_synchronised_.write(true);
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
                                  << " ] SYNCHRONIZING ended" << RTT::endlog();
-            std::cout << "synchro finished" << std::endl;
+            std::cout << getName() << " synchro finished" << std::endl;
           } else if (synchro_stop_iter_ <= 0) {
             state_ = PRE_SERVOING;
           }
@@ -571,8 +576,8 @@ void HardwareInterface::updateHook() {
       if (!test_mode_) {
         hi_->set_hardware_panic();
       } else if (error_msg_hardware_panic_ == 0) {
-        std::cout << RED << std::endl << "[error] hardware panic" << RESET
-                  << std::endl << std::endl;
+        std::cout << RED << std::endl << getName() << " [error] hardware panic"
+                  << RESET << std::endl << std::endl;
         error_msg_hardware_panic_++;
       }
     }

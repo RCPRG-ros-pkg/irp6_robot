@@ -60,7 +60,7 @@ class HI_moxa {
  public:
   HI_moxa(unsigned int numberOfDrivers,
           std::vector<unsigned int> card_addresses,
-          std::vector<double> max_increments, int tx_prefix_len);
+          std::vector<double> max_increments, int tx_prefix_len, std::string hardware_name_);
   ~HI_moxa();
 
   // initialize
@@ -110,7 +110,7 @@ class HI_moxa {
 
   bool hardware_panic;
 
-
+  std::string hardware_name;
 
 
  private:

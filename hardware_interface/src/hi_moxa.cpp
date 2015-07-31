@@ -49,7 +49,8 @@ namespace hi_moxa {
 
 HI_moxa::HI_moxa(unsigned int numberOfDrivers,
                  std::vector<unsigned int> card_addresses,
-                 std::vector<double> max_increments, int tx_prefix_len)
+                 std::vector<double> max_increments, int tx_prefix_len,
+                 std::string hardware_name_)
     : howMuchItSucks(tx_prefix_len),
       last_drive_number(numberOfDrivers),
       drives_addresses(card_addresses),
@@ -59,7 +60,8 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
       longest_delay_(0),
       longest_read_delay_(0),
       cycle_nr(0),
-      error_msg_hardware_panic_(0) {
+      error_msg_hardware_panic_(0),
+      hardware_name(hardware_name_) {
   for (unsigned int drive_number = 0; drive_number <= last_drive_number;
       drive_number++) {
     memset(servo_data + drive_number, 0, sizeof(servo_St));
@@ -450,7 +452,7 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
                 < -ridiculous_increment[drive_number])) {
           hardware_panic = true;
           temp_message << std::endl << RED
-                       << "[error] RIDICOLOUS INCREMENT on drive "
+                       << hardware_name <<": [error] RIDICOLOUS INCREMENT on drive "
                        << static_cast<int>(drive_number) << ", "
                        << port_names[drive_number].c_str() << ", c.cycle "
                        << static_cast<int>(receive_attempts) << ": read = "
@@ -467,7 +469,7 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
           & NF_DrivesStatus_Overcurrent) != 0) {
         if (error_msg_overcurrent == 0) {
           // master.msg->message(lib::NON_FATAL_ERROR, "Overcurrent");
-          std::cout << std::endl << RED << "[error] OVERCURRENT on drive "
+          std::cout << std::endl << RED << hardware_name << ": [error] OVERCURRENT on drive "
                     << static_cast<int>(drive_number) << ", "
                     << port_names[drive_number].c_str() << ": read = "
                     << NFComBuf.ReadDrivesCurrent.data[drive_number] << "mA"
@@ -482,8 +484,8 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
         hardware_panic = true;
         if (error_limit_switch == 0) {
           // master.msg->message(lib::NON_FATAL_ERROR, "Overcurrent");
-          std::cout << std::endl << RED
-                    << "[error] UPPER LIMIT SWITCH on drive "
+          std::cout << std::endl << RED << hardware_name
+                    << ": [error] UPPER LIMIT SWITCH on drive "
                     << static_cast<int>(drive_number) << RESET << std::endl
                     << std::endl;
           error_limit_switch++;
@@ -496,8 +498,8 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
         hardware_panic = true;
         if (error_limit_switch == 0) {
           // master.msg->message(lib::NON_FATAL_ERROR, "Overcurrent");
-          std::cout << std::endl << RED
-                    << "[error] LOWER LIMIT SWITCH on drive "
+          std::cout << std::endl << RED << hardware_name
+                    << ": [error] LOWER LIMIT SWITCH on drive "
                     << static_cast<int>(drive_number) << RESET << std::endl
                     << std::endl;
           error_limit_switch++;
@@ -522,7 +524,7 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
     hardware_panic = true;
     // std::cout << "[error] power_fault" << std::endl;
     if (error_msg_power_stage == 0) {
-      temp_message << std::endl << RED << "[error] POWER FAULT" << RESET
+      temp_message << std::endl << RED << hardware_name << ": [error] POWER FAULT" << RESET
                    << std::endl << std::endl;
       std::cerr << temp_message.str() << std::cerr.flush();
       // master.msg->message(lib::NON_FATAL_ERROR, "Wylaczono moc - robot zablokowany");
@@ -585,7 +587,7 @@ uint64_t HI_moxa::write_hardware(void) {
       SerialPort[drive_number]->write(txBuf, txCnt);
     }
     if (error_msg_hardware_panic_ == 0) {
-      std::cout << RED << std::endl << "[error] hardware panic" << RESET
+      std::cout << RED << std::endl << hardware_name << ": [error] hardware panic" << RESET
                 << std::endl << std::endl;
       error_msg_hardware_panic_++;
     }
