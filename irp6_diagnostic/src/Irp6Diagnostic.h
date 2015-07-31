@@ -50,10 +50,15 @@ class Irp6Diagnostic : public RTT::TaskContext {
   void updateHook();
 
  private:
+  // Ports
   RTT::OutputPort<diagnostic_msgs::DiagnosticArray> port_Diagnostics;
   RTT::InputPort<bool> synchro_state_in_;
   RTT::InputPort<bool> hardware_panic_in_;
 
+  // Properties
+  std::string hardware_label_;
+
+  // Other
   diagnostic_msgs::DiagnosticArray diagnostic_;
 };
 

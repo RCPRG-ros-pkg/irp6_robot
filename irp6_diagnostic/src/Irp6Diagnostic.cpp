@@ -42,6 +42,8 @@ Irp6Diagnostic::Irp6Diagnostic(const std::string& name)
       "Synchro State from HardwareInterface");
   this->ports()->addPort("HardwaPanicIn", hardware_panic_in_).doc(
       "Hardware Panic from HardwareInterface");
+
+  this->addProperty("hardware_label", hardware_label_).doc("");
 }
 
 Irp6Diagnostic::~Irp6Diagnostic() {
@@ -51,7 +53,7 @@ bool Irp6Diagnostic::configureHook() {
   diagnostic_.status.resize(1);
   diagnostic_.status[0].values.resize(2);
 
-  diagnostic_.status[0].name = "Hardware Interface";
+  diagnostic_.status[0].name = hardware_label_ + " Hardware Interface";
   diagnostic_.status[0].values[0].key = "Synchro";
   diagnostic_.status[0].values[1].key = "HardwarePanic";
 
@@ -84,14 +86,14 @@ void Irp6Diagnostic::updateHook() {
 
   if (hardware_panic_state) {
     diagnostic_.status[0].level = diagnostic_msgs::DiagnosticStatus::ERROR;
-    diagnostic_.status[0].message = "Hardware Interface ERROR";
+    diagnostic_.status[0].message = hardware_label_ + " Hardware Interface ERROR";
   } else if (!synchro_state) {
     diagnostic_.status[0].level = diagnostic_msgs::DiagnosticStatus::WARN;
     diagnostic_.status[0].message =
         "Hardware Interface WARNING - NOT SYNCHRONISED";
   } else {
     diagnostic_.status[0].level = diagnostic_msgs::DiagnosticStatus::OK;
-    diagnostic_.status[0].message = "Hardware Interface OK";
+    diagnostic_.status[0].message = hardware_label_ + " Hardware Interface OK";
   }
 
   port_Diagnostics.write(diagnostic_);

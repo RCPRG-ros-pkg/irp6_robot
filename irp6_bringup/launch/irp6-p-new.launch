@@ -10,6 +10,8 @@
     
   <group>
     <rosparam>
+      Irp6pDiag:
+        hardware_label: Irp6p
       Irp6pScheme:
         scheme_name: irp6p_manager
       Irp6pHardwareInterface:
