@@ -11,6 +11,7 @@ from python_qt_binding.QtGui import QWidget
 
 from .irp6p_motors import Irp6pMotors
 from .irp6ot_motors import Irp6otMotors
+from .conveyor_motors import ConveyorMotors
 
 from rqt_robot_dashboard.dashboard import Dashboard
 from rqt_robot_dashboard.monitor_dash_widget import MonitorDashWidget
@@ -31,6 +32,7 @@ class Irp6Dashboard(Dashboard):
         ## Motors
         self._irp6p_motors_button = Irp6pMotors(self.context)
         self._irp6ot_motors_button = Irp6otMotors(self.context)
+        self._conveyor_motors_button = ConveyorMotors(self.context)
         
         self._agg_sub = rospy.Subscriber('diagnostics_agg', DiagnosticArray, self.new_diagnostic_message)
         
@@ -42,7 +44,7 @@ class Irp6Dashboard(Dashboard):
 
     def get_widgets(self):
         return [
-                [self._monitor, self._console, self._irp6ot_motors_button, self._irp6p_motors_button]
+                [self._monitor, self._console, self._irp6ot_motors_button, self._irp6p_motors_button, self._conveyor_motors_button]
                ]
 
 
@@ -61,6 +63,8 @@ class Irp6Dashboard(Dashboard):
                 self._irp6p_motors_button.interpret_diagnostic_message(status)
             elif status.name == 'Irp6ot Hardware Interface':
                 self._irp6ot_motors_button.interpret_diagnostic_message(status)
+            elif status.name == 'Conveyor Hardware Interface':
+                self._conveyor_motors_button.interpret_diagnostic_message(status)
 
 
     def save_settings(self, plugin_settings, instance_settings):
