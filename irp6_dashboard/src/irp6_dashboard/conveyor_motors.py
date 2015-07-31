@@ -69,15 +69,15 @@ class ConveyorMotors(Irp6Motors):
         timerThread.start()
         
 
+
     def enable_post_synchro_actions(self):
         pass
+
 
     def enable_pre_synchro_actions(self):
         pass
 
+
     def disable_all_actions(self):
         pass
-
-
-
 
