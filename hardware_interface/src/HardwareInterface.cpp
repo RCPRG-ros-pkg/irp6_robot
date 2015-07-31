@@ -395,8 +395,8 @@ void HardwareInterface::updateHook() {
       }
     }
 
-    bool hi_status = hi_->write_read_hardware(rwh_nsec_, timeouts_to_print_);
-    if (hi_status == 0) {
+    hi_->write_read_hardware(rwh_nsec_, timeouts_to_print_);
+    if (hi_->hardware_panic) {
       port_is_hardware_panic_.write(true);
     } else {
       port_is_hardware_panic_.write(false);

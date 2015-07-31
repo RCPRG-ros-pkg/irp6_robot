@@ -108,8 +108,10 @@ class HI_moxa {
   uint16_t convert_to_115(float input);
   int cycle_nr;
 
- protected:
   bool hardware_panic;
+
+
+
 
  private:
 /// communication baud rate (bps)

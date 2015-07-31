@@ -585,7 +585,8 @@ uint64_t HI_moxa::write_hardware(void) {
       SerialPort[drive_number]->write(txBuf, txCnt);
     }
     if (error_msg_hardware_panic_ == 0) {
-      std::cout << RED << std::endl << "[error] hardware panic" << RESET << std::endl << std::endl;
+      std::cout << RED << std::endl << "[error] hardware panic" << RESET
+                << std::endl << std::endl;
       error_msg_hardware_panic_++;
     }
     // std::cout << temp_message.str() << std::endl;
@@ -666,7 +667,7 @@ uint64_t HI_moxa::write_read_hardware(uint64_t nsec,
   struct timespec start_time, current_time, read_time;
   clock_gettime(CLOCK_MONOTONIC, &start_time);
 
-  uint64_t ret;
+  uint64_t ret = 0;
   if ((ret = write_hardware()) != 0) {
     clock_gettime(CLOCK_MONOTONIC, &current_time);
     int64_t current_delay = (current_time.tv_sec - start_time.tv_sec)

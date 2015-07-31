@@ -15,7 +15,7 @@
       Irp6pScheme:
         scheme_name: irp6p_manager
       Irp6pHardwareInterface:
-        auto_synchronize: true
+        auto_synchronize: false
         rwh_nsec: 1200000
         active_motors: [irp6pm_0, irp6pm_1, irp6pm_2, irp6pm_3, irp6pm_4, irp6pm_5, irp6ptfg]
         hardware_hostname: gerwazy

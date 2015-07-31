@@ -145,20 +145,20 @@ class Irp6Motors(MenuDashWidget):
             if self.status.synchro_in_progress == False:
                 self.set_warn()
                 self.enable_pre_synchro_actions()
-                self.setToolTip(self.tr("Irp6ot Motors: Robot not synchronised, Execute synchronisation and wait for operation finish"))
+                self.setToolTip(self.tr(self.name + ": Robot not synchronised, Execute synchronisation and wait for operation finish"))
             else:
                 self.set_stale()
                 self.disable_all_actions()
-                self.setToolTip(self.tr("Irp6ot Motors: Synchronisation in progress"))
+                self.setToolTip(self.tr(self.name + ": Synchronisation in progress"))
         else:
             if self.status.motion_in_progress == True:
                 self.set_stale()
                 self.disable_all_actions()
-                self.setToolTip(self.tr("Irp6ot Motors: Robot in motion"))
+                self.setToolTip(self.tr(self.name + ": Robot in motion"))
             else:
                 self.set_ok()
                 self.enable_post_synchro_actions()
-                self.setToolTip(self.tr("Irp6ot Motors: Robot synchronised and waiting for command"))
+                self.setToolTip(self.tr(self.name + ": Robot synchronised and waiting for command"))
                 
         self.previous_status.assign(self.status)
 

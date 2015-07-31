@@ -64,7 +64,7 @@ class Irp6pMotors(Irp6Motors):
         
         self.move_to_synchro_pos_action = self.add_action('Irp6p move to synchro pos', self.move_to_synchro_pos)
         self.move_to_front_pos_action = self.add_action('Irp6p move to front pos', self.move_to_front_pos)
-        self.synchronise_action = self.add_action('Synchronise', self.synchronise)
+        self.synchronise_action = self.add_action('Irp6p Synchronise', self.synchronise)
 
         
         
@@ -74,6 +74,7 @@ class Irp6pMotors(Irp6Motors):
     def done_callback(self,state, result):
         self.conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
         self.status.motion_in_progress = False
+        self.change_motors_widget_state()
 
 
     def init_conman(self):
@@ -98,6 +99,7 @@ class Irp6pMotors(Irp6Motors):
         self.client.send_goal(goal, self.done_callback)
 
         self.status.motion_in_progress = True
+        self.change_motors_widget_state()
 
 
     def move_to_front_pos(self):
@@ -116,6 +118,7 @@ class Irp6pMotors(Irp6Motors):
         
         self.client.send_goal(goal, self.done_callback)
         self.status.motion_in_progress = True
+        self.change_motors_widget_state()
 
 
     def synchronise(self):
@@ -125,5 +128,6 @@ class Irp6pMotors(Irp6Motors):
         goal.data = True
         pub.publish(goal)
         self.status.synchro_in_progress = True
+        self.change_motors_widget_state()
 
 
