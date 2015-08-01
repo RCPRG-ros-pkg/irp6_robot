@@ -34,7 +34,8 @@ class Irp6Dashboard(Dashboard):
         self._irp6ot_motors_button = Irp6otMotors(self.context)
         self._conveyor_motors_button = ConveyorMotors(self.context)
         
-        self._agg_sub = rospy.Subscriber('diagnostics_agg', DiagnosticArray, self.new_diagnostic_message)
+        self._agg_sub = rospy.Subscriber('diagnostics', DiagnosticArray, self.new_diagnostic_message_diagnostics)
+        self._agg_sub = rospy.Subscriber('diagnostics_agg', DiagnosticArray, self.new_diagnostic_message_diagnostics_agg)
         
 
 
@@ -52,7 +53,22 @@ class Irp6Dashboard(Dashboard):
         self._agg_sub.unregister()
 
 
-    def new_diagnostic_message(self, msg):
+    def new_diagnostic_message_diagnostics(self, msg):
+        """
+        callback to process dashboard_agg messages
+        """
+        
+        self._dashboard_message = msg
+        for status in msg.status:
+            if status.name == 'Irp6p Hardware Interface':
+                self._irp6p_motors_button.interpret_diagnostic_message(status)
+            elif status.name == 'Irp6ot Hardware Interface':
+                self._irp6ot_motors_button.interpret_diagnostic_message(status)
+            elif status.name == 'Conveyor Hardware Interface':
+                self._conveyor_motors_button.interpret_diagnostic_message(status)
+
+
+    def new_diagnostic_message_diagnostics_agg(self, msg):
         """
         callback to process dashboard_agg messages
         """

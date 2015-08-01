@@ -116,7 +116,8 @@ class Irp6Motors(MenuDashWidget):
                 previous_diagnostic_messages_number = self.diagnostic_messages_number
             if (not self.status.is_eq(self.previous_status)):
                 self.change_motors_widget_state()
-            next_call = next_call+1.5;
+            next_call = next_call+0.5; # wariant dla /diagnostics z poszczegolnych robotow
+            # next_call = next_call+1.5; # wariant dla /diagnostics_agg 
             time.sleep(next_call - time.time())
 
 
