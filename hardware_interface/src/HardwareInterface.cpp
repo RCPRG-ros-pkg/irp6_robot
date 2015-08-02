@@ -54,8 +54,7 @@ HardwareInterface::HardwareInterface(const std::string& name)
       rwh_nsec_(1200000),
       timeouts_to_print_(1),
       number_of_drives_(0),
-      error_msg_hardware_panic_(0),
-      generator_active_(false) {
+      error_msg_hardware_panic_(0) {
 
   this->ports()->addPort("EmergencyStopIn", port_emergency_stop_);
   this->ports()->addPort("GeneratorActiveIn", port_generator_active_);
@@ -453,8 +452,11 @@ void HardwareInterface::updateHook() {
       break;
 
     case SERVOING: {
-      if (port_generator_active_.read(generator_active_) == RTT::NewData) {
-        port_is_hardware_busy_.write(generator_active_);
+      bool generator_active;
+      if (port_generator_active_.read(generator_active) == RTT::NewData) {
+        port_is_hardware_busy_.write(generator_active);
+      } else {
+        port_is_hardware_busy_.write(false);
       }
 
       for (int i = 0; i < number_of_drives_; i++) {
