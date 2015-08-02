@@ -257,6 +257,9 @@ Irp6otmSplineTrajectoryGeneratorJoint.rosparam.getAll();
 
 connect("Irp6otmM2J.JointPosition","Irp6otmSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
 connect("Irp6otmSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6otmJ2M.JointPosition", ConnPolicy())
+connect("Irp6otmSplineTrajectoryGeneratorJoint.IsSynchronisedIn","Irp6otHardwareInterface.IsSynchronised", ConnPolicy())
+connect("Irp6otmSplineTrajectoryGeneratorJoint.GeneratorActiveOut","Irp6otHardwareInterface.GeneratorActiveIn", ConnPolicy())
+
 Irp6otmSplineTrajectoryGeneratorJoint.configure()
 
 
@@ -270,6 +273,9 @@ Irp6ottfgSplineTrajectoryGeneratorJoint.rosparam.getAll();
 
 connect("Irp6ottfgM2J.JointPosition","Irp6ottfgSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
 connect("Irp6ottfgSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6ottfgJ2M.JointPosition", ConnPolicy())
+connect("Irp6ottfgSplineTrajectoryGeneratorJoint.IsSynchronisedIn","Irp6otHardwareInterface.IsSynchronised", ConnPolicy())
+connect("Irp6ottfgSplineTrajectoryGeneratorJoint.GeneratorActiveOut","Irp6otHardwareInterface.GeneratorActiveIn", ConnPolicy())
+
 Irp6ottfgSplineTrajectoryGeneratorJoint.configure()
 
 
@@ -285,6 +291,8 @@ connect("IRp6otmLimitDetector.OutputPort","Irp6otmPortDoubleSplit_hw_cp.InputPor
 
 connect("Irp6otmPortDoubleAggregate_hw_p.OutputPort","Irp6otmSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
 connect("Irp6otmSplineTrajectoryGeneratorMotor.JointPositionCommand","IRp6otmLimitDetector.InputPort", ConnPolicy())
+connect("Irp6otmSplineTrajectoryGeneratorMotor.IsSynchronisedIn","Irp6otHardwareInterface.IsSynchronised", ConnPolicy())
+connect("Irp6otmSplineTrajectoryGeneratorMotor.GeneratorActiveOut","Irp6otHardwareInterface.GeneratorActiveIn", ConnPolicy())
 
 Irp6otmSplineTrajectoryGeneratorMotor.configure()
 
@@ -299,6 +307,8 @@ connect("IRp6ottfgLimitDetector.OutputPort","Irp6ottfgPortDoubleSplit_hw_cp.Inpu
 
 connect("Irp6ottfgPortDoubleAggregate_hw_p.OutputPort","Irp6ottfgSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
 connect("Irp6ottfgSplineTrajectoryGeneratorMotor.JointPositionCommand","IRp6ottfgLimitDetector.InputPort", ConnPolicy())
+connect("Irp6ottfgSplineTrajectoryGeneratorMotor.IsSynchronisedIn","Irp6otHardwareInterface.IsSynchronised", ConnPolicy())
+connect("Irp6ottfgSplineTrajectoryGeneratorMotor.GeneratorActiveOut","Irp6otHardwareInterface.GeneratorActiveIn", ConnPolicy())
 
 Irp6ottfgSplineTrajectoryGeneratorMotor.configure()
 
@@ -635,6 +645,10 @@ Irp6otScheme.addBlock("Irp6otmSplineTrajectoryGeneratorJoint");
 Irp6otScheme.addBlock("Irp6ottfgSplineTrajectoryGeneratorJoint");
 Irp6otScheme.addBlock("Irp6otmSplineTrajectoryGeneratorMotor");
 Irp6otScheme.addBlock("Irp6ottfgSplineTrajectoryGeneratorMotor");
+Irp6otScheme.latchConnections("Irp6otHardwareInterface", "Irp6otmSplineTrajectoryGeneratorJoint", true);
+Irp6otScheme.latchConnections("Irp6otHardwareInterface", "Irp6ottfgSplineTrajectoryGeneratorJoint", true);
+Irp6otScheme.latchConnections("Irp6otHardwareInterface", "Irp6otmSplineTrajectoryGeneratorMotor", true);
+Irp6otScheme.latchConnections("Irp6otHardwareInterface", "Irp6ottfgSplineTrajectoryGeneratorMotor", true);
 Irp6otScheme.addBlock("Irp6otmPoseInt");
 Irp6otScheme.addBlock("Irp6otmToolInt");
 
