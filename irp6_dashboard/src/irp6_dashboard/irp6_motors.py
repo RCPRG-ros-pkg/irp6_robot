@@ -177,10 +177,13 @@ class Irp6Motors(MenuDashWidget):
                 self.disable_all_actions()
                 self.setToolTip(self.tr(self.name + ": Synchronisation in progress"))
         else:
-            if self.status.motion_in_progress == True:
+            if self.status.is_busy == True:
                 self.set_warn()
                 self.disable_all_actions()
-                self.setToolTip(self.tr(self.name + ": Robot in motion"))
+                if self.status.motion_in_progress == True:
+                    self.setToolTip(self.tr(self.name + ": Robot in motion (internal call)"))
+                else:
+                    self.setToolTip(self.tr(self.name + ": Robot in motion (external call)"))
             else:
                 self.set_ok()
                 self.enable_post_synchro_actions()
