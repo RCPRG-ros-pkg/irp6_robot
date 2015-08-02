@@ -54,6 +54,7 @@ class Irp6Diagnostic : public RTT::TaskContext {
   RTT::OutputPort<diagnostic_msgs::DiagnosticArray> port_Diagnostics;
   RTT::InputPort<bool> synchro_state_in_;
   RTT::InputPort<bool> hardware_panic_in_;
+  RTT::InputPort<bool> hardware_busy_in_;
 
   // Properties
   std::string hardware_label_;

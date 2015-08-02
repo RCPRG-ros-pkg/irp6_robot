@@ -89,6 +89,7 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<bool> current_mode_;
   std::vector<bool> synchro_needed_;
 
+
   int number_of_drives_;
   int error_msg_hardware_panic_;
 
@@ -111,6 +112,7 @@ class HardwareInterface : public RTT::TaskContext {
   State state_;
   SynchroState synchro_state_;
   int synchro_drive_;
+  bool generator_active_;
 
   std::vector<double> desired_position_;
   std::vector<double> desired_position_increment_;
