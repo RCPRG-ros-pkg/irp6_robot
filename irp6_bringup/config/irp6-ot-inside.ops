@@ -320,6 +320,8 @@ loadComponent("Irp6otmPoseInt", "CartesianInterpolator")
 
 connect("Irp6otmForwardKinematic.EndEffectorOutputPose", "Irp6otmPoseInt.CartesianPosition", ConnPolicy())
 connect("Irp6otmPoseInt.CartesianPositionCommand", "Irp6otmInverseKinematic.InputEndEffectorPose", ConnPolicy())
+connect("Irp6otmPoseInt.IsSynchronisedIn","Irp6otHardwareInterface.IsSynchronised", ConnPolicy())
+connect("Irp6otmPoseInt.GeneratorActiveOut","Irp6otHardwareInterface.GeneratorActiveIn", ConnPolicy())
 
 Irp6otmPoseInt.configure();
 
@@ -650,6 +652,7 @@ Irp6otScheme.latchConnections("Irp6otHardwareInterface", "Irp6ottfgSplineTraject
 Irp6otScheme.latchConnections("Irp6otHardwareInterface", "Irp6otmSplineTrajectoryGeneratorMotor", true);
 Irp6otScheme.latchConnections("Irp6otHardwareInterface", "Irp6ottfgSplineTrajectoryGeneratorMotor", true);
 Irp6otScheme.addBlock("Irp6otmPoseInt");
+Irp6otScheme.latchConnections("Irp6otHardwareInterface", "Irp6otmPoseInt", true);
 Irp6otScheme.addBlock("Irp6otmToolInt");
 
 
