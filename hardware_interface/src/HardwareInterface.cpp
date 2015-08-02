@@ -57,9 +57,11 @@ HardwareInterface::HardwareInterface(const std::string& name)
       error_msg_hardware_panic_(0) {
 
   this->ports()->addPort("EmergencyStopIn", port_emergency_stop_);
+  this->ports()->addPort("GeneratorActiveIn", port_generator_active_);
   this->ports()->addPort("DoSynchroIn", port_do_synchro_);
   this->ports()->addPort("IsSynchronised", port_is_synchronised_);
   this->ports()->addPort("IsHardwarePanic", port_is_hardware_panic_);
+  this->ports()->addPort("IsHardwareBusy", port_is_hardware_busy_);
 
   this->addProperty("active_motors", active_motors_).doc("");
   this->addProperty("hardware_hostname", hardware_hostname_).doc("");
@@ -323,6 +325,7 @@ bool HardwareInterface::startHook() {
       }
       if (!hi_->robot_synchronized()) {
         port_is_synchronised_.write(false);
+        port_is_hardware_busy_.write(true);
         RTT::log(RTT::Info) << "Robot not synchronized" << RTT::endlog();
         synchro_start_iter_ = 500;
         synchro_stop_iter_ = 1000;
@@ -352,6 +355,7 @@ bool HardwareInterface::startHook() {
     } else {
       test_mode_sleep();
       port_is_synchronised_.write(true);
+      port_is_hardware_busy_.write(false);
       RTT::log(RTT::Info) << "HI test mode activated" << RTT::endlog();
 
       for (int i = 0; i < number_of_drives_; i++) {
@@ -441,12 +445,19 @@ void HardwareInterface::updateHook() {
 
       if ((servo_start_iter_--) <= 0) {
         state_ = SERVOING;
+        port_is_hardware_busy_.write(false);
         std::cout << getName() << " Servoing started" << std::endl;
       }
 
       break;
 
-    case SERVOING:
+    case SERVOING: {
+      bool generator_active = false;
+      if (port_generator_active_.read(generator_active) == RTT::NewData) {
+        port_is_hardware_busy_.write(generator_active);
+      } else {
+        port_is_hardware_busy_.write(false);
+      }
 
       for (int i = 0; i < number_of_drives_; i++) {
         if (port_motor_position_command_list_[i]->read(
@@ -463,7 +474,7 @@ void HardwareInterface::updateHook() {
               static_cast<double>(motor_position_[i]));
         }
       }
-
+    }
       break;
 
     case PRE_SYNCHRONIZING:

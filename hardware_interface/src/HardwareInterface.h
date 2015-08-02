@@ -68,9 +68,11 @@ class HardwareInterface : public RTT::TaskContext {
   std::vector<RTT::OutputPort<double>*> port_motor_current_list_;
 
   RTT::InputPort<bool> port_emergency_stop_;
+  RTT::InputPort<bool> port_generator_active_;
   RTT::InputPort<std_msgs::Bool> port_do_synchro_;  // do przerobienia na wersje ze zwrotnym statusem synchronziacji
   RTT::OutputPort<bool> port_is_synchronised_;
   RTT::OutputPort<bool> port_is_hardware_panic_;
+  RTT::OutputPort<bool> port_is_hardware_busy_;
 
   std::vector<RTT::InputPort<double>*> port_motor_position_command_list_;
 
