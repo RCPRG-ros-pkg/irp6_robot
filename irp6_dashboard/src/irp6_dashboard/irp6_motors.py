@@ -44,6 +44,7 @@ from irpos import *
 
 class Irp6MotorStatus():
     def __init__(self, context):
+        self.is_busy = False
         self.is_responding = False
         self.is_synchronised = False
         self.motion_in_progress = False
@@ -52,7 +53,8 @@ class Irp6MotorStatus():
 
 
     def is_eq(self,s1):
-        if ((self.is_responding == s1.is_responding)
+        if ((self.is_busy == s1.is_busy)
+        and(self.is_responding == s1.is_responding)
         and (self.is_synchronised == s1.is_synchronised)
         and (self.motion_in_progress == s1.motion_in_progress)
         and (self.synchro_in_progress == s1.synchro_in_progress)
@@ -63,6 +65,7 @@ class Irp6MotorStatus():
 
 
     def assign(self,s1):
+        self.is_busy = s1.is_busy
         self.is_responding = s1.is_responding
         self.is_synchronised = s1.is_synchronised
         self.motion_in_progress = s1.motion_in_progress
@@ -200,6 +203,11 @@ class Irp6Motors(MenuDashWidget):
                     self.status.is_emergency_stop_activated = True
                 else:
                     self.status.is_emergency_stop_activated = False
+            elif kv.key == 'HardwareBusy':
+                if kv.value == 'TRUE':
+                    self.status.is_busy = True
+                else:
+                    self.status.is_busy = False
                     
             if (not self.status.is_eq(self.previous_status)):
                 self.change_motors_widget_state()
