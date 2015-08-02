@@ -372,6 +372,8 @@ Irp6otmForceControlLaw.configure()
 connect("Irp6otmForceControlLaw.OutputEndEffectorPose", "Irp6otmInverseKinematic.InputEndEffectorPose", ConnPolicy())
 connect("Irp6otmForceControlLaw.CurrentEndEffectorPose", "Irp6otmForwardKinematic.EndEffectorOutputPose", ConnPolicy())
 connect("Irp6otmForceTransformation.OutputEndEffectorWrench", "Irp6otmForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
+connect("Irp6otmForceControlLaw.IsSynchronisedIn","Irp6otHardwareInterface.IsSynchronised", ConnPolicy())
+connect("Irp6otmForceControlLaw.GeneratorActiveOut","Irp6otHardwareInterface.GeneratorActiveIn", ConnPolicy())
 
 stream("Irp6otmForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6ot_arm/fcl_param"))
 
@@ -641,6 +643,7 @@ Irp6otScheme.latchConnections("Irp6otHardwareInterface", "Irp6ottfgPortDoubleAgg
 Irp6otScheme.addBlock("Irp6otmJ2M");
 Irp6otScheme.addBlock("Irp6ottfgJ2M");
 Irp6otScheme.addBlock("Irp6otmForceControlLaw");
+Irp6otScheme.latchConnections("Irp6otHardwareInterface", "Irp6otmForceControlLaw", true);
 Irp6otScheme.addBlock("Irp6otmForceTransformation");
 
 Irp6otScheme.addBlock("Irp6otmSplineTrajectoryGeneratorJoint");
