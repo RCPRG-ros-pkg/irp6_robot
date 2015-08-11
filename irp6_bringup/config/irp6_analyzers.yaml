@@ -1,0 +1,22 @@
+
+
+analyzers:
+  HardwareInterfaces:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: HardwareInterfaces
+    analyzers:
+      Conveyor:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Conveyor
+        startswith: 'Conveyor'
+      Irp6ot:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Irp6ot
+        startswith: 'Irp6ot'
+      Irp6p:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Irp6p
+        startswith: 'Irp6p'
+
+     
+

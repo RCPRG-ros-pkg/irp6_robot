@@ -48,10 +48,24 @@ import tf_conversions.posemath as pm
 
 if __name__ == '__main__':
   rospy.init_node('haptic_stop')
-  rospy.wait_for_service('/controller_manager/switch_controller')
-  conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+  rospy.wait_for_service('/irp6p_manager/switch_controller')
+  conmanSwitchIrp6p = rospy.ServiceProxy('/irp6p_manager/switch_controller', SwitchController)
   
-  conmanSwitch([], ['Irp6pmForceTransformation','Irp6pmForceControlLaw','Irp6otmForceTransformation','Irp6otmForceControlLaw','Irp6Haptic'], True)
+  print "servers irp6p ok"
+  
+  rospy.wait_for_service('/irp6ot_manager/switch_controller')
+  conmanSwitchIrp6ot = rospy.ServiceProxy('/irp6ot_manager/switch_controller', SwitchController)
+  
+  print "servers irp6ot ok"
+  
+  rospy.wait_for_service('/haptic_manager/switch_controller')
+  conmanSwitchHaptic = rospy.ServiceProxy('/haptic_manager/switch_controller', SwitchController)
+  
+  print "haptic server ok"
+  
+  conmanSwitchIrp6p([], ['Irp6pmForceTransformation','Irp6pmForceControlLaw'], True)
+  conmanSwitchIrp6ot([], ['Irp6otmForceTransformation','Irp6otmForceControlLaw'], True)
+  conmanSwitchHaptic([], ['Irp6Haptic'], True)
       
   print 'finish'
   

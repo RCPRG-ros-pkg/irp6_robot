@@ -21,7 +21,7 @@ loadComponent("Irp6pHardwareInterface","HardwareInterface")
 Irp6pHardwareInterface.loadService("rosparam")
 Irp6pHardwareInterface.rosparam.getAll()
 Irp6pHardwareInterface.configure()
-stream("Irp6pHardwareInterface.DoSynchroIn", ros.comm.topic("/hardware_interface/do_synchro_in"))
+stream("Irp6pHardwareInterface.DoSynchroIn", ros.comm.topic("/irp6p_hardware_interface/do_synchro_in"))
 
 loadComponent("Irp6pDiag", "Irp6Diagnostic")
 setActivity("Irp6pDiag", 0.1, 1, ORO_SCHED_RT)
@@ -30,7 +30,8 @@ Irp6pDiag.rosparam.getAll();
 
 connect("Irp6pDiag.SynchroStateIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
 connect("Irp6pDiag.HardwaPanicIn","Irp6pHardwareInterface.IsHardwarePanic", ConnPolicy())
-stream("Irp6pDiag.Diagnostics", ros.comm.topic("/diagnostics_agg"));
+connect("Irp6pDiag.HardwaBusyIn","Irp6pHardwareInterface.IsHardwareBusy", ConnPolicy())
+stream("Irp6pDiag.Diagnostics", ros.comm.topic("/diagnostics"));
 Irp6pDiag.configure()
 
 
@@ -235,6 +236,8 @@ Irp6pmSplineTrajectoryGeneratorJoint.rosparam.getAll();
 
 connect("Irp6pmM2J.JointPosition","Irp6pmSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
 connect("Irp6pmSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6pmJ2M.JointPosition", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorJoint.IsSynchronisedIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorJoint.GeneratorActiveOut","Irp6pHardwareInterface.GeneratorActiveIn", ConnPolicy())
 Irp6pmSplineTrajectoryGeneratorJoint.configure()
 
 
@@ -248,6 +251,8 @@ Irp6ptfgSplineTrajectoryGeneratorJoint.rosparam.getAll();
 
 connect("Irp6ptfgM2J.JointPosition","Irp6ptfgSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
 connect("Irp6ptfgSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6ptfgJ2M.JointPosition", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryGeneratorJoint.IsSynchronisedIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryGeneratorJoint.GeneratorActiveOut","Irp6pHardwareInterface.GeneratorActiveIn", ConnPolicy())
 Irp6ptfgSplineTrajectoryGeneratorJoint.configure()
 
 
@@ -266,7 +271,8 @@ connect("IRp6pmLimitDetector.OutputPort","Irp6pmPortDoubleSplit_hw_cp.InputPort"
 
 connect("Irp6pmPortDoubleAggregate_hw_p.OutputPort","Irp6pmSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
 connect("Irp6pmSplineTrajectoryGeneratorMotor.JointPositionCommand","IRp6pmLimitDetector.InputPort", ConnPolicy())
-
+connect("Irp6pmSplineTrajectoryGeneratorMotor.IsSynchronisedIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorMotor.GeneratorActiveOut","Irp6pHardwareInterface.GeneratorActiveIn", ConnPolicy())
 Irp6pmSplineTrajectoryGeneratorMotor.configure()
 
 // Irp6ptfgSplineTrajectoryGeneratorMotor
@@ -280,7 +286,8 @@ connect("IRp6ptfgLimitDetector.OutputPort","Irp6ptfgPortDoubleSplit_hw_cp.InputP
 
 connect("Irp6ptfgPortDoubleAggregate_hw_p.OutputPort","Irp6ptfgSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
 connect("Irp6ptfgSplineTrajectoryGeneratorMotor.JointPositionCommand","IRp6ptfgLimitDetector.InputPort", ConnPolicy())
-
+connect("Irp6ptfgSplineTrajectoryGeneratorMotor.IsSynchronisedIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryGeneratorMotor.GeneratorActiveOut","Irp6pHardwareInterface.GeneratorActiveIn", ConnPolicy())
 Irp6ptfgSplineTrajectoryGeneratorMotor.configure()
 
 
@@ -290,6 +297,8 @@ loadComponent("Irp6pmPoseInt", "CartesianInterpolator")
 
 connect("Irp6pmForwardKinematic.EndEffectorOutputPose", "Irp6pmPoseInt.CartesianPosition", ConnPolicy())
 connect("Irp6pmPoseInt.CartesianPositionCommand", "Irp6pmInverseKinematic.InputEndEffectorPose", ConnPolicy())
+connect("Irp6pmPoseInt.IsSynchronisedIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
+connect("Irp6pmPoseInt.GeneratorActiveOut","Irp6pHardwareInterface.GeneratorActiveIn", ConnPolicy())
 
 Irp6pmPoseInt.configure();
 
@@ -339,6 +348,8 @@ Irp6pmForceControlLaw.configure()
 connect("Irp6pmForceControlLaw.OutputEndEffectorPose", "Irp6pmInverseKinematic.InputEndEffectorPose", ConnPolicy())
 connect("Irp6pmForceControlLaw.CurrentEndEffectorPose", "Irp6pmForwardKinematic.EndEffectorOutputPose", ConnPolicy())
 connect("Irp6pmForceTransformation.OutputEndEffectorWrench", "Irp6pmForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
+connect("Irp6pmForceControlLaw.IsSynchronisedIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
+connect("Irp6pmForceControlLaw.GeneratorActiveOut","Irp6pHardwareInterface.GeneratorActiveIn", ConnPolicy())
 
 stream("Irp6pmForceControlLaw.CurrentFclParam", ros.comm.topic("/irp6p_arm/fcl_param"))
 
@@ -557,8 +568,6 @@ Irp6pScheme.latchConnections("Irp6pHardwareInterface", "IRp6pmRegulator_5", true
 Irp6pScheme.latchConnections("Irp6pHardwareInterface", "Irp6ptfgRegulator", true);
 
 
-
-
 Irp6pScheme.addBlock("Irp6pmPortDoubleSplit_hw_cp")
 Irp6pScheme.addBlock("IRp6pmLimitDetector")
 Irp6pScheme.addBlock("Irp6ptfgPortDoubleSplit_hw_cp")
@@ -575,12 +584,18 @@ Irp6pScheme.latchConnections("Irp6pHardwareInterface", "Irp6ptfgPortDoubleAggreg
 Irp6pScheme.addBlock("Irp6pmJ2M");
 Irp6pScheme.addBlock("Irp6ptfgJ2M");
 Irp6pScheme.addBlock("Irp6pmForceControlLaw");
+Irp6pScheme.latchConnections("Irp6pHardwareInterface", "Irp6pmForceControlLaw", true);
 Irp6pScheme.addBlock("Irp6pmForceTransformation");
 Irp6pScheme.addBlock("Irp6pmSplineTrajectoryGeneratorJoint");
 Irp6pScheme.addBlock("Irp6ptfgSplineTrajectoryGeneratorJoint");
 Irp6pScheme.addBlock("Irp6pmSplineTrajectoryGeneratorMotor");
 Irp6pScheme.addBlock("Irp6ptfgSplineTrajectoryGeneratorMotor");
+Irp6pScheme.latchConnections("Irp6pHardwareInterface", "Irp6pmSplineTrajectoryGeneratorJoint", true);
+Irp6pScheme.latchConnections("Irp6pHardwareInterface", "Irp6ptfgSplineTrajectoryGeneratorJoint", true);
+Irp6pScheme.latchConnections("Irp6pHardwareInterface", "Irp6pmSplineTrajectoryGeneratorMotor", true);
+Irp6pScheme.latchConnections("Irp6pHardwareInterface", "Irp6ptfgSplineTrajectoryGeneratorMotor", true);
 Irp6pScheme.addBlock("Irp6pmPoseInt");
+Irp6pScheme.latchConnections("Irp6pHardwareInterface", "Irp6pmPoseInt", true);
 Irp6pScheme.addBlock("Irp6pmToolInt");
 
 

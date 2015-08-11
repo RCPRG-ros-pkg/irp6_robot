@@ -8,7 +8,15 @@
    
   <group>
     <rosparam>
-      Irp6HardwareInterface:
+      ConvDiag:
+        hardware_label: Conveyor
+      ConvScheme:
+        scheme_name: conveyor_manager
+      ConvHardwareInterface:
+        auto_synchronize: true
+        rwh_nsec: 1200000
+        active_motors: [conveyor]
+        hardware_hostname: gerwazy
         conveyor:
           label: conveyor
           ports_adresses: /dev/ttyMI15

@@ -48,15 +48,27 @@ import tf_conversions.posemath as pm
 
 if __name__ == '__main__':
   rospy.init_node('haptic_start')
-  rospy.wait_for_service('/controller_manager/switch_controller')
-  conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+  rospy.wait_for_service('/irp6p_manager/switch_controller')
+  conmanSwitchIrp6p = rospy.ServiceProxy('/irp6p_manager/switch_controller', SwitchController)
+  
+  print "servers irp6p ok"
+  
+  rospy.wait_for_service('/irp6ot_manager/switch_controller')
+  conmanSwitchIrp6ot = rospy.ServiceProxy('/irp6ot_manager/switch_controller', SwitchController)
+  
+  print "servers irp6ot ok"
+  
+  rospy.wait_for_service('/haptic_manager/switch_controller')
+  conmanSwitchHaptic = rospy.ServiceProxy('/haptic_manager/switch_controller', SwitchController)
+  
+  print "haptic server ok"
   
   #
   # Deactivate all generators
   #
   
-  conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
-  conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
+  conmanSwitchIrp6ot([], ['Irp6otmSplineTrajectoryGeneratorMotor','Irp6otmSplineTrajectoryGeneratorJoint','Irp6otmPoseInt','Irp6otmForceControlLaw','Irp6otmForceTransformation'], True)
+  conmanSwitchIrp6p([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
   
   
   #
@@ -70,7 +82,7 @@ if __name__ == '__main__':
   # Joint coordinates motion
   #
   
-  conmanSwitch(['Irp6otmSplineTrajectoryGeneratorJoint'], [], True)
+  conmanSwitchIrp6ot(['Irp6otmSplineTrajectoryGeneratorJoint'], [], True)
   
   joint_client = actionlib.SimpleActionClient('/irp6ot_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
   joint_client.wait_for_server()
@@ -88,14 +100,14 @@ if __name__ == '__main__':
   joint_client.wait_for_result()
   command_result = joint_client.get_result()
     
-  conmanSwitch([], ['Irp6otmSplineTrajectoryGeneratorJoint'], True)
+  conmanSwitchIrp6ot([], ['Irp6otmSplineTrajectoryGeneratorJoint'], True)
   
   
   #
   # Cartesian coordinates motion
   #
   
-  conmanSwitch(['Irp6otmPoseInt'], [], True)
+  conmanSwitchIrp6ot(['Irp6otmPoseInt'], [], True)
   
   pose_client = actionlib.SimpleActionClient('/irp6ot_arm/pose_trajectory', CartesianTrajectoryAction)
   pose_client.wait_for_server()
@@ -115,7 +127,7 @@ if __name__ == '__main__':
   pose_client.wait_for_result()
   command_result = pose_client.get_result()
   
-  conmanSwitch([], ['Irp6otmPoseInt'], True)
+  conmanSwitchIrp6ot([], ['Irp6otmPoseInt'], True)
   
   print 'Irp6 postument approach to initial position'
   
@@ -123,7 +135,7 @@ if __name__ == '__main__':
   # Joint coordinates motion
   #
   
-  conmanSwitch(['Irp6pmSplineTrajectoryGeneratorJoint'], [], True)
+  conmanSwitchIrp6p(['Irp6pmSplineTrajectoryGeneratorJoint'], [], True)
   
   joint_client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
   joint_client.wait_for_server()
@@ -143,13 +155,13 @@ if __name__ == '__main__':
   
   
   
-  conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorJoint'], True)
+  conmanSwitchIrp6p([], ['Irp6pmSplineTrajectoryGeneratorJoint'], True)
   
   #
   # Cartesian coordinates motion
   #
   
-  conmanSwitch(['Irp6pmPoseInt'], [], True)
+  conmanSwitchIrp6p(['Irp6pmPoseInt'], [], True)
   
   pose_client = actionlib.SimpleActionClient('/irp6p_arm/pose_trajectory', CartesianTrajectoryAction)
   pose_client.wait_for_server()
@@ -168,7 +180,7 @@ if __name__ == '__main__':
   pose_client.wait_for_result()
   command_result = pose_client.get_result()
   
-  conmanSwitch([], ['Irp6pmPoseInt'], True)
+  conmanSwitchIrp6p([], ['Irp6pmPoseInt'], True)
   
   
   print 'Irp6 on track force control parameters'   
@@ -220,8 +232,11 @@ if __name__ == '__main__':
  
   pubtg.publish(tg_goal)
    
-  conmanSwitch(['Irp6pmForceTransformation','Irp6otmForceTransformation','Irp6otmForceControlLaw','Irp6Haptic'], [], True)
-    
+   
+   
+  conmanSwitchIrp6ot(['Irp6otmForceTransformation','Irp6otmForceControlLaw'], [], True)
+  conmanSwitchIrp6p(['Irp6pmForceTransformation'], [], True)
+  conmanSwitchHaptic(['Irp6Haptic'], [], True)  
     
   print 'finish'
   

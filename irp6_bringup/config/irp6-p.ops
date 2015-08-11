@@ -9,42 +9,7 @@ ros.import("irp6tfg_kinematic")
 ros.import("force_control")
 ros.import("irp6_force_sensor")
 
-
-
-
-//------------------------------------------------------------------------------
-//-- irp6 pm and ptfg
-//------------------------------------------------------------------------------
-
-
-runScript( ros.find("irp6_bringup") + "/config/load-scheme-and-hi.ops")
-
-runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside-pre-add-scheme-peer.ops")
-
-
-
-addPeer("Irp6scheme", "Irp6HardwareInterface");
-addPeer("Irp6scheme", "PortDoubleToFloat64_1");
-
-
-runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside-add-scheme-peer.ops")
-
-Irp6scheme.addBlock("Irp6HardwareInterface");
-Irp6scheme.addBlock("PortDoubleToFloat64_1");
-
-runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside-add-scheme-block.ops")
-
-runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside-pre-start.ops")
-
-## Start it
-Irp6scheme.start()
-
-runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside-start.ops")
-
-runScript( ros.find("irp6_bringup") + "/config/start-hi.ops")
-PortDoubleToFloat64_1.start()
-
-
+runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside.ops")
 
 
 

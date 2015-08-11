@@ -69,8 +69,8 @@ class IRPOS:
 	tool_weight = None
 	tool_mass_center = None
 
-	def __init__(self, nodeName, robotName, robotJointNumbers, option='controller_manager'):
-		assert option in set(['controller_manager', 'irp6p_manager', 'irp6ot_manager'])
+	def __init__(self, nodeName, robotName, robotJointNumbers, option):
+		assert option in set(['irp6p_manager', 'irp6ot_manager'])
 		self.robot_name = robotName
 		#self.robot_joint_names = robotJointNames
 		self.robot_joint_names = []
@@ -81,10 +81,6 @@ class IRPOS:
 		
 		robotNameLower = robotName.lower()
 
-		if option == 'controller_manager':
-			rospy.wait_for_service('/controller_manager/switch_controller')
-			self.conmanSwitch = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
-		
 		if option == 'irp6p_manager':
 			rospy.wait_for_service('/irp6p_manager/switch_controller')
   			self.conmanSwitch = rospy.ServiceProxy('/irp6p_manager/switch_controller', SwitchController)

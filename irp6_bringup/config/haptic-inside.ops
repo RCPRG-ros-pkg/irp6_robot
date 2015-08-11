@@ -6,7 +6,7 @@
 //-- Controller manager
 //------------------------------------------------------------------------------
 loadComponent("HapticScheme", "conman::Scheme");
-setActivity("ConvScheme", 0.002, 5, ORO_SCHED_RT);
+setActivity("HapticScheme", 0.002, 5, ORO_SCHED_RT);
 HapticScheme.loadService("rosparam")
 HapticScheme.rosparam.getAll()
 HapticScheme.loadService("conman_ros")

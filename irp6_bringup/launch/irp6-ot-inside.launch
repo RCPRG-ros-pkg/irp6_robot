@@ -3,10 +3,22 @@
  #
  # DO NOT USE THAT FILE DIRECTLY.
  #
+ # Use irp6-conv-hardware.launch or irp6-con-nohardware.launch 
+ #
  
+
+    
   <group>
     <rosparam>
-      Irp6HardwareInterface:
+      Irp6otDiag:
+        hardware_label: Irp6ot
+      Irp6otScheme:
+        scheme_name: irp6ot_manager
+      Irp6otHardwareInterface:
+        auto_synchronize: false
+        rwh_nsec: 1200000
+        active_motors: [irp6otm_0, irp6otm_1, irp6otm_2, irp6otm_3, irp6otm_4, irp6otm_5, irp6otm_6, irp6ottfg]
+        hardware_hostname: gerwazy
         irp6otm_0:
           label: irp6otm_0
           ports_adresses: /dev/ttyMI7
@@ -295,6 +307,7 @@
         frame_ids: [tl_6]
         child_frame_ids: [tl_ef]
     </rosparam>
-</group>
+  </group>
+
 
 </launch>

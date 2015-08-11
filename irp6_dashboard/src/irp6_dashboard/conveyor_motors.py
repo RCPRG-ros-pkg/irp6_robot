@@ -43,13 +43,9 @@ import std_srvs.srv
 
 from std_msgs.msg import *
 from irpos import *
+from .irp6_motors import Irp6MotorStatus, Irp6Motors
 
-class HiMotorStatus():
-    def __init__(self, context):
-        self.synchro_in_progress = False
-        self.synchro_in_progress_previous = False
-
-class HiMotors(MenuDashWidget):
+class ConveyorMotors(Irp6Motors):
     """
     Dashboard widget to display motor state and allow interaction.
     """
@@ -62,53 +58,26 @@ class HiMotors(MenuDashWidget):
         :param halt_callback: calback for the "reset" action
         :type halt_callback: function
         """
-        ok_icon = ['bg-green.svg', 'ic-motors.svg']
-        warn_icon = ['bg-yellow.svg', 'ic-motors.svg', 'ol-warn-badge.svg']
-        err_icon = ['bg-red.svg', 'ic-motors.svg', 'ol-err-badge.svg']
-        stale_icon = ['bg-grey.svg', 'ic-motors.svg', 'ol-stale-badge.svg']
 
-        icons = [ok_icon, warn_icon, err_icon, stale_icon]
-
-        super(HiMotors, self).__init__('HiMotors', icons)
+        super(ConveyorMotors, self).__init__('ConveyorMotors')
         
-        self.synchronise_action = self.add_action('Synchronise', self.synchronise)
         
-        self.status = HiMotorStatus(self)
-
-
-    def set_ok(self):
-        self.update_state(0)
-
-
-    def set_warn(self):
-        self.update_state(1)
-
-
-    def set_error(self):
-        self.update_state(2)
-
-
-    def set_stale(self):
-        self.update_state(3)
+                
+        self.change_motors_widget_state()
+        timerThread = threading.Thread(target=self.monitor_robot_activity)
+        timerThread.daemon = True
+        timerThread.start()
+        
 
 
     def enable_post_synchro_actions(self):
-        self.synchronise_action.setDisabled(True)
+        pass
 
 
     def enable_pre_synchro_actions(self):
-        self.synchronise_action.setDisabled(False)
+        pass
 
 
     def disable_all_actions(self):
-        self.synchronise_action.setDisabled(True)
-
-
-    def synchronise(self):
-        pub = rospy.Publisher('/hardware_interface/do_synchro_in', std_msgs.msg.Bool, queue_size=0)
-        rospy.sleep(0.5)
-        goal = std_msgs.msg.Bool()
-        goal.data = True
-        pub.publish(goal)
-        self.status.synchro_in_progress = True
+        pass
 

@@ -10,38 +10,5 @@ ros.import("force_control")
 ros.import("irp6_force_sensor")
 
 
-
-
-
-//------------------------------------------------------------------------------
-//-- irp6 otm and ottfg
-//------------------------------------------------------------------------------
-
-runScript( ros.find("irp6_bringup") + "/config/load-scheme-and-hi.ops")
-
-
-runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-pre-add-scheme-peer.ops")
-
-addPeer("Irp6scheme", "Irp6HardwareInterface");
-
-
-runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-add-scheme-peer.ops")
-
-Irp6scheme.addBlock("Irp6HardwareInterface");
-
-
-runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-add-scheme-block.ops")
-
-runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-pre-start.ops")
-
-## Start it
-Irp6scheme.start()
-
-runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside-start.ops")
-
-runScript( ros.find("irp6_bringup") + "/config/start-hi.ops")
-
-
-
-
+runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside.ops")
 

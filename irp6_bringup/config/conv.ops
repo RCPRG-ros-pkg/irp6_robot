@@ -5,24 +5,4 @@ runScript( ros.find("irp6_bringup") + "/config/common-imports.ops")
 
 ros.import("conveyor_kinematic")
 
-
-
-runScript( ros.find("irp6_bringup") + "/config/load-scheme-and-hi.ops")
-
-
-runScript( ros.find("irp6_bringup") + "/config/conv-inside-pre-add-scheme-peer.ops")
-
-addPeer("Irp6scheme", "Irp6HardwareInterface")
-
-runScript( ros.find("irp6_bringup") + "/config/conv-inside-add-scheme-peer.ops")
-
-Irp6scheme.addBlock("Irp6HardwareInterface");
-
-runScript( ros.find("irp6_bringup") + "/config/conv-inside-add-scheme-block.ops")
-
-runScript( ros.find("irp6_bringup") + "/config/conv-inside-pre-start.ops")
-
-Irp6scheme.start()
-
-runScript( ros.find("irp6_bringup") + "/config/conv-inside-start.ops")
-runScript( ros.find("irp6_bringup") + "/config/start-hi.ops")
+runScript( ros.find("irp6_bringup") + "/config/conv-inside.ops")

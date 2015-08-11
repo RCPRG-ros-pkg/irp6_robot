@@ -17,7 +17,7 @@ loadComponent("ConvHardwareInterface","HardwareInterface")
 ConvHardwareInterface.loadService("rosparam")
 ConvHardwareInterface.rosparam.getAll()
 ConvHardwareInterface.configure()
-stream("ConvHardwareInterface.DoSynchroIn", ros.comm.topic("/hardware_interface/do_synchro_in"))
+stream("ConvHardwareInterface.DoSynchroIn", ros.comm.topic("/conv_hardware_interface/do_synchro_in"))
 
 loadComponent("ConvDiag", "Irp6Diagnostic")
 setActivity("ConvDiag", 0.1, 1, ORO_SCHED_RT)
@@ -26,7 +26,8 @@ ConvDiag.rosparam.getAll();
 
 connect("ConvDiag.SynchroStateIn","ConvHardwareInterface.IsSynchronised", ConnPolicy())
 connect("ConvDiag.HardwaPanicIn","ConvHardwareInterface.IsHardwarePanic", ConnPolicy())
-stream("ConvDiag.Diagnostics", ros.comm.topic("/diagnostics_agg"));
+connect("ConvDiag.HardwaBusyIn","ConvHardwareInterface.IsHardwareBusy", ConnPolicy())
+stream("ConvDiag.Diagnostics", ros.comm.topic("/diagnostics"));
 ConvDiag.configure()
 
 
@@ -90,6 +91,8 @@ ConveyorSplineTrajectoryGeneratorJoint.loadService("rosparam");
 ConveyorSplineTrajectoryGeneratorJoint.rosparam.getAll();
 connect("ConveyorM2J.JointPosition","ConveyorSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
 connect("ConveyorSplineTrajectoryGeneratorJoint.JointPositionCommand","ConveyorJ2M.JointPosition", ConnPolicy())
+connect("ConveyorSplineTrajectoryGeneratorJoint.IsSynchronisedIn","ConvHardwareInterface.IsSynchronised", ConnPolicy())
+connect("ConveyorSplineTrajectoryGeneratorJoint.GeneratorActiveOut","ConvHardwareInterface.GeneratorActiveIn", ConnPolicy())
 ConveyorSplineTrajectoryGeneratorJoint.configure()
 
 
@@ -103,6 +106,8 @@ connect("ConveyorLimitDetector.OutputPort","ConveyorPortDoubleSplit_hw_cp.InputP
 
 connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
 connect("ConveyorSplineTrajectoryGeneratorMotor.JointPositionCommand","ConveyorLimitDetector.InputPort", ConnPolicy())
+connect("ConveyorSplineTrajectoryGeneratorMotor.IsSynchronisedIn","ConvHardwareInterface.IsSynchronised", ConnPolicy())
+connect("ConveyorSplineTrajectoryGeneratorMotor.GeneratorActiveOut","ConvHardwareInterface.GeneratorActiveIn", ConnPolicy())
 ConveyorSplineTrajectoryGeneratorMotor.configure()
 
 
@@ -153,6 +158,9 @@ ConvScheme.latchConnections("ConvHardwareInterface", "ConveyorPortDoubleAggregat
 ConvScheme.addBlock("ConveyorJ2M");
 ConvScheme.addBlock("ConveyorSplineTrajectoryGeneratorJoint");
 ConvScheme.addBlock("ConveyorSplineTrajectoryGeneratorMotor");
+ConvScheme.latchConnections("ConvHardwareInterface", "ConveyorSplineTrajectoryGeneratorJoint", true);
+ConvScheme.latchConnections("ConvHardwareInterface", "ConveyorSplineTrajectoryGeneratorMotor", true);
+
 
 
 

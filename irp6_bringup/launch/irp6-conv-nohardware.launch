@@ -8,19 +8,40 @@
   </include>
 
 
-  <include file="$(find irp6_bringup)/launch/irp6-conv.launch">
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find irp6_description)/robots/irp6pboth.urdf.xacro'" />
+    
+  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher"/>
+  
+  <node pkg="diagnostic_aggregator" type="aggregator_node"
+        name="diagnostic_aggregator" >
+        
+  <rosparam command="load" file="$(find irp6_bringup)/config/irp6_analyzers.yaml" />
+
+</node>
+  
+  <include file="$(find irp6_bringup)/launch/irp6-p-inside.launch" ns="IRP6_CONV_OROCOS_ROBOT">
+  </include>
+  
+  <include file="$(find irp6_bringup)/launch/irp6-ot-inside.launch" ns="IRP6_CONV_OROCOS_ROBOT">
+  </include>
+  
+  <include file="$(find irp6_bringup)/launch/conv-inside.launch" ns="IRP6_CONV_OROCOS_ROBOT">
   </include>
 
   <group ns="IRP6_CONV_OROCOS_ROBOT">
     <rosparam>
-      Irp6scheme:
-        scheme_name: controller_manager
-      Irp6HardwareInterface:
+      Irp6pHardwareInterface:
+        test_mode: true
+      Irp6otHardwareInterface:
+        test_mode: true
+      ConvHardwareInterface:
         test_mode: true
       ATI6284:
         test_mode: true
       ATI3084:
         test_mode: true
+      HapticScheme:
+        scheme_name: haptic_manager
     </rosparam>
   </group>
 
