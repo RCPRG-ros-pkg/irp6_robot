@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find freenect_launch)/launch/freenect.launch">
+    <arg name="camera" default="track_kinect" />
+    <arg name="publish_tf" default="false" />
+    <arg name="rgb_frame_id" default="t_kinect_optical_frame" />
+    <arg name="data_skip" default="2" />
+    <arg name="depth_registration" default="true" />
+  </include>
+</launch>
+

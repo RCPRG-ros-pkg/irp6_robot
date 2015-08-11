@@ -34,7 +34,7 @@
   <inertial>
     <mass value="1"/>
     <inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
-    <origin/>
+    <origin xyz="0 0 0"/>
   </inertial>
   <visual>
     <origin xyz="0 .6045 .125" />
@@ -51,7 +51,6 @@
     <geometry>
       <box size=".462 1.609 .2" />
     </geometry>
-    <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
   </collision>
 </link>
 
@@ -59,7 +58,7 @@
   <inertial>
     <mass value="1"/>
     <inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
-    <origin/>
+    <origin xyz="0 0 0"/>
   </inertial>
   <visual>
     <origin xyz="0 0 0.075" />
@@ -76,7 +75,6 @@
     <geometry>
       <box size=".0 .0 .0" />
     </geometry>
-    <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
   </collision>
 </link>
 
@@ -353,12 +351,41 @@
 </link>
 
 <joint name="tl_camera_optical_frame" type="fixed">
-    <origin rpy="0.0 0.0 3.14" xyz="0.0 0.0 0.0"/>
+    <origin rpy="0.0 0.0 3.14" xyz="0 0 0"/>
     <parent link="t_c"/>
     <child link="t_c_optical_frame"/>
-  </joint>
+</joint>
 
 <link name="t_c_optical_frame">
+</link>
+
+<joint name="t_calib_joint" type="fixed">
+<!--    <origin rpy="0.0 ${M_PI/2} ${M_PI/4}" xyz="0.05 0.7 -0.05"/> -->
+    <origin xyz="-0.50751 0.769 -0.016818" rpy="0.0 ${M_PI/2} ${M_PI/4}"/>
+    <parent link="tl_3"/>
+    <child link="t_calib_link"/>
+</joint>
+
+<link name="t_calib_link">
+</link>
+
+<joint name="tl_kinect" type="fixed">
+<!--    <origin rpy="0.0 1.57 0.0" xyz="0.82 -0.2 2.08"/> -->
+    <origin xyz="0.88317 -0.21239 2.0291" rpy="-2.8825 1.3979 -2.8821"/>
+    <parent link="tl_base"/>
+    <child link="t_kinect"/>
+</joint>
+
+<link name="t_kinect">
+</link>
+
+<joint name="tl_kinect_optical_frame" type="fixed">
+    <origin xyz="0 0 0" rpy="-1.57 0.0 -1.57" />
+    <parent link="t_kinect"/>
+    <child link="t_kinect_optical_frame"/>
+</joint>
+
+<link name="t_kinect_optical_frame">
 </link>
 
 <!-- -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.- -->
@@ -628,7 +655,7 @@
       <origin rpy="0 0 0.0" xyz="0 -0.02 0.0"/>
       <geometry>
          <box size="0.05 0.04 0.12" />
-      </geometry>
+      </geometry>origin
     </visual>
 
     <collision>
