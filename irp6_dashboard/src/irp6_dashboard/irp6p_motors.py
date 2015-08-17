@@ -75,8 +75,14 @@ class Irp6pMotors(Irp6Motors):
         timerThread.start()
 
 
-    def done_callback(self,state, result):
+    def irp6pm_done_callback(self,state, result):
         self.conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
+        self.status.motion_in_progress = False
+        self.change_motors_widget_state()
+
+
+    def irp6ptfg_done_callback(self,state, result):
+        self.conmanSwitch([], ['Irp6ptfgSplineTrajectoryGeneratorMotor'], True)
         self.status.motion_in_progress = False
         self.change_motors_widget_state()
 
@@ -88,7 +94,7 @@ class Irp6pMotors(Irp6Motors):
 
     def move_to_synchro_pos(self):
         self.init_conman()
-        self.conmanSwitch([], ['Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
+        self.conmanSwitch([], ['Irp6ptfgSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorMotor','Irp6pmSplineTrajectoryGeneratorJoint','Irp6pmPoseInt','Irp6pmForceControlLaw','Irp6pmForceTransformation'], True)
   
         self.conmanSwitch(['Irp6pmSplineTrajectoryGeneratorMotor'], [], True)
     
@@ -100,7 +106,19 @@ class Irp6pMotors(Irp6Motors):
         goal.trajectory.points.append(JointTrajectoryPoint([0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
         goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
 
-        self.client.send_goal(goal, self.done_callback)
+        self.client.send_goal(goal, self.irp6pm_done_callback)
+        
+        self.conmanSwitch(['Irp6ptfgSplineTrajectoryGeneratorMotor'], [], True)
+    
+        self.client_tfg = actionlib.SimpleActionClient('/irp6p_tfg/spline_trajectory_action_motor', FollowJointTrajectoryAction)
+        self.client_tfg.wait_for_server()
+
+        goal = FollowJointTrajectoryGoal()
+        goal.trajectory.joint_names = ['joint1']
+        goal.trajectory.points.append(JointTrajectoryPoint([0.0], [0.0], [], [], rospy.Duration(10.0)))
+        goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+
+        self.client_tfg.send_goal(goal, self.irp6ptfg_done_callback)
 
         self.status.motion_in_progress = True
         self.change_motors_widget_state()
@@ -112,15 +130,15 @@ class Irp6pMotors(Irp6Motors):
   
         self.conmanSwitch(['Irp6pmSplineTrajectoryGeneratorJoint'], [], True)
     
-        self.client = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
-        self.client.wait_for_server()
+        self.client_m = actionlib.SimpleActionClient('/irp6p_arm/spline_trajectory_action_joint', FollowJointTrajectoryAction)
+        self.client_m.wait_for_server()
 
-        goal = FollowJointTrajectoryGoal()
-        goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
-        goal.trajectory.points.append(JointTrajectoryPoint([0.0, -1.57, 0.0, 1.5, 1.57, -1.57], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
-        goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+        goal_m = FollowJointTrajectoryGoal()
+        goal_m.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
+        goal_m.trajectory.points.append(JointTrajectoryPoint([0.0, -1.57, 0.0, 1.5, 1.57, -1.57], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)))
+        goal_m.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
         
-        self.client.send_goal(goal, self.done_callback)
+        self.client_m.send_goal(goal_m, self.irp6pm_done_callback)
         self.status.motion_in_progress = True
         self.change_motors_widget_state()
 

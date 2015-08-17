@@ -36,9 +36,6 @@ class Irp6Dashboard(Dashboard):
         
         self._agg_sub = rospy.Subscriber('diagnostics', DiagnosticArray, self.new_diagnostic_message_diagnostics)
         # self._agg_sub = rospy.Subscriber('diagnostics_agg', DiagnosticArray, self.new_diagnostic_message_diagnostics_agg)
-        
-
-
 
 
 
