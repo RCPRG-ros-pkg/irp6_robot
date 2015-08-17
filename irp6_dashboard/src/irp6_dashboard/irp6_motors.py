@@ -163,6 +163,7 @@ class Irp6Motors(MenuDashWidget):
             self.set_stale()
             self.disable_all_actions()
             self.setToolTip(self.tr(self.name + ": Not responding"))
+            self.status.synchro_in_progress = False
         elif self.status.is_emergency_stop_activated == True:
             self.set_error()
             self.disable_all_actions()
