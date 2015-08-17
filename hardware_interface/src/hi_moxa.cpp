@@ -177,6 +177,7 @@ void HI_moxa::reset_counters(void) {
     servo_data[i].previous_absolute_position = 0L;
     servo_data[i].current_position_inc = 0.0;
     servo_data[i].previous_position_inc = 0.0;
+    check_ridicolous_increment_[i] = true;
   }
 }
 
@@ -436,7 +437,7 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
         servo_data[drive_number].current_absolute_position = rdp;
       }
 
-      if ((robot_synchronized)
+      if ((robot_synchronized && check_ridicolous_increment_[drive_number])
           && (static_cast<int>(ridiculous_increment[drive_number]) != 0)) {
         /*if (drive_number == 0) {
 
@@ -451,8 +452,8 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
             || (servo_data[drive_number].current_position_inc
                 < -ridiculous_increment[drive_number])) {
           hardware_panic = true;
-          temp_message << std::endl << RED
-                       << hardware_name <<": [error] RIDICOLOUS INCREMENT on drive "
+          temp_message << std::endl << RED << hardware_name
+                       << ": [error] RIDICOLOUS INCREMENT on drive "
                        << static_cast<int>(drive_number) << ", "
                        << port_names[drive_number].c_str() << ", c.cycle "
                        << static_cast<int>(receive_attempts) << ": read = "
@@ -469,7 +470,8 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
           & NF_DrivesStatus_Overcurrent) != 0) {
         if (error_msg_overcurrent == 0) {
           // master.msg->message(lib::NON_FATAL_ERROR, "Overcurrent");
-          std::cout << std::endl << RED << hardware_name << ": [error] OVERCURRENT on drive "
+          std::cout << std::endl << RED << hardware_name
+                    << ": [error] OVERCURRENT on drive "
                     << static_cast<int>(drive_number) << ", "
                     << port_names[drive_number].c_str() << ": read = "
                     << NFComBuf.ReadDrivesCurrent.data[drive_number] << "mA"
@@ -524,8 +526,9 @@ uint64_t HI_moxa::read_hardware(int timeouts_to_print) {
     hardware_panic = true;
     // std::cout << "[error] power_fault" << std::endl;
     if (error_msg_power_stage == 0) {
-      temp_message << std::endl << RED << hardware_name << ": [error] POWER FAULT" << RESET
-                   << std::endl << std::endl;
+      temp_message << std::endl << RED << hardware_name
+                   << ": [error] POWER FAULT" << RESET << std::endl
+                   << std::endl;
       std::cerr << temp_message.str() << std::cerr.flush();
       // master.msg->message(lib::NON_FATAL_ERROR, "Wylaczono moc - robot zablokowany");
       error_msg_power_stage++;
@@ -587,8 +590,9 @@ uint64_t HI_moxa::write_hardware(void) {
       SerialPort[drive_number]->write(txBuf, txCnt);
     }
     if (error_msg_hardware_panic_ == 0) {
-      std::cout << RED << std::endl << hardware_name << ": [error] hardware panic" << RESET
-                << std::endl << std::endl;
+      std::cout << RED << std::endl << hardware_name
+                << ": [error] hardware panic" << RESET << std::endl
+                << std::endl;
       error_msg_hardware_panic_++;
     }
     // std::cout << temp_message.str() << std::endl;
@@ -834,6 +838,7 @@ void HI_moxa::start_synchro(int drive_number) {
   NF_COMMAND_SetDrivesMode;
   std::cout << "[func] HI_moxa::start_synchro(" << drive_number << ")"
             << std::endl;
+  check_ridicolous_increment_[drive_number] = false;
 }
 
 void HI_moxa::finish_synchro(int drive_number) {
@@ -854,6 +859,8 @@ void HI_moxa::finish_synchro(int drive_number) {
   NF_COMMAND_SetDrivesMode;
   std::cout << "[func] HI_moxa::finish_synchro(" << drive_number << ")"
             << std::endl;
+
+  check_ridicolous_increment_[drive_number] = true;
 }
 
 void HI_moxa::unsynchro(int drive_number) {

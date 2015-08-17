@@ -149,6 +149,7 @@ class HI_moxa {
   struct servo_St servo_data[MOXA_SERVOS_NR];
   struct termios oldtio[MOXA_SERVOS_NR];
 
+
   /// periodic timer used for generating read_write_hardware time base
   // lib::periodic_timer ptimer;
 
@@ -156,7 +157,7 @@ class HI_moxa {
   NF_STRUCT_ComBuf NFComBuf;
   uint8_t txBuf[BUFF_SIZE];
   uint8_t txCnt;
-
+  bool check_ridicolous_increment_[MOXA_SERVOS_NR];
   struct {
     uint8_t rxBuf[BUFF_SIZE];
     uint8_t rxCnt;
