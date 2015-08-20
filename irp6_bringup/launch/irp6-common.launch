@@ -1,0 +1,15 @@
+<launch>
+
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find irp6_description)/robots/irp6pboth.urdf.xacro'" />
+  
+  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher"/>
+  
+  <node pkg="diagnostic_aggregator" type="aggregator_node"
+        name="diagnostic_aggregator" >
+        
+  <rosparam command="load" file="$(find irp6_bringup)/config/irp6_analyzers.yaml" />
+
+</node>
+  
+ 
+</launch>
