@@ -7,7 +7,7 @@ ros.import("rtt_trajectory_msgs")
 ros.import("rtt_control_msgs")
 ros.import("rtt_cartesian_trajectory_msgs")
 ros.import("rtt_force_control_msgs")
-ros.import("rtt_hi_msgs")
+ros.import("rtt_hi_mw_msgs")
 
 ros.import("conman")
 ros.import("rtt_conman_msgs")
@@ -16,7 +16,7 @@ ros.import("eigen_typekit");
 ros.import("rtt_tf");
 ros.import("limit_detector");
 ros.import("port_operations")
-ros.import("hardware_interface")
+ros.import("hardware_interface_mw")
 ros.import("irp6_regulator")
 ros.import("irp6_diagnostic")
 ros.import("oro_joint_state_publisher")

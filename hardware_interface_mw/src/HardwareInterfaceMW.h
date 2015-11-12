@@ -31,7 +31,7 @@
 #ifndef HARDWAREINTERFACEMW_H_
 #define HARDWAREINTERFACEMW_H_
 
-#include <hi_msgs/HardwareInterfacePort.h>
+#include <hi_mw_msgs/HardwareInterfaceMWPort.h>
 #include <std_msgs/Bool.h>
 
 #include <rtt/TaskContext.hpp>
@@ -40,12 +40,13 @@
 
 #include <rtt/extras/SlaveActivity.hpp>
 
-
-#include <vector>
-#include <string>
-
 #include <Eigen/Dense>
 #include <string>
+
+#include <vector>
+
+
+
 
 #include "../../hardware_interface_mw/src/hi_moxa.h"
 
@@ -110,7 +111,7 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   int timeouts_to_print_;
   int tx_prefix_len_;
   int rwh_nsec_;
-  hi_msgs::HardwareInterfacePort hi_port_param_[HI_SERVOS_NR];
+  hi_mw_msgs::HardwareInterfaceMWPort hi_port_param_[HI_SERVOS_NR];
   std::string hardware_hostname_;
 
   int synchro_stop_iter_;

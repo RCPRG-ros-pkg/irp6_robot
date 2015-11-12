@@ -17,7 +17,7 @@ Irp6otScheme.configure()
 //------------------------------------------------------------------------------
 //-- Irp6otHardwareInterface
 //------------------------------------------------------------------------------
-loadComponent("Irp6otHardwareInterface","HardwareInterface")
+loadComponent("Irp6otHardwareInterface","HardwareInterfaceMW")
 Irp6otHardwareInterface.loadService("rosparam")
 Irp6otHardwareInterface.rosparam.getAll()
 Irp6otHardwareInterface.configure()

@@ -13,7 +13,7 @@ ConvScheme.configure()
 //------------------------------------------------------------------------------
 //-- ConvHardwareInterface
 //------------------------------------------------------------------------------
-loadComponent("ConvHardwareInterface","HardwareInterface")
+loadComponent("ConvHardwareInterface","HardwareInterfaceMW")
 ConvHardwareInterface.loadService("rosparam")
 ConvHardwareInterface.rosparam.getAll()
 ConvHardwareInterface.configure()
