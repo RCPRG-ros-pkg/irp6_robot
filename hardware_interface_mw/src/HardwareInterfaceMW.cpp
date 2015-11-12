@@ -28,8 +28,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "HardwareInterfaceMW.h"
+#include <string>
 
+#include "HardwareInterfaceMW.h"
 
 HardwareInterfaceMW::HardwareInterfaceMW(const std::string& name)
     : TaskContext(name, PreOperational),
@@ -77,7 +78,6 @@ HardwareInterfaceMW::HardwareInterfaceMW(const std::string& name)
   this->addProperty("irp6otm_5", hi_port_param_[13]).doc("");
   this->addProperty("irp6otm_6", hi_port_param_[14]).doc("");
   this->addProperty("irp6ottfg", hi_port_param_[15]).doc("");
-  this->addProperty("sarkofag", hi_port_param_[16]).doc("");
 }
 
 HardwareInterfaceMW::~HardwareInterfaceMW() {
