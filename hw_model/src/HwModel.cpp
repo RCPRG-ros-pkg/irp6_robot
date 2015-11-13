@@ -38,11 +38,12 @@ HwModel::HwModel(const std::string& name)
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("JointPosition", port_joint_position_);
 
-  this->addProperty("synchro_motor_position", synchro_motor_position_);
+  this->addProperty("iteration_number", iteration_number_);
+  this->addProperty("torque_constant", torque_constant_);
+  this->addProperty("inertia", inertia_);
+  this->addProperty("viscous_friction", viscous_friction_);
+  this->addProperty("current_or_position_input", current_or_position_input_);
 
-  for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
-    SYNCHRO_JOINT_POSITION[i] = 0.0;
-  }
 }
 
 HwModel::~HwModel() {
@@ -58,11 +59,13 @@ bool HwModel::configureHook() {
 }
 
 void HwModel::updateHook() {
-  if (port_joint_position_.read(joint_position_) == RTT::NewData) {
-    if (i2mp(&joint_position_(0), &motor_position_(0))) {
-      port_motor_position_.write(motor_position_);
-    }
-  }
+
+/* for iteration_number_
+
+sprawdz current_or_position_input_
+
+endfor
+  */
 }
 
 bool HwModel::i2mp(const double* joints, double* motors) {

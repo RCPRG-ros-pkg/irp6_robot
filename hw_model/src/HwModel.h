@@ -55,10 +55,12 @@ class HwModel : public RTT::TaskContext {
 
   Eigen::VectorXd motor_position_, joint_position_;
 
-  double SYNCHRO_JOINT_POSITION[NUMBER_OF_SERVOS];
-
   // properties
-  std::vector<double> synchro_motor_position_;
+  int iteration_number_;
+  std::vector<double> torque_constant_;
+  std::vector<double> inertia_;
+  std::vector<double> viscous_friction_;
+  std::vector<bool> current_or_position_input_;
 };
 
 #endif  // HWMODEL_H_
