@@ -37,9 +37,6 @@
 #include <string>
 #include <vector>
 
-#define NUMBER_OF_SERVOS 7
-
-
 class HwModel : public RTT::TaskContext {
  public:
   explicit HwModel(const std::string& name);
@@ -47,16 +44,21 @@ class HwModel : public RTT::TaskContext {
 
   bool configureHook();
   void updateHook();
- private:
-  bool i2mp(const double* joints, double* motors);
 
-  RTT::InputPort<Eigen::VectorXd> port_joint_position_;
+ private:
+
+  RTT::InputPort<Eigen::VectorXd> port_desired_input_;
   RTT::OutputPort<Eigen::VectorXd> port_motor_position_;
 
-  Eigen::VectorXd motor_position_, joint_position_;
+  Eigen::VectorXd motor_position_, motor_velocity_, motor_acceleration_;
+  Eigen::VectorXd desired_input_, desired_torque_, effective_torque_;
+
+  int number_of_servos_;
+  int m_factor_;
 
   // properties
-  int iteration_number_;
+  int iteration_per_step_;
+  int step_per_second_;
   std::vector<double> torque_constant_;
   std::vector<double> inertia_;
   std::vector<double> viscous_friction_;

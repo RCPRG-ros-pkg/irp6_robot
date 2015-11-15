@@ -34,11 +34,14 @@
 #include <string>
 
 HwModel::HwModel(const std::string& name)
-    : RTT::TaskContext(name, PreOperational) {
+    : RTT::TaskContext(name, PreOperational),
+      number_of_servos_(0),
+      m_factor_(0) {
   this->ports()->addPort("MotorPosition", port_motor_position_);
-  this->ports()->addPort("JointPosition", port_joint_position_);
+  this->ports()->addPort("DesiredInput", port_desired_input_);
 
-  this->addProperty("iteration_number", iteration_number_);
+  this->addProperty("iteration_per_step_", iteration_per_step_);
+  this->addProperty("step_per_second", step_per_second_);
   this->addProperty("torque_constant", torque_constant_);
   this->addProperty("inertia", inertia_);
   this->addProperty("viscous_friction", viscous_friction_);
@@ -50,30 +53,52 @@ HwModel::~HwModel() {
 }
 
 bool HwModel::configureHook() {
-  motor_position_.resize(NUMBER_OF_SERVOS);
-  joint_position_.resize(NUMBER_OF_SERVOS);
 
+  // number_of_servos_ trzeba czytac z konfiguracji pierwszego z wektorow (w ktoryms z komponentow tak to jest robione)
+  // trzeba sprawdzic czy wszystkie wektory sa wlaciwej wielkosci
 
+  motor_position_.resize(number_of_servos_);
+  motor_velocity_.resize(number_of_servos_);
+  motor_acceleration_.resize(number_of_servos_);
+  desired_input_.resize(number_of_servos_);
+  desired_torque_.resize(number_of_servos_);
+  effective_torque_.resize(number_of_servos_);
+
+// motor_position_ ustaw na zero
+// motor_velocity_ ustaw na zero
+  m_factor_ = step_per_second_ * iteration_per_step_;
 
   return true;
 }
 
 void HwModel::updateHook() {
 
-/* for iteration_number_
+  /*
 
-sprawdz current_or_position_input_
+   desired_input_ przypisz z port_desired_input_
 
-endfor
-  */
+
+   for number_of_servos_
+
+   sprawdz current_or_position_input_
+   if position input_
+   motor_position_ = desired_input_
+
+   else if current_input_
+   desired_torque_ = desired_input_ * torque_constant_
+   for iteration_per_step_
+   effective_torque_ = desired_torque_ - motor_velocity_ * viscous_friction_
+   motor_acceleration_ = effective_torque / inertia_
+   motor_velocity_ += motor_acceleration_ / m_factor_
+   motor_position_ += motor_velocity_ / m_factor_
+
+   endfor iteration_per_step_
+
+   endif current_input
+   endfor number_of_servos_
+
+   port_motor_position_ przypisz motor_position_
+   */
 }
-
-bool HwModel::i2mp(const double* joints, double* motors) {
-
-
-  return true;
-}
-
 
 ORO_CREATE_COMPONENT(HwModel)
-
