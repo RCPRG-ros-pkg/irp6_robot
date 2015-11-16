@@ -41,7 +41,7 @@ HwModel::HwModel(const std::string& name)
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("DesiredInput", port_desired_input_);
 
-  this->addProperty("iteration_per_step_", iteration_per_step_);
+  this->addProperty("iteration_per_step", iteration_per_step_);
   this->addProperty("step_per_second", step_per_second_);
   this->addProperty("torque_constant", torque_constant_);
   this->addProperty("inertia", inertia_);
@@ -93,12 +93,13 @@ bool HwModel::configureHook() {
 void HwModel::updateHook() {
   if (RTT::NewData == port_desired_input_.read(desired_input_)) {
   }
-
+// pytanie czy to nie przychodzi w inkrementach
   for (int servo = 0; servo < number_of_servos_; servo++) {
     if (!current_input_[servo]) {  // position input
       motor_position_(servo) = desired_input_(servo);
     } else {  // current input
-      desired_torque_(servo) = desired_input_(servo) * torque_constant_[servo];
+      // prad jest w miliamperach, dlatego dzielimy przez 1000
+      desired_torque_(servo) = desired_input_(servo) * torque_constant_[servo]/1000;
 
       for (int iteration = 0; iteration < iteration_per_step_; iteration++) {
         effective_torque_(servo) = desired_torque_(servo)

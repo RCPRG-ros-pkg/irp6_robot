@@ -107,6 +107,13 @@
           synchro_step_coarse: -0.5
           synchro_step_fine: 0.2
           current_mode: 1
+      Irp6otHwModel:
+        iteration_per_step: 10
+        step_per_second: 500
+        torque_constant: [0.105, 0.105, 0.105, 0.105, 0.105, 0.105, 0.105, 0.105]
+        inertia: [0.00015, 0.00015, 0.00015, 0.00015, 0.00015, 0.00015, 0.00015, 0.00015]
+        viscous_friction: [0.00015, 0.00015, 0.00015, 0.00015, 0.00015, 0.00015, 0.00015, 0.00015]
+        current_input: [false, true, true, true, true, false, false, true]
       Irp6otmJntPub:
         joint_names: [Irp6otmJoint1, Irp6otmJoint2, Irp6otmJoint3, Irp6otmJoint4, Irp6otmJoint5, Irp6otmJoint6, Irp6otmJoint7]
       Irp6otmMotPub:
