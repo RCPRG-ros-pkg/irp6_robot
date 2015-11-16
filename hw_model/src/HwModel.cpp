@@ -28,10 +28,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "HwModel.h"
-
 #include <rtt/Component.hpp>
 #include <string>
+
+#include "HwModel.h"
+#include "string_colors.h"
 
 HwModel::HwModel(const std::string& name)
     : RTT::TaskContext(name, PreOperational),
@@ -45,17 +46,26 @@ HwModel::HwModel(const std::string& name)
   this->addProperty("torque_constant", torque_constant_);
   this->addProperty("inertia", inertia_);
   this->addProperty("viscous_friction", viscous_friction_);
-  this->addProperty("current_or_position_input", current_or_position_input_);
-
+  this->addProperty("current_input", current_input_);
 }
 
 HwModel::~HwModel() {
 }
 
 bool HwModel::configureHook() {
-
-  // number_of_servos_ trzeba czytac z konfiguracji pierwszego z wektorow (w ktoryms z komponentow tak to jest robione)
-  // trzeba sprawdzic czy wszystkie wektory sa wlaciwej wielkosci
+  number_of_servos_ = torque_constant_.size();
+  if ((number_of_servos_ != inertia_.size())
+      || (number_of_servos_ != viscous_friction_.size())
+      || (number_of_servos_ != current_input_.size())) {
+    std::cout
+        << std::endl
+        << RED
+        << "[error] hardware model "
+        << getName()
+        << "configuration failed: wrong properties vector length in launch file."
+        << RESET << std::endl;
+    return false;
+  }
 
   motor_position_.resize(number_of_servos_);
   motor_velocity_.resize(number_of_servos_);
@@ -64,41 +74,42 @@ bool HwModel::configureHook() {
   desired_torque_.resize(number_of_servos_);
   effective_torque_.resize(number_of_servos_);
 
-// motor_position_ ustaw na zero
-// motor_velocity_ ustaw na zero
+  port_motor_position_.setDataSample(motor_position_);
+
+  for (int i = 0; i < number_of_servos_; i++) {
+    motor_position_(i) = 0.0;
+    motor_velocity_(i) = 0.0;
+    motor_acceleration_(i) = 0.0;
+    desired_input_(i) = 0.0;
+    desired_torque_(i) = 0.0;
+    effective_torque_(i) = 0.0;
+  }
+
   m_factor_ = step_per_second_ * iteration_per_step_;
 
   return true;
 }
 
 void HwModel::updateHook() {
+  if (RTT::NewData == port_desired_input_.read(desired_input_)) {
+  }
 
-  /*
+  for (int servo = 0; servo < number_of_servos_; servo++) {
+    if (!current_input_[servo]) {  // position input
+      motor_position_(servo) = desired_input_(servo);
+    } else {  // current input
+      desired_torque_(servo) = desired_input_(servo) * torque_constant_[servo];
 
-   desired_input_ przypisz z port_desired_input_
-
-
-   for number_of_servos_
-
-   sprawdz current_or_position_input_
-   if position input_
-   motor_position_ = desired_input_
-
-   else if current_input_
-   desired_torque_ = desired_input_ * torque_constant_
-   for iteration_per_step_
-   effective_torque_ = desired_torque_ - motor_velocity_ * viscous_friction_
-   motor_acceleration_ = effective_torque / inertia_
-   motor_velocity_ += motor_acceleration_ / m_factor_
-   motor_position_ += motor_velocity_ / m_factor_
-
-   endfor iteration_per_step_
-
-   endif current_input
-   endfor number_of_servos_
-
-   port_motor_position_ przypisz motor_position_
-   */
+      for (int iteration = 0; iteration < iteration_per_step_; iteration++) {
+        effective_torque_(servo) = desired_torque_(servo)
+            - motor_velocity_(servo) * viscous_friction_[servo];
+        motor_acceleration_(servo) = effective_torque_(servo) / inertia_[servo];
+        motor_velocity_(servo) += motor_acceleration_(servo) / m_factor_;
+        motor_position_(servo) += motor_velocity_(servo) / m_factor_;
+      }
+    }
+  }
+  port_motor_position_.write(motor_position_);
 }
 
 ORO_CREATE_COMPONENT(HwModel)

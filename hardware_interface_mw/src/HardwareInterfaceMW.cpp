@@ -251,7 +251,9 @@ bool HardwareInterfaceMW::configureHook() {
     log(RTT::Info) << e.what() << RTT::endlog();
 
     std::cout
-        << std::endl << RED << getName()
+        << std::endl
+        << RED
+        << getName()
         << " [error] ERROR configuring HardwareInterfaceMW, check power switches"
         << RESET << std::endl << std::endl;
 

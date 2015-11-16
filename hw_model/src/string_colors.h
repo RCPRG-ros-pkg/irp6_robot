@@ -28,41 +28,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HWMODEL_H_
-#define HWMODEL_H_
+#ifndef STRING_COLORS_H_
+#define STRING_COLORS_H_
 
-#include <rtt/TaskContext.hpp>
-#include <rtt/Port.hpp>
-#include <Eigen/Dense>
-#include <string>
-#include <vector>
+#define RESET   "\033[0m"
+#define BLACK   "\033[30m"      /* Black */
+#define RED     "\033[31m"      /* Red */
+#define GREEN   "\033[32m"      /* Green */
+#define YELLOW  "\033[33m"      /* Yellow */
+#define BLUE    "\033[34m"      /* Blue */
+#define MAGENTA "\033[35m"      /* Magenta */
+#define CYAN    "\033[36m"      /* Cyan */
+#define WHITE   "\033[37m"      /* White */
+#define BOLDBLACK   "\033[1m\033[30m"      /* Bold Black */
+#define BOLDRED     "\033[1m\033[31m"      /* Bold Red */
+#define BOLDGREEN   "\033[1m\033[32m"      /* Bold Green */
+#define BOLDYELLOW  "\033[1m\033[33m"      /* Bold Yellow */
+#define BOLDBLUE    "\033[1m\033[34m"      /* Bold Blue */
+#define BOLDMAGENTA "\033[1m\033[35m"      /* Bold Magenta */
+#define BOLDCYAN    "\033[1m\033[36m"      /* Bold Cyan */
+#define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
 
-class HwModel : public RTT::TaskContext {
- public:
-  explicit HwModel(const std::string& name);
-  virtual ~HwModel();
-
-  bool configureHook();
-  void updateHook();
-
- private:
-
-  RTT::InputPort<Eigen::VectorXd> port_desired_input_;
-  RTT::OutputPort<Eigen::VectorXd> port_motor_position_;
-
-  Eigen::VectorXd motor_position_, motor_velocity_, motor_acceleration_;
-  Eigen::VectorXd desired_input_, desired_torque_, effective_torque_;
-
-  int number_of_servos_;
-  int m_factor_;
-
-  // properties
-  int iteration_per_step_;
-  int step_per_second_;
-  std::vector<double> torque_constant_;
-  std::vector<double> inertia_;
-  std::vector<double> viscous_friction_;
-  std::vector<bool> current_input_;
-};
-
-#endif  // HWMODEL_H_
+#endif  // STRING_COLORS_H_
