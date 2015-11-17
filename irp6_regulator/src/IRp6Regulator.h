@@ -38,7 +38,7 @@ class IRp6Regulator : public RTT::TaskContext {
   explicit IRp6Regulator(const std::string& name);
   ~IRp6Regulator();
 
-  int doServo(double, int);
+  int doServo(double, double);
   void reset();
 
  private:

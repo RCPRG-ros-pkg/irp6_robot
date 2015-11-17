@@ -92,7 +92,7 @@ bool HwModel::configureHook() {
 
 void HwModel::updateHook() {
   if (RTT::NewData == port_desired_input_.read(desired_input_)) {
-    std::cout << "HwModel updateHook" << desired_input_(1) << std::endl;
+//    std::cout << "HwModel updateHook" << desired_input_(1) << std::endl;
 // pytanie czy to nie przychodzi w inkrementach
     for (int servo = 0; servo < number_of_servos_; servo++) {
       // PWM input do implementacji
@@ -102,9 +102,8 @@ void HwModel::updateHook() {
        } else {  // current input
        */
 
-      // prad jest w miliamperach, dlatego dzielimy przez 1000
-      desired_torque_(servo) = desired_input_(servo) * torque_constant_[servo]
-          / 1000;
+      // prad jest w miliamperach
+      desired_torque_(servo) = desired_input_(servo) * torque_constant_[servo];
 
       for (int iteration = 0; iteration < iteration_per_step_; iteration++) {
         effective_torque_(servo) = desired_torque_(servo)

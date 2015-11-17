@@ -160,7 +160,7 @@ void IRp6Regulator::updateHook() {
   }
 }
 
-int IRp6Regulator::doServo(double step_new, int pos_inc) {
+int IRp6Regulator::doServo(double step_new, double pos_inc) {
 // algorytm regulacji dla serwomechanizmu
 // position_increment_old - przedostatnio odczytany przyrost polozenie
 //                         (delta y[k-2] -- mierzone w impulsach)

@@ -597,6 +597,8 @@ void HardwareInterfaceMW::updateHook() {
   for (int i = 0; i < number_of_drives_; i++) {
     if (!test_mode_) {
       motor_current_(i) = static_cast<double>(hi_->get_current(i));
+    } else {  // test_mode == true
+      motor_current_(i) = static_cast<double>(pwm_or_current_(i));
     }
     port_motor_current_list_[i]->write(static_cast<double>(motor_current_[i]));
     if (!test_mode_) {
@@ -606,6 +608,7 @@ void HardwareInterfaceMW::updateHook() {
     }
     port_motor_increment_list_[i]->write(
         static_cast<double>(motor_increment_[i]));
+
     if (state_ != SERVOING) {
       desired_position_out_list_[i]->write(
           static_cast<double>(desired_position_[i]));
