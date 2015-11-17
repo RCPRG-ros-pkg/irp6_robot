@@ -45,9 +45,6 @@
 
 #include <vector>
 
-
-
-
 #include "../../hardware_interface_mw/src/hi_moxa.h"
 
 #define HI_SERVOS_NR 17
@@ -87,7 +84,10 @@ class HardwareInterfaceMW : public RTT::TaskContext {
 
   std::vector<RTT::InputPort<double>*> port_motor_position_command_list_;
 
-  Eigen::VectorXd motor_position_, motor_increment_, motor_current_,
+  RTT::OutputPort<Eigen::VectorXd> port_desired_hw_model_output_;
+  RTT::InputPort<Eigen::VectorXd> port_hw_model_motor_position_;
+
+  Eigen::VectorXd motor_position_, previous_motor_position_, motor_increment_, motor_current_,
       motor_position_command_;
 
   std::vector<std::string> ports_adresses_;
@@ -99,7 +99,6 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   std::vector<double> synchro_step_fine_;
   std::vector<bool> current_mode_;
   std::vector<bool> synchro_needed_;
-
 
   int number_of_drives_;
   int error_msg_hardware_panic_;
@@ -124,14 +123,10 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   SynchroState synchro_state_;
   int synchro_drive_;
 
-
   std::vector<double> desired_position_;
-  std::vector<double> desired_position_increment_;
   std::vector<double> max_pos_inc_;
 
-  std::vector<double> increment_;
-  std::vector<double> motor_pos_;
-  std::vector<double> pwm_or_current_;
+  Eigen::VectorXd pwm_or_current_;
 
   std::vector<RTT::TaskContext*> servo_list_;
 
@@ -139,6 +134,7 @@ class HardwareInterfaceMW : public RTT::TaskContext {
 
   uint16_t convert_to_115(float input);
   void test_mode_sleep();
+  double hw_get_increment(int servo_nr);
 
  public:
   explicit HardwareInterfaceMW(const std::string& name);

@@ -56,6 +56,9 @@ HardwareInterfaceMW::HardwareInterfaceMW(const std::string& name)
   this->ports()->addPort("IsHardwarePanic", port_is_hardware_panic_);
   this->ports()->addPort("IsHardwareBusy", port_is_hardware_busy_);
 
+  this->ports()->addPort("DesiredHwModelOutput", port_desired_hw_model_output_);
+  this->ports()->addPort("HwModelMotorPosition", port_hw_model_motor_position_);
+
   this->addProperty("active_motors", active_motors_).doc("");
   this->addProperty("hardware_hostname", hardware_hostname_).doc("");
   this->addProperty("auto_synchronize", auto_synchronize_).doc("");
@@ -195,15 +198,15 @@ bool HardwareInterfaceMW::configureHook() {
   }
   counter_ = 0.0;
 
-  increment_.resize(number_of_drives_);
   desired_position_.resize(number_of_drives_);
-  desired_position_increment_.resize(number_of_drives_);
 
   pwm_or_current_.resize(number_of_drives_);
   max_pos_inc_.resize(number_of_drives_);
+  motor_increment_.resize(number_of_drives_);
+  port_desired_hw_model_output_.setDataSample(pwm_or_current_);
 
   for (int i = 0; i < number_of_drives_; i++) {
-    increment_[i] = 0;
+    motor_increment_[i] = 0;
     pwm_or_current_[i] = 0.0;
     max_pos_inc_[i] = 0.0;
   }
@@ -261,7 +264,8 @@ bool HardwareInterfaceMW::configureHook() {
   }
 
   motor_position_.resize(number_of_drives_);
-  motor_increment_.resize(number_of_drives_);
+  previous_motor_position_.resize(number_of_drives_);
+
   motor_current_.resize(number_of_drives_);
   motor_position_command_.resize(number_of_drives_);
 
@@ -353,7 +357,8 @@ bool HardwareInterfaceMW::startHook() {
       RTT::log(RTT::Info) << "HI test mode activated" << RTT::endlog();
 
       for (int i = 0; i < number_of_drives_; i++) {
-        motor_position_command_(i) = motor_position_(i) = 0.0;
+        motor_position_command_(i) = motor_position_(i) =
+            previous_motor_position_(i) = 0.0;
         motor_increment_(i) = 0.0;
         motor_current_(i) = 0.0;
       }
@@ -381,11 +386,14 @@ void HardwareInterfaceMW::updateHook() {
 
   iteration_nr++;
 
+  for (int i = 0; i < number_of_drives_; i++) {
+    if (RTT::NewData != computedReg_in_list_[i]->read(pwm_or_current_[i])) {
+      RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
+    }
+  }
+
   if (!test_mode_) {
     for (int i = 0; i < number_of_drives_; i++) {
-      if (RTT::NewData != computedReg_in_list_[i]->read(pwm_or_current_[i])) {
-        RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
-      }
       if (current_mode_[i]) {
         hi_->set_current(i, pwm_or_current_[i]);
       } else {
@@ -408,7 +416,12 @@ void HardwareInterfaceMW::updateHook() {
       motor_position_(i) = static_cast<double>(hi_->get_position(i))
           * ((2.0 * M_PI) / enc_res_[i]);
     }
-  } else {
+  } else {  // test_mode==true
+    for (int i = 0; i < number_of_drives_; i++) {
+      previous_motor_position_(i) = motor_position_(i);
+    }
+    port_hw_model_motor_position_.read(motor_position_);
+    port_desired_hw_model_output_.write(pwm_or_current_);
     test_mode_sleep();
     port_is_hardware_panic_.write(false);
   }
@@ -429,12 +442,10 @@ void HardwareInterfaceMW::updateHook() {
 
     case PRE_SERVOING:
 
-      if (!test_mode_) {
-        for (int i = 0; i < number_of_drives_; i++) {
-          motor_position_command_(i) = motor_position_(i);
-          port_motor_position_list_[i]->write(
-              static_cast<double>(motor_position_[i]));
-        }
+      for (int i = 0; i < number_of_drives_; i++) {
+        motor_position_command_(i) = motor_position_(i);
+        port_motor_position_list_[i]->write(
+            static_cast<double>(motor_position_[i]));
       }
 
       if ((servo_start_iter_--) <= 0) {
@@ -459,14 +470,8 @@ void HardwareInterfaceMW::updateHook() {
           desired_position_[i] = motor_position_command_(i);
         }
 
-        if (!test_mode_) {
-          port_motor_position_list_[i]->write(
-              static_cast<double>(motor_position_[i]));
-        } else {
-          motor_position_(i) = motor_position_command_(i);
-          port_motor_position_list_[i]->write(
-              static_cast<double>(motor_position_[i]));
-        }
+        port_motor_position_list_[i]->write(
+            static_cast<double>(motor_position_[i]));
       }
     }
       break;
@@ -594,14 +599,22 @@ void HardwareInterfaceMW::updateHook() {
     }
     port_motor_current_list_[i]->write(static_cast<double>(motor_current_[i]));
     if (!test_mode_) {
-      increment_[i] = hi_->get_increment(i);
+      motor_increment_[i] = hi_->get_increment(i);
+    } else {  // test_mode == true
+      motor_increment_[i] = hw_get_increment(i);
     }
-    port_motor_increment_list_[i]->write(static_cast<double>(increment_[i]));
+    port_motor_increment_list_[i]->write(
+        static_cast<double>(motor_increment_[i]));
     if (state_ != SERVOING) {
       desired_position_out_list_[i]->write(
           static_cast<double>(desired_position_[i]));
     }
   }
+}
+
+double HardwareInterfaceMW::hw_get_increment(int servo_nr) {
+  return (motor_position_(servo_nr) - previous_motor_position_(servo_nr))
+      * enc_res_[servo_nr] / (2.0 * M_PI);
 }
 
 ORO_CREATE_COMPONENT(HardwareInterfaceMW)
