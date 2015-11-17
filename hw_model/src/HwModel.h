@@ -46,7 +46,6 @@ class HwModel : public RTT::TaskContext {
   void updateHook();
 
  private:
-
   RTT::InputPort<Eigen::VectorXd> port_desired_input_;
   RTT::OutputPort<Eigen::VectorXd> port_motor_position_;
 
