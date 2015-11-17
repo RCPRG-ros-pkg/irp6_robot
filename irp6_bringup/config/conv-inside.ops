@@ -31,7 +31,12 @@ stream("ConvDiag.Diagnostics", ros.comm.topic("/diagnostics"));
 ConvDiag.configure()
 
 
-
+loadComponent("ConvHwModel","HwModel")
+ConvHwModel.loadService("rosparam")
+ConvHwModel.rosparam.getAll()
+connect("ConvHwModel.DesiredInput","ConvHardwareInterface.DesiredHwModelOutput", ConnPolicy())
+connect("ConvHwModel.MotorPosition","ConvHardwareInterface.HwModelMotorPosition", ConnPolicy())
+ConvHwModel.configure()
 
 
 loadComponent("ConveyorLimitDetector","LimitDetector")
@@ -131,7 +136,7 @@ connect("ConveyorPortDoubleAggregate_hw_p.InputPort_0","ConvHardwareInterface.Mo
 
 
 addPeer("ConvScheme", "ConvHardwareInterface")
-
+addPeer("ConvScheme", "ConvHwModel");
 
 addPeer("ConvScheme", "ConveyorRegulator");
 addPeer("ConvScheme", "ConveyorPortDoubleSplit_hw_cp")
@@ -145,6 +150,9 @@ addPeer("ConvScheme", "ConveyorSplineTrajectoryGeneratorMotor");
 
 
 ConvScheme.addBlock("ConvHardwareInterface");
+ConvScheme.addBlock("ConvHwModel");
+ConvScheme.latchConnections("ConvHardwareInterface", "ConvHwModel", true);
+
 
 
 ConvScheme.addBlock("ConveyorRegulator")
@@ -233,4 +241,5 @@ ConveyorSplineTrajectoryActionMotor.start()
 ConveyorJntPub.start()
 
 ConvHardwareInterface.start()
+ConvHwModel.start()
 ConvDiag.start()
