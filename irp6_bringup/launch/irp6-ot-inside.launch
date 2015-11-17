@@ -111,8 +111,8 @@
         iteration_per_step: 1
         step_per_second: 500
         torque_constant: [0.000105, 0.000105, 0.000105, 0.000105, 0.000105, 0.000105, 0.000105, 0.000105]
-        inertia: [0.00015, 0.00015, 0.00015, 0.00015, 0.00015, 0.00015, 0.00015, 0.00015]
-        viscous_friction: [0.0015, 0.02, 0.02, 0.02, 0.02, 0.0015, 0.00015, 0.0015]
+        inertia: [0.000015, 0.00015, 0.00015, 0.00015, 0.00015, 0.000015, 0.000015, 0.0000005]
+        viscous_friction: [0.0002, 0.02, 0.02, 0.02, 0.02, 0.0002, 0.0002, 0.000002]
         current_input: [false, true, true, true, true, false, false, true]
       Irp6otmJntPub:
         joint_names: [Irp6otmJoint1, Irp6otmJoint2, Irp6otmJoint3, Irp6otmJoint4, Irp6otmJoint5, Irp6otmJoint6, Irp6otmJoint7]
