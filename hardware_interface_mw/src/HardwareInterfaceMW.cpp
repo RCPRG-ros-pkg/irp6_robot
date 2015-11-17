@@ -215,7 +215,6 @@ void HardwareInterfaceMW::configureHookInitVariables() {
   }
 }
 
-
 bool HardwareInterfaceMW::configureHookInitHardware() {
   try {
     hi_ = new hi_moxa::HI_moxa(number_of_drives_ - 1, card_indexes_,
@@ -270,7 +269,6 @@ bool HardwareInterfaceMW::configureHookInitHardware() {
   return true;
 }
 
-
 bool HardwareInterfaceMW::configureHook() {
   configureHookInitVariables();
 
@@ -280,7 +278,6 @@ bool HardwareInterfaceMW::configureHook() {
     return configureHookInitHardware();
   }
 }
-
 
 uint16_t HardwareInterfaceMW::convert_to_115(float input) {
   uint16_t output = 0;
@@ -302,7 +299,6 @@ uint16_t HardwareInterfaceMW::convert_to_115(float input) {
   return output;
 }
 
-
 void HardwareInterfaceMW::test_mode_sleep() {
   struct timespec delay;
   delay.tv_nsec = rwh_nsec_ + 200000;
@@ -310,7 +306,6 @@ void HardwareInterfaceMW::test_mode_sleep() {
 
   nanosleep(&delay, NULL);
 }
-
 
 bool HardwareInterfaceMW::startHook() {
   try {
@@ -381,12 +376,12 @@ bool HardwareInterfaceMW::startHook() {
   return true;
 }
 
-
 void HardwareInterfaceMW::updateHook() {
-  static int iteration_nr = 0;
+  updateHookInit();
+  updateHookStateMachine();
+}
 
-  iteration_nr++;
-
+void HardwareInterfaceMW::updateHookInit() {
   for (int i = 0; i < number_of_drives_; i++) {
     if (RTT::NewData != computedReg_in_list_[i]->read(pwm_or_current_[i])) {
       RTT::log(RTT::Error) << "NO PWM DATA" << RTT::endlog();
@@ -428,6 +423,36 @@ void HardwareInterfaceMW::updateHook() {
     port_is_hardware_panic_.write(false);
   }
 
+  bool emergency_stop;
+  if (port_emergency_stop_.read(emergency_stop) == RTT::NewData) {
+    if (emergency_stop) {
+      if (!test_mode_) {
+        hi_->set_hardware_panic();
+      } else if (error_msg_hardware_panic_ == 0) {
+        std::cout << RED << std::endl << getName() << " [error] hardware panic"
+                  << RESET << std::endl << std::endl;
+        error_msg_hardware_panic_++;
+      }
+    }
+  }
+
+  for (int i = 0; i < number_of_drives_; i++) {
+    if (!test_mode_) {
+      motor_current_(i) = static_cast<double>(hi_->get_current(i));
+      motor_increment_[i] = hi_->get_increment(i);
+    } else {  // test_mode == true
+      motor_current_(i) = static_cast<double>(pwm_or_current_(i));
+      motor_increment_[i] = (motor_position_(i) - previous_motor_position_(i))
+          * enc_res_[i] / (2.0 * M_PI);
+    }
+    port_motor_current_list_[i]->write(static_cast<double>(motor_current_[i]));
+    port_motor_increment_list_[i]->write(
+        static_cast<double>(motor_increment_[i]));
+  }
+
+}
+
+void HardwareInterfaceMW::updateHookStateMachine() {
   switch (state_) {
     case NOT_SYNCHRONIZED: {
       std_msgs::Bool do_synchro;
@@ -582,44 +607,12 @@ void HardwareInterfaceMW::updateHook() {
       break;
   }
 
-  bool emergency_stop;
-  if (port_emergency_stop_.read(emergency_stop) == RTT::NewData) {
-    if (emergency_stop) {
-      if (!test_mode_) {
-        hi_->set_hardware_panic();
-      } else if (error_msg_hardware_panic_ == 0) {
-        std::cout << RED << std::endl << getName() << " [error] hardware panic"
-                  << RESET << std::endl << std::endl;
-        error_msg_hardware_panic_++;
-      }
-    }
-  }
-
   for (int i = 0; i < number_of_drives_; i++) {
-    if (!test_mode_) {
-      motor_current_(i) = static_cast<double>(hi_->get_current(i));
-    } else {  // test_mode == true
-      motor_current_(i) = static_cast<double>(pwm_or_current_(i));
-    }
-    port_motor_current_list_[i]->write(static_cast<double>(motor_current_[i]));
-    if (!test_mode_) {
-      motor_increment_[i] = hi_->get_increment(i);
-    } else {  // test_mode == true
-      motor_increment_[i] = hw_get_increment(i);
-    }
-    port_motor_increment_list_[i]->write(
-        static_cast<double>(motor_increment_[i]));
-
     if (state_ != SERVOING) {
       desired_position_out_list_[i]->write(
           static_cast<double>(desired_position_[i]));
     }
   }
-}
-
-double HardwareInterfaceMW::hw_get_increment(int servo_nr) {
-  return (motor_position_(servo_nr) - previous_motor_position_(servo_nr))
-      * enc_res_[servo_nr] / (2.0 * M_PI);
 }
 
 ORO_CREATE_COMPONENT(HardwareInterfaceMW)

@@ -131,18 +131,16 @@ class HardwareInterfaceMW : public RTT::TaskContext {
 
   uint16_t convert_to_115(float input);
   void test_mode_sleep();
-  double hw_get_increment(int servo_nr);
+  void configureHookInitVariables();
+  bool configureHookInitHardware();
+  void updateHookStateMachine();
+  void updateHookInit();
 
  public:
   explicit HardwareInterfaceMW(const std::string& name);
   ~HardwareInterfaceMW();
 
   bool configureHook();
-
-  void configureHookInitVariables();
-  bool configureHookInitHardware();
-
-
   bool startHook();
   void updateHook();
 };
