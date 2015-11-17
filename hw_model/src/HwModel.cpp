@@ -92,25 +92,28 @@ bool HwModel::configureHook() {
 
 void HwModel::updateHook() {
   if (RTT::NewData == port_desired_input_.read(desired_input_)) {
-
+    std::cout << "HwModel updateHook" << desired_input_(1) << std::endl;
 // pytanie czy to nie przychodzi w inkrementach
     for (int servo = 0; servo < number_of_servos_; servo++) {
-      if (!current_input_[servo]) {  // position input
-        motor_position_(servo) = desired_input_(servo);
-      } else {  // current input
-        // prad jest w miliamperach, dlatego dzielimy przez 1000
-        desired_torque_(servo) = desired_input_(servo) * torque_constant_[servo]
-            / 1000;
+      // PWM input do implementacji
+      /*
+       if (!current_input_[servo]) {  // pwm input
+       motor_position_(servo) = desired_input_(servo);
+       } else {  // current input
+       */
 
-        for (int iteration = 0; iteration < iteration_per_step_; iteration++) {
-          effective_torque_(servo) = desired_torque_(servo)
-              - motor_velocity_(servo) * viscous_friction_[servo];
-          motor_acceleration_(servo) = effective_torque_(servo)
-              / inertia_[servo];
-          motor_velocity_(servo) += motor_acceleration_(servo) / m_factor_;
-          motor_position_(servo) += motor_velocity_(servo) / m_factor_;
-        }
+      // prad jest w miliamperach, dlatego dzielimy przez 1000
+      desired_torque_(servo) = desired_input_(servo) * torque_constant_[servo]
+          / 1000;
+
+      for (int iteration = 0; iteration < iteration_per_step_; iteration++) {
+        effective_torque_(servo) = desired_torque_(servo)
+            - motor_velocity_(servo) * viscous_friction_[servo];
+        motor_acceleration_(servo) = effective_torque_(servo) / inertia_[servo];
+        motor_velocity_(servo) += motor_acceleration_(servo) / m_factor_;
+        motor_position_(servo) += motor_velocity_(servo) / m_factor_;
       }
+      //}
     }
     port_motor_position_.write(motor_position_);
   }

@@ -421,6 +421,7 @@ void HardwareInterfaceMW::updateHook() {
       previous_motor_position_(i) = motor_position_(i);
     }
     port_hw_model_motor_position_.read(motor_position_);
+
     port_desired_hw_model_output_.write(pwm_or_current_);
     test_mode_sleep();
     port_is_hardware_panic_.write(false);
