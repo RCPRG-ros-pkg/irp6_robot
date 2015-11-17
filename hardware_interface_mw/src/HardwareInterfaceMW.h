@@ -117,7 +117,6 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   int synchro_start_iter_;
   int servo_start_iter_;
 
-  double counter_;
 
   State state_;
   SynchroState synchro_state_;
@@ -127,8 +126,6 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   std::vector<double> max_pos_inc_;
 
   Eigen::VectorXd pwm_or_current_;
-
-  std::vector<RTT::TaskContext*> servo_list_;
 
   hi_moxa::HI_moxa *hi_;
 
@@ -141,6 +138,11 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   ~HardwareInterfaceMW();
 
   bool configureHook();
+
+  void configureHookInitVariables();
+  bool configureHookInitHardware();
+
+
   bool startHook();
   void updateHook();
 };

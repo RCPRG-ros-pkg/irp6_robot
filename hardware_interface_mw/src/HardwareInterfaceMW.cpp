@@ -38,7 +38,6 @@ HardwareInterfaceMW::HardwareInterfaceMW(const std::string& name)
       servo_start_iter_(0),
       synchro_stop_iter_(0),
       test_mode_(0),
-      counter_(0.0),
       hi_(NULL),
       state_(NOT_SYNCHRONIZED),
       synchro_drive_(0),
@@ -49,6 +48,8 @@ HardwareInterfaceMW::HardwareInterfaceMW(const std::string& name)
       number_of_drives_(0),
       error_msg_hardware_panic_(0) {
 
+  // ports addition
+
   this->ports()->addPort("EmergencyStopIn", port_emergency_stop_);
   this->ports()->addPort("GeneratorActiveIn", port_generator_active_);
   this->ports()->addPort("DoSynchroIn", port_do_synchro_);
@@ -58,6 +59,8 @@ HardwareInterfaceMW::HardwareInterfaceMW(const std::string& name)
 
   this->ports()->addPort("DesiredHwModelOutput", port_desired_hw_model_output_);
   this->ports()->addPort("HwModelMotorPosition", port_hw_model_motor_position_);
+
+  // properties addition
 
   this->addProperty("active_motors", active_motors_).doc("");
   this->addProperty("hardware_hostname", hardware_hostname_).doc("");
@@ -86,7 +89,7 @@ HardwareInterfaceMW::HardwareInterfaceMW(const std::string& name)
 HardwareInterfaceMW::~HardwareInterfaceMW() {
 }
 
-bool HardwareInterfaceMW::configureHook() {
+void HardwareInterfaceMW::configureHookInitVariables() {
   for (size_t j = 0; j < HI_SERVOS_NR; j++) {
     if (std::find(active_motors_.begin(), active_motors_.end(),
                   hi_port_param_[j].label) != active_motors_.end()) {
@@ -114,6 +117,25 @@ bool HardwareInterfaceMW::configureHook() {
   synchro_step_fine_.resize(number_of_drives_);
   current_mode_.resize(number_of_drives_);
   synchro_needed_.resize(number_of_drives_);
+
+  desired_position_.resize(number_of_drives_);
+
+  pwm_or_current_.resize(number_of_drives_);
+  max_pos_inc_.resize(number_of_drives_);
+  motor_increment_.resize(number_of_drives_);
+  port_desired_hw_model_output_.setDataSample(pwm_or_current_);
+
+  motor_position_.resize(number_of_drives_);
+  previous_motor_position_.resize(number_of_drives_);
+
+  motor_current_.resize(number_of_drives_);
+  motor_position_command_.resize(number_of_drives_);
+
+  for (int i = 0; i < number_of_drives_; i++) {
+    motor_increment_[i] = 0;
+    pwm_or_current_[i] = 0.0;
+    max_pos_inc_[i] = 0.0;
+  }
 
   int i = -1;
   for (size_t j = 0; j < HI_SERVOS_NR; j++) {
@@ -191,63 +213,46 @@ bool HardwareInterfaceMW::configureHook() {
       //   std::cout << "synchro_needed_: "  << synchro_needed_[i] << std::endl << std::endl;
     }
   }
+}
 
-  if (!test_mode_) {
+
+bool HardwareInterfaceMW::configureHookInitHardware() {
+  try {
     hi_ = new hi_moxa::HI_moxa(number_of_drives_ - 1, card_indexes_,
                                max_increment_, tx_prefix_len_, getName());
-  }
-  counter_ = 0.0;
+    char hostname[128];
+    if (gethostname(hostname, sizeof(hostname)) == -1) {
+      perror("gethostname()");
+      hostname[0] = '\0';
+    }
 
-  desired_position_.resize(number_of_drives_);
+    if (std::string(hostname) != hardware_hostname_) {
+      std::cout << std::endl << RED << getName()
+                << " [error] ERROR wrong host_name for hardware_mode" << RESET
+                << std::endl << std::endl;
+    }
 
-  pwm_or_current_.resize(number_of_drives_);
-  max_pos_inc_.resize(number_of_drives_);
-  motor_increment_.resize(number_of_drives_);
-  port_desired_hw_model_output_.setDataSample(pwm_or_current_);
+    std::cout << getName() << " hostname: " << hostname << std::endl;
 
-  for (int i = 0; i < number_of_drives_; i++) {
-    motor_increment_[i] = 0;
-    pwm_or_current_[i] = 0.0;
-    max_pos_inc_[i] = 0.0;
-  }
+    hi_->init(ports_adresses_);
 
-  try {
-    struct timespec delay;
-    if (!test_mode_) {
-      char hostname[128];
-      if (gethostname(hostname, sizeof(hostname)) == -1) {
-        perror("gethostname()");
-        hostname[0] = '\0';
-      }
+    for (int i = 0; i < number_of_drives_; i++) {
+      hi_->set_parameter_now(i, NF_COMMAND_SetDrivesMaxCurrent,
+                             (int16_t) max_current_[i]);
+    }
+    /*
+     NF_STRUCT_Regulator tmpReg = { convert_to_115(0.0600), convert_to_115(
+     0.0500), convert_to_115(0.0), 0 };
 
-      if (std::string(hostname) != hardware_hostname_) {
-        std::cout << std::endl << RED << getName()
-                  << " [error] ERROR wrong host_name for hardware_mode" << RESET
-                  << std::endl << std::endl;
-      }
+     hi_->set_pwm_mode(0);
+     hi_->set_parameter_now(0, NF_COMMAND_SetCurrentRegulator, tmpReg);
+     */
 
-      std::cout << getName() << " hostname: " << hostname << std::endl;
-
-      hi_->init(ports_adresses_);
-
-      for (int i = 0; i < number_of_drives_; i++) {
-        hi_->set_parameter_now(i, NF_COMMAND_SetDrivesMaxCurrent,
-                               (int16_t) max_current_[i]);
-      }
-      /*
-       NF_STRUCT_Regulator tmpReg = { convert_to_115(0.0600), convert_to_115(
-       0.0500), convert_to_115(0.0), 0 };
-
-       hi_->set_pwm_mode(0);
-       hi_->set_parameter_now(0, NF_COMMAND_SetCurrentRegulator, tmpReg);
-       */
-
-      for (int i = 0; i < number_of_drives_; i++) {
-        if (current_mode_[i]) {
-          hi_->set_current_mode(i);
-        } else {
-          hi_->set_pwm_mode(i);
-        }
+    for (int i = 0; i < number_of_drives_; i++) {
+      if (current_mode_[i]) {
+        hi_->set_current_mode(i);
+      } else {
+        hi_->set_pwm_mode(i);
       }
     }
   } catch (std::exception& e) {
@@ -262,27 +267,20 @@ bool HardwareInterfaceMW::configureHook() {
 
     return false;
   }
-
-  motor_position_.resize(number_of_drives_);
-  previous_motor_position_.resize(number_of_drives_);
-
-  motor_current_.resize(number_of_drives_);
-  motor_position_command_.resize(number_of_drives_);
-
-  PeerList plist;
-
-  plist = this->getPeerList();
-
-  for (size_t i = 0; i < plist.size(); i++) {
-    std::cout << plist[i] << std::endl;
-    servo_list_.push_back(this->getPeer(plist[i]));
-    servo_list_[i]->setActivity(
-        new RTT::extras::SlaveActivity(this->getActivity(),
-                                       servo_list_[i]->engine()));
-  }
-
   return true;
 }
+
+
+bool HardwareInterfaceMW::configureHook() {
+  configureHookInitVariables();
+
+  if (test_mode_) {
+    return true;
+  } else {
+    return configureHookInitHardware();
+  }
+}
+
 
 uint16_t HardwareInterfaceMW::convert_to_115(float input) {
   uint16_t output = 0;
@@ -304,6 +302,7 @@ uint16_t HardwareInterfaceMW::convert_to_115(float input) {
   return output;
 }
 
+
 void HardwareInterfaceMW::test_mode_sleep() {
   struct timespec delay;
   delay.tv_nsec = rwh_nsec_ + 200000;
@@ -311,6 +310,7 @@ void HardwareInterfaceMW::test_mode_sleep() {
 
   nanosleep(&delay, NULL);
 }
+
 
 bool HardwareInterfaceMW::startHook() {
   try {
@@ -380,6 +380,7 @@ bool HardwareInterfaceMW::startHook() {
   }
   return true;
 }
+
 
 void HardwareInterfaceMW::updateHook() {
   static int iteration_nr = 0;
