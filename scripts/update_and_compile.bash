@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /opt/ros/indigo/setup.bash
+source /opt/ros/jade/setup.bash
 export LANG=en_US.UTF-8
 export LANG=en
 
