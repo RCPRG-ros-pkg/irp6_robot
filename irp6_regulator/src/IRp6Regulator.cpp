@@ -147,7 +147,6 @@ void IRp6Regulator::updateHook() {
 
     computedPwm_out.write(output);
     if (debug_) {
-
       std::cout << std::dec << GREEN << "output: " << output << " pos_inc: "
           << desired_position_increment_ << " inp_inc: " << deltaIncData
           << RESET << std::endl;

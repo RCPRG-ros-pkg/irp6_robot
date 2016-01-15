@@ -227,7 +227,8 @@ bool HardwareInterfaceMW::configureHookInitHardware() {
 
     if (std::string(hostname) != hardware_hostname_) {
       std::cout << std::endl << RED << getName()
-                << " [error] ERROR wrong host_name for hardware_mode: " << std::string(hostname) << ", " << hardware_hostname_ << RESET
+                << " [error] ERROR wrong host_name for hardware_mode: "
+                << std::string(hostname) << ", " << hardware_hostname_ << RESET
                 << std::endl << std::endl;
     }
 
@@ -449,7 +450,6 @@ void HardwareInterfaceMW::updateHookInit() {
     port_motor_increment_list_[i]->write(
         static_cast<double>(motor_increment_[i]));
   }
-
 }
 
 void HardwareInterfaceMW::updateHookStateMachine() {

@@ -160,7 +160,7 @@
         max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6pmRegulator_1:
-        debug: true
+        debug: false
         eint_dif: 0.008
         A: 0.655629139073
         BB0: 0.6181068
