@@ -16,7 +16,7 @@
         auto_synchronize: true
         rwh_nsec: 1200000
         active_motors: [conveyor]
-        hardware_hostname: gerwazy
+        hardware_hostname: gerwazy.robotyka.ia.pw.edu.pl
         conveyor:
           label: conveyor
           ports_adresses: /dev/ttyMI15

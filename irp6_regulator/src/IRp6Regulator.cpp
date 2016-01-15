@@ -39,6 +39,7 @@
 #include <string>
 
 #include "IRp6Regulator.h"
+#include "../../hardware_interface_mw/src/string_colors.h"
 
 const int MAX_PWM = 190;
 
@@ -142,20 +143,14 @@ void IRp6Regulator::updateHook() {
 
     desired_position_old_ = desired_position_new_;
 
-    if (!debug_) {
-      int output = doServo(desired_position_increment_, deltaIncData);
-      /*
-       std::cout << std::dec << GREEN << "output: " << output << " pos_inc: "
-       << desired_position_increment_ << " inp_inc: " << deltaIncData
-       << RESET << std::endl;
+    int output = doServo(desired_position_increment_, deltaIncData);
 
-       if (iteration_number_ > 2000) {
-       output = 0;
-       }
-       */
-      computedPwm_out.write(output);
-    } else {
-      computedPwm_out.write(0.0);
+    computedPwm_out.write(output);
+    if (debug_) {
+
+      std::cout << std::dec << GREEN << "output: " << output << " pos_inc: "
+          << desired_position_increment_ << " inp_inc: " << deltaIncData
+          << RESET << std::endl;
     }
   }
 }

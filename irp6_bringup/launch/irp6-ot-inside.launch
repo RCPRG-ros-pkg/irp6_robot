@@ -18,7 +18,7 @@
         auto_synchronize: false
         rwh_nsec: 1200000
         active_motors: [irp6otm_0, irp6otm_1, irp6otm_2, irp6otm_3, irp6otm_4, irp6otm_5, irp6otm_6, irp6ottfg]
-        hardware_hostname: gerwazy
+        hardware_hostname: gerwazy.robotyka.ia.pw.edu.pl
         irp6otm_0:
           label: irp6otm_0
           ports_adresses: /dev/ttyMI7

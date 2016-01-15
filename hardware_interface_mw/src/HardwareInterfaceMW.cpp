@@ -227,7 +227,7 @@ bool HardwareInterfaceMW::configureHookInitHardware() {
 
     if (std::string(hostname) != hardware_hostname_) {
       std::cout << std::endl << RED << getName()
-                << " [error] ERROR wrong host_name for hardware_mode" << RESET
+                << " [error] ERROR wrong host_name for hardware_mode: " << std::string(hostname) << ", " << hardware_hostname_ << RESET
                 << std::endl << std::endl;
     }
 
