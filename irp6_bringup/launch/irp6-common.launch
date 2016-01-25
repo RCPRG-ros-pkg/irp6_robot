@@ -1,6 +1,6 @@
 <launch>
 
-  <param name="robot_description" command="$(find xacro)/xacro.py '$(find irp6_description)/robots/irp6pboth.urdf.xacro'" />
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find irp6_description)/robots/irp6pboth.urdf.xacro'" />
   
   <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher"/>
   

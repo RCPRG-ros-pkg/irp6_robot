@@ -5,7 +5,7 @@
        xmlns:xacro="http://ros.org/wiki/fixme"
        xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface">
 
-  <property name="M_PI" value="3.14159"/>
+  <xacro:property name="M_PI" value="3.14159"/>
 
   <link name="world">
     <!--<inertial>
