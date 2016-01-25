@@ -7,7 +7,7 @@ from irpos import *
 # POSTUMENT DEMOS
 
 def irp6p_multi_trajectory():
-	irpos = IRPOS("IRpOS", "Irp6p", 6)
+	irpos = IRPOS("IRpOS", "Irp6p", 6, "irp6p_manager")
 
 	motor_trajectory = [JointTrajectoryPoint([0.4, -1.5418065817051163, 0.0, 1.57, 1.57, -2.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(10.0)), JointTrajectoryPoint([10.0, 10.0, 0.0, 10.57, 10.57, -20.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], [], rospy.Duration(12.0))]
         irpos.move_along_motor_trajectory(motor_trajectory)
@@ -34,7 +34,7 @@ CartesianTrajectoryPoint(rospy.Duration(6.0), pm.toMsg(rot), Twist()),CartesianT
 	print "Irp6p 'multi_trajectory' test completed"
 
 def irp6p_multi_trajectory2():
-	irpos = IRPOS("IRpOS", "Irp6p", 6)
+	irpos = IRPOS("IRpOS", "Irp6p", 6, "irp6p_manager")
 
 	irpos.move_to_motor_position([0.4, -1.5418065817051163, 0.0, 1.57, 1.57, -2.0], 10.0)
 	irpos.move_to_motor_position([10.0, 10.0, 0.0, 10.57, 10.57, -20.0], 2.0)
@@ -89,7 +89,7 @@ def irp6otm_multi_trajectory():
 	print "Irp6otm 'multi_trajectory' test completed"
 
 def irp6otm_multi_trajectory2():
-	irpos = IRPOS("IRpOS", "Irp6ot", 7)
+	irpos = IRPOS("IRpOS", "Irp6ot", 7, "irp6ot_manager")
 
 	irpos.move_to_motor_position([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 10.0)
 	irpos.move_to_motor_position([50.0, 10.0, 10.0, 0.0, 10.57, 10.57, -20.0], 2.0)
@@ -100,7 +100,7 @@ def irp6otm_multi_trajectory2():
 	print "Irp6otm 'multi_trajectory2' test completed"
 
 def irp6otm_get_status():
-	irpos = IRPOS("IRpOS", "Irp6ot", 7)
+	irpos = IRPOS("IRpOS", "Irp6ot", 7, "irp6ot_manager")
 
 	print('[Joint position]')
 	print str(irpos.get_joint_position())
@@ -114,7 +114,7 @@ def irp6otm_get_status():
 	print "Irp6otm 'get_status' test completed"
 
 def irp6otm_synchro_position():
-	irpos = IRPOS("IRpOS", "Irp6ot", 7)
+	irpos = IRPOS("IRpOS", "Irp6ot", 7, "irp6ot_manager")
 
 	irpos.move_to_synchro_position(10.0)
 
@@ -123,7 +123,7 @@ def irp6otm_synchro_position():
 def test():
 	print 'START TEST'
 
-	irpos = IRPOS("IRpOS", "Irp6p", 6)
+	irpos = IRPOS("IRpOS", "Irp6p", 6, "irp6p_manager")
 
 	irpos.move_to_synchro_position(10.0)
 	
