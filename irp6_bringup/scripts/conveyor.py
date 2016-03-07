@@ -31,7 +31,6 @@
 # WSPOLPRACUJE z conv-hardware.launch
 
 
-
 import rospy
 import tf
 import actionlib
