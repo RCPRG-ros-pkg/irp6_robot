@@ -795,7 +795,7 @@ Irp6otmJntPub.loadService("rosparam");
 Irp6otmJntPub.rosparam.getAll();
 
 connect("Irp6otmM2J.JointPosition", "Irp6otmJntPub.JointPosition", ConnPolicy());
-connect("Irp6otmM2J.JointPosition", "Irp6otmJntPub.JointVelocity", ConnPolicy());
+connect("Irp6otmM2J.JointEstimatedVelocity", "Irp6otmJntPub.JointVelocity", ConnPolicy());
 connect("Irp6otmPortDoubleAggregate_hw_curr.OutputPort", "Irp6otmJntPub.JointEffort", ConnPolicy());
 
 stream("Irp6otmJntPub.joint_state", ros.comm.topic("irp6ot_arm/joint_states"));

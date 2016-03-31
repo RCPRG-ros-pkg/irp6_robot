@@ -736,7 +736,6 @@ Irp6pmJntPub.rosparam.getAll();
 
 connect("Irp6pmM2J.JointPosition", "Irp6pmJntPub.JointPosition", ConnPolicy());
 connect("Irp6pmM2J.JointEstimatedVelocity", "Irp6pmJntPub.JointVelocity", ConnPolicy());
-#connect("Irp6pmM2J.JointPosition", "Irp6pmJntPub.JointVelocity", ConnPolicy());
 connect("Irp6pmPortDoubleAggregate_hw_curr.OutputPort", "Irp6pmJntPub.JointEffort", ConnPolicy());
 
 stream("Irp6pmJntPub.joint_state", ros.comm.topic("/irp6p_arm/joint_states"));
