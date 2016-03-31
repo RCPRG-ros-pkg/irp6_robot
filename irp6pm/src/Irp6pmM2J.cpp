@@ -38,8 +38,11 @@ Irp6pmM2J::Irp6pmM2J(const std::string& name)
     : RTT::TaskContext(name, PreOperational) {
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("JointPosition", port_joint_position_);
+  this->ports()->addPort("JointEstimatedVelocity",
+                         port_joint_estimated_velocity_);
 
   this->addProperty("synchro_motor_position", synchro_motor_position_);
+  this->addProperty("step", step_);
 }
 
 Irp6pmM2J::~Irp6pmM2J() {
@@ -48,17 +51,22 @@ Irp6pmM2J::~Irp6pmM2J() {
 bool Irp6pmM2J::configureHook() {
   motor_position_.resize(NUMBER_OF_SERVOS);
   joint_position_.resize(NUMBER_OF_SERVOS);
+  previous_joint_position_.resize(NUMBER_OF_SERVOS);
+  joint_estimated_velocity_.resize(NUMBER_OF_SERVOS);
   return true;
 }
 
 void Irp6pmM2J::updateHook() {
   if (RTT::NewData == port_motor_position_.read(motor_position_)) {
-    mp2i(&motor_position_(0), &joint_position_(0));
+    mp2i(&motor_position_(0), &joint_position_(0),
+         &joint_estimated_velocity_(0));
     port_joint_position_.write(joint_position_);
+    port_joint_estimated_velocity_.write(joint_estimated_velocity_);
   }
 }
 
-void Irp6pmM2J::mp2i(const double* motors, double* joints) {
+void Irp6pmM2J::mp2i(const double* motors, double* joints,
+                     double* estimated_velocity) {
   // zmienne pomocnicze
   double c, d, l;
   double sinus, cosinus;
@@ -103,6 +111,12 @@ void Irp6pmM2J::mp2i(const double* motors, double* joints) {
 
   joints[2] -= joints[1] + M_PI_2;
   joints[3] -= joints[2] + joints[1] + M_PI_2;
+
+  for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
+    joint_estimated_velocity_[i] = (joints[i] - previous_joint_position_[i])
+        / step_;
+    previous_joint_position_[i] = joints[i];
+  }
 }
 
 ORO_CREATE_COMPONENT(Irp6pmM2J)

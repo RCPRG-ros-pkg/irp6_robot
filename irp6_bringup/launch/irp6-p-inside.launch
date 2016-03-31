@@ -103,6 +103,8 @@
         inertia: [0.00015, 0.00015, 0.00015, 0.00015, 0.000015, 0.000015, 0.0000005]
         viscous_friction: [0.02, 0.02, 0.02, 0.02, 0.0002, 0.0002, 0.000002]
         current_input: [true, true, true, true, false, false, true]
+      Irp6pmM2J:
+        step: 0.002
       Irp6pmJntPub:
         joint_names: [Irp6pmJoint1, Irp6pmJoint2, Irp6pmJoint3, Irp6pmJoint4, Irp6pmJoint5, Irp6pmJoint6]
       Irp6pmMotPub:

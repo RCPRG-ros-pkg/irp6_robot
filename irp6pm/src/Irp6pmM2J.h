@@ -45,14 +45,17 @@ class Irp6pmM2J : public RTT::TaskContext {
   bool configureHook();
   void updateHook();
  private:
-  void mp2i(const double* motors, double* joints);
+  void mp2i(const double* motors, double* joints, double* estimated_velocity);
   RTT::OutputPort<Eigen::VectorXd> port_joint_position_;
+  RTT::OutputPort<Eigen::VectorXd> port_joint_estimated_velocity_;
   RTT::InputPort<Eigen::VectorXd> port_motor_position_;
 
-  Eigen::VectorXd motor_position_, joint_position_;
+  Eigen::VectorXd motor_position_, joint_position_, previous_joint_position_,
+      joint_estimated_velocity_;
 
   // properties
   std::vector<double> synchro_motor_position_;
+  bool step_;
 };
 
 #endif  // IRP6PMM2J_H_
