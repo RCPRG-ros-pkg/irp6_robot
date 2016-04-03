@@ -57,11 +57,7 @@ bool HwModel::configureHook() {
   if ((number_of_servos_ != inertia_.size())
       || (number_of_servos_ != viscous_friction_.size())
       || (number_of_servos_ != current_input_.size())) {
-    std::cout
-        << std::endl
-        << RED
-        << "[error] hardware model "
-        << getName()
+    std::cout << std::endl << RED << "[error] hardware model " << getName()
         << "configuration failed: wrong properties vector length in launch file."
         << RESET << std::endl;
     return false;
@@ -76,7 +72,25 @@ bool HwModel::configureHook() {
 
   port_motor_position_.setDataSample(motor_position_);
 
+  port_motor_position_list_.resize(number_of_servos_);
+  port_desired_input_list_.resize(number_of_servos_);
+
   for (int i = 0; i < number_of_servos_; i++) {
+
+    char port_motor_position_name[32];
+    snprintf(port_motor_position_name, sizeof(port_motor_position_name),
+             "MotorPositionOutput_%d", i);
+    port_motor_position_list_[i] = new typeof(*port_motor_position_list_[i]);
+    this->ports()->addPort(port_motor_position_name,
+                           *port_motor_position_list_[i]);
+
+    char port_desired_input_name[32];
+    snprintf(port_desired_input_name, sizeof(port_desired_input_name),
+             "DesiredInput_%d", i);
+    port_desired_input_list_[i] = new typeof(*port_desired_input_list_[i]);
+    this->ports()->addPort(port_desired_input_name,
+                           *port_desired_input_list_[i]);
+
     motor_position_(i) = 0.0;
     motor_velocity_(i) = 0.0;
     motor_acceleration_(i) = 0.0;

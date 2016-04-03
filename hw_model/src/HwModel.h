@@ -49,6 +49,9 @@ class HwModel : public RTT::TaskContext {
   RTT::InputPort<Eigen::VectorXd> port_desired_input_;
   RTT::OutputPort<Eigen::VectorXd> port_motor_position_;
 
+  std::vector<RTT::InputPort<double>*> port_desired_input_list_;
+  std::vector<RTT::OutputPort<double>*> port_motor_position_list_;
+
   Eigen::VectorXd motor_position_, motor_velocity_, motor_acceleration_;
   Eigen::VectorXd desired_input_, desired_torque_, effective_torque_;
 
