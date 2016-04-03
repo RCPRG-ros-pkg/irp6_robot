@@ -84,8 +84,8 @@ class HardwareInterfaceMW : public RTT::TaskContext {
 
   std::vector<RTT::InputPort<double>*> port_motor_position_command_list_;
 
-  RTT::OutputPort<Eigen::VectorXd> port_desired_hw_model_output_;
-  RTT::InputPort<Eigen::VectorXd> port_hw_model_motor_position_;
+  std::vector<RTT::OutputPort<double>*> port_desired_hw_model_output_list_;
+  std::vector<RTT::InputPort<double>*>  port_hw_model_motor_position_list_;
 
   Eigen::VectorXd motor_position_, previous_motor_position_, motor_increment_, motor_current_,
       motor_position_command_;

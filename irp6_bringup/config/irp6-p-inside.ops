@@ -37,8 +37,6 @@ Irp6pDiag.configure()
 loadComponent("Irp6pHwModel","HwModel")
 Irp6pHwModel.loadService("rosparam")
 Irp6pHwModel.rosparam.getAll()
-connect("Irp6pHwModel.DesiredInput","Irp6pHardwareInterface.DesiredHwModelOutput", ConnPolicy())
-connect("Irp6pHwModel.MotorPosition","Irp6pHardwareInterface.HwModelMotorPosition", ConnPolicy())
 Irp6pHwModel.configure()
 
 
@@ -368,6 +366,8 @@ connect("IRp6pmRegulator_0.DesiredPosition","Irp6pHardwareInterface.DesiredPosit
 connect("IRp6pmRegulator_0.deltaInc_in","Irp6pHardwareInterface.MotorIncrement_irp6pm_0", ConnPolicy())
 connect("IRp6pmRegulator_0.SynchroStateIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6pmRegulator_0.EmergencyStopOut","Irp6pHardwareInterface.EmergencyStopIn", ConnPolicy())
+connect("Irp6pHwModel.DesiredInput_0","Irp6pHardwareInterface.DesiredHwModelOutput_irp6pm_0", ConnPolicy())
+connect("Irp6pHwModel.MotorPositionOutput_0","Irp6pHardwareInterface.HwModelMotorPosition_irp6pm_0", ConnPolicy())
 
 
 connect("IRp6pmPortDoubleSum_1.InputPort_0","IRp6pmRegulator_1.computedPwm_out", ConnPolicy())
@@ -376,6 +376,8 @@ connect("IRp6pmRegulator_1.DesiredPosition","Irp6pHardwareInterface.DesiredPosit
 connect("IRp6pmRegulator_1.deltaInc_in","Irp6pHardwareInterface.MotorIncrement_irp6pm_1", ConnPolicy())
 connect("IRp6pmRegulator_1.SynchroStateIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6pmRegulator_1.EmergencyStopOut","Irp6pHardwareInterface.EmergencyStopIn", ConnPolicy())
+connect("Irp6pHwModel.DesiredInput_1","Irp6pHardwareInterface.DesiredHwModelOutput_irp6pm_1", ConnPolicy())
+connect("Irp6pHwModel.MotorPositionOutput_1","Irp6pHardwareInterface.HwModelMotorPosition_irp6pm_1", ConnPolicy())
 
 
 connect("IRp6pmPortDoubleSum_2.InputPort_0","IRp6pmRegulator_2.computedPwm_out", ConnPolicy())
@@ -384,6 +386,8 @@ connect("IRp6pmRegulator_2.DesiredPosition","Irp6pHardwareInterface.DesiredPosit
 connect("IRp6pmRegulator_2.deltaInc_in","Irp6pHardwareInterface.MotorIncrement_irp6pm_2", ConnPolicy())
 connect("IRp6pmRegulator_2.SynchroStateIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6pmRegulator_2.EmergencyStopOut","Irp6pHardwareInterface.EmergencyStopIn", ConnPolicy())
+connect("Irp6pHwModel.DesiredInput_2","Irp6pHardwareInterface.DesiredHwModelOutput_irp6pm_2", ConnPolicy())
+connect("Irp6pHwModel.MotorPositionOutput_2","Irp6pHardwareInterface.HwModelMotorPosition_irp6pm_2", ConnPolicy())
 
 
 connect("IRp6pmPortDoubleSum_3.InputPort_0","IRp6pmRegulator_3.computedPwm_out", ConnPolicy())
@@ -392,6 +396,8 @@ connect("IRp6pmRegulator_3.DesiredPosition","Irp6pHardwareInterface.DesiredPosit
 connect("IRp6pmRegulator_3.deltaInc_in","Irp6pHardwareInterface.MotorIncrement_irp6pm_3", ConnPolicy())
 connect("IRp6pmRegulator_3.SynchroStateIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6pmRegulator_3.EmergencyStopOut","Irp6pHardwareInterface.EmergencyStopIn", ConnPolicy())
+connect("Irp6pHwModel.DesiredInput_3","Irp6pHardwareInterface.DesiredHwModelOutput_irp6pm_3", ConnPolicy())
+connect("Irp6pHwModel.MotorPositionOutput_3","Irp6pHardwareInterface.HwModelMotorPosition_irp6pm_3", ConnPolicy())
 
 
 connect("IRp6pmPortDoubleSum_4.InputPort_0","IRp6pmRegulator_4.computedPwm_out", ConnPolicy())
@@ -400,6 +406,8 @@ connect("IRp6pmRegulator_4.DesiredPosition","Irp6pHardwareInterface.DesiredPosit
 connect("IRp6pmRegulator_4.deltaInc_in","Irp6pHardwareInterface.MotorIncrement_irp6pm_4", ConnPolicy())
 connect("IRp6pmRegulator_4.SynchroStateIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6pmRegulator_4.EmergencyStopOut","Irp6pHardwareInterface.EmergencyStopIn", ConnPolicy())
+connect("Irp6pHwModel.DesiredInput_4","Irp6pHardwareInterface.DesiredHwModelOutput_irp6pm_4", ConnPolicy())
+connect("Irp6pHwModel.MotorPositionOutput_4","Irp6pHardwareInterface.HwModelMotorPosition_irp6pm_4", ConnPolicy())
 
 
 connect("IRp6pmPortDoubleSum_5.InputPort_0","IRp6pmRegulator_5.computedPwm_out", ConnPolicy())
@@ -408,6 +416,10 @@ connect("IRp6pmRegulator_5.DesiredPosition","Irp6pHardwareInterface.DesiredPosit
 connect("IRp6pmRegulator_5.deltaInc_in","Irp6pHardwareInterface.MotorIncrement_irp6pm_5", ConnPolicy())
 connect("IRp6pmRegulator_5.SynchroStateIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
 connect("IRp6pmRegulator_5.EmergencyStopOut","Irp6pHardwareInterface.EmergencyStopIn", ConnPolicy())
+connect("Irp6pHwModel.DesiredInput_5","Irp6pHardwareInterface.DesiredHwModelOutput_irp6pm_5", ConnPolicy())
+connect("Irp6pHwModel.MotorPositionOutput_5","Irp6pHardwareInterface.HwModelMotorPosition_irp6pm_5", ConnPolicy())
+
+
 
 connect("PortDoubleToFloat64_1.InputPort","Irp6pHardwareInterface.MotorIncrement_irp6pm_5", ConnPolicy())
 
@@ -418,6 +430,8 @@ connect("Irp6ptfgRegulator.DesiredPosition","Irp6pHardwareInterface.DesiredPosit
 connect("Irp6ptfgRegulator.deltaInc_in","Irp6pHardwareInterface.MotorIncrement_irp6ptfg", ConnPolicy())
 connect("Irp6ptfgRegulator.SynchroStateIn","Irp6pHardwareInterface.IsSynchronised", ConnPolicy())
 connect("Irp6ptfgRegulator.EmergencyStopOut","Irp6pHardwareInterface.EmergencyStopIn", ConnPolicy())
+connect("Irp6pHwModel.DesiredInput_6","Irp6pHardwareInterface.DesiredHwModelOutput_irp6ptfg", ConnPolicy())
+connect("Irp6pHwModel.MotorPositionOutput_6","Irp6pHardwareInterface.HwModelMotorPosition_irp6ptfg", ConnPolicy())
 
 
 

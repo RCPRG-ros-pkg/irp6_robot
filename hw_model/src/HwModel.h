@@ -31,6 +31,8 @@
 #ifndef HWMODEL_H_
 #define HWMODEL_H_
 
+
+#include <std_msgs/Bool.h>
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
 #include <Eigen/Dense>
@@ -43,14 +45,22 @@ class HwModel : public RTT::TaskContext {
   virtual ~HwModel();
 
   bool configureHook();
+  bool startHook();
   void updateHook();
 
  private:
-  RTT::InputPort<Eigen::VectorXd> port_desired_input_;
-  RTT::OutputPort<Eigen::VectorXd> port_motor_position_;
+  // RTT::InputPort<Eigen::VectorXd> port_desired_input_;
+  // RTT::OutputPort<Eigen::VectorXd> port_motor_position_;
 
   std::vector<RTT::InputPort<double>*> port_desired_input_list_;
   std::vector<RTT::OutputPort<double>*> port_motor_position_list_;
+
+  RTT::InputPort<bool> port_emergency_stop_;
+  RTT::InputPort<bool> port_generator_active_;
+  RTT::InputPort<std_msgs::Bool> port_do_synchro_;  // do przerobienia na wersje ze zwrotnym statusem synchronziacji
+  RTT::OutputPort<bool> port_is_synchronised_;
+  RTT::OutputPort<bool> port_is_hardware_panic_;
+  RTT::OutputPort<bool> port_is_hardware_busy_;
 
   Eigen::VectorXd motor_position_, motor_velocity_, motor_acceleration_;
   Eigen::VectorXd desired_input_, desired_torque_, effective_torque_;

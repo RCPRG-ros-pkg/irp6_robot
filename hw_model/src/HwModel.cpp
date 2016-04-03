@@ -38,8 +38,17 @@ HwModel::HwModel(const std::string& name)
     : RTT::TaskContext(name, PreOperational),
       number_of_servos_(0),
       m_factor_(0) {
-  this->ports()->addPort("MotorPosition", port_motor_position_);
-  this->ports()->addPort("DesiredInput", port_desired_input_);
+  // this->ports()->addPort("MotorPosition", port_motor_position_);
+  // this->ports()->addPort("DesiredInput", port_desired_input_);
+
+  // ports addition
+
+  this->ports()->addPort("EmergencyStopIn", port_emergency_stop_);
+  this->ports()->addPort("GeneratorActiveIn", port_generator_active_);
+  this->ports()->addPort("DoSynchroIn", port_do_synchro_);
+  this->ports()->addPort("IsSynchronised", port_is_synchronised_);
+  this->ports()->addPort("IsHardwarePanic", port_is_hardware_panic_);
+  this->ports()->addPort("IsHardwareBusy", port_is_hardware_busy_);
 
   this->addProperty("iteration_per_step", iteration_per_step_);
   this->addProperty("step_per_second", step_per_second_);
@@ -70,7 +79,7 @@ bool HwModel::configureHook() {
   desired_torque_.resize(number_of_servos_);
   effective_torque_.resize(number_of_servos_);
 
-  port_motor_position_.setDataSample(motor_position_);
+  // port_motor_position_.setDataSample(motor_position_);
 
   port_motor_position_list_.resize(number_of_servos_);
   port_desired_input_list_.resize(number_of_servos_);
@@ -104,31 +113,49 @@ bool HwModel::configureHook() {
   return true;
 }
 
+
+bool HwModel::startHook() {
+  port_is_synchronised_.write(true);
+  return true;
+}
+
+
 void HwModel::updateHook() {
-  if (RTT::NewData == port_desired_input_.read(desired_input_)) {
+  /*
+  int rwh_nsec_;
+  struct timespec delay;
+  delay.tv_nsec = rwh_nsec_ + 200000;
+  delay.tv_sec = 0;
+
+  nanosleep(&delay, NULL);
+*/
+//  if (RTT::NewData == port_desired_input_.read(desired_input_)) {
 //    std::cout << "HwModel updateHook" << desired_input_(1) << std::endl;
 // pytanie czy to nie przychodzi w inkrementach
-    for (int servo = 0; servo < number_of_servos_; servo++) {
-      // PWM input do implementacji
-      /*
-       if (!current_input_[servo]) {  // pwm input
-       motor_position_(servo) = desired_input_(servo);
-       } else {  // current input
-       */
+  for (int servo = 0; servo < number_of_servos_; servo++) {
 
-      // prad jest w miliamperach
-      desired_torque_(servo) = desired_input_(servo) * torque_constant_[servo];
+    port_desired_input_list_[servo]->read(desired_input_[servo]);
 
-      for (int iteration = 0; iteration < iteration_per_step_; iteration++) {
-        effective_torque_(servo) = desired_torque_(servo)
-            - motor_velocity_(servo) * viscous_friction_[servo];
-        motor_acceleration_(servo) = effective_torque_(servo) / inertia_[servo];
-        motor_velocity_(servo) += motor_acceleration_(servo) / m_factor_;
-        motor_position_(servo) += motor_velocity_(servo) / m_factor_;
-      }
-      //}
+    // PWM input do implementacji
+    /*
+     if (!current_input_[servo]) {  // pwm input
+     motor_position_(servo) = desired_input_(servo);
+     } else {  // current input
+     */
+
+    // prad jest w miliamperach
+    desired_torque_(servo) = desired_input_(servo) * torque_constant_[servo];
+
+    for (int iteration = 0; iteration < iteration_per_step_; iteration++) {
+      effective_torque_(servo) = desired_torque_(servo)
+          - motor_velocity_(servo) * viscous_friction_[servo];
+      motor_acceleration_(servo) = effective_torque_(servo) / inertia_[servo];
+      motor_velocity_(servo) += motor_acceleration_(servo) / m_factor_;
+      motor_position_(servo) += motor_velocity_(servo) / m_factor_;
     }
-    port_motor_position_.write(motor_position_);
+    //}
+    //   }
+    port_motor_position_list_[servo]->write(motor_position_[servo]);
   }
 }
 
