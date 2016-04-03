@@ -35,6 +35,7 @@
         inertia: [0.00015]
         viscous_friction: [0.02]
         current_input: [true]
+        enc_res: [4000.0]
       ConveyorSplineTrajectoryGeneratorJoint:
         number_of_joints: 1
       ConveyorSplineTrajectoryActionJoint:

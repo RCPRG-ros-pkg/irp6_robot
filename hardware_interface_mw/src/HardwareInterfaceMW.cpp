@@ -105,7 +105,7 @@ void HardwareInterfaceMW::configureHookInitVariables() {
   desired_position_out_list_.resize(number_of_drives_);
   port_motor_position_command_list_.resize(number_of_drives_);
   port_motor_position_list_.resize(number_of_drives_);
-  port_motor_increment_list_.resize(number_of_drives_);
+  // port_motor_increment_list_.resize(number_of_drives_);
   port_motor_current_list_.resize(number_of_drives_);
 
   ports_adresses_.resize(number_of_drives_);
@@ -179,15 +179,15 @@ void HardwareInterfaceMW::configureHookInitVariables() {
       port_motor_position_list_[i] = new typeof(*port_motor_position_list_[i]);
       this->ports()->addPort(MotorPosition_port_name,
                              *port_motor_position_list_[i]);
-
-      char MotorIncrement_port_name[32];
-      snprintf(MotorIncrement_port_name, sizeof(MotorIncrement_port_name),
-               "MotorIncrement_%s", hi_port_param_[j].label.c_str());
-      port_motor_increment_list_[i] =
-          new typeof(*port_motor_increment_list_[i]);
-      this->ports()->addPort(MotorIncrement_port_name,
-                             *port_motor_increment_list_[i]);
-
+      /*
+       char MotorIncrement_port_name[32];
+       snprintf(MotorIncrement_port_name, sizeof(MotorIncrement_port_name),
+       "MotorIncrement_%s", hi_port_param_[j].label.c_str());
+       port_motor_increment_list_[i] =
+       new typeof(*port_motor_increment_list_[i]);
+       this->ports()->addPort(MotorIncrement_port_name,
+       *port_motor_increment_list_[i]);
+       */
       char MotorCurrent_port_name[32];
       snprintf(MotorCurrent_port_name, sizeof(MotorCurrent_port_name),
                "MotorCurrent_%s", hi_port_param_[j].label.c_str());
@@ -382,11 +382,15 @@ bool HardwareInterfaceMW::startHook() {
   }
 
   for (int i = 0; i < number_of_drives_; i++) {
-    port_motor_position_list_[i]->write(
-        static_cast<double>(motor_position_[i]));
-    port_motor_increment_list_[i]->write(
-        static_cast<double>(motor_increment_[i]));
-    port_motor_current_list_[i]->write(static_cast<double>(motor_current_[i]));
+    /*
+     port_motor_position_list_[i]->write(
+     static_cast<double>(motor_position_[i]));
+
+     port_motor_increment_list_[i]->write(
+     static_cast<double>(motor_increment_[i]));
+
+     port_motor_current_list_[i]->write(static_cast<double>(motor_current_[i]));
+     */
     desired_position_[i] = motor_position_(i);
   }
   return true;
@@ -431,7 +435,7 @@ void HardwareInterfaceMW::updateHookInit() {
     for (int i = 0; i < number_of_drives_; i++) {
       previous_motor_position_(i) = motor_position_(i);
       port_hw_model_motor_position_list_[i]->read(motor_position_[i]);
-            port_desired_hw_model_output_list_[i]->write(pwm_or_current_[i]);
+      port_desired_hw_model_output_list_[i]->write(pwm_or_current_[i]);
     }
 
     test_mode_sleep();
@@ -460,8 +464,12 @@ void HardwareInterfaceMW::updateHookInit() {
       motor_increment_[i] = (motor_position_(i) - previous_motor_position_(i));
     }
     port_motor_current_list_[i]->write(static_cast<double>(motor_current_[i]));
-    port_motor_increment_list_[i]->write(
-        static_cast<double>(motor_increment_[i]));
+    port_motor_position_list_[i]->write(
+        static_cast<double>(motor_position_[i]));
+    /*  port_motor_increment_list_[i]->write(
+     static_cast<double>(motor_increment_[i]));
+     */
+
   }
 }
 
@@ -484,8 +492,6 @@ void HardwareInterfaceMW::updateHookStateMachine() {
 
       for (int i = 0; i < number_of_drives_; i++) {
         motor_position_command_(i) = motor_position_(i);
-        port_motor_position_list_[i]->write(
-            static_cast<double>(motor_position_[i]));
       }
 
       if ((servo_start_iter_--) <= 0) {
@@ -509,9 +515,10 @@ void HardwareInterfaceMW::updateHookStateMachine() {
             motor_position_command_[i]) == RTT::NewData) {
           desired_position_[i] = motor_position_command_(i);
         }
-
-        port_motor_position_list_[i]->write(
-            static_cast<double>(motor_position_[i]));
+        /*
+         port_motor_position_list_[i]->write(
+         static_cast<double>(motor_position_[i]));
+         */
       }
     }
       break;

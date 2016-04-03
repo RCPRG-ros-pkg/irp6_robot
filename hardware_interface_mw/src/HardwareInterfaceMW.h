@@ -72,7 +72,7 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   std::vector<RTT::OutputPort<double>*> desired_position_out_list_;
 
   std::vector<RTT::OutputPort<double>*> port_motor_position_list_;
-  std::vector<RTT::OutputPort<double>*> port_motor_increment_list_;
+ // std::vector<RTT::OutputPort<double>*> port_motor_increment_list_;
   std::vector<RTT::OutputPort<double>*> port_motor_current_list_;
 
   RTT::InputPort<bool> port_emergency_stop_;

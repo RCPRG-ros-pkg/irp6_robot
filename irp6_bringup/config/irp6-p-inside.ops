@@ -438,7 +438,7 @@ connect("Irp6pHwModel.MotorPositionOutput_5","Irp6pHardwareInterface.HwModelMoto
 
 
 
-connect("PortDoubleToFloat64_1.InputPort","Irp6pHardwareInterface.MotorIncrement_irp6pm_5", ConnPolicy())
+// connect("PortDoubleToFloat64_1.InputPort","Irp6pHardwareInterface.MotorIncrement_irp6pm_5", ConnPolicy())
 
 
 connect("Irp6ptfgPortDoubleSum.InputPort_0","Irp6ptfgRegulator.computedPwm_out", ConnPolicy())
