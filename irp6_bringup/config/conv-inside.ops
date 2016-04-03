@@ -34,8 +34,6 @@ ConvDiag.configure()
 loadComponent("ConvHwModel","HwModel")
 ConvHwModel.loadService("rosparam")
 ConvHwModel.rosparam.getAll()
-connect("ConvHwModel.DesiredInput","ConvHardwareInterface.DesiredHwModelOutput", ConnPolicy())
-connect("ConvHwModel.MotorPosition","ConvHardwareInterface.HwModelMotorPosition", ConnPolicy())
 ConvHwModel.configure()
 
 
@@ -123,6 +121,9 @@ connect("ConveyorRegulator.DesiredPosition","ConvHardwareInterface.DesiredPositi
 connect("ConveyorRegulator.deltaInc_in","ConvHardwareInterface.MotorIncrement_conveyor", ConnPolicy())
 connect("ConveyorRegulator.SynchroStateIn","ConvHardwareInterface.IsSynchronised", ConnPolicy())
 connect("ConveyorRegulator.EmergencyStopOut","ConvHardwareInterface.EmergencyStopIn", ConnPolicy())
+connect("ConvHwModel.DesiredInput_0","ConvHardwareInterface.DesiredHwModelOutput_conveyor", ConnPolicy())
+connect("ConvHwModel.MotorPositionOutput_0","ConvHardwareInterface.HwModelMotorPosition_conveyor", ConnPolicy())
+
 
 
 
@@ -131,6 +132,8 @@ connect("ConveyorJ2M.MotorPosition", "ConveyorLimitDetector.InputPort", ConnPoli
 connect("ConveyorPortDoubleSplit_hw_cp.OutputPort_0","ConvHardwareInterface.MotorPositionCommand_conveyor", ConnPolicy())
 connect("ConveyorPortDoubleSplit_hw_cp.OutputPort_0","ConveyorRegulator.DesiredPosition", ConnPolicy())
 connect("ConveyorPortDoubleAggregate_hw_p.InputPort_0","ConvHardwareInterface.MotorPosition_conveyor", ConnPolicy())
+
+
 
 
 
