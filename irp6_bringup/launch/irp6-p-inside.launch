@@ -103,6 +103,7 @@
         inertia: [0.00015, 0.00015, 0.00015, 0.00015, 0.000015, 0.000015, 0.0000005]
         viscous_friction: [0.02, 0.02, 0.02, 0.02, 0.0002, 0.0002, 0.000002]
         current_input: [true, true, true, true, false, false, true]
+        enc_res: [4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 2000.0, 128.0]
       Irp6pmM2J:
         step: 0.002
       Irp6pmJntPub:
@@ -129,6 +130,7 @@
         lower_limits: [-470.0, -110.0, -80.0, -70.0, -80.0, -1000.0]
         upper_limits: [450.0, 100.0, 100.0, 380.0, 490.0, 3000.0]
         synchro_motor_position: [-15.9, -5.0, -8.527, 151.31, 432.25, 791.0]
+        enc_res: [4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 2000.0]
       Irp6pmSplineTrajectoryGeneratorMotor:
         number_of_joints: 6
       Irp6pmSplineTrajectoryActionMotor:
@@ -143,6 +145,7 @@
       Irp6ptfgMotorParameters:
         lower_limits: [-1800.0]
         upper_limits: [1200.0]
+        enc_res: [128.0]
       Irp6ptfgSplineTrajectoryActionMotor:
         joint_names: [joint1]
       IRp6ptfgLimitDetector:

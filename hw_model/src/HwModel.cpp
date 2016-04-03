@@ -56,6 +56,7 @@ HwModel::HwModel(const std::string& name)
   this->addProperty("inertia", inertia_);
   this->addProperty("viscous_friction", viscous_friction_);
   this->addProperty("current_input", current_input_);
+  this->addProperty("enc_res", enc_res_);
 }
 
 HwModel::~HwModel() {
@@ -78,6 +79,7 @@ bool HwModel::configureHook() {
   desired_input_.resize(number_of_servos_);
   desired_torque_.resize(number_of_servos_);
   effective_torque_.resize(number_of_servos_);
+  inc_motor_position_.resize(number_of_servos_);
 
   // port_motor_position_.setDataSample(motor_position_);
 
@@ -153,9 +155,11 @@ void HwModel::updateHook() {
       motor_velocity_(servo) += motor_acceleration_(servo) / m_factor_;
       motor_position_(servo) += motor_velocity_(servo) / m_factor_;
     }
+    inc_motor_position_[servo] = motor_position_[servo] * enc_res_[servo] / (2.0 * M_PI);
     //}
     //   }
-    port_motor_position_list_[servo]->write(motor_position_[servo]);
+    port_motor_position_list_[servo]->write(inc_motor_position_[servo]);
+
   }
 }
 

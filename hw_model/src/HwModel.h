@@ -62,7 +62,7 @@ class HwModel : public RTT::TaskContext {
   RTT::OutputPort<bool> port_is_hardware_panic_;
   RTT::OutputPort<bool> port_is_hardware_busy_;
 
-  Eigen::VectorXd motor_position_, motor_velocity_, motor_acceleration_;
+  Eigen::VectorXd motor_position_, motor_velocity_, motor_acceleration_, inc_motor_position_;
   Eigen::VectorXd desired_input_, desired_torque_, effective_torque_;
 
   int number_of_servos_;
@@ -74,6 +74,7 @@ class HwModel : public RTT::TaskContext {
   std::vector<double> torque_constant_;
   std::vector<double> inertia_;
   std::vector<double> viscous_friction_;
+  std::vector<double> enc_res_;
   std::vector<bool> current_input_;
 };
 

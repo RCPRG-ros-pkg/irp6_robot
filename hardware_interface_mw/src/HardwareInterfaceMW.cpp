@@ -330,8 +330,7 @@ bool HardwareInterfaceMW::startHook() {
       hi_->write_read_hardware(rwh_nsec_, 0);
       servo_start_iter_ = 200;
       for (int i = 0; i < number_of_drives_; i++) {
-        motor_position_(i) = static_cast<double>(hi_->get_position(i))
-            * ((2.0 * M_PI) / enc_res_[i]);
+        motor_position_(i) = static_cast<double>(hi_->get_position(i));
       }
       if (!hi_->robot_synchronized()) {
         port_is_synchronised_.write(false);
@@ -426,14 +425,13 @@ void HardwareInterfaceMW::updateHookInit() {
       port_is_hardware_panic_.write(false);
     }
     for (int i = 0; i < number_of_drives_; i++) {
-      motor_position_(i) = static_cast<double>(hi_->get_position(i))
-          * ((2.0 * M_PI) / enc_res_[i]);
+      motor_position_(i) = static_cast<double>(hi_->get_position(i));
     }
   } else {  // test_mode==true
     for (int i = 0; i < number_of_drives_; i++) {
       previous_motor_position_(i) = motor_position_(i);
       port_hw_model_motor_position_list_[i]->read(motor_position_[i]);
-      port_desired_hw_model_output_list_[i]->write(pwm_or_current_[i]);
+            port_desired_hw_model_output_list_[i]->write(pwm_or_current_[i]);
     }
 
     test_mode_sleep();
@@ -459,8 +457,7 @@ void HardwareInterfaceMW::updateHookInit() {
       motor_increment_[i] = hi_->get_increment(i);
     } else {  // test_mode == true
       motor_current_(i) = static_cast<double>(pwm_or_current_(i));
-      motor_increment_[i] = (motor_position_(i) - previous_motor_position_(i))
-          * enc_res_[i] / (2.0 * M_PI);
+      motor_increment_[i] = (motor_position_(i) - previous_motor_position_(i));
     }
     port_motor_current_list_[i]->write(static_cast<double>(motor_current_[i]));
     port_motor_increment_list_[i]->write(

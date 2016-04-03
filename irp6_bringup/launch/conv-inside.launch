@@ -44,6 +44,7 @@
       ConveyorMotorParameters:
         lower_limits: [-100000.0]
         upper_limits: [100000.0]
+        enc_res: [4000.0]
       ConveyorSplineTrajectoryGeneratorMotor:
         number_of_joints: 1
       ConveyorSplineTrajectoryActionMotor:

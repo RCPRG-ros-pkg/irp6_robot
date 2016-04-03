@@ -46,7 +46,7 @@ const int MAX_PWM = 190;
 IRp6Regulator::IRp6Regulator(const std::string& name)
     : TaskContext(name),
       desired_position_("DesiredPosition"),
-      deltaInc_in("deltaInc_in"),
+      measured_position_("MeasuredPosition"),
       computedPwm_out("computedPwm_out"),
       synchro_state_in_("SynchroStateIn"),
       emergency_stop_out_("EmergencyStopOut"),
@@ -60,6 +60,8 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
       desired_position_increment_(0.0),
       position_increment_new(0.0),
       position_increment_old(0.0),
+      measured_position_old_(0.0),
+      measured_position_new_(0.0),
       set_value_new(0.0),
       set_value_old(0.0),
       set_value_very_old(0.0),
@@ -76,7 +78,9 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
 
   this->addEventPort(desired_position_).doc(
       "Receiving a value of position step");
-  this->addPort(deltaInc_in).doc("Receiving a value of measured increment.");
+
+  this->addPort(measured_position_).doc("Receiving a measured position");
+
   this->addPort(computedPwm_out).doc(
       "Sending value of calculated pwm or current.");
   this->addPort(synchro_state_in_).doc("Synchro State from HardwareInterface");
@@ -110,8 +114,11 @@ bool IRp6Regulator::configureHook() {
 }
 
 void IRp6Regulator::updateHook() {
-  if (RTT::NewData == deltaInc_in.read(deltaIncData)) {
+  if (RTT::NewData == measured_position_.read(measured_position_new_)) {
     update_hook_iteration_number_++;
+    deltaIncData = (measured_position_new_ - measured_position_old_);
+    measured_position_old_ = measured_position_new_;
+
     if (update_hook_iteration_number_ <= 1) {
       deltaIncData = 0.0;
     }
@@ -127,6 +134,7 @@ void IRp6Regulator::updateHook() {
       if (synchro_state_new_ != synchro_state_old_) {
         desired_position_old_ = desired_position_new_;
         synchro_state_old_ = synchro_state_new_;
+        measured_position_old_ = measured_position_new_;
       }
     }
 
@@ -136,7 +144,7 @@ void IRp6Regulator::updateHook() {
 
     if (fabs(desired_position_increment_) > max_desired_increment_) {
       std::cout << "very high pos_inc_: " << getName() << " pos_inc: "
-                << desired_position_increment_ << std::endl;
+          << desired_position_increment_ << std::endl;
 
       emergency_stop_out_.write(true);
     }
