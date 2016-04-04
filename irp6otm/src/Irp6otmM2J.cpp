@@ -130,7 +130,6 @@ void Irp6otmM2J::mp2i(const double* motors, double* joints, double* estimated_ve
         / step_;
     previous_joint_position_[i] = joints[i];
   }
-
 }
 
 ORO_CREATE_COMPONENT(Irp6otmM2J)

@@ -67,7 +67,11 @@ bool HwModel::configureHook() {
   if ((number_of_servos_ != inertia_.size())
       || (number_of_servos_ != viscous_friction_.size())
       || (number_of_servos_ != current_input_.size())) {
-    std::cout << std::endl << RED << "[error] hardware model " << getName()
+    std::cout
+        << std::endl
+        << RED
+        << "[error] hardware model "
+        << getName()
         << "configuration failed: wrong properties vector length in launch file."
         << RESET << std::endl;
     return false;
@@ -87,7 +91,6 @@ bool HwModel::configureHook() {
   port_desired_input_list_.resize(number_of_servos_);
 
   for (int i = 0; i < number_of_servos_; i++) {
-
     char port_motor_position_name[32];
     snprintf(port_motor_position_name, sizeof(port_motor_position_name),
              "MotorPositionOutput_%d", i);
@@ -115,27 +118,24 @@ bool HwModel::configureHook() {
   return true;
 }
 
-
 bool HwModel::startHook() {
   port_is_synchronised_.write(true);
   return true;
 }
 
-
 void HwModel::updateHook() {
   /*
-  int rwh_nsec_;
-  struct timespec delay;
-  delay.tv_nsec = rwh_nsec_ + 200000;
-  delay.tv_sec = 0;
+   int rwh_nsec_;
+   struct timespec delay;
+   delay.tv_nsec = rwh_nsec_ + 200000;
+   delay.tv_sec = 0;
 
-  nanosleep(&delay, NULL);
-*/
+   nanosleep(&delay, NULL);
+   */
 //  if (RTT::NewData == port_desired_input_.read(desired_input_)) {
 //    std::cout << "HwModel updateHook" << desired_input_(1) << std::endl;
 // pytanie czy to nie przychodzi w inkrementach
   for (int servo = 0; servo < number_of_servos_; servo++) {
-
     port_desired_input_list_[servo]->read(desired_input_[servo]);
 
     // PWM input do implementacji
@@ -155,11 +155,11 @@ void HwModel::updateHook() {
       motor_velocity_(servo) += motor_acceleration_(servo) / m_factor_;
       motor_position_(servo) += motor_velocity_(servo) / m_factor_;
     }
-    inc_motor_position_[servo] = motor_position_[servo] * enc_res_[servo] / (2.0 * M_PI);
-    //}
+    inc_motor_position_[servo] = motor_position_[servo] * enc_res_[servo]
+        / (2.0 * M_PI);
+    // }
     //   }
     port_motor_position_list_[servo]->write(inc_motor_position_[servo]);
-
   }
 }
 
