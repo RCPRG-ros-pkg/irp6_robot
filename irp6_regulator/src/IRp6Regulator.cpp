@@ -49,6 +49,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
       measured_position_("MeasuredPosition"),
       computedPwm_out("computedPwm_out"),
       synchro_state_in_("SynchroStateIn"),
+      reset_signal_in_("ResetSignalIn"),
       emergency_stop_out_("EmergencyStopOut"),
       a_(0.0),
       b0_(0.0),
@@ -84,6 +85,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addPort(computedPwm_out).doc(
       "Sending value of calculated pwm or current.");
   this->addPort(synchro_state_in_).doc("Synchro State from HardwareInterface");
+  this->addPort(reset_signal_in_).doc("Reset signal from HardwareInterface");
   this->addPort(emergency_stop_out_).doc("Emergency Stop Out");
 
   this->addProperty("A", A_).doc("");
@@ -134,8 +136,13 @@ void IRp6Regulator::updateHook() {
       if (synchro_state_new_ != synchro_state_old_) {
         desired_position_old_ = desired_position_new_;
         synchro_state_old_ = synchro_state_new_;
-        measured_position_old_ = measured_position_new_;
       }
+    }
+
+    bool tmp_signal;
+
+    if (RTT::NewData == reset_signal_in_.read(tmp_signal)) {
+      deltaIncData = 0.0;
     }
 
     desired_position_increment_ =
@@ -144,7 +151,7 @@ void IRp6Regulator::updateHook() {
 
     if (fabs(desired_position_increment_) > max_desired_increment_) {
       std::cout << "very high pos_inc_: " << getName() << " pos_inc: "
-          << desired_position_increment_ << std::endl;
+                << desired_position_increment_ << std::endl;
 
       emergency_stop_out_.write(true);
     }
@@ -156,8 +163,8 @@ void IRp6Regulator::updateHook() {
     computedPwm_out.write(output);
     if (debug_) {
       std::cout << std::dec << GREEN << "output: " << output << " pos_inc: "
-          << desired_position_increment_ << " inp_inc: " << deltaIncData
-          << RESET << std::endl;
+                << desired_position_increment_ << " inp_inc: " << deltaIncData
+                << RESET << std::endl;
     }
   }
 }
