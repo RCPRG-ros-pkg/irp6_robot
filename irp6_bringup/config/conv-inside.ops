@@ -126,6 +126,7 @@ connect("ConveyorPortDoubleSum.InputPort_0","ConveyorRegulator.computedPwm_out",
 connect("ConvHardwareInterface.computedReg_in_conveyor","ConveyorPortDoubleSum.OutputPort", ConnPolicy())
 connect("ConveyorRegulator.DesiredPosition","ConvHardwareInterface.DesiredPosition_out_conveyor", ConnPolicy())
 connect("ConveyorRegulator.MeasuredPosition","ConvHardwareInterface.MotorPosition_conveyor", ConnPolicy())
+connect("ConveyorRegulator.ResetSignalIn","ConvHardwareInterface.RegulatorResetOutput_conveyor", ConnPolicy())
 connect("ConveyorRegulator.SynchroStateIn","ConvHardwareInterface.IsSynchronised", ConnPolicy())
 connect("ConveyorRegulator.EmergencyStopOut","ConvHardwareInterface.EmergencyStopIn", ConnPolicy())
 connect("ConvHwModel.DesiredInput_0","ConvHardwareInterface.DesiredHwModelOutput_conveyor", ConnPolicy())
