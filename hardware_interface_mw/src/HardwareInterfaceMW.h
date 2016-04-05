@@ -72,7 +72,6 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   std::vector<RTT::OutputPort<double>*> desired_position_out_list_;
 
   std::vector<RTT::OutputPort<double>*> port_motor_position_list_;
-  // std::vector<RTT::OutputPort<double>*> port_motor_increment_list_;
   std::vector<RTT::OutputPort<double>*> port_motor_current_list_;
 
   RTT::InputPort<bool> port_emergency_stop_;
@@ -82,11 +81,9 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   RTT::OutputPort<bool> port_is_hardware_panic_;
   RTT::OutputPort<bool> port_is_hardware_busy_;
 
-  std::vector<RTT::InputPort<double>*> port_motor_position_command_list_;
   std::vector<RTT::OutputPort<bool>*>  port_regulator_reset_list_;
 
-  std::vector<RTT::OutputPort<double>*> port_desired_hw_model_output_list_;
-  std::vector<RTT::InputPort<double>*>  port_hw_model_motor_position_list_;
+
 
   Eigen::VectorXd motor_position_, previous_motor_position_, motor_increment_, motor_current_,
       motor_position_command_;
@@ -107,7 +104,7 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   // Properties
   std::vector<std::string> active_motors_;
   bool auto_synchronize_;
-  bool test_mode_;
+  //  bool test_mode_;
   int timeouts_to_print_;
   int tx_prefix_len_;
   int rwh_nsec_;
@@ -131,7 +128,7 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   hi_moxa::HI_moxa *hi_;
 
   uint16_t convert_to_115(float input);
-  void test_mode_sleep();
+
   void configureHookInitVariables();
   bool configureHookInitHardware();
   void updateHookStateMachine();

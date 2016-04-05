@@ -19,12 +19,6 @@
 
   <group ns="IRP6_CONV_OROCOS_ROBOT">
     <rosparam>
-      Irp6pHardwareInterface:
-        test_mode: true
-      Irp6otHardwareInterface:
-        test_mode: true
-      ConvHardwareInterface:
-        test_mode: true
       ATI6284:
         test_mode: true
       ATI3084:

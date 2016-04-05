@@ -20,13 +20,10 @@
   <group ns="IRP6_CONV_OROCOS_ROBOT">
     <rosparam>
       Irp6pHardwareInterface:
-        test_mode: false
         timeouts_to_print: 3
       Irp6otHardwareInterface:
-        test_mode: false
         timeouts_to_print: 3
       ConvHardwareInterface:
-        test_mode: false
         timeouts_to_print: 3
       ATI6284:
         test_mode: false

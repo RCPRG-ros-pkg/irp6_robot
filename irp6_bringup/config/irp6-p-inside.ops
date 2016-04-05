@@ -545,13 +545,13 @@ connect("Irp6pmPortDoubleAggregate_hw_curr.InputPort_5",hi_component()+".MotorCu
 
 
 
-connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_0",hi_component()+".MotorPositionCommand_irp6pm_0", ConnPolicy())
-connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_1",hi_component()+".MotorPositionCommand_irp6pm_1", ConnPolicy())
-connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_2",hi_component()+".MotorPositionCommand_irp6pm_2", ConnPolicy())
-connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_3",hi_component()+".MotorPositionCommand_irp6pm_3", ConnPolicy())
-connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_4",hi_component()+".MotorPositionCommand_irp6pm_4", ConnPolicy())
-connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_5",hi_component()+".MotorPositionCommand_irp6pm_5", ConnPolicy())
-connect("Irp6ptfgPortDoubleSplit_hw_cp.OutputPort_0",hi_component()+".MotorPositionCommand_irp6ptfg", ConnPolicy())
+// connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_0",hi_component()+".MotorPositionCommand_irp6pm_0", ConnPolicy())
+// connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_1",hi_component()+".MotorPositionCommand_irp6pm_1", ConnPolicy())
+// connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_2",hi_component()+".MotorPositionCommand_irp6pm_2", ConnPolicy())
+// connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_3",hi_component()+".MotorPositionCommand_irp6pm_3", ConnPolicy())
+// connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_4",hi_component()+".MotorPositionCommand_irp6pm_4", ConnPolicy())
+// connect("Irp6pmPortDoubleSplit_hw_cp.OutputPort_5",hi_component()+".MotorPositionCommand_irp6pm_5", ConnPolicy())
+// connect("Irp6ptfgPortDoubleSplit_hw_cp.OutputPort_0",hi_component()+".MotorPositionCommand_irp6ptfg", ConnPolicy())
 
 
 

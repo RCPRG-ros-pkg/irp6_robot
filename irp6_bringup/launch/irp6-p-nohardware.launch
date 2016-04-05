@@ -12,8 +12,6 @@
 
   <group ns="IRP6_P_OROCOS_ROBOT">
     <rosparam>
-      Irp6pHardwareInterface:
-        test_mode: true
       ATI6284:
         test_mode: true
     </rosparam>

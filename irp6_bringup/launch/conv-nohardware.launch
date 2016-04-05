@@ -12,8 +12,6 @@
 
   <group ns="CONV_OROCOS_ROBOT">
     <rosparam>
-      ConvHardwareInterface:
-        test_mode: true
     </rosparam>
   </group>
 
