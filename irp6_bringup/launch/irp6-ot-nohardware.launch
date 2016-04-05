@@ -2,7 +2,7 @@
 
   <include file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="IRP6_OT_OROCOS_ROBOT"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find irp6_bringup)/config/irp6-ot.ops"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find irp6_bringup)/config/irp6-ot-nohardware.ops"/>
     <arg name="LOG_LEVEL" value="Warning"/>
     <arg name="DEBUG" value="false"/>
   </include>

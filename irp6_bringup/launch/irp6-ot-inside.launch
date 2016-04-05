@@ -115,6 +115,7 @@
         viscous_friction: [0.0002, 0.02, 0.02, 0.02, 0.02, 0.0002, 0.0002, 0.000002]
         current_input: [false, true, true, true, true, false, false, true]
         enc_res: [4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 2000.0, 128.0]
+        port_labels: [irp6otm_0, irp6otm_1, irp6otm_2, irp6otm_3, irp6otm_4, irp6otm_5, irp6otm_6, irp6ottfg]
       Irp6otmM2J:
         step: 0.002
       Irp6otmJntPub:

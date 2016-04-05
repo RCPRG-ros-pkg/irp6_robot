@@ -104,7 +104,6 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   // Properties
   std::vector<std::string> active_motors_;
   bool auto_synchronize_;
-  //  bool test_mode_;
   int timeouts_to_print_;
   int tx_prefix_len_;
   int rwh_nsec_;

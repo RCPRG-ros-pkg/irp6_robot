@@ -1,0 +1,22 @@
+import("rtt_ros")
+ros.import("rtt_rospack")
+
+runScript( ros.find("irp6_bringup") + "/config/common-imports.ops")
+
+ros.import("conveyor_kinematic")
+
+
+bool ConvSimulation() { return true; }
+
+string Conv_hi_component() { return string("ConvHwModel"); }
+
+
+loadComponent("ConvHwModel","HwModel")
+ConvHwModel.loadService("rosparam")
+ConvHwModel.rosparam.getAll()
+ConvHwModel.configure()
+
+runScript( ros.find("irp6_bringup") + "/config/conv-inside.ops")
+
+ConvHwModel.start()
+ConvScheme.start()
