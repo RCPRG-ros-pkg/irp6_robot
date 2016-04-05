@@ -57,6 +57,7 @@ HwModel::HwModel(const std::string& name)
   this->addProperty("viscous_friction", viscous_friction_);
   this->addProperty("current_input", current_input_);
   this->addProperty("enc_res", enc_res_);
+  this->addProperty("port_labels", port_labels_).doc("");
 }
 
 HwModel::~HwModel() {
@@ -90,20 +91,57 @@ bool HwModel::configureHook() {
   port_motor_position_list_.resize(number_of_servos_);
   port_desired_input_list_.resize(number_of_servos_);
 
+
+  desired_position_out_list_.resize(number_of_servos_);
+  port_motor_position_command_list_.resize(number_of_servos_);
+  port_motor_current_list_.resize(number_of_servos_);
+  port_regulator_reset_list_.resize(number_of_servos_);
+
   for (int i = 0; i < number_of_servos_; i++) {
     char port_motor_position_name[32];
     snprintf(port_motor_position_name, sizeof(port_motor_position_name),
-             "MotorPositionOutput_%d", i);
+             "MotorPosition_%s", port_labels_[i].c_str());
     port_motor_position_list_[i] = new typeof(*port_motor_position_list_[i]);
     this->ports()->addPort(port_motor_position_name,
                            *port_motor_position_list_[i]);
 
     char port_desired_input_name[32];
     snprintf(port_desired_input_name, sizeof(port_desired_input_name),
-             "DesiredInput_%d", i);
+             "computedReg_in_%s", port_labels_[i].c_str());
     port_desired_input_list_[i] = new typeof(*port_desired_input_list_[i]);
     this->ports()->addPort(port_desired_input_name,
                            *port_desired_input_list_[i]);
+
+    char DesiredPosition_out_port_name[32];
+    snprintf(DesiredPosition_out_port_name,
+             sizeof(DesiredPosition_out_port_name), "DesiredPosition_out_%s",
+             port_labels_[i].c_str());
+    desired_position_out_list_[i] = new typeof(*desired_position_out_list_[i]);
+    this->ports()->addPort(DesiredPosition_out_port_name,
+                           *desired_position_out_list_[i]);
+
+    char MotorPositionCommand_port_name[32];
+    snprintf(MotorPositionCommand_port_name,
+             sizeof(MotorPositionCommand_port_name), "MotorPositionCommand_%s",
+             port_labels_[i].c_str());
+    port_motor_position_command_list_[i] =
+        new typeof(*port_motor_position_command_list_[i]);
+    this->ports()->addPort(MotorPositionCommand_port_name,
+                           *port_motor_position_command_list_[i]);
+
+    char MotorCurrent_port_name[32];
+    snprintf(MotorCurrent_port_name, sizeof(MotorCurrent_port_name),
+             "MotorCurrent_%s", port_labels_[i].c_str());
+    port_motor_current_list_[i] = new typeof(*port_motor_current_list_[i]);
+    this->ports()->addPort(MotorCurrent_port_name,
+                           *port_motor_current_list_[i]);
+
+    char port_regulator_reset_name[32];
+    snprintf(port_regulator_reset_name, sizeof(port_regulator_reset_name),
+             "RegulatorResetOutput_%s", port_labels_[i].c_str());
+    port_regulator_reset_list_[i] = new typeof(*port_regulator_reset_list_[i]);
+    this->ports()->addPort(port_regulator_reset_name,
+                           *port_regulator_reset_list_[i]);
 
     motor_position_(i) = 0.0;
     motor_velocity_(i) = 0.0;
@@ -120,6 +158,7 @@ bool HwModel::configureHook() {
 
 bool HwModel::startHook() {
   port_is_synchronised_.write(true);
+  port_is_hardware_busy_.write(false);
   return true;
 }
 
@@ -135,6 +174,13 @@ void HwModel::updateHook() {
 //  if (RTT::NewData == port_desired_input_.read(desired_input_)) {
 //    std::cout << "HwModel updateHook" << desired_input_(1) << std::endl;
 // pytanie czy to nie przychodzi w inkrementach
+  bool generator_active;
+  if (port_generator_active_.read(generator_active) == RTT::NewData) {
+    port_is_hardware_busy_.write(generator_active);
+  } else {
+    port_is_hardware_busy_.write(false);
+  }
+
   for (int servo = 0; servo < number_of_servos_; servo++) {
     port_desired_input_list_[servo]->read(desired_input_[servo]);
 

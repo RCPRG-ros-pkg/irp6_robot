@@ -55,6 +55,12 @@ class HwModel : public RTT::TaskContext {
   std::vector<RTT::InputPort<double>*> port_desired_input_list_;
   std::vector<RTT::OutputPort<double>*> port_motor_position_list_;
 
+  std::vector<RTT::OutputPort<double>*> desired_position_out_list_;
+  std::vector<RTT::InputPort<double>*> port_motor_position_command_list_;
+  std::vector<RTT::OutputPort<double>*> port_motor_current_list_;
+  std::vector<RTT::OutputPort<bool>*>  port_regulator_reset_list_;
+
+
   RTT::InputPort<bool> port_emergency_stop_;
   RTT::InputPort<bool> port_generator_active_;
   RTT::InputPort<std_msgs::Bool> port_do_synchro_;  // do przerobienia na wersje ze zwrotnym statusem synchronziacji
@@ -76,6 +82,7 @@ class HwModel : public RTT::TaskContext {
   std::vector<double> viscous_friction_;
   std::vector<double> enc_res_;
   std::vector<bool> current_input_;
+  std::vector<std::string> port_labels_;
 };
 
 #endif  // HWMODEL_H_

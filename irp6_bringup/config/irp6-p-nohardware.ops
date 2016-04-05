@@ -9,9 +9,21 @@ ros.import("irp6tfg_kinematic")
 ros.import("force_control")
 ros.import("irp6_force_sensor")
 
-bool Simulation() { return false; }
+bool Simulation() { return true; }
+
+string hi_component() { return string("Irp6pHwModel"); }
+
+
+//------------------------------------------------------------------------------
+//-- Irp6pHardwareInterface
+//------------------------------------------------------------------------------
+loadComponent(hi_component(),"HwModel")
+Irp6pHwModel.loadService("rosparam")
+Irp6pHwModel.rosparam.getAll()
+Irp6pHwModel.configure()
+
 
 runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside.ops")
 
-
-
+Irp6pHwModel.start()
+Irp6pScheme.start()

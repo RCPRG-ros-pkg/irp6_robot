@@ -11,7 +11,18 @@ ros.import("irp6_force_sensor")
 
 bool Simulation() { return false; }
 
+string hi_component() { return string("Irp6pHardwareInterface"); }
+
+
+//------------------------------------------------------------------------------
+//-- Irp6pHardwareInterface
+//------------------------------------------------------------------------------
+loadComponent(hi_component(),"HardwareInterfaceMW")
+Irp6pHardwareInterface.loadService("rosparam")
+Irp6pHardwareInterface.rosparam.getAll()
+Irp6pHardwareInterface.configure()
+
 runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside.ops")
 
-
-
+Irp6pHardwareInterface.start()
+Irp6pScheme.start()
