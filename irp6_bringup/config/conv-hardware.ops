@@ -6,22 +6,4 @@ runScript( ros.find("irp6_bringup") + "/config/common-imports.ops")
 ros.import("conveyor_kinematic")
 
 
-bool ConvSimulation() { return false; }
-
-string Conv_hi_component() { return string("ConvHardwareInterface"); }
-
-
-//------------------------------------------------------------------------------
-//-- ConvHardwareInterface
-//------------------------------------------------------------------------------
-loadComponent("ConvHardwareInterface","HardwareInterfaceMW")
-ConvHardwareInterface.loadService("rosparam")
-ConvHardwareInterface.rosparam.getAll()
-ConvHardwareInterface.configure()
-
-
-
-runScript( ros.find("irp6_bringup") + "/config/conv-inside.ops")
-
-ConvHardwareInterface.start()
-ConvScheme.start()
+runScript( ros.find("irp6_bringup") + "/config/conv-hardware-inside.ops")

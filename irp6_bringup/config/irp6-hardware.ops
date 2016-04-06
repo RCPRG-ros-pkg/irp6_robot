@@ -10,49 +10,9 @@ ros.import("force_control")
 ros.import("irp6_force_sensor")
 ros.import("irp6_haptic")
 
+runScript( ros.find("irp6_bringup") + "/config/irp6-ot-hardware-inside.ops")
 
-bool Irp6otSimulation() { return false; }
-
-string Irp6ot_hi_component() { return string("Irp6otHardwareInterface"); }
-
-
-
-//------------------------------------------------------------------------------
-//-- Irp6otHardwareInterface
-//------------------------------------------------------------------------------
-loadComponent("Irp6otHardwareInterface","HardwareInterfaceMW")
-Irp6otHardwareInterface.loadService("rosparam")
-Irp6otHardwareInterface.rosparam.getAll()
-Irp6otHardwareInterface.configure()
-
-
-
-runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside.ops")
-
-Irp6otHardwareInterface.start()
-Irp6otScheme.start()
-
-
-bool Irp6pSimulation() { return false; }
-
-string Irp6p_hi_component() { return string("Irp6pHardwareInterface"); }
-
-
-//------------------------------------------------------------------------------
-//-- Irp6pHardwareInterface
-//------------------------------------------------------------------------------
-loadComponent("Irp6pHardwareInterface","HardwareInterfaceMW")
-Irp6pHardwareInterface.loadService("rosparam")
-Irp6pHardwareInterface.rosparam.getAll()
-Irp6pHardwareInterface.configure()
-
-runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside.ops")
-
-Irp6pHardwareInterface.start()
-Irp6pScheme.start()
-
-
-
+runScript( ros.find("irp6_bringup") + "/config/irp6-p-hardware-inside.ops")
 
 
 PortDoubleToFloat64_1.start()

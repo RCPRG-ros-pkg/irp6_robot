@@ -1,0 +1,19 @@
+bool ConvSimulation() { return false; }
+
+string Conv_hi_component() { return string("ConvHardwareInterface"); }
+
+
+//------------------------------------------------------------------------------
+//-- ConvHardwareInterface
+//------------------------------------------------------------------------------
+loadComponent("ConvHardwareInterface","HardwareInterfaceMW")
+ConvHardwareInterface.loadService("rosparam")
+ConvHardwareInterface.rosparam.getAll()
+ConvHardwareInterface.configure()
+
+
+
+runScript( ros.find("irp6_bringup") + "/config/conv-inside.ops")
+
+ConvHardwareInterface.start()
+ConvScheme.start()

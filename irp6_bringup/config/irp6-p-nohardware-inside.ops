@@ -1,0 +1,18 @@
+bool Irp6pSimulation() { return true; }
+
+string Irp6p_hi_component() { return string("Irp6pHwModel"); }
+
+
+//------------------------------------------------------------------------------
+//-- Irp6pHardwareInterface
+//------------------------------------------------------------------------------
+loadComponent("Irp6pHwModel","HwModel")
+Irp6pHwModel.loadService("rosparam")
+Irp6pHwModel.rosparam.getAll()
+Irp6pHwModel.configure()
+
+
+runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside.ops")
+
+Irp6pHwModel.start()
+Irp6pScheme.start()
