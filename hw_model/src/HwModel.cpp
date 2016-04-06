@@ -159,6 +159,7 @@ bool HwModel::configureHook() {
 bool HwModel::startHook() {
   port_is_synchronised_.write(true);
   port_is_hardware_busy_.write(false);
+  port_is_hardware_panic_.write(false);
   return true;
 }
 
