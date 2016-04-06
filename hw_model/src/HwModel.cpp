@@ -164,14 +164,7 @@ bool HwModel::startHook() {
 }
 
 void HwModel::updateHook() {
-  /*
-   int rwh_nsec_;
-   struct timespec delay;
-   delay.tv_nsec = rwh_nsec_ + 200000;
-   delay.tv_sec = 0;
 
-   nanosleep(&delay, NULL);
-   */
 //  if (RTT::NewData == port_desired_input_.read(desired_input_)) {
 //    std::cout << "HwModel updateHook" << desired_input_(1) << std::endl;
 // pytanie czy to nie przychodzi w inkrementach

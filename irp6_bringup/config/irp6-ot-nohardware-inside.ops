@@ -2,15 +2,23 @@
 
 bool Irp6otSimulation() { return true; }
 
-string Irp6ot_hi_component() { return string("Irp6otHwModel"); }
+string Irp6ot_hi_component_mw() { return string("Irp6otHwModel_MW"); }
 
 
-loadComponent("Irp6otHwModel","HwModel")
-Irp6otHwModel.loadService("rosparam")
-Irp6otHwModel.rosparam.getAll()
-Irp6otHwModel.configure()
+loadComponent("Irp6otHwModel_MW","HwModel")
+Irp6otHwModel_MW.loadService("rosparam")
+Irp6otHwModel_MW.rosparam.getAll()
+Irp6otHwModel_MW.configure()
+
+string Irp6ot_hi_component_ec() { return string("Irp6otHwModel_EC"); }
+
+loadComponent("Irp6otHwModel_EC","HwModel")
+Irp6otHwModel_EC.loadService("rosparam")
+Irp6otHwModel_EC.rosparam.getAll()
+Irp6otHwModel_EC.configure()
 
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside.ops")
 
-Irp6otHwModel.start()
+Irp6otHwModel_EC.start()
+Irp6otHwModel_MW.start()
 Irp6otScheme.start()

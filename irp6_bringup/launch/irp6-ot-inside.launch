@@ -107,15 +107,24 @@
           synchro_step_coarse: -0.5
           synchro_step_fine: 0.2
           current_mode: 1
-      Irp6otHwModel:
+      Irp6otHwModel_EC:
         iteration_per_step: 1
         step_per_second: 500
-        torque_constant: [0.000105, 0.000105, 0.000105, 0.000105, 0.000105, 0.000105, 0.000105, 0.000105]
-        inertia: [0.000015, 0.00015, 0.00015, 0.00015, 0.00015, 0.000015, 0.000015, 0.0000005]
-        viscous_friction: [0.0002, 0.02, 0.02, 0.02, 0.02, 0.0002, 0.0002, 0.000002]
-        current_input: [false, true, true, true, true, false, false, true]
-        enc_res: [4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 2000.0, 128.0]
-        port_labels: [irp6otm_0, irp6otm_1, irp6otm_2, irp6otm_3, irp6otm_4, irp6otm_5, irp6otm_6, irp6ottfg]
+        torque_constant: [0.000105, 0.000105, 0.000105, 0.000105, 0.000105, 0.000105]
+        inertia: [0.000015, 0.00015, 0.00015, 0.00015, 0.00015, 0.000015]
+        viscous_friction: [0.0002, 0.02, 0.02, 0.02, 0.02, 0.0002]
+        current_input: [false, true, true, true, true, false]
+        enc_res: [4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 4000.0]
+        port_labels: [irp6otm_0, irp6otm_1, irp6otm_2, irp6otm_3, irp6otm_4, irp6otm_5]
+      Irp6otHwModel_MW:
+        iteration_per_step: 1
+        step_per_second: 500
+        torque_constant: [0.000105, 0.000105]
+        inertia: [0.000015, 0.0000005]
+        viscous_friction: [0.0002, 0.000002]
+        current_input: [false, true]
+        enc_res: [2000.0, 128.0]
+        port_labels: [irp6otm_6, irp6ottfg]
       Irp6otmM2J:
         step: 0.002
       Irp6otmJntPub:
