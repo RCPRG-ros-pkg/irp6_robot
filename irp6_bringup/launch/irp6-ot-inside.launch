@@ -39,7 +39,7 @@
           current_mode: 0 
         irp6ottfg:
           label: irp6ottfg
-          ports_adresses: /dev/ttyMI6
+          ports_adresses: /dev/ttyMI7
           synchro_needed: 1
           max_current: 200
           max_increment: 1000.0
