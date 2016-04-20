@@ -21,6 +21,11 @@ Irp6otScheme.loadService("conman_ros")
 Irp6otScheme.configure()
 
 
+loadComponent("ECManager","ECManager")
+setActivity("ECManager", 0.1, 4, ORO_SCHED_RT);
+ECManager.loadService("rosparam")
+ECManager.rosparam.getAll()
+ECManager.configure()
 
 
 
@@ -116,37 +121,37 @@ Irp6ottfgPortDoubleSum.configure()
 
 
 
-loadComponent("IRp6otmRegulator_0","IRp6Regulator")
+loadComponent("IRp6otmRegulator_0","IRp6RegulatorEC")
 IRp6otmRegulator_0.loadService("rosparam")
 IRp6otmRegulator_0.rosparam.getAll()
 IRp6otmRegulator_0.configure()
 
 
-loadComponent("IRp6otmRegulator_1","IRp6Regulator")
+loadComponent("IRp6otmRegulator_1","IRp6RegulatorEC")
 IRp6otmRegulator_1.loadService("rosparam")
 IRp6otmRegulator_1.rosparam.getAll()
 IRp6otmRegulator_1.configure()
 
 
-loadComponent("IRp6otmRegulator_2","IRp6Regulator")
+loadComponent("IRp6otmRegulator_2","IRp6RegulatorEC")
 IRp6otmRegulator_2.loadService("rosparam")
 IRp6otmRegulator_2.rosparam.getAll()
 IRp6otmRegulator_2.configure()
 
 
-loadComponent("IRp6otmRegulator_3","IRp6Regulator")
+loadComponent("IRp6otmRegulator_3","IRp6RegulatorEC")
 IRp6otmRegulator_3.loadService("rosparam")
 IRp6otmRegulator_3.rosparam.getAll()
 IRp6otmRegulator_3.configure()
 
 
-loadComponent("IRp6otmRegulator_4","IRp6Regulator")
+loadComponent("IRp6otmRegulator_4","IRp6RegulatorEC")
 IRp6otmRegulator_4.loadService("rosparam")
 IRp6otmRegulator_4.rosparam.getAll()
 IRp6otmRegulator_4.configure()
 
 
-loadComponent("IRp6otmRegulator_5","IRp6Regulator")
+loadComponent("IRp6otmRegulator_5","IRp6RegulatorEC")
 IRp6otmRegulator_5.loadService("rosparam")
 IRp6otmRegulator_5.rosparam.getAll()
 IRp6otmRegulator_5.configure()
@@ -612,12 +617,9 @@ connect("Irp6otDiag.HardwaBusyIn",Irp6ot_hi_component_mw()+".IsHardwareBusy", Co
 
 for (var int i=0; i < 6; i = i+1) {
 	connect("IRp6otmPortDoubleSum_"+i+".InputPort_0","IRp6otmRegulator_"+i+".computedPwm_out", ConnPolicy())
-	connect(Irp6ot_hi_component_ec()+".computedReg_in_irp6otm_"+i,"IRp6otmPortDoubleSum_"+i+".OutputPort", ConnPolicy())
-	connect("IRp6otmRegulator_"+i+".DesiredPosition",Irp6ot_hi_component_ec()+".DesiredPosition_out_"+irp6ot_joint_labels[i], ConnPolicy())
-	connect("IRp6otmRegulator_"+i+".MeasuredPosition",Irp6ot_hi_component_ec()+".MotorPosition_"+irp6ot_joint_labels[i], ConnPolicy())
-	connect("IRp6otmRegulator_"+i+".ResetSignalIn",Irp6ot_hi_component_ec()+".RegulatorResetOutput_"+irp6ot_joint_labels[i], ConnPolicy())
-	connect("IRp6otmRegulator_"+i+".SynchroStateIn",Irp6ot_hi_component_ec()+".IsSynchronised", ConnPolicy())
-	connect("IRp6otmRegulator_"+i+".EmergencyStopOut",Irp6ot_hi_component_ec()+".EmergencyStopIn", ConnPolicy())
+	connect(Irp6ot_hi_component_ec()+"."+irp6ot_joint_labels[i]+".motor_current_command","IRp6otmPortDoubleSum_"+i+".OutputPort", ConnPolicy())
+	//connect("IRp6otmRegulator_"+i+".DesiredPosition",Irp6ot_hi_component_ec()+".DesiredPosition_out_"+irp6ot_joint_labels[i], ConnPolicy())
+	connect("IRp6otmRegulator_"+i+".MeasuredPosition",Irp6ot_hi_component_ec()+"."+irp6ot_joint_labels[i]+".motor_position", ConnPolicy())
 }
 
 
@@ -664,8 +666,8 @@ connect("Irp6ottfgPortDoubleAggregate_hw_p.InputPort_0",Irp6ot_hi_component_mw()
 
 
 for (i=0; i < 6; i = i+1) {
-	connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_"+i,Irp6ot_hi_component_ec()+".MotorPosition_irp6otm_"+i, ConnPolicy())
-	connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_"+i,Irp6ot_hi_component_ec()+".MotorCurrent_irp6otm_"+i, ConnPolicy())
+	connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_"+i,Irp6ot_hi_component_ec()+"."+irp6ot_joint_labels[i]+".motor_position", ConnPolicy())
+	connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_"+i,Irp6ot_hi_component_ec()+"."+irp6ot_joint_labels[i]+".motor_current", ConnPolicy())
 }
 
 connect("Irp6otmPortDoubleAggregate_hw_p.InputPort_6",Irp6ot_hi_component_mw()+".MotorPosition_irp6otm_6", ConnPolicy())
@@ -734,6 +736,7 @@ addPeer("Irp6otScheme", "Irp6ottfgPortDoubleSum")
 addPeer("Irp6otScheme", "Irp6ottfgRegulator");
 
 
+addPeer("ECManager", "Irp6otScheme");
 
 addPeer("Irp6otScheme", "Irp6otmPortDoubleSplit_hw_cp")
 addPeer("Irp6otScheme", "IRp6otmLimitDetector")
@@ -880,12 +883,12 @@ Irp6ottfgPortDoubleSum.start()
 //
 
 
-IRp6otmRegulator_0.start()
-IRp6otmRegulator_1.start()
-IRp6otmRegulator_2.start()
-IRp6otmRegulator_3.start()
-IRp6otmRegulator_4.start()
-IRp6otmRegulator_5.start()
+//IRp6otmRegulator_0.start()
+//IRp6otmRegulator_1.start()
+//IRp6otmRegulator_2.start()
+//IRp6otmRegulator_3.start()
+//IRp6otmRegulator_4.start()
+//IRp6otmRegulator_5.start()
 IRp6otmRegulator_6.start()
 Irp6ottfgRegulator.start()
 Irp6otmPortDoubleSplit_hw_cp.start()

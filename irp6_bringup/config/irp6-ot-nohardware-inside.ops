@@ -12,12 +12,15 @@ Irp6otHwModel_MW.configure()
 
 string Irp6ot_hi_component_ec() { return string("Irp6otHwModel_EC"); }
 
-loadComponent("Irp6otHwModel_EC","HwModel")
+loadComponent("Irp6otHwModel_EC","EcHwModel")
 Irp6otHwModel_EC.loadService("rosparam")
 Irp6otHwModel_EC.rosparam.getAll()
+Irp6otHwModel_EC.rosparam.getParam("~/Irp6otmMotorParameters/enc_res", "enc_res")
 Irp6otHwModel_EC.configure()
 
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside.ops")
+
+addPeer("ECManager", "Irp6otHwModel_EC");
 
 Irp6otHwModel_EC.start()
 Irp6otHwModel_MW.start()

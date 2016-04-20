@@ -13,6 +13,8 @@
 
   <group ns="IRP6_OT_OROCOS_ROBOT">
     <rosparam>
+      ECManager:
+        hal_component_name: Irp6otHwModel_EC
       ATI3084:
         test_mode: true
     </rosparam>
