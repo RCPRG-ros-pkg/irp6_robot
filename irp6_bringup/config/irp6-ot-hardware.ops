@@ -3,6 +3,9 @@ ros.import("rtt_rospack")
 
 runScript( ros.find("irp6_bringup") + "/config/common-imports.ops")
 
+ros.import("ec_hardware")
+ros.import("ec_drivers")
+
 
 ros.import("irp6otm_kinematic")
 ros.import("irp6tfg_kinematic")

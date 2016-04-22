@@ -57,8 +57,12 @@ bool Irp6otmJ2M::configureHook() {
   SYNCHRO_JOINT_POSITION[3] = synchro_motor_position_[3] - GEAR[3] * THETA[3];
   SYNCHRO_JOINT_POSITION[4] = synchro_motor_position_[4] - GEAR[4] * THETA[4];
   SYNCHRO_JOINT_POSITION[5] = synchro_motor_position_[5] - GEAR[5] * THETA[5]
-      - synchro_motor_position_[4];
+      - synchro_motor_position_[4] * old_wrist_sign;
   SYNCHRO_JOINT_POSITION[6] = synchro_motor_position_[6] - GEAR[6] * THETA[6];
+  /*
+   std::cout << std::endl << std::endl << "gear[1]: " << GEAR[1] << std::endl
+   << std::endl;
+   */
 
   return true;
 }
@@ -105,7 +109,7 @@ bool Irp6otmJ2M::i2mp(const double* joints, double* motors) {
   motors[4] = GEAR[4] * (joints_tmp4 + THETA[4]) + SYNCHRO_JOINT_POSITION[4];
 
   // Obliczanie kata obrotu walu silnika napedowego obrotu kisci V
-  motors[5] = GEAR[5] * joints[5] + SYNCHRO_JOINT_POSITION[5] + motors[4];
+  motors[5] = GEAR[5] * joints[5] + SYNCHRO_JOINT_POSITION[5] + motors[4] * old_wrist_sign;
 
   // Ograniczenie na obrot.
   while (motors[5] < LOWER_MOTOR_LIMIT[5])
@@ -116,9 +120,13 @@ bool Irp6otmJ2M::i2mp(const double* joints, double* motors) {
   // Obliczanie kata obrotu walu silnika napedowego obrotu kisci N
   motors[6] = GEAR[6] * joints[6] + SYNCHRO_JOINT_POSITION[6];
 
+  /*
+   std::cout << "joints[1]: " << joints[1] << "    motors[1]: " << motors[1]
+   << std::endl;
+   */
+
   return true;
 }
-
 
 ORO_CREATE_COMPONENT(Irp6otmJ2M)
 
