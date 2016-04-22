@@ -56,6 +56,8 @@ bool Irp6otmM2J::configureHook() {
   joint_estimated_velocity_.resize(NUMBER_OF_SERVOS);
 
   return true;
+
+
 }
 
 void Irp6otmM2J::updateHook() {

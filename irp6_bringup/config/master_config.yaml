@@ -250,9 +250,9 @@ domains:
         value: 1
         index: -3
       homing:
-        mode: 8
-        speed_high: 1000
-        speed_low: 1000
+        mode: 7
+        speed_high: 2000
+        speed_low: 2000
         acceleration: 1000000
       control_mode: current
     - name: irp6otm_3
@@ -263,8 +263,8 @@ domains:
         index: -3
       homing:
         mode: 7
-        speed_high: 1000
-        speed_low: 1000
+        speed_high: 2000
+        speed_low: 2000
         acceleration: 1000000
       control_mode: current
     - name: irp6otm_1
@@ -274,9 +274,9 @@ domains:
         value: 1
         index: -3
       homing:
-        mode: 8
-        speed_high: 1000
-        speed_low: 1000
+        mode: 7
+        speed_high: 2000
+        speed_low: 2000
         acceleration: 1000000
       control_mode: current
     - name: irp6otm_4
@@ -287,7 +287,7 @@ domains:
         value: 1
         index: -3
       homing:
-        mode: 3
+        mode: 5
         speed_high: 10000
         speed_low: 10000
         acceleration: 1000000
@@ -314,7 +314,7 @@ domains:
         index: -3
       homing:
         mode: 12
-        speed_high: 10000
-        speed_low: 10000
+        speed_high: 100000
+        speed_low: 100000
         acceleration: 1000000
       control_mode: current

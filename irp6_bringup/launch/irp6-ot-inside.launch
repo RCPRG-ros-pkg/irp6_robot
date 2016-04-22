@@ -93,7 +93,7 @@
       Irp6otmMotorParameters:
         lower_limits: [-1000.0, -470.0, -110.0, -80.0, -70.0, -80.0, -1000.0]
         upper_limits: [2000.0, 450.0, 100.0, 100.0, 380.0, 490.0, 3000.0]
-        synchro_motor_position: [0.0, -16.5, -4.012, -6.219, 159.5, 473.0, 769.7]
+        synchro_motor_position: [0.0, 16.5, 4.012, 6.219, 159.5, 473.0, 769.7]
         enc_res: [4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 2000.0]
       Irp6otmSplineTrajectoryActionMotor:
         joint_names: [joint1, joint2, joint3, joint4, joint5, joint6, joint7]
@@ -121,7 +121,6 @@
         A: 0.412429378531
         BB0: 1.5569592
         BB1: 1.5028614
-        current_mode: false
         current_reg_kp: 0.2
         output_multiplicator: 13.3
         max_output_current: 22
@@ -133,9 +132,8 @@
         A: 0.412429378531
         BB0: 1.5569592
         BB1: 1.5028614
-        current_mode: true
         current_reg_kp: 0.2
-        output_multiplicator: 13.3
+        output_multiplicator: 100.0
         max_output_current: 20
         max_desired_increment: 2000.0
         enc_res: 4000.0
@@ -145,9 +143,8 @@
         A: 0.655629139073
         BB0: 0.6181068
         BB1: 0.5916852
-        current_mode: true
         current_reg_kp: 0.15
-        output_multiplicator: 13.3
+        output_multiplicator: 100.0
         max_output_current: 15
         max_desired_increment: 2000.0
         enc_res: 4000.0
@@ -158,7 +155,7 @@
         BB0: 1.1984784
         BB1: 1.1424828
         current_reg_kp: 0.2
-        output_multiplicator: 13.3
+        output_multiplicator: 100.0
         max_output_current: 20
         max_desired_increment: 2000.0
         enc_res: 4000.0

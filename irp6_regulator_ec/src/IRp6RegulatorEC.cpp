@@ -153,12 +153,7 @@ void IRp6RegulatorEC::updateHook() {
 
     desired_position_old_ = desired_position_new_;
 
-    int output;
-    if (ft_) {
-      output = doServo_friction_test(0.0, deltaIncData);
-    } else {
-      output = doServo(desired_position_increment_, deltaIncData);
-    }
+    int output  = doServo(desired_position_increment_, deltaIncData);
     /*
      std::cout << std::dec << GREEN << "output: " << output << " pos_inc: "
      << desired_position_increment_ << " inp_inc: " << deltaIncData
