@@ -42,10 +42,12 @@ const double THETA[NUMBER_OF_SERVOS] = { 0.0, 0.0, 2.203374e+02, 1.838348e+02,
 const int ENC_RES[NUMBER_OF_SERVOS] =
     { 4000, 4000, 4000, 4000, 4000, 4000, 2000 };
 
-const double LOWER_MOTOR_LIMIT[NUMBER_OF_SERVOS] = { -200, -470, -110, -80, -70,
-    -50, -1000 };
-const double UPPER_MOTOR_LIMIT[NUMBER_OF_SERVOS] = { 1900, 450, 100, 100, 380,
-    490, 3000 };
+const double LOWER_MOTOR_LIMIT[NUMBER_OF_SERVOS] = { -200, -450, -100, -100,
+    -70, -490, -1000 };
+const double UPPER_MOTOR_LIMIT[NUMBER_OF_SERVOS] = { 1900, 470, 110, 80, 380,
+    50, 3000 };
+
+const double old_wrist_sign = -1;
 
 const double sl123 = 7.789525e+04;
 const double mi2 = 6.090255e+04;

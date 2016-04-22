@@ -56,8 +56,6 @@ bool Irp6otmM2J::configureHook() {
   joint_estimated_velocity_.resize(NUMBER_OF_SERVOS);
 
   return true;
-
-
 }
 
 void Irp6otmM2J::updateHook() {
@@ -117,7 +115,7 @@ void Irp6otmM2J::mp2i(const double* motors, double* joints, double* estimated_ve
   // Przelicznik polozenia walu silnika napedowego obrotu kisci V w radianach
   // na kat obrotu kisci (wspolrzedna wewnetrzna) w radianach
   joints[5] = (motors[5] - synchro_motor_position_[5]
-      - (motors[4] - synchro_motor_position_[4])) / GEAR[5] + THETA[5];
+      - (motors[4] - synchro_motor_position_[4]) * old_wrist_sign) / GEAR[5] + THETA[5];
 
   // Przelicznik polozenia walu silnika napedowego obrotu kisci N w radianach
   // na kat obrotu kisci (wspolrzedna wewnetrzna) w radianach

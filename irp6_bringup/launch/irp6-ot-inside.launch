@@ -91,8 +91,8 @@
       Irp6otmSplineTrajectoryGeneratorMotor:
         number_of_joints: 7
       Irp6otmMotorParameters:
-        lower_limits: [-1000.0, -470.0, -110.0, -80.0, -70.0, -80.0, -1000.0]
-        upper_limits: [2000.0, 450.0, 100.0, 100.0, 380.0, 490.0, 3000.0]
+        lower_limits: [-1000.0, -450.0, -100.0, -100.0, -70.0, -490.0, -1000.0]
+        upper_limits: [2000.0, 470.0, 110.0, 80.0, 380.0, 80.0, 3000.0]
         synchro_motor_position: [0.0, 16.5, 4.012, 6.219, 159.5, -473.0, 769.7]
         enc_res: [4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 2000.0]
       Irp6otmSplineTrajectoryActionMotor:
@@ -176,7 +176,7 @@
         A: 0.391982182628
         BB0: 0.4458592
         BB1: 0.4085392
-        current_reg_kp: 0.05
+        current_reg_kp: 0.005
         output_multiplicator: 1638.4
         max_output_current: 8
         max_desired_increment: 2000.0
