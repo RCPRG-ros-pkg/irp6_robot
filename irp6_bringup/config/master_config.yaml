@@ -253,7 +253,7 @@ domains:
         mode: 7
         speed_high: 2000
         speed_low: 2000
-        acceleration: 1000000
+        acceleration: 10000
       control_mode: current
     - name: irp6otm_3
       type: elmo_driver
@@ -265,7 +265,7 @@ domains:
         mode: 7
         speed_high: 2000
         speed_low: 2000
-        acceleration: 1000000
+        acceleration: 10000
       control_mode: current
     - name: irp6otm_1
       type: elmo_driver
@@ -277,7 +277,7 @@ domains:
         mode: 7
         speed_high: 2000
         speed_low: 2000
-        acceleration: 1000000
+        acceleration: 10000
       control_mode: current
     - name: irp6otm_4
       type: elmo_driver
@@ -313,7 +313,7 @@ domains:
         value: 1
         index: -3
       homing:
-        mode: 12
+        mode: 11
         speed_high: 100000
         speed_low: 100000
         acceleration: 1000000
