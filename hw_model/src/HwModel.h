@@ -79,9 +79,9 @@ class HwModel : public RTT::TaskContext {
   int step_per_second_;
   std::vector<double> torque_constant_;
   std::vector<double> inertia_;
+  std::vector<double> input_current_units_per_amper_;
   std::vector<double> viscous_friction_;
   std::vector<double> enc_res_;
-  std::vector<bool> current_input_;
   std::vector<std::string> port_labels_;
 };
 

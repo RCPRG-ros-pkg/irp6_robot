@@ -52,18 +52,18 @@
         iteration_per_step: 1
         step_per_second: 500
         torque_constant: [0.105, 0.105, 0.105, 0.105, 0.105, 0.105]
-        input_current_multiplicator: [13.3, 13.3, 13.3, 13.3, 13.3, 13.3]
-        inertia: [0.00015, 0.00015, 0.00015, 0.00015, 0.00015, 0.00015]
-        viscous_friction: [0.02, 0.02, 0.02, 0.02, 0.02, 0.02]
+        input_current_multiplicator: [1638.4, 100.0, 100.0, 100.0, 1638.4, 1638.4]
+        inertia: [0.00015, 0.00015, 0.00015, 0.00015, 0.00015, 0.000015]
+        viscous_friction: [0.02, 0.02, 0.02, 0.02, 0.02, 0.0002]
         enc_res: [4000.0, 4000.0, 4000.0, 4000.0, 4000.0, 4000.0]
         services_names: [irp6otm_0, irp6otm_1, irp6otm_2, irp6otm_3, irp6otm_4, irp6otm_5]
       Irp6otHwModel_MW:
         iteration_per_step: 1
         step_per_second: 500
-        torque_constant: [0.000105, 0.000105]
+        input_current_units_per_amper: [1000.0, 1000.0]
+        torque_constant: [0.105, 0.105]
         inertia: [0.000015, 0.0000005]
         viscous_friction: [0.0002, 0.000002]
-        current_input: [false, true]
         enc_res: [2000.0, 128.0]
         port_labels: [irp6otm_6, irp6ottfg]
       Irp6otmM2J:

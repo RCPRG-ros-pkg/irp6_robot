@@ -53,9 +53,10 @@ HwModel::HwModel(const std::string& name)
   this->addProperty("iteration_per_step", iteration_per_step_);
   this->addProperty("step_per_second", step_per_second_);
   this->addProperty("torque_constant", torque_constant_);
+  this->addProperty("input_current_units_per_amper",
+                    input_current_units_per_amper_);
   this->addProperty("inertia", inertia_);
   this->addProperty("viscous_friction", viscous_friction_);
-  this->addProperty("current_input", current_input_);
   this->addProperty("enc_res", enc_res_);
   this->addProperty("port_labels", port_labels_).doc("");
 }
@@ -65,14 +66,12 @@ HwModel::~HwModel() {
 
 bool HwModel::configureHook() {
   number_of_servos_ = torque_constant_.size();
-  if ((number_of_servos_ != inertia_.size())
+  if ((number_of_servos_ != torque_constant_.size())
+      || (number_of_servos_ != input_current_units_per_amper_.size())
+      || (number_of_servos_ != inertia_.size())
       || (number_of_servos_ != viscous_friction_.size())
-      || (number_of_servos_ != current_input_.size())) {
-    std::cout
-        << std::endl
-        << RED
-        << "[error] hardware model "
-        << getName()
+      || (number_of_servos_ != enc_res_.size())) {
+    std::cout << std::endl << RED << "[error] hardware model " << getName()
         << "configuration failed: wrong properties vector length in launch file."
         << RESET << std::endl;
     return false;
@@ -90,7 +89,6 @@ bool HwModel::configureHook() {
 
   port_motor_position_list_.resize(number_of_servos_);
   port_desired_input_list_.resize(number_of_servos_);
-
 
   desired_position_out_list_.resize(number_of_servos_);
   port_motor_position_command_list_.resize(number_of_servos_);
@@ -150,7 +148,6 @@ bool HwModel::configureHook() {
     desired_torque_(i) = 0.0;
     effective_torque_(i) = 0.0;
   }
-
   m_factor_ = step_per_second_ * iteration_per_step_;
 
   return true;
@@ -164,10 +161,6 @@ bool HwModel::startHook() {
 }
 
 void HwModel::updateHook() {
-
-//  if (RTT::NewData == port_desired_input_.read(desired_input_)) {
-//    std::cout << "HwModel updateHook" << desired_input_(1) << std::endl;
-// pytanie czy to nie przychodzi w inkrementach
   bool generator_active;
   if (port_generator_active_.read(generator_active) == RTT::NewData) {
     port_is_hardware_busy_.write(generator_active);
@@ -178,15 +171,9 @@ void HwModel::updateHook() {
   for (int servo = 0; servo < number_of_servos_; servo++) {
     port_desired_input_list_[servo]->read(desired_input_[servo]);
 
-    // PWM input do implementacji
-    /*
-     if (!current_input_[servo]) {  // pwm input
-     motor_position_(servo) = desired_input_(servo);
-     } else {  // current input
-     */
-
-    // prad jest w miliamperach
-    desired_torque_(servo) = desired_input_(servo) * torque_constant_[servo];
+    // prad jest w przeliczany do amperow
+    desired_torque_(servo) = desired_input_(servo) * torque_constant_[servo]
+        / input_current_units_per_amper_[servo];
 
     for (int iteration = 0; iteration < iteration_per_step_; iteration++) {
       effective_torque_(servo) = desired_torque_(servo)
@@ -197,8 +184,7 @@ void HwModel::updateHook() {
     }
     inc_motor_position_[servo] = motor_position_[servo] * enc_res_[servo]
         / (2.0 * M_PI);
-    // }
-    //   }
+
     port_motor_position_list_[servo]->write(inc_motor_position_[servo]);
   }
 }
