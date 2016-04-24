@@ -72,7 +72,7 @@ bool HwModel::configureHook() {
       || (number_of_servos_ != viscous_friction_.size())
       || (number_of_servos_ != enc_res_.size())) {
     std::cout << std::endl << RED << "[error] hardware model " << getName()
-        << "configuration failed: wrong properties vector length in launch file."
+        << " configuration failed: wrong properties vector length in launch file."
         << RESET << std::endl;
     return false;
   }

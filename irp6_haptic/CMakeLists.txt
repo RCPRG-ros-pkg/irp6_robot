@@ -16,3 +16,8 @@ add_dependencies(irp6_haptic ${catkin_EXPORTED_TARGETS})
 
 
 orocos_generate_package()
+
+catkin_install_python(PROGRAMS
+haptic_start.py
+haptic_stop.py
+DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
