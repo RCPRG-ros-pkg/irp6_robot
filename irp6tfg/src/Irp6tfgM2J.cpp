@@ -31,7 +31,6 @@
 #include <rtt/Component.hpp>
 #include <string>
 #include "Irp6tfgM2J.h"
-#include "Irp6tfgTransmission.h"
 
 Irp6tfgM2J::Irp6tfgM2J(const std::string& name)
     : RTT::TaskContext(name, PreOperational) {

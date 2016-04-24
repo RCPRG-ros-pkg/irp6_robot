@@ -31,12 +31,12 @@
 #include <rtt/Component.hpp>
 #include <string>
 #include "Irp6tfgJ2M.h"
-#include "Irp6tfgTransmission.h"
 
 Irp6tfgJ2M::Irp6tfgJ2M(const std::string& name)
     : RTT::TaskContext(name, PreOperational) {
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("JointPosition", port_joint_position_);
+
 
   inv_a_7 = 0.3531946456e-5;
   inv_b_7 = 0.2622172716e19;

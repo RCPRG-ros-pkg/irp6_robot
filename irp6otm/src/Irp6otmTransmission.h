@@ -39,14 +39,6 @@ const double GEAR[NUMBER_OF_SERVOS] = { (1000 * 2 * 2 * M_PI) / 8.0, 158.0, -2
 const double THETA[NUMBER_OF_SERVOS] = { 0.0, 0.0, 2.203374e+02, 1.838348e+02,
     1.570796e+00, 0.0, 0.0 };
 
-const int ENC_RES[NUMBER_OF_SERVOS] =
-    { 4000, 4000, 4000, 4000, 4000, 4000, 2000 };
-
-const double LOWER_MOTOR_LIMIT[NUMBER_OF_SERVOS] = { -200, -450, -100, -100,
-    -70, -490, -1000 };
-const double UPPER_MOTOR_LIMIT[NUMBER_OF_SERVOS] = { 1900, 470, 110, 80, 380,
-    50, 3000 };
-
 const double old_wrist_sign = -1;
 
 const double sl123 = 7.789525e+04;
