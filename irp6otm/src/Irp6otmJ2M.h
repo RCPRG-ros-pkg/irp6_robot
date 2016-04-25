@@ -58,6 +58,8 @@ class Irp6otmJ2M : public RTT::TaskContext {
 
   // properties
   std::vector<double> synchro_motor_position_;
+  std::vector<double> lower_motor_limit_;
+  std::vector<double> upper_motor_limit_;
 };
 
 #endif  // IRP6OTMJ2M_H_

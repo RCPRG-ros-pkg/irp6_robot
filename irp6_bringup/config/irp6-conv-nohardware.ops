@@ -10,6 +10,7 @@ ros.import("conveyor_kinematic")
 ros.import("force_control")
 ros.import("irp6_force_sensor")
 ros.import("irp6_haptic")
+ros.import("ec_hw_model")
 
 //------------------------------------------------------------------------------
 //-- Two manipulators and grippers

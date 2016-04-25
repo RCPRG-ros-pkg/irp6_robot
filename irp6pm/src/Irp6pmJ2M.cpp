@@ -38,6 +38,8 @@ Irp6pmJ2M::Irp6pmJ2M(const std::string& name)
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("JointPosition", port_joint_position_);
   this->addProperty("synchro_motor_position", synchro_motor_position_);
+  this->addProperty("lower_motor_limit", lower_motor_limit_);
+  this->addProperty("upper_motor_limit", upper_motor_limit_);
 
   for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
     SYNCHRO_JOINT_POSITION[i] = 0.0;
@@ -48,6 +50,15 @@ Irp6pmJ2M::~Irp6pmJ2M() {
 }
 
 bool Irp6pmJ2M::configureHook() {
+  if ((NUMBER_OF_SERVOS != synchro_motor_position_.size())
+      || (NUMBER_OF_SERVOS != lower_motor_limit_.size())
+      || (NUMBER_OF_SERVOS != upper_motor_limit_.size())) {
+    std::cout << std::endl << "[error] Irp6pmJ2M " << getName()
+        << " configuration failed: wrong properties vector length in launch file."
+        << std::endl;
+    return false;
+  }
+
   motor_position_.resize(NUMBER_OF_SERVOS);
   joint_position_.resize(NUMBER_OF_SERVOS);
 
@@ -102,9 +113,9 @@ bool Irp6pmJ2M::i2mp(const double* joints, double* motors) {
   motors[4] = GEAR[4] * joints[4] + SYNCHRO_JOINT_POSITION[4] + motors[3];
 
 // Ograniczenie na obrot.
-  while (motors[4] < LOWER_MOTOR_LIMIT[4])
+  while (motors[4] < lower_motor_limit_[4])
     motors[4] += axis_4_revolution;
-  while (motors[4] > UPPER_MOTOR_LIMIT[4])
+  while (motors[4] > upper_motor_limit_[4])
     motors[4] -= axis_4_revolution;
 
 // Obliczanie kata obrotu walu silnika napedowego obrotu kisci N
@@ -112,7 +123,6 @@ bool Irp6pmJ2M::i2mp(const double* joints, double* motors) {
 
   return true;
 }
-
 
 ORO_CREATE_COMPONENT(Irp6pmJ2M)
 

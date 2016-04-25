@@ -38,6 +38,8 @@ Irp6otmJ2M::Irp6otmJ2M(const std::string& name)
   this->ports()->addPort("JointPosition", port_joint_position_);
 
   this->addProperty("synchro_motor_position", synchro_motor_position_);
+  this->addProperty("lower_motor_limit", lower_motor_limit_);
+  this->addProperty("upper_motor_limit", upper_motor_limit_);
 
   for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
     SYNCHRO_JOINT_POSITION[i] = 0.0;
@@ -48,6 +50,15 @@ Irp6otmJ2M::~Irp6otmJ2M() {
 }
 
 bool Irp6otmJ2M::configureHook() {
+  if ((NUMBER_OF_SERVOS != synchro_motor_position_.size())
+      || (NUMBER_OF_SERVOS != lower_motor_limit_.size())
+      || (NUMBER_OF_SERVOS != upper_motor_limit_.size())) {
+    std::cout << std::endl << "[error] Irp6otmJ2M " << getName()
+        << " configuration failed: wrong properties vector length in launch file."
+        << std::endl;
+    return false;
+  }
+
   motor_position_.resize(NUMBER_OF_SERVOS);
   joint_position_.resize(NUMBER_OF_SERVOS);
 
@@ -57,7 +68,7 @@ bool Irp6otmJ2M::configureHook() {
   SYNCHRO_JOINT_POSITION[3] = synchro_motor_position_[3] - GEAR[3] * THETA[3];
   SYNCHRO_JOINT_POSITION[4] = synchro_motor_position_[4] - GEAR[4] * THETA[4];
   SYNCHRO_JOINT_POSITION[5] = synchro_motor_position_[5] - GEAR[5] * THETA[5]
-      - synchro_motor_position_[4] * old_wrist_sign;
+      - synchro_motor_position_[4];
   SYNCHRO_JOINT_POSITION[6] = synchro_motor_position_[6] - GEAR[6] * THETA[6];
   /*
    std::cout << std::endl << std::endl << "gear[1]: " << GEAR[1] << std::endl
@@ -109,12 +120,12 @@ bool Irp6otmJ2M::i2mp(const double* joints, double* motors) {
   motors[4] = GEAR[4] * (joints_tmp4 + THETA[4]) + SYNCHRO_JOINT_POSITION[4];
 
   // Obliczanie kata obrotu walu silnika napedowego obrotu kisci V
-  motors[5] = GEAR[5] * joints[5] + SYNCHRO_JOINT_POSITION[5] + motors[4] * old_wrist_sign;
+  motors[5] = GEAR[5] * joints[5] + SYNCHRO_JOINT_POSITION[5] + motors[4];
 
   // Ograniczenie na obrot.
-  while (motors[5] < LOWER_MOTOR_LIMIT[5])
+  while (motors[5] < lower_motor_limit_[5])
     motors[5] += axis_5_revolution;
-  while (motors[5] > UPPER_MOTOR_LIMIT[5])
+  while (motors[5] > upper_motor_limit_[5])
     motors[5] -= axis_5_revolution;
 
   // Obliczanie kata obrotu walu silnika napedowego obrotu kisci N

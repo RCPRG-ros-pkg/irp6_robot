@@ -250,6 +250,8 @@ loadComponent("Irp6otmJ2M","Irp6otmJ2M")
 Irp6otmJ2M.loadService("rosparam")
 Irp6otmJ2M.rosparam.getAll()
 Irp6otmJ2M.rosparam.getParam("~/Irp6otmMotorParameters/synchro_motor_position", "synchro_motor_position")
+Irp6otmJ2M.rosparam.getParam("~/Irp6otmMotorParameters/lower_limits", "lower_motor_limit")
+Irp6otmJ2M.rosparam.getParam("~/Irp6otmMotorParameters/upper_limits", "upper_motor_limit")
 Irp6otmJ2M.configure()
 
 loadComponent("Irp6otmForwardKinematic","Irp6otmForwardKinematic")
