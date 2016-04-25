@@ -882,7 +882,7 @@ Irp6ottfgPortDoubleSum.start()
 //  Start regulators
 //
 
-
+ECManager.start()
 //IRp6otmRegulator_0.start()
 //IRp6otmRegulator_1.start()
 //IRp6otmRegulator_2.start()
