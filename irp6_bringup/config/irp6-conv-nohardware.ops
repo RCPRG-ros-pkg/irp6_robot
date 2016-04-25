@@ -11,6 +11,7 @@ ros.import("force_control")
 ros.import("irp6_force_sensor")
 ros.import("irp6_haptic")
 ros.import("ec_hw_model")
+ros.import("irp6ot_manager")
 
 //------------------------------------------------------------------------------
 //-- Two manipulators and grippers
