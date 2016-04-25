@@ -1,0 +1,8 @@
+<launch>
+  <include file="$(find irp6_bringup)/launch/conv-inside.launch">
+  </include>
+  <group>
+    <rosparam>
+    </rosparam>
+  </group>
+</launch>

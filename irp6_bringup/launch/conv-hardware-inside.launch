@@ -1,0 +1,10 @@
+<launch>
+  <include file="$(find irp6_bringup)/launch/conv-inside.launch">
+  </include>
+  <group>
+    <rosparam>
+      ConvHardwareInterface:
+        timeouts_to_print: 3
+    </rosparam>
+  </group>
+</launch>

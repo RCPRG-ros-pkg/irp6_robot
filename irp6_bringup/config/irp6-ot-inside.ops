@@ -240,7 +240,7 @@ Irp6otmM2Jdesired.configure()
 loadComponent("Irp6ottfgM2J","Irp6tfgM2J")
 Irp6ottfgM2J.configure()
 
-loadComponent("Irp6ottfgIM2RM","IM2RM") 
+loadComponent("Irp6ottfgIM2RM","IM2RM")  
 Irp6ottfgIM2RM.loadService("rosparam") 
 Irp6ottfgIM2RM.rosparam.getAll() 
 Irp6ottfgIM2RM.rosparam.getParam("~/Irp6ottfgMotorParameters/enc_res", "enc_res") 

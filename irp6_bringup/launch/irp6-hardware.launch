@@ -9,28 +9,13 @@
 
 
  
-  <include file="$(find irp6_bringup)/launch/irp6-p-inside.launch" ns="IRP6_OROCOS_ROBOT">
+  <include file="$(find irp6_bringup)/launch/irp6-p-hardware-inside.launch" ns="IRP6_OROCOS_ROBOT">
   </include>
   
-  <include file="$(find irp6_bringup)/launch/irp6-ot-inside.launch" ns="IRP6_OROCOS_ROBOT">
+  <include file="$(find irp6_bringup)/launch/irp6-ot-hardware-inside.launch" ns="IRP6_OROCOS_ROBOT">
   </include>
 
-  <group ns="IRP6_OROCOS_ROBOT">
-     <param name="Irp6otHardwareInterface_EC/master_config" command="cat $(find irp6_bringup)/config/master_config.yaml"/>
-     <rosparam>
-      Irp6otManager:
-        hal_component_name: Irp6otHardwareInterface_EC
-      Irp6pHardwareInterface:
-        timeouts_to_print: 3
-      Irp6otHardwareInterface:
-        timeouts_to_print: 3
-      ATI6284:
-        test_mode: false
-      ATI3084:
-        test_mode: false
-      HapticScheme:
-        scheme_name: haptic_manager
-    </rosparam>
-  </group>
+  <include file="$(find irp6_bringup)/launch/haptic-inside.launch" ns="IRP6_OROCOS_ROBOT">
+  </include>
 
 </launch>

@@ -1,23 +1,10 @@
 <launch>
-
   <include file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="IRP6_P_OROCOS_ROBOT"/>
     <arg name="DEPLOYER_ARGS" value="-s $(find irp6_bringup)/config/irp6-p-hardware.ops"/>
     <arg name="LOG_LEVEL" value="Warning"/>
     <arg name="DEBUG" value="false"/>
   </include>
-
-
-  <include file="$(find irp6_bringup)/launch/irp6-p-inside.launch" ns="IRP6_P_OROCOS_ROBOT">
+  <include file="$(find irp6_bringup)/launch/irp6-p-hardware-inside.launch" ns="IRP6_P_OROCOS_ROBOT">
   </include>
-
-  <group ns="IRP6_P_OROCOS_ROBOT">
-    <rosparam>
-      Irp6pHardwareInterface:
-        timeouts_to_print: 3
-      ATI6284:
-        test_mode: false
-    </rosparam>
-  </group>
-
 </launch>

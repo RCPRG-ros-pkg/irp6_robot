@@ -153,7 +153,7 @@ void IRp6RegulatorEC::updateHook() {
 
     desired_position_old_ = desired_position_new_;
 
-    int output  = doServo(desired_position_increment_, deltaIncData);
+    int output = doServo(desired_position_increment_, deltaIncData);
     /*
      std::cout << std::dec << GREEN << "output: " << output << " pos_inc: "
      << desired_position_increment_ << " inp_inc: " << deltaIncData
@@ -230,7 +230,6 @@ int IRp6RegulatorEC::doServo(double step_new, double pos_inc) {
 
   return (static_cast<int>(output_value * output_multiplicator_));
 }
-
 
 void IRp6RegulatorEC::reset() {
   position_increment_old = 0.0;

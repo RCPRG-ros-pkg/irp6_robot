@@ -1,0 +1,8 @@
+<launch>
+  <group>
+    <rosparam>
+      HapticScheme:
+        scheme_name: haptic_manager
+    </rosparam>
+  </group>
+</launch>
