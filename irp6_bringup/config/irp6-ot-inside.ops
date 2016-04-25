@@ -21,11 +21,11 @@ Irp6otScheme.loadService("conman_ros")
 Irp6otScheme.configure()
 
 
-loadComponent("ECManager","ECManager")
-setActivity("ECManager", 0.1, 4, ORO_SCHED_RT);
-ECManager.loadService("rosparam")
-ECManager.rosparam.getAll()
-ECManager.configure()
+loadComponent("Irp6otManager","Irp6otManager")
+setActivity("Irp6otManager", 0.1, 4, ORO_SCHED_RT);
+Irp6otManager.loadService("rosparam")
+Irp6otManager.rosparam.getAll()
+Irp6otManager.configure()
 
 
 
@@ -738,7 +738,7 @@ addPeer("Irp6otScheme", "Irp6ottfgPortDoubleSum")
 addPeer("Irp6otScheme", "Irp6ottfgRegulator");
 
 
-addPeer("ECManager", "Irp6otScheme");
+addPeer("Irp6otManager", "Irp6otScheme");
 
 addPeer("Irp6otScheme", "Irp6otmPortDoubleSplit_hw_cp")
 addPeer("Irp6otScheme", "IRp6otmLimitDetector")
@@ -884,7 +884,6 @@ Irp6ottfgPortDoubleSum.start()
 //  Start regulators
 //
 
-
 //IRp6otmRegulator_0.start()
 //IRp6otmRegulator_1.start()
 //IRp6otmRegulator_2.start()
@@ -925,4 +924,3 @@ Irp6otmPoseIntAction.start()
 Irp6otmToolIntAction.start()
 Irp6otmToolInt.start()
 Irp6otDiag.start()
-

@@ -14,7 +14,7 @@
   <group ns="IRP6_OT_OROCOS_ROBOT">
     <param name="Irp6otHardwareInterface_EC/master_config" command="cat $(find irp6_bringup)/config/master_config.yaml"/>
     <rosparam>
-      ECManager:
+      Irp6otManager:
         hal_component_name: Irp6otHardwareInterface_EC
       Irp6otHardwareInterface:
         timeouts_to_print: 3

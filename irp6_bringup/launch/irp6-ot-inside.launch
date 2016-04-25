@@ -10,10 +10,10 @@
     
   <group>
     <rosparam>
-      ECManager:
-        debug: true
+      Irp6otManager:
+        debug: false
         fault_autoreset: false
-        sequent_synchro: true
+        autostart: false
         services_names: [irp6otm_0, irp6otm_1, irp6otm_2, irp6otm_3, irp6otm_4, irp6otm_5]
         regulators_names: [IRp6otmRegulator_0, IRp6otmRegulator_1, IRp6otmRegulator_2, IRp6otmRegulator_3, IRp6otmRegulator_4, IRp6otmRegulator_5]
         scheme_component_name: Irp6otScheme
