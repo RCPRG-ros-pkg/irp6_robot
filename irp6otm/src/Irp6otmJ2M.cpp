@@ -68,7 +68,7 @@ bool Irp6otmJ2M::configureHook() {
   SYNCHRO_JOINT_POSITION[3] = synchro_motor_position_[3] - GEAR[3] * THETA[3];
   SYNCHRO_JOINT_POSITION[4] = synchro_motor_position_[4] - GEAR[4] * THETA[4];
   SYNCHRO_JOINT_POSITION[5] = synchro_motor_position_[5] - GEAR[5] * THETA[5]
-      - synchro_motor_position_[4] * old_wrist_sign;
+      - synchro_motor_position_[4];
   SYNCHRO_JOINT_POSITION[6] = synchro_motor_position_[6] - GEAR[6] * THETA[6];
   /*
    std::cout << std::endl << std::endl << "gear[1]: " << GEAR[1] << std::endl
@@ -120,7 +120,7 @@ bool Irp6otmJ2M::i2mp(const double* joints, double* motors) {
   motors[4] = GEAR[4] * (joints_tmp4 + THETA[4]) + SYNCHRO_JOINT_POSITION[4];
 
   // Obliczanie kata obrotu walu silnika napedowego obrotu kisci V
-  motors[5] = GEAR[5] * joints[5] + SYNCHRO_JOINT_POSITION[5] + motors[4] * old_wrist_sign;
+  motors[5] = GEAR[5] * joints[5] + SYNCHRO_JOINT_POSITION[5] + motors[4];
 
   // Ograniczenie na obrot.
   while (motors[5] < lower_motor_limit_[5])
