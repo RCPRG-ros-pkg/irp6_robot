@@ -25,5 +25,4 @@ ros.import("internal_space_spline_trajectory_action")
 ros.import("internal_space_spline_trajectory_generator")
 ros.import("controller_common")
 ros.import("hw_model")
-ros.import("ec_manager")
 

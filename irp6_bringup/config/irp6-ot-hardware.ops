@@ -7,6 +7,7 @@ ros.import("ec_hardware")
 ros.import("ec_drivers")
 
 
+ros.import("irp6ot_manager")
 ros.import("irp6otm_kinematic")
 ros.import("irp6tfg_kinematic")
 ros.import("force_control")

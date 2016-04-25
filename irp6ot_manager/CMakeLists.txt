@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(irp6_ot_manager)
+project(irp6ot_manager)
 
 find_package(catkin REQUIRED COMPONENTS rtt_ros cmake_modules)
 
