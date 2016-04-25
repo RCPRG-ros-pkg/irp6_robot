@@ -31,3 +31,5 @@ addPeer("ECManager", "Irp6otHardwareInterface_EC");
 Irp6otHardwareInterface_EC.start()
 Irp6otHardwareInterface_MW.start()
 Irp6otScheme.start()
+
+ECManager.start()

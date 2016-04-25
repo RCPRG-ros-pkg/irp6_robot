@@ -11,7 +11,7 @@
   <group>
     <rosparam>
       ECManager:
-        debug: true
+        debug: false
         fault_autoreset: false
         autostart: false
         services_names: [irp6otm_0, irp6otm_1, irp6otm_2, irp6otm_3, irp6otm_4, irp6otm_5]
