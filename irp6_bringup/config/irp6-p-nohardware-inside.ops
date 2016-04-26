@@ -1,9 +1,3 @@
-ros.import("irp6ot_manager")
-ros.import("irp6otm_kinematic")
-ros.import("irp6tfg_kinematic")
-ros.import("force_control")
-ros.import("irp6_force_sensor")
-
 
 bool Irp6pSimulation() { return true; }
 
