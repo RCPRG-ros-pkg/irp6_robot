@@ -32,7 +32,7 @@
 #include <string>
 
 #include "HwModel.h"
-#include "string_colors.h"
+#include "common_headers/string_colors.h"
 
 HwModel::HwModel(const std::string& name)
     : RTT::TaskContext(name, PreOperational),

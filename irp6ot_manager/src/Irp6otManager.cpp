@@ -31,7 +31,7 @@
 #include "Irp6otManager.h"
 #include <vector>
 #include <string>
-#include "string_colors.h"
+#include "common_headers/string_colors.h"
 
 Irp6otManager::Irp6otManager(const std::string& name)
 : TaskContext(name),

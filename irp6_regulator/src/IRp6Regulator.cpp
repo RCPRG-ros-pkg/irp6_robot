@@ -39,7 +39,7 @@
 #include <string>
 
 #include "IRp6Regulator.h"
-#include "../../hardware_interface_mw/src/string_colors.h"
+#include "common_headers/string_colors.h"
 
 const int MAX_PWM = 190;
 

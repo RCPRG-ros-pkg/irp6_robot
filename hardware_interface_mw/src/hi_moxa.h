@@ -41,7 +41,7 @@
 #include "../../hardware_interface_mw/src/hi_moxa_combuf.h"
 #include "../../hardware_interface_mw/src/nf/nfv2.h"
 #include "../../hardware_interface_mw/src/serialcomm/serialcomm.hpp"
-#include "../../hardware_interface_mw/src/string_colors.h"
+#include "common_headers/string_colors.h"
 
 #define STATUS_DISP_T 100
 #define BUFF_SIZE 256
