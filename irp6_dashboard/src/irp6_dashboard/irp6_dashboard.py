@@ -9,6 +9,7 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtGui import QWidget
 
+from .irp6_motors import Irp6Stop
 from .irp6p_motors import Irp6pMotors
 from .irp6ot_motors import Irp6otMotors
 from .conveyor_motors import ConveyorMotors
@@ -33,16 +34,18 @@ class Irp6Dashboard(Dashboard):
         self._irp6p_motors_button = Irp6pMotors(self.context)
         self._irp6ot_motors_button = Irp6otMotors(self.context)
         self._conveyor_motors_button = ConveyorMotors(self.context)
+        self._stop_button = Irp6Stop('Irp6Stop',self.emergency_stop)
         
         self._agg_sub = rospy.Subscriber('diagnostics', DiagnosticArray, self.new_diagnostic_message_diagnostics)
         # self._agg_sub = rospy.Subscriber('diagnostics_agg', DiagnosticArray, self.new_diagnostic_message_diagnostics_agg)
 
 
-
+    def emergency_stop(self):
+        print 'pupa bazowa' 
 
     def get_widgets(self):
         return [
-                [self._monitor, self._console, self._irp6ot_motors_button, self._irp6p_motors_button, self._conveyor_motors_button]
+                [self._monitor, self._console, self._irp6ot_motors_button, self._irp6p_motors_button, self._conveyor_motors_button, self._stop_button]
                ]
 
 

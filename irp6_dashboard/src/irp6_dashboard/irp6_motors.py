@@ -34,13 +34,14 @@ from python_qt_binding.QtGui import QMessageBox
 
 import actionlib
 import rospy
-from rqt_robot_dashboard.widgets import MenuDashWidget
+from rqt_robot_dashboard.widgets import MenuDashWidget, IconToolButton
 import std_srvs.srv
 import datetime, threading, time
 
 from std_msgs.msg import *
 from irpos import *
 
+from QtGui import QMenu, QToolButton
 
 class Irp6MotorStatus():
     def __init__(self, context):
@@ -72,6 +73,24 @@ class Irp6MotorStatus():
         self.synchro_in_progress = s1.synchro_in_progress
         self.is_emergency_stop_activated = s1.is_emergency_stop_activated
 
+
+
+class Irp6Stop(IconToolButton):
+    def __init__(self, name_, fun):
+        self.fun = fun
+        self.name = name_
+        icon_paths=[]
+        icons = [['bg-red.svg']]
+        super(Irp6Stop, self).__init__(name_, icons=icons, suppress_overlays=True, icon_paths=icon_paths)
+        # self.setPopupMode(QToolButton.InstantPopup)
+        self.update_state(0)
+        
+    def _pressed(self):
+        super(Irp6Stop,self)._pressed()
+        print 'pupa'
+        self.fun()
+        
+        
 
 
 class Irp6Motors(MenuDashWidget):
