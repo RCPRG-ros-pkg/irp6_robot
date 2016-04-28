@@ -41,7 +41,10 @@ class Irp6Dashboard(Dashboard):
 
 
     def emergency_stop(self):
-        print 'pupa bazowa' 
+        self._irp6p_motors_button.emergency_stop()
+        self._irp6ot_motors_button.emergency_stop()
+        self._conveyor_motors_button.emergency_stop()
+        print 'emergency stop commanded'
 
     def get_widgets(self):
         return [

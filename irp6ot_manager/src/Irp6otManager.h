@@ -95,6 +95,12 @@ class Irp6otManager : public RTT::TaskContext {
   std::vector<std::string> disable_vec_;
   std::vector<std::string> enable_vec_;
 
+  // ports
+
+  RTT::InputPort<std_msgs::Bool> port_do_synchro_in_;
+  RTT::InputPort<std_msgs::Bool> port_emergency_stop_in_;
+
+
   // Properties
   bool debug_;
   bool auto_;

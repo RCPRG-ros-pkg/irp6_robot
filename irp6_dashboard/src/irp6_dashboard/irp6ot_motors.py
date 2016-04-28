@@ -71,6 +71,7 @@ class Irp6otMotors(Irp6Motors):
         timerThread = threading.Thread(target=self.monitor_robot_activity)
         timerThread.daemon = True
         timerThread.start()
+        self.emergency_stop_pub = rospy.Publisher('/irp6ot_manager/emergency_stop_in', std_msgs.msg.Bool, queue_size=0)
         
 
 
@@ -150,6 +151,5 @@ class Irp6otMotors(Irp6Motors):
         pub.publish(goal)
         self.status.synchro_in_progress = True
         self.change_motors_widget_state()
-        
         
 

@@ -67,6 +67,7 @@ class ConveyorMotors(Irp6Motors):
         timerThread = threading.Thread(target=self.monitor_robot_activity)
         timerThread.daemon = True
         timerThread.start()
+        self.emergency_stop_pub = rospy.Publisher('/conv_manager/emergency_stop_in', std_msgs.msg.Bool, queue_size=0)
         
 
 
@@ -80,4 +81,5 @@ class ConveyorMotors(Irp6Motors):
 
     def disable_all_actions(self):
         pass
+
 

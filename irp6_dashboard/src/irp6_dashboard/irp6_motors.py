@@ -87,7 +87,6 @@ class Irp6Stop(IconToolButton):
         
     def _pressed(self):
         super(Irp6Stop,self)._pressed()
-        print 'pupa'
         self.fun()
         
         
@@ -236,5 +235,12 @@ class Irp6Motors(MenuDashWidget):
                 self.change_motors_widget_state()
                 
 #        print self.name + ": new diag message, synchro: " + str(self.status.is_synchronised) + " hardware panic: " + str(self.status.is_emergency_stop_activated)
+
+
+    def emergency_stop(self):
+        goal = std_msgs.msg.Bool()
+        goal.data = True
+        self.emergency_stop_pub.publish(goal)
+        self.change_motors_widget_state()
 
 

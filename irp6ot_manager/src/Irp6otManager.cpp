@@ -34,12 +34,19 @@
 #include "common_headers/string_colors.h"
 
 Irp6otManager::Irp6otManager(const std::string& name)
-: TaskContext(name),
-  robot_state_(NOT_OPERATIONAL),
-  number_of_servos_(0),
-  last_servo_synchro_(0),
-  servos_state_changed_(0),
-  auto_(false) {
+    : TaskContext(name),
+      robot_state_(NOT_OPERATIONAL),
+      number_of_servos_(0),
+      last_servo_synchro_(0),
+      servos_state_changed_(0),
+      auto_(false) {
+  // ports addition
+
+  this->ports()->addPort("DoSynchroIn", port_do_synchro_in_);
+  this->ports()->addPort("EmegencyStopIn", port_emergency_stop_in_);
+
+  // properties addition
+
   this->addProperty("hal_component_name", hal_component_name_).doc("");
   this->addProperty("scheme_component_name", scheme_component_name_).doc("");
   this->addProperty("debug", debug_).doc("");
@@ -47,14 +54,22 @@ Irp6otManager::Irp6otManager(const std::string& name)
   this->addProperty("fault_autoreset", fault_autoreset_).doc("");
   this->addProperty("services_names", services_names_).doc("");
   this->addProperty("regulators_names", regulators_names_).doc("");
-  this->addOperation("auto", &Irp6otManager::autoRun, this, RTT::OwnThread).doc("");
-  this->addOperation("setSynchronized", &Irp6otManager::setSynchronized, this, RTT::OwnThread).doc("");
-  this->addOperation("resetFault", &Irp6otManager::resetFaultAll, this, RTT::OwnThread).doc("");
-  this->addOperation("disable", &Irp6otManager::disableAll, this, RTT::OwnThread).doc("");
-  this->addOperation("enable", &Irp6otManager::enableAll, this, RTT::OwnThread).doc("");
-  this->addOperation("beginHoming", &Irp6otManager::beginHomingAll, this, RTT::OwnThread).doc("");
-  this->addOperation("homingDone", &Irp6otManager::homingDoneAll, this, RTT::OwnThread).doc("");
-  this->addOperation("state", &Irp6otManager::stateAll, this, RTT::OwnThread).doc("");
+  this->addOperation("auto", &Irp6otManager::autoRun, this, RTT::OwnThread).doc(
+      "");
+  this->addOperation("setSynchronized", &Irp6otManager::setSynchronized, this,
+                     RTT::OwnThread).doc("");
+  this->addOperation("resetFault", &Irp6otManager::resetFaultAll, this,
+                     RTT::OwnThread).doc("");
+  this->addOperation("disable", &Irp6otManager::disableAll, this,
+                     RTT::OwnThread).doc("");
+  this->addOperation("enable", &Irp6otManager::enableAll, this, RTT::OwnThread)
+      .doc("");
+  this->addOperation("beginHoming", &Irp6otManager::beginHomingAll, this,
+                     RTT::OwnThread).doc("");
+  this->addOperation("homingDone", &Irp6otManager::homingDoneAll, this,
+                     RTT::OwnThread).doc("");
+  this->addOperation("state", &Irp6otManager::stateAll, this, RTT::OwnThread)
+      .doc("");
 }
 
 Irp6otManager::~Irp6otManager() {
@@ -102,13 +117,28 @@ bool Irp6otManager::startHook() {
 }
 
 void Irp6otManager::updateHook() {
+  std_msgs::Bool do_synchro;
+  if (port_do_synchro_in_.read(do_synchro) == RTT::NewData) {
+    if (do_synchro.data) {
+      std::cout<< getName() << " Synchronisation commanded" << std::endl;
+    }
+  }
+
+  std_msgs::Bool emergency_stop;
+  if (port_emergency_stop_in_.read(emergency_stop) == RTT::NewData) {
+    if (emergency_stop.data) {
+      std::cout  <<  RED << getName() << " Emergency stop commanded" << RESET << std::endl;
+    }
+  }
+
   switch (robot_state_) {
     case NOT_OPERATIONAL:
 
       for (int i = 0; i < number_of_servos_; i++) {
         if (servo_state_[i] != NOT_SYNCHRONIZED) {
-          RTT::Attribute<ECServoState> * servo_ec_state = (RTT::Attribute<ECServoState> *) EC
-              ->provides(services_names_[i])->getAttribute("state");
+          RTT::Attribute<ECServoState> * servo_ec_state = (RTT::Attribute<
+              ECServoState> *) EC->provides(services_names_[i])->getAttribute(
+              "state");
           ec_servo_state_ = servo_ec_state->get();
 
           if (auto_) {
@@ -139,13 +169,15 @@ void Irp6otManager::updateHook() {
       break;
 
     case NOT_SYNCHRONIZED:
-      if (auto_) robot_state_ = SYNCHRONIZING;
+      if (auto_)
+        robot_state_ = SYNCHRONIZING;
       break;
 
     case SYNCHRONIZING:
       for (int i = 0; i < number_of_servos_; i++) {
-        RTT::Attribute<ECServoState> * servo_state = (RTT::Attribute<ECServoState> *) EC
-            ->provides(services_names_[i])->getAttribute("state");
+        RTT::Attribute<ECServoState> * servo_state = (RTT::Attribute<
+            ECServoState> *) EC->provides(services_names_[i])->getAttribute(
+            "state");
         ec_servo_state_ = servo_state->get();
 
         if (ec_servo_state_ == OPERATION_ENABLED) {
@@ -153,20 +185,23 @@ void Irp6otManager::updateHook() {
             case NOT_SYNCHRONIZED:
               if (i == last_servo_synchro_) {
                 RTT::OperationCaller<bool(void)> beginHoming;
-                beginHoming = EC->provides(services_names_[i])->getOperation("beginHoming");
+                beginHoming = EC->provides(services_names_[i])->getOperation(
+                    "beginHoming");
                 beginHoming.setCaller(this->engine());
                 beginHoming();
                 servo_state_[i] = SYNCHRONIZING;
-                std::cout << services_names_[i] << ": SYNCHRONIZING" << std::endl;
+                std::cout << services_names_[i] << ": SYNCHRONIZING"
+                    << std::endl;
               }
               break;
             case SYNCHRONIZING:
-              RTT::Attribute<bool> * homing = (RTT::Attribute<bool> *) EC->provides(
-                  services_names_[i])->getAttribute("homing_done");
+              RTT::Attribute<bool> * homing = (RTT::Attribute<bool> *) EC
+                  ->provides(services_names_[i])->getAttribute("homing_done");
               if (homing->get()) {
                 servo_state_[i] = SYNCHRONIZED;
-                std::cout << services_names_[i] << ": SYNCHRONIZED" << std::endl;
-                last_servo_synchro_ = i+1;
+                std::cout << services_names_[i] << ": SYNCHRONIZED"
+                    << std::endl;
+                last_servo_synchro_ = i + 1;
                 ++servos_state_changed_;
 
                 // switch Regulator
@@ -174,9 +209,9 @@ void Irp6otManager::updateHook() {
                 enable_vec_.clear();
                 enable_vec_.push_back(regulators_names_[i]);
                 RTT::OperationCaller<
-                bool(const std::vector<std::string> &disable_block_names,
-                     const std::vector<std::string> &enable_block_names,
-                     const bool strict, const bool force)> switchBlocks;
+                    bool(const std::vector<std::string> &disable_block_names,
+                         const std::vector<std::string> &enable_block_names,
+                         const bool strict, const bool force)> switchBlocks;
                 switchBlocks = Scheme->getOperation("switchBlocks");
                 switchBlocks.setCaller(this->engine());
                 switchBlocks(disable_vec_, enable_vec_, true, true);
@@ -224,9 +259,9 @@ void Irp6otManager::setSynchronized() {
     enable_vec_.clear();
     enable_vec_.push_back(regulators_names_[i]);
     RTT::OperationCaller<
-    bool(const std::vector<std::string> &disable_block_names,
-         const std::vector<std::string> &enable_block_names,
-         const bool strict, const bool force)> switchBlocks;
+        bool(const std::vector<std::string> &disable_block_names,
+             const std::vector<std::string> &enable_block_names,
+             const bool strict, const bool force)> switchBlocks;
     switchBlocks = Scheme->getOperation("switchBlocks");
     switchBlocks.setCaller(this->engine());
     switchBlocks(disable_vec_, enable_vec_, true, true);
@@ -237,8 +272,9 @@ void Irp6otManager::setSynchronized() {
 bool Irp6otManager::resetFaultAll() {
   bool out = true;
   for (int i = 0; i < number_of_servos_; i++) {
-    RTT::Attribute<ECServoState> * servo_ec_state = (RTT::Attribute<ECServoState> *) EC
-        ->provides(services_names_[i])->getAttribute("state");
+    RTT::Attribute<ECServoState> * servo_ec_state =
+        (RTT::Attribute<ECServoState> *) EC->provides(services_names_[i])
+            ->getAttribute("state");
     ec_servo_state_ = servo_ec_state->get();
 
     // set "resetFault" if fault
@@ -255,8 +291,9 @@ bool Irp6otManager::resetFaultAll() {
 bool Irp6otManager::enableAll() {
   bool out = true;
   for (int i = 0; i < number_of_servos_; i++) {
-    RTT::Attribute<ECServoState> * servo_ec_state = (RTT::Attribute<ECServoState> *) EC
-        ->provides(services_names_[i])->getAttribute("state");
+    RTT::Attribute<ECServoState> * servo_ec_state =
+        (RTT::Attribute<ECServoState> *) EC->provides(services_names_[i])
+            ->getAttribute("state");
     ec_servo_state_ = servo_ec_state->get();
 
     // set "enable" if powered on
@@ -273,8 +310,9 @@ bool Irp6otManager::enableAll() {
 bool Irp6otManager::disableAll() {
   bool out = true;
   for (int i = 0; i < number_of_servos_; i++) {
-    RTT::Attribute<ECServoState> * servo_ec_state = (RTT::Attribute<ECServoState> *) EC
-        ->provides(services_names_[i])->getAttribute("state");
+    RTT::Attribute<ECServoState> * servo_ec_state =
+        (RTT::Attribute<ECServoState> *) EC->provides(services_names_[i])
+            ->getAttribute("state");
     ec_servo_state_ = servo_ec_state->get();
 
     // set "disable" if powered on
@@ -287,7 +325,8 @@ bool Irp6otManager::disableAll() {
 }
 
 void Irp6otManager::beginHomingAll() {
-  if (robot_state_ == NOT_SYNCHRONIZED) robot_state_ = SYNCHRONIZING;
+  if (robot_state_ == NOT_SYNCHRONIZED)
+    robot_state_ = SYNCHRONIZING;
 }
 
 void Irp6otManager::homingDoneAll() {
@@ -300,10 +339,12 @@ void Irp6otManager::homingDoneAll() {
 
 void Irp6otManager::stateAll() {
   for (int i = 0; i < number_of_servos_; i++) {
-    RTT::Attribute<ECServoState> * servo_ec_state = (RTT::Attribute<ECServoState> *) EC
-        ->provides(services_names_[i])->getAttribute("state");
+    RTT::Attribute<ECServoState> * servo_ec_state =
+        (RTT::Attribute<ECServoState> *) EC->provides(services_names_[i])
+            ->getAttribute("state");
     ec_servo_state_ = servo_ec_state->get();
-    std::cout << services_names_[i] << ": " << state_text(ec_servo_state_) << std::endl;
+    std::cout << services_names_[i] << ": " << state_text(ec_servo_state_)
+        << std::endl;
   }
 }
 
@@ -311,29 +352,21 @@ std::string Irp6otManager::state_text(ECServoState state) {
   switch (state) {
     case INVALID:
       return "INVALID";
-    case
-    NOT_READY_TO_SWITCH_ON:
+    case NOT_READY_TO_SWITCH_ON:
       return "NOT_READY_TO_SWITCH_ON";
-    case
-    SWITCH_ON_DISABLED:
+    case SWITCH_ON_DISABLED:
       return "SWITCH_ON_DISABLED";
-    case
-    READY_TO_SWITCH_ON:
+    case READY_TO_SWITCH_ON:
       return "READY_TO_SWITCH_ON";
-    case
-    SWITCH_ON:
+    case SWITCH_ON:
       return "SWITCH_ON";
-    case
-    OPERATION_ENABLED:
+    case OPERATION_ENABLED:
       return "OPERATION_ENABLED";
-    case
-    QUICK_STOP_ACTIVE:
+    case QUICK_STOP_ACTIVE:
       return "QUICK_STOP_ACTIVE";
-    case
-    FAULT_REACTION_ACTIVE:
+    case FAULT_REACTION_ACTIVE:
       return "FAULT_REACTION_ACTIVE";
-    case
-    FAULT:
+    case FAULT:
       return "FAULT";
     default:
       return "";
