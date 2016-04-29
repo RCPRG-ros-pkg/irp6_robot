@@ -28,12 +28,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Irp6otManager.h"
+#include "../../irp6_supervisor/src/Irp6otSupervisor.h"
+
 #include <vector>
 #include <string>
 #include "common_headers/string_colors.h"
 
-Irp6otManager::Irp6otManager(const std::string& name)
+Irp6otSupervisor::Irp6otSupervisor(const std::string& name)
     : TaskContext(name),
       robot_state_(NOT_OPERATIONAL),
       number_of_servos_(0),
@@ -68,28 +69,28 @@ Irp6otManager::Irp6otManager(const std::string& name)
   this->addProperty("fault_autoreset", fault_autoreset_).doc("");
   this->addProperty("services_names", services_names_).doc("");
   this->addProperty("regulators_names", regulators_names_).doc("");
-  this->addOperation("auto", &Irp6otManager::autoRun, this, RTT::OwnThread).doc(
+  this->addOperation("auto", &Irp6otSupervisor::autoRun, this, RTT::OwnThread).doc(
       "");
-  this->addOperation("setSynchronized", &Irp6otManager::setSynchronized, this,
+  this->addOperation("setSynchronized", &Irp6otSupervisor::setSynchronized, this,
                      RTT::OwnThread).doc("");
-  this->addOperation("resetFault", &Irp6otManager::resetFaultAll, this,
+  this->addOperation("resetFault", &Irp6otSupervisor::resetFaultAll, this,
                      RTT::OwnThread).doc("");
-  this->addOperation("disable", &Irp6otManager::disableAll, this,
+  this->addOperation("disable", &Irp6otSupervisor::disableAll, this,
                      RTT::OwnThread).doc("");
-  this->addOperation("enable", &Irp6otManager::enableAll, this, RTT::OwnThread)
+  this->addOperation("enable", &Irp6otSupervisor::enableAll, this, RTT::OwnThread)
       .doc("");
-  this->addOperation("beginHoming", &Irp6otManager::beginHomingAll, this,
+  this->addOperation("beginHoming", &Irp6otSupervisor::beginHomingAll, this,
                      RTT::OwnThread).doc("");
-  this->addOperation("homingDone", &Irp6otManager::homingDoneAll, this,
+  this->addOperation("homingDone", &Irp6otSupervisor::homingDoneAll, this,
                      RTT::OwnThread).doc("");
-  this->addOperation("state", &Irp6otManager::stateAll, this, RTT::OwnThread)
+  this->addOperation("state", &Irp6otSupervisor::stateAll, this, RTT::OwnThread)
       .doc("");
 }
 
-Irp6otManager::~Irp6otManager() {
+Irp6otSupervisor::~Irp6otSupervisor() {
 }
 
-bool Irp6otManager::configureHook() {
+bool Irp6otSupervisor::configureHook() {
   if (hal_component_name_.empty() || scheme_component_name_.empty()) {
     return false;
   }
@@ -113,7 +114,7 @@ bool Irp6otManager::configureHook() {
   return true;
 }
 
-bool Irp6otManager::startHook() {
+bool Irp6otSupervisor::startHook() {
   port_is_synchronised_out_.write(true);
   port_is_hardware_busy_out_.write(false);
   port_is_hardware_panic_out_.write(false);
@@ -134,7 +135,7 @@ bool Irp6otManager::startHook() {
   return true;
 }
 
-void Irp6otManager::updateHook() {
+void Irp6otSupervisor::updateHook() {
   std_msgs::Bool do_synchro;
   if (port_do_synchro_in_.read(do_synchro) == RTT::NewData) {
     if (do_synchro.data) {
@@ -285,11 +286,11 @@ void Irp6otManager::updateHook() {
   }
 }
 
-void Irp6otManager::autoRun() {
+void Irp6otSupervisor::autoRun() {
   auto_ = true;
 }
 
-void Irp6otManager::setSynchronized() {
+void Irp6otSupervisor::setSynchronized() {
   robot_state_ = SYNCHRONIZED;
 
   // switch Regulators
@@ -308,7 +309,7 @@ void Irp6otManager::setSynchronized() {
   }
 }
 
-bool Irp6otManager::resetFaultAll() {
+bool Irp6otSupervisor::resetFaultAll() {
   bool out = true;
   for (int i = 0; i < number_of_servos_; i++) {
     RTT::Attribute<ECServoState> * servo_ec_state =
@@ -327,7 +328,7 @@ bool Irp6otManager::resetFaultAll() {
   return out;
 }
 
-bool Irp6otManager::enableAll() {
+bool Irp6otSupervisor::enableAll() {
   bool out = true;
   for (int i = 0; i < number_of_servos_; i++) {
     RTT::Attribute<ECServoState> * servo_ec_state =
@@ -346,7 +347,7 @@ bool Irp6otManager::enableAll() {
   return out;
 }
 
-bool Irp6otManager::disableAll() {
+bool Irp6otSupervisor::disableAll() {
   bool out = true;
   for (int i = 0; i < number_of_servos_; i++) {
     RTT::Attribute<ECServoState> * servo_ec_state =
@@ -363,12 +364,12 @@ bool Irp6otManager::disableAll() {
   return out;
 }
 
-void Irp6otManager::beginHomingAll() {
+void Irp6otSupervisor::beginHomingAll() {
   if (robot_state_ == NOT_SYNCHRONIZED)
     robot_state_ = SYNCHRONIZING;
 }
 
-void Irp6otManager::homingDoneAll() {
+void Irp6otSupervisor::homingDoneAll() {
   for (int i = 0; i < number_of_servos_; i++) {
     RTT::Attribute<bool> * homing = (RTT::Attribute<bool> *) EC->provides(
         services_names_[i])->getAttribute("homing_done");
@@ -376,7 +377,7 @@ void Irp6otManager::homingDoneAll() {
   }
 }
 
-void Irp6otManager::stateAll() {
+void Irp6otSupervisor::stateAll() {
   for (int i = 0; i < number_of_servos_; i++) {
     RTT::Attribute<ECServoState> * servo_ec_state =
         (RTT::Attribute<ECServoState> *) EC->provides(services_names_[i])
@@ -387,7 +388,7 @@ void Irp6otManager::stateAll() {
   }
 }
 
-std::string Irp6otManager::state_text(ECServoState state) {
+std::string Irp6otSupervisor::state_text(ECServoState state) {
   switch (state) {
     case INVALID:
       return "INVALID";
@@ -412,4 +413,4 @@ std::string Irp6otManager::state_text(ECServoState state) {
   }
 }
 
-ORO_CREATE_COMPONENT(Irp6otManager)
+ORO_CREATE_COMPONENT(Irp6otSupervisor)

@@ -20,10 +20,10 @@ Irp6otHwModel_EC.configure()
 
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside.ops")
 
-addPeer("Irp6otManager", "Irp6otHwModel_EC");
+addPeer("Irp6otSupervisor", "Irp6otHwModel_EC");
 
 Irp6otHwModel_EC.start()
 Irp6otHwModel_MW.start()
 Irp6otScheme.start()
 
-Irp6otManager.start()
+Irp6otSupervisor.start()

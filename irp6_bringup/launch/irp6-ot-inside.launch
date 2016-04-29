@@ -10,7 +10,7 @@
     
   <group>
     <rosparam>
-      Irp6otManager:
+      Irp6otSupervisor:
         debug: false
         fault_autoreset: false
         autostart: false

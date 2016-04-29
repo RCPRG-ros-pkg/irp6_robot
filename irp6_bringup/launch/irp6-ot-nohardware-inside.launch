@@ -3,7 +3,7 @@
   </include>
   <group>
     <rosparam>
-      Irp6otManager:
+      Irp6otSupervisor:
         hal_component_name: Irp6otHwModel_EC
       ATI3084:
         test_mode: true

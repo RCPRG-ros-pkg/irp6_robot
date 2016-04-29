@@ -1,15 +1,16 @@
 <package>
-  <name>irp6ot_manager</name>
+  <name>irp6_supervisor</name>
   <version>0.1.0</version>
-  <description>Irp6 track manager</description>
+  <description>Irp6 supervisor</description>
   <maintainer email="bartswis@gmail.com">Bartosz Świstak</maintainer>
-
+ 
   <license>BSD</license>
 
   <url type="website"></url>
   <!-- <url type="bugtracker"></url> -->
 
   <author email="bartswis@gmail.com">Bartosz Świstak</author>
+  <author email="tomrobotics@gmail.com">Tomasz Winiarski</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 

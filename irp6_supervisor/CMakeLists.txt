@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(irp6ot_manager)
+project(irp6_supervisor)
 
 find_package(catkin REQUIRED COMPONENTS common_headers rtt_ros cmake_modules)
 
@@ -17,7 +17,7 @@ link_directories(
   ${catkin_LIBRARY_DIRS}
   ${USE_OROCOS_LIBRARY_DIRS})
 
-orocos_component(${PROJECT_NAME} src/Irp6otManager.cpp)
+orocos_component(${PROJECT_NAME} src/Irp6otSupervisor.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 orocos_generate_package()

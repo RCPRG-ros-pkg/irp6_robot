@@ -4,7 +4,7 @@
   <group>
     <param name="Irp6otHardwareInterface_EC/master_config" command="cat $(find irp6_bringup)/config/master_config.yaml"/>
     <rosparam>
-      Irp6otManager:
+      Irp6otSupervisor:
         hal_component_name: Irp6otHardwareInterface_EC
       Irp6otHardwareInterface:
         timeouts_to_print: 3

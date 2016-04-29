@@ -28,8 +28,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef IRP6OTMANAGER_H_
-#define IRP6OTMANAGER_H_
+#ifndef IRP6OTSUPERVISOR_H_
+#define IRP6OTSUPERVISOR_H_
 
 #include <std_msgs/Bool.h>
 
@@ -77,7 +77,7 @@ typedef enum {
   FAULT = 8
 } ECServoState;
 
-class Irp6otManager : public RTT::TaskContext {
+class Irp6otSupervisor : public RTT::TaskContext {
  private:
   TaskContext * EC;
   TaskContext * Scheme;
@@ -122,8 +122,8 @@ class Irp6otManager : public RTT::TaskContext {
   std::vector<std::string> regulators_names_;
 
  public:
-  explicit Irp6otManager(const std::string& name);
-  ~Irp6otManager();
+  explicit Irp6otSupervisor(const std::string& name);
+  ~Irp6otSupervisor();
 
   bool configureHook();
   bool startHook();
@@ -142,4 +142,4 @@ class Irp6otManager : public RTT::TaskContext {
   std::string state_text(ECServoState state);
 };
 
-#endif  // IRP6OTMANAGER_H_
+#endif  // IRP6OTSUPERVISOR_H_
