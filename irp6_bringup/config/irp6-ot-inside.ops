@@ -563,7 +563,7 @@ connect("Irp6otmForceControlLaw.OutputEndEffectorPose", "Irp6otmInverseKinematic
 connect("Irp6otmForceControlLaw.CurrentEndEffectorPose", "Irp6otmForwardKinematic.EndEffectorOutputPose", ConnPolicy())
 connect("Irp6otmForceTransformation.OutputEndEffectorWrench", "Irp6otmForceControlLaw.CurrentEndEffectorWrench", ConnPolicy())
 connect("Irp6otmForceControlLaw.IsSynchronisedIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
-connect("Irp6otmForceControlLaw.GeneratorActiveOut",Irp6ot_hi_component_mw()+".GeneratorActiveIn", ConnPolicy())
+connect("Irp6otmForceControlLaw.GeneratorActiveOut","Irp6otManager.GeneratorActiveIn", ConnPolicy())
 
 
 connect("IRp6ottfgLimitDetector.OutputPort","Irp6ottfgPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
@@ -571,11 +571,11 @@ connect("Irp6ottfgPortDoubleAggregate_hw_p.OutputPort","Irp6ottfgIM2RM.Increment
 connect("Irp6ottfgIM2RM.RadianMotorPosition","Irp6ottfgSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
 connect("Irp6ottfgSplineTrajectoryGeneratorMotor.JointPositionCommand","IRp6ottfgLimitDetector.InputPort", ConnPolicy())
 connect("Irp6ottfgSplineTrajectoryGeneratorMotor.IsSynchronisedIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
-connect("Irp6ottfgSplineTrajectoryGeneratorMotor.GeneratorActiveOut",Irp6ot_hi_component_mw()+".GeneratorActiveIn", ConnPolicy())
+connect("Irp6ottfgSplineTrajectoryGeneratorMotor.GeneratorActiveOut","Irp6otManager.GeneratorActiveIn", ConnPolicy())
 connect("Irp6otmForwardKinematic.EndEffectorOutputPose", "Irp6otmPoseInt.CartesianPosition", ConnPolicy())
 connect("Irp6otmPoseInt.CartesianPositionCommand", "Irp6otmInverseKinematic.InputEndEffectorPose", ConnPolicy())
 connect("Irp6otmPoseInt.IsSynchronisedIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
-connect("Irp6otmPoseInt.GeneratorActiveOut",Irp6ot_hi_component_mw()+".GeneratorActiveIn", ConnPolicy())
+connect("Irp6otmPoseInt.GeneratorActiveOut","Irp6otManager.GeneratorActiveIn", ConnPolicy())
 connect("Irp6otmToolInt.CartesianPositionCommand", "Irp6otmForwardKinematic.Tool", ConnPolicy())
 connect("Irp6otmToolInt.CartesianPositionCommand", "Irp6otmInverseKinematic.Tool", ConnPolicy())
 
@@ -587,17 +587,17 @@ connect("Irp6otmPortDoubleAggregate_hw_p.OutputPort","Irp6otmIM2RM.IncrementalMo
 connect("Irp6otmIM2RM.RadianMotorPosition","Irp6otmSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
 connect("Irp6otmSplineTrajectoryGeneratorMotor.JointPositionCommand","IRp6otmLimitDetector.InputPort", ConnPolicy())
 connect("Irp6otmSplineTrajectoryGeneratorMotor.IsSynchronisedIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
-connect("Irp6otmSplineTrajectoryGeneratorMotor.GeneratorActiveOut",Irp6ot_hi_component_mw()+".GeneratorActiveIn", ConnPolicy())
+connect("Irp6otmSplineTrajectoryGeneratorMotor.GeneratorActiveOut","Irp6otManager.GeneratorActiveIn", ConnPolicy())
 
 
 connect("Irp6otmM2J.JointPosition","Irp6otmSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
 connect("Irp6otmSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6otmJ2M.JointPosition", ConnPolicy())
 connect("Irp6otmSplineTrajectoryGeneratorJoint.IsSynchronisedIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
-connect("Irp6otmSplineTrajectoryGeneratorJoint.GeneratorActiveOut",Irp6ot_hi_component_mw()+".GeneratorActiveIn", ConnPolicy())
+connect("Irp6otmSplineTrajectoryGeneratorJoint.GeneratorActiveOut","Irp6otManager.GeneratorActiveIn", ConnPolicy())
 connect("Irp6ottfgM2J.JointPosition","Irp6ottfgSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
 connect("Irp6ottfgSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6ottfgJ2M.JointPosition", ConnPolicy())
 connect("Irp6ottfgSplineTrajectoryGeneratorJoint.IsSynchronisedIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
-connect("Irp6ottfgSplineTrajectoryGeneratorJoint.GeneratorActiveOut",Irp6ot_hi_component_mw()+".GeneratorActiveIn", ConnPolicy())
+connect("Irp6ottfgSplineTrajectoryGeneratorJoint.GeneratorActiveOut","Irp6otManager.GeneratorActiveIn", ConnPolicy())
 
 
 
@@ -607,13 +607,14 @@ connect("Irp6ottfgSplineTrajectoryGeneratorJoint.GeneratorActiveOut",Irp6ot_hi_c
 connect("Irp6otmM2J.JointPosition","Irp6otmForwardKinematic.JointPosition", ConnPolicy())
 connect("Irp6otmJ2M.JointPosition","Irp6otmInverseKinematic.OutputJointPosition", ConnPolicy())
 
+connect("Irp6otDiag.SynchroStateIn","Irp6otManager.IsSynchronisedOut", ConnPolicy())
+connect("Irp6otDiag.HardwaPanicIn","Irp6otManager.IsHardwarePanicOut", ConnPolicy())
+connect("Irp6otDiag.HardwaBusyIn","Irp6otManager.IsHardwareBusyOut", ConnPolicy())
 
-
-
-connect("Irp6otDiag.SynchroStateIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
-connect("Irp6otDiag.HardwaPanicIn",Irp6ot_hi_component_mw()+".IsHardwarePanic", ConnPolicy())
-connect("Irp6otDiag.HardwaBusyIn",Irp6ot_hi_component_mw()+".IsHardwareBusy", ConnPolicy())
-
+connect("Irp6otManager.DoSynchroHiMwOut",Irp6ot_hi_component_mw()+".DoSynchroIn", ConnPolicy())
+connect("Irp6otManager.EmergencyStopHiMwOut",Irp6ot_hi_component_mw()+".EmergencyStopIn", ConnPolicy())
+connect("Irp6otManager.IsSynchronisedHiMwIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
+connect("Irp6otManager.IsHardwarePanicHiMwIn",Irp6ot_hi_component_mw()+".IsHardwarePanic", ConnPolicy())
 
 
 
@@ -685,7 +686,7 @@ connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_6",Irp6ot_hi_component_mw(
 //
 
 
-stream(Irp6ot_hi_component_mw()+".DoSynchroIn", ros.comm.topic("/irp6ot_hardware_interface/do_synchro_in"))
+// stream(Irp6ot_hi_component_mw()+".DoSynchroIn", ros.comm.topic("/irp6ot_hardware_interface/do_synchro_in"))
 
 stream("Irp6otManager.DoSynchroIn", ros.comm.topic("/irp6ot_manager/do_synchro_in"))
 stream("Irp6otManager.EmegencyStopIn", ros.comm.topic("/irp6ot_manager/emergency_stop_in"))

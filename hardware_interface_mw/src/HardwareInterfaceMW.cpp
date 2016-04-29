@@ -374,6 +374,8 @@ void HardwareInterfaceMW::updateHookInit() {
 
   bool emergency_stop;
   if (port_emergency_stop_.read(emergency_stop) == RTT::NewData) {
+    std::cout << RED << std::endl << getName() << " emergency_stop"
+                   << RESET << std::endl << std::endl;
     if (emergency_stop) {
       hi_->set_hardware_panic();
     }

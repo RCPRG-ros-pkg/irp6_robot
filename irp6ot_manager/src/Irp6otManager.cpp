@@ -44,6 +44,20 @@ Irp6otManager::Irp6otManager(const std::string& name)
 
   this->ports()->addPort("DoSynchroIn", port_do_synchro_in_);
   this->ports()->addPort("EmegencyStopIn", port_emergency_stop_in_);
+  this->ports()->addPort("GeneratorActiveIn", port_generator_active_in_);
+
+  this->ports()->addPort("IsSynchronisedHiMwIn",
+                         port_is_synchronised_hi_mw_in_);
+  this->ports()->addPort("IsHardwarePanicHiMwIn",
+                         port_is_hardware_panic_hi_mw_in_);
+
+  this->ports()->addPort("IsSynchronisedOut", port_is_synchronised_out_);
+  this->ports()->addPort("IsHardwarePanicOut", port_is_hardware_panic_out_);
+  this->ports()->addPort("IsHardwareBusyOut", port_is_hardware_busy_out_);
+
+  this->ports()->addPort("DoSynchroHiMwOut", port_do_synchro_hi_mw_out_);
+  this->ports()->addPort("EmergencyStopHiMwOut",
+                         port_emergency_stop_hi_mw_out_);
 
   // properties addition
 
@@ -100,6 +114,10 @@ bool Irp6otManager::configureHook() {
 }
 
 bool Irp6otManager::startHook() {
+  port_is_synchronised_out_.write(true);
+  port_is_hardware_busy_out_.write(false);
+  port_is_hardware_panic_out_.write(false);
+
   EC = RTT::TaskContext::getPeer(hal_component_name_);
   Scheme = RTT::TaskContext::getPeer(scheme_component_name_);
 
@@ -120,15 +138,36 @@ void Irp6otManager::updateHook() {
   std_msgs::Bool do_synchro;
   if (port_do_synchro_in_.read(do_synchro) == RTT::NewData) {
     if (do_synchro.data) {
-      std::cout<< getName() << " Synchronisation commanded" << std::endl;
+      port_do_synchro_hi_mw_out_.write(do_synchro);
+      std::cout << getName() << " Synchronisation commanded" << std::endl;
     }
   }
 
   std_msgs::Bool emergency_stop;
   if (port_emergency_stop_in_.read(emergency_stop) == RTT::NewData) {
     if (emergency_stop.data) {
-      std::cout  <<  RED << getName() << " Emergency stop commanded" << RESET << std::endl;
+      port_emergency_stop_hi_mw_out_.write(true);
+      std::cout << RED << getName() << " Emergency stop commanded" << RESET
+          << std::endl;
     }
+  }
+
+  bool generator_active;
+  if (port_generator_active_in_.read(generator_active) == RTT::NewData) {
+    port_is_hardware_busy_out_.write(generator_active);
+  } else {
+    port_is_hardware_busy_out_.write(false);
+  }
+
+  bool is_hi_mw_synchronised;
+  if (port_is_synchronised_hi_mw_in_.read(is_hi_mw_synchronised)
+      == RTT::NewData) {
+    port_is_synchronised_out_.write(is_hi_mw_synchronised);
+  }
+
+  bool is_hi_mw_panic;
+  if (port_is_hardware_panic_hi_mw_in_.read(is_hi_mw_panic) == RTT::NewData) {
+    port_is_hardware_panic_out_.write(is_hi_mw_panic);
   }
 
   switch (robot_state_) {
@@ -191,7 +230,7 @@ void Irp6otManager::updateHook() {
                 beginHoming();
                 servo_state_[i] = SYNCHRONIZING;
                 std::cout << services_names_[i] << ": SYNCHRONIZING"
-                    << std::endl;
+                          << std::endl;
               }
               break;
             case SYNCHRONIZING:
@@ -200,7 +239,7 @@ void Irp6otManager::updateHook() {
               if (homing->get()) {
                 servo_state_[i] = SYNCHRONIZED;
                 std::cout << services_names_[i] << ": SYNCHRONIZED"
-                    << std::endl;
+                          << std::endl;
                 last_servo_synchro_ = i + 1;
                 ++servos_state_changed_;
 
@@ -344,7 +383,7 @@ void Irp6otManager::stateAll() {
             ->getAttribute("state");
     ec_servo_state_ = servo_ec_state->get();
     std::cout << services_names_[i] << ": " << state_text(ec_servo_state_)
-        << std::endl;
+              << std::endl;
   }
 }
 

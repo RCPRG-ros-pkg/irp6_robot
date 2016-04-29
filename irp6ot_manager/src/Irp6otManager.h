@@ -99,7 +99,17 @@ class Irp6otManager : public RTT::TaskContext {
 
   RTT::InputPort<std_msgs::Bool> port_do_synchro_in_;
   RTT::InputPort<std_msgs::Bool> port_emergency_stop_in_;
+  RTT::InputPort<bool> port_generator_active_in_;
 
+  RTT::InputPort<bool> port_is_synchronised_hi_mw_in_;
+  RTT::InputPort<bool> port_is_hardware_panic_hi_mw_in_;
+
+  RTT::OutputPort<bool> port_is_synchronised_out_;
+  RTT::OutputPort<bool> port_is_hardware_panic_out_;
+  RTT::OutputPort<bool> port_is_hardware_busy_out_;
+
+  RTT::OutputPort<std_msgs::Bool> port_do_synchro_hi_mw_out_;
+  RTT::OutputPort<bool> port_emergency_stop_hi_mw_out_;
 
   // Properties
   bool debug_;

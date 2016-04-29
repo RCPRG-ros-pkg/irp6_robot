@@ -72,7 +72,8 @@ class Irp6otMotors(Irp6Motors):
         timerThread.daemon = True
         timerThread.start()
         self.emergency_stop_pub = rospy.Publisher('/irp6ot_manager/emergency_stop_in', std_msgs.msg.Bool, queue_size=0)
-        
+        self.synchro_pub = rospy.Publisher('/irp6ot_manager/do_synchro_in', std_msgs.msg.Bool, queue_size=0)
+      
 
 
     def irp6otm_done_callback(self,state, result):
@@ -144,11 +145,9 @@ class Irp6otMotors(Irp6Motors):
 
 
     def synchronise(self):
-        pub = rospy.Publisher('/irp6ot_hardware_interface/do_synchro_in', std_msgs.msg.Bool, queue_size=0)
-        rospy.sleep(0.5)
         goal = std_msgs.msg.Bool()
         goal.data = True
-        pub.publish(goal)
+        self.synchro_pub.publish(goal)
         self.status.synchro_in_progress = True
         self.change_motors_widget_state()
         
