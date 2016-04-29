@@ -13,7 +13,7 @@ ros.import("conveyor_kinematic")
 ros.import("force_control")
 ros.import("irp6_force_sensor")
 ros.import("irp6_haptic")
-ros.import("irp6_manager")
+ros.import("irp6_supervisor")
 
 
 //------------------------------------------------------------------------------
