@@ -23,7 +23,11 @@ ConvScheme.loadService("conman_ros")
 ConvScheme.configure()
 
 
-
+loadComponent("ConvSupervisor","ConvSupervisor")
+setActivity("ConvSupervisor", 0.1, 4, ORO_SCHED_RT);
+ConvSupervisor.loadService("rosparam")
+ConvSupervisor.rosparam.getAll()
+ConvSupervisor.configure()
 
 
 loadComponent("ConvDiag", "Irp6Diagnostic")
@@ -153,19 +157,26 @@ ConveyorJntPub.configure()
 //
 
 
-connect("ConvDiag.SynchroStateIn",Conv_hi_component()+".IsSynchronised", ConnPolicy())
-connect("ConvDiag.HardwaPanicIn",Conv_hi_component()+".IsHardwarePanic", ConnPolicy())
-connect("ConvDiag.HardwaBusyIn",Conv_hi_component()+".IsHardwareBusy", ConnPolicy())
+connect("ConvDiag.SynchroStateIn","ConvSupervisor.IsSynchronisedOut", ConnPolicy())
+connect("ConvDiag.HardwaPanicIn","ConvSupervisor.IsHardwarePanicOut", ConnPolicy())
+connect("ConvDiag.HardwaBusyIn","ConvSupervisor.IsHardwareBusyOut", ConnPolicy())
+
+connect("ConvSupervisor.DoSynchroHiMwOut",Conv_hi_component()+".DoSynchroIn", ConnPolicy())
+connect("ConvSupervisor.EmergencyStopHiMwOut",Conv_hi_component()+".EmergencyStopIn", ConnPolicy())
+connect("ConvSupervisor.IsSynchronisedHiMwIn",Conv_hi_component()+".IsSynchronised", ConnPolicy())
+connect("ConvSupervisor.IsHardwarePanicHiMwIn",Conv_hi_component()+".IsHardwarePanic", ConnPolicy())
+
+
 connect("ConveyorM2J.JointPosition","ConveyorSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
 connect("ConveyorSplineTrajectoryGeneratorJoint.JointPositionCommand","ConveyorJ2M.JointPosition", ConnPolicy())
 connect("ConveyorSplineTrajectoryGeneratorJoint.IsSynchronisedIn",Conv_hi_component()+".IsSynchronised", ConnPolicy())
-connect("ConveyorSplineTrajectoryGeneratorJoint.GeneratorActiveOut",Conv_hi_component()+".GeneratorActiveIn", ConnPolicy())
+connect("ConveyorSplineTrajectoryGeneratorJoint.GeneratorActiveOut","ConvSupervisor.GeneratorActiveIn", ConnPolicy())
 connect("ConveyorLimitDetector.OutputPort","ConveyorPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 connect("ConveyorPortDoubleAggregate_hw_p.OutputPort","ConveyorIM2RM.IncrementalMotorPosition", ConnPolicy())
 connect("ConveyorIM2RM.RadianMotorPosition","ConveyorSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
 connect("ConveyorSplineTrajectoryGeneratorMotor.JointPositionCommand","ConveyorLimitDetector.InputPort", ConnPolicy())
 connect("ConveyorSplineTrajectoryGeneratorMotor.IsSynchronisedIn",Conv_hi_component()+".IsSynchronised", ConnPolicy())
-connect("ConveyorSplineTrajectoryGeneratorMotor.GeneratorActiveOut",Conv_hi_component()+".GeneratorActiveIn", ConnPolicy())
+connect("ConveyorSplineTrajectoryGeneratorMotor.GeneratorActiveOut","ConvSupervisor.GeneratorActiveIn", ConnPolicy())
 
 
 
@@ -210,7 +221,9 @@ connect("ConveyorM2J.JointPosition", "ConveyorJntPub.JointEffort", ConnPolicy())
 //
 
 
-stream(Conv_hi_component()+".DoSynchroIn", ros.comm.topic("/conv_hardware_interface/do_synchro_in"))
+stream("ConvSupervisor.DoSynchroIn", ros.comm.topic("/conv_supervisor/do_synchro_in"))
+stream("ConvSupervisor.EmegencyStopIn", ros.comm.topic("/conv_supervisor/emergency_stop_in"))
+
 stream("ConvDiag.Diagnostics", ros.comm.topic("/diagnostics"));
 stream("ConveyorJntPub.joint_state", ros.comm.topic("conveyor/joint_states"));
 

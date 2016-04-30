@@ -13,3 +13,5 @@ runScript( ros.find("irp6_bringup") + "/config/conv-inside.ops")
 
 ConvHwModel.start()
 ConvScheme.start()
+
+ConvSupervisor.start()

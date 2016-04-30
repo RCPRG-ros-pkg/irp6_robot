@@ -44,11 +44,9 @@ HwModel::HwModel(const std::string& name)
   // ports addition
 
   this->ports()->addPort("EmergencyStopIn", port_emergency_stop_);
-  this->ports()->addPort("GeneratorActiveIn", port_generator_active_);
   this->ports()->addPort("DoSynchroIn", port_do_synchro_);
   this->ports()->addPort("IsSynchronised", port_is_synchronised_);
   this->ports()->addPort("IsHardwarePanic", port_is_hardware_panic_);
-  this->ports()->addPort("IsHardwareBusy", port_is_hardware_busy_);
 
   this->addProperty("iteration_per_step", iteration_per_step_);
   this->addProperty("step_per_second", step_per_second_);
@@ -155,18 +153,11 @@ bool HwModel::configureHook() {
 
 bool HwModel::startHook() {
   port_is_synchronised_.write(true);
-  port_is_hardware_busy_.write(false);
   port_is_hardware_panic_.write(false);
   return true;
 }
 
 void HwModel::updateHook() {
-  bool generator_active;
-  if (port_generator_active_.read(generator_active) == RTT::NewData) {
-    port_is_hardware_busy_.write(generator_active);
-  } else {
-    port_is_hardware_busy_.write(false);
-  }
 
   for (int servo = 0; servo < number_of_servos_; servo++) {
     port_desired_input_list_[servo]->read(desired_input_[servo]);

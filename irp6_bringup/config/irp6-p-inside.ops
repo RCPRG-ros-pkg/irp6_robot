@@ -22,6 +22,13 @@ Irp6pScheme.loadService("conman_ros")
 Irp6pScheme.configure()
 
 
+loadComponent("Irp6pSupervisor","Irp6pSupervisor")
+setActivity("Irp6pSupervisor", 0.1, 4, ORO_SCHED_RT);
+Irp6pSupervisor.loadService("rosparam")
+Irp6pSupervisor.rosparam.getAll()
+Irp6pSupervisor.configure()
+
+
 
 loadComponent("Irp6pDiag", "Irp6Diagnostic")
 setActivity("Irp6pDiag", 0.1, 1, ORO_SCHED_RT)
@@ -460,20 +467,27 @@ irp6p_joint_labels[5] = "irp6pm_5"
 irp6p_joint_labels[6] = "irp6ptfg"
 
 connect("Irp6ptfgSplineTrajectoryGeneratorJoint.IsSynchronisedIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
-connect("Irp6ptfgSplineTrajectoryGeneratorJoint.GeneratorActiveOut",Irp6p_hi_component()+".GeneratorActiveIn", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryGeneratorJoint.GeneratorActiveOut","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
 connect("Irp6pmSplineTrajectoryGeneratorJoint.IsSynchronisedIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
-connect("Irp6pmSplineTrajectoryGeneratorJoint.GeneratorActiveOut",Irp6p_hi_component()+".GeneratorActiveIn", ConnPolicy())
-connect("Irp6pDiag.SynchroStateIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
-connect("Irp6pDiag.HardwaPanicIn",Irp6p_hi_component()+".IsHardwarePanic", ConnPolicy())
-connect("Irp6pDiag.HardwaBusyIn",Irp6p_hi_component()+".IsHardwareBusy", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorJoint.GeneratorActiveOut","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
+
+connect("Irp6pDiag.SynchroStateIn","Irp6pSupervisor.IsSynchronisedOut", ConnPolicy())
+connect("Irp6pDiag.HardwaPanicIn","Irp6pSupervisor.IsHardwarePanicOut", ConnPolicy())
+connect("Irp6pDiag.HardwaBusyIn","Irp6pSupervisor.IsHardwareBusyOut", ConnPolicy())
+
+connect("Irp6pSupervisor.DoSynchroHiMwOut",Irp6p_hi_component()+".DoSynchroIn", ConnPolicy())
+connect("Irp6pSupervisor.EmergencyStopHiMwOut",Irp6p_hi_component()+".EmergencyStopIn", ConnPolicy())
+connect("Irp6pSupervisor.IsSynchronisedHiMwIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
+connect("Irp6pSupervisor.IsHardwarePanicHiMwIn",Irp6p_hi_component()+".IsHardwarePanic", ConnPolicy())
+
 connect("Irp6pmSplineTrajectoryGeneratorMotor.IsSynchronisedIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
-connect("Irp6pmSplineTrajectoryGeneratorMotor.GeneratorActiveOut",Irp6p_hi_component()+".GeneratorActiveIn", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorMotor.GeneratorActiveOut","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
 connect("Irp6ptfgSplineTrajectoryGeneratorMotor.IsSynchronisedIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
-connect("Irp6ptfgSplineTrajectoryGeneratorMotor.GeneratorActiveOut",Irp6p_hi_component()+".GeneratorActiveIn", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryGeneratorMotor.GeneratorActiveOut","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
 connect("Irp6pmPoseInt.IsSynchronisedIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
-connect("Irp6pmPoseInt.GeneratorActiveOut",Irp6p_hi_component()+".GeneratorActiveIn", ConnPolicy())
+connect("Irp6pmPoseInt.GeneratorActiveOut","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
 connect("Irp6pmForceControlLaw.IsSynchronisedIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
-connect("Irp6pmForceControlLaw.GeneratorActiveOut",Irp6p_hi_component()+".GeneratorActiveIn", ConnPolicy())
+connect("Irp6pmForceControlLaw.GeneratorActiveOut","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
 
 // connect("PortDoubleToFloat64_1.InputPort",Irp6p_hi_component()+".MotorIncrement_irp6pm_5", ConnPolicy())
 
@@ -620,8 +634,9 @@ connect("Irp6ptfgJ2M.MotorPosition", "IRp6ptfgLimitDetector.InputPort", ConnPoli
 //
 //
 
+stream("Irp6pSupervisor.DoSynchroIn", ros.comm.topic("/irp6p_supervisor/do_synchro_in"))
+stream("Irp6pSupervisor.EmegencyStopIn", ros.comm.topic("/irp6p_supervisor/emergency_stop_in"))
 
-stream(Irp6p_hi_component()+".DoSynchroIn", ros.comm.topic("/irp6p_hardware_interface/do_synchro_in"))
 stream("Irp6pDiag.Diagnostics", ros.comm.topic("/diagnostics"));
 #stream("Irp6pmToolInt.CartesianPositionCommand", ros.comm.topic("/irp6p_arm/tool"))
 stream("PortDoubleToFloat64_1.OutputPort", ros.comm.topic("/debug"));

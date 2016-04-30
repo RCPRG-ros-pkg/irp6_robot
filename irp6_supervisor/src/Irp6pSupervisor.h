@@ -28,59 +28,52 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HWMODEL_H_
-#define HWMODEL_H_
-
+#ifndef IRP6PSUPERVISOR_H_
+#define IRP6PSUPERVISOR_H_
 
 #include <std_msgs/Bool.h>
+
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
+#include <rtt/Component.hpp>
+#include <rtt/OperationCaller.hpp>
+#include <rtt/SendHandle.hpp>
+#include <rtt/Attribute.hpp>
+#include <rtt/base/AttributeBase.hpp>
+
+#include <rtt/extras/SlaveActivity.hpp>
+
 #include <Eigen/Dense>
 #include <string>
 #include <vector>
 
-class HwModel : public RTT::TaskContext {
+
+class Irp6pSupervisor : public RTT::TaskContext {
+ private:
+  // ports
+
+  RTT::InputPort<std_msgs::Bool> port_do_synchro_in_;
+  RTT::InputPort<std_msgs::Bool> port_emergency_stop_in_;
+  RTT::InputPort<bool> port_generator_active_in_;
+
+  RTT::InputPort<bool> port_is_synchronised_hi_mw_in_;
+  RTT::InputPort<bool> port_is_hardware_panic_hi_mw_in_;
+
+  RTT::OutputPort<bool> port_is_synchronised_out_;
+  RTT::OutputPort<bool> port_is_hardware_panic_out_;
+  RTT::OutputPort<bool> port_is_hardware_busy_out_;
+
+  RTT::OutputPort<std_msgs::Bool> port_do_synchro_hi_mw_out_;
+  RTT::OutputPort<bool> port_emergency_stop_hi_mw_out_;
+
+
  public:
-  explicit HwModel(const std::string& name);
-  virtual ~HwModel();
+  explicit Irp6pSupervisor(const std::string& name);
+  ~Irp6pSupervisor();
 
   bool configureHook();
   bool startHook();
   void updateHook();
-
- private:
-  // RTT::InputPort<Eigen::VectorXd> port_desired_input_;
-  // RTT::OutputPort<Eigen::VectorXd> port_motor_position_;
-
-  std::vector<RTT::InputPort<double>*> port_desired_input_list_;
-  std::vector<RTT::OutputPort<double>*> port_motor_position_list_;
-
-  std::vector<RTT::OutputPort<double>*> desired_position_out_list_;
-  std::vector<RTT::InputPort<double>*> port_motor_position_command_list_;
-  std::vector<RTT::OutputPort<double>*> port_motor_current_list_;
-  std::vector<RTT::OutputPort<bool>*>  port_regulator_reset_list_;
-
-
-  RTT::InputPort<bool> port_emergency_stop_;
-  RTT::InputPort<std_msgs::Bool> port_do_synchro_;  // do przerobienia na wersje ze zwrotnym statusem synchronziacji
-  RTT::OutputPort<bool> port_is_synchronised_;
-  RTT::OutputPort<bool> port_is_hardware_panic_;
-
-  Eigen::VectorXd motor_position_, motor_velocity_, motor_acceleration_, inc_motor_position_;
-  Eigen::VectorXd desired_input_, desired_torque_, effective_torque_;
-
-  int number_of_servos_;
-  int m_factor_;
-
-  // properties
-  int iteration_per_step_;
-  int step_per_second_;
-  std::vector<double> torque_constant_;
-  std::vector<double> inertia_;
-  std::vector<double> input_current_units_per_amper_;
-  std::vector<double> viscous_friction_;
-  std::vector<double> enc_res_;
-  std::vector<std::string> port_labels_;
 };
 
-#endif  // HWMODEL_H_
+#endif  // IRP6PSUPERVISOR_H_

@@ -244,3 +244,13 @@ class Irp6Motors(MenuDashWidget):
         self.change_motors_widget_state()
 
 
+    def synchronise(self):
+        goal = std_msgs.msg.Bool()
+        goal.data = True
+        self.synchro_pub.publish(goal)
+        self.status.synchro_in_progress = True
+        self.change_motors_widget_state()
+
+
+
+

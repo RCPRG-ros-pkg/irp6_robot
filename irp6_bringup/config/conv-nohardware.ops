@@ -4,7 +4,7 @@ ros.import("rtt_rospack")
 runScript( ros.find("irp6_bringup") + "/config/common-imports.ops")
 
 ros.import("conveyor_kinematic")
-
+ros.import("irp6_supervisor")
 
 
 runScript( ros.find("irp6_bringup") + "/config/conv-nohardware-inside.ops")

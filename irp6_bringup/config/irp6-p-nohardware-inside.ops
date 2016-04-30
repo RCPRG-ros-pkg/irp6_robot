@@ -17,3 +17,5 @@ runScript( ros.find("irp6_bringup") + "/config/irp6-p-inside.ops")
 
 Irp6pHwModel.start()
 Irp6pScheme.start()
+
+Irp6pSupervisor.start()
