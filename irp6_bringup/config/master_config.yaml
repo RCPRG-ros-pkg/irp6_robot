@@ -301,8 +301,8 @@ domains:
         index: -3
       homing:
         mode: 5
-        speed_high: 10000
-        speed_low: 10000
+        speed_high: 40000
+        speed_low: 20000
         acceleration: 1000000
       control_mode: current
     - name: irp6otm_0

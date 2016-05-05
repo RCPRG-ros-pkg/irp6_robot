@@ -121,6 +121,8 @@ class Irp6otSupervisor : public RTT::TaskContext {
   std::vector<std::string> services_names_;
   std::vector<std::string> regulators_names_;
 
+  bool hi_mw_synchronised;
+
  public:
   explicit Irp6otSupervisor(const std::string& name);
   ~Irp6otSupervisor();
@@ -130,7 +132,6 @@ class Irp6otSupervisor : public RTT::TaskContext {
   void updateHook();
 
   void autoRun();
-  void setSynchronized();
 
   bool resetFaultAll();
   bool enableAll();
