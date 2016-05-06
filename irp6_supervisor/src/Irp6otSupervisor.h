@@ -123,6 +123,9 @@ class Irp6otSupervisor : public RTT::TaskContext {
 
   bool hi_mw_synchronised;
 
+  std::string state_text(ECServoState state);
+  std_msgs::Bool do_synchro;
+
  public:
   explicit Irp6otSupervisor(const std::string& name);
   ~Irp6otSupervisor();
@@ -139,8 +142,6 @@ class Irp6otSupervisor : public RTT::TaskContext {
   void beginHomingAll();
   void homingDoneAll();
   void stateAll();
-
-  std::string state_text(ECServoState state);
 };
 
 #endif  // IRP6OTSUPERVISOR_H_

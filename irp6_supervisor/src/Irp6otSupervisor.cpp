@@ -77,13 +77,13 @@ Irp6otSupervisor::Irp6otSupervisor(const std::string& name)
   this->addOperation("disable", &Irp6otSupervisor::disableAll, this,
                      RTT::OwnThread).doc("");
   this->addOperation("enable", &Irp6otSupervisor::enableAll, this, RTT::OwnThread)
-          .doc("");
+      .doc("");
   this->addOperation("beginHoming", &Irp6otSupervisor::beginHomingAll, this,
                      RTT::OwnThread).doc("");
   this->addOperation("homingDone", &Irp6otSupervisor::homingDoneAll, this,
                      RTT::OwnThread).doc("");
   this->addOperation("state", &Irp6otSupervisor::stateAll, this, RTT::OwnThread)
-          .doc("");
+      .doc("");
 }
 
 Irp6otSupervisor::~Irp6otSupervisor() {
@@ -96,7 +96,7 @@ bool Irp6otSupervisor::configureHook() {
 
   number_of_servos_ = services_names_.size();
   if (number_of_servos_ != regulators_names_.size()) {
-    std::cout << std::endl << RED << "[error] EC Manager "
+    std::cout << std::endl << RED << "[error] Irp6otSupervisor "
         << "configuration failed: wrong properties vector length in launch file."
         << RESET << std::endl;
     return false;
@@ -109,7 +109,6 @@ bool Irp6otSupervisor::configureHook() {
   for (int i = 0; i < number_of_servos_; i++) {
     servo_state_[i] = NOT_OPERATIONAL;
   }
-
   return true;
 }
 
@@ -135,10 +134,8 @@ bool Irp6otSupervisor::startHook() {
 }
 
 void Irp6otSupervisor::updateHook() {
-  std_msgs::Bool do_synchro;
   if (port_do_synchro_in_.read(do_synchro) == RTT::NewData) {
     if (do_synchro.data) {
-      port_do_synchro_hi_mw_out_.write(do_synchro);
       std::cout << getName() << " Synchronisation commanded" << std::endl;
       beginHomingAll();
     }
@@ -160,19 +157,20 @@ void Irp6otSupervisor::updateHook() {
     port_is_hardware_busy_out_.write(false);
   }
 
+  bool is_hi_mw_panic;
+  if (port_is_hardware_panic_hi_mw_in_.read(is_hi_mw_panic) == RTT::NewData) {
+    port_is_hardware_panic_out_.write(is_hi_mw_panic);
+  }
+
   bool is_hi_mw_synchronised;
   if (port_is_synchronised_hi_mw_in_.read(is_hi_mw_synchronised)
       == RTT::NewData) {
     if (is_hi_mw_synchronised) {
       hi_mw_synchronised = true;
+      std::cout << "ROBOT PREV. SYNCHRONIZED" << std::endl;
     } else {
       port_is_synchronised_out_.write(false);
     }
-  }
-
-  bool is_hi_mw_panic;
-  if (port_is_hardware_panic_hi_mw_in_.read(is_hi_mw_panic) == RTT::NewData) {
-    port_is_hardware_panic_out_.write(is_hi_mw_panic);
   }
 
   switch (robot_state_) {
@@ -213,7 +211,11 @@ void Irp6otSupervisor::updateHook() {
       // all servos enabled
       if (servos_state_changed_ == number_of_servos_) {
         robot_state_ = NOT_SYNCHRONIZED;
-        std::cout << "ROBOT NOT SYNCHRONIZED" << std::endl;
+        if (hi_mw_synchronised) {
+          std::cout << "ROBOT PREV. SYNCHRONIZED" << std::endl;
+        } else {
+          std::cout << "ROBOT NOT SYNCHRONIZED" << std::endl;
+        }
         servos_state_changed_ = 0;
       }
       break;
@@ -307,8 +309,9 @@ void Irp6otSupervisor::updateHook() {
       // all servos synhronized
       if (servos_state_changed_ == number_of_servos_) {
         robot_state_ = SYNCHRONIZED;
-        std::cout << "ROBOT SYNCHRONIZED" << std::endl;
+        std::cout << "EC SERVOS SYNCHRONIZED" << std::endl;
         servos_state_changed_ = 0;
+        port_do_synchro_hi_mw_out_.write(do_synchro);
       }
       break;
 
@@ -410,7 +413,7 @@ void Irp6otSupervisor::stateAll() {
         ->getAttribute("state");
     ec_servo_state_ = servo_ec_state->get();
     std::cout << services_names_[i] << ": " << state_text(ec_servo_state_)
-                                  << std::endl;
+        << std::endl;
   }
 }
 
