@@ -73,7 +73,7 @@
           enc_res: 4000.0
           synchro_step_coarse: -0.03
           synchro_step_fine: 0.007
-          current_mode: 0
+          current_mode: 1
         irp6pm_5:
           label: irp6pm_5
           ports_adresses: /dev/ttyMI13
@@ -84,7 +84,7 @@
           enc_res: 2000.0
           synchro_step_coarse: -0.05
           synchro_step_fine: 0.05
-          current_mode: 0
+          current_mode: 1
         irp6ptfg:
           label: irp6ptfg
           ports_adresses: /dev/ttyMI14
@@ -162,6 +162,7 @@
         BB1: 1.5028614
         current_mode: true
         current_reg_kp: 200.0
+        output_multiplicator: 1.0
         max_output_current: 20000.0
         max_desired_increment: 200.0
         enc_res: 4000.0
@@ -173,6 +174,7 @@
         BB1: 0.5916852
         current_mode: true
         current_reg_kp: 150.0
+        output_multiplicator: 1.0
         max_output_current: 15000.0
         max_desired_increment: 200.0
         enc_res: 4000.0
@@ -184,6 +186,7 @@
         BB1: 1.1424828
         current_mode: true
         current_reg_kp: 180.0
+        output_multiplicator: 1.0
         max_output_current: 15000.0
         max_desired_increment: 200.0
         enc_res: 4000.0
@@ -195,6 +198,7 @@
         BB1: 0.5874396
         current_mode: true
         current_reg_kp: 170.0
+        output_multiplicator: 1.0
         max_output_current: 15000.0
         max_desired_increment: 200.0
         enc_res: 4000.0
@@ -204,8 +208,9 @@
         A: 0.391982182628
         BB0: 0.4458592
         BB1: 0.4085392
-        current_mode: false
+        current_mode: true
         current_reg_kp: 110.0
+        output_multiplicator: 1.0
         max_output_current: 8000.0
         max_desired_increment: 200.0
         enc_res: 4000.0
@@ -215,8 +220,9 @@
         A: 0.3
         BB0: 0.5456
         BB1: 0.5056
-        current_mode: false
+        current_mode: true
         current_reg_kp: 11.0
+        output_multiplicator: 1.0
         max_output_current: 1000.0
         max_desired_increment: 200.0
         enc_res: 2000.0
@@ -228,6 +234,7 @@
         BB1: 15.784375
         current_mode: true
         current_reg_kp: 0.33
+        output_multiplicator: 1.0
         max_output_current: 80.0
         max_desired_increment: 10000.0
         enc_res: 128.0

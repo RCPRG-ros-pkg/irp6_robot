@@ -121,37 +121,37 @@ Irp6ottfgPortDoubleSum.configure()
 
 
 
-loadComponent("IRp6otmRegulator_0","IRp6RegulatorEC")
+loadComponent("IRp6otmRegulator_0","IRp6Regulator")
 IRp6otmRegulator_0.loadService("rosparam")
 IRp6otmRegulator_0.rosparam.getAll()
 IRp6otmRegulator_0.configure()
 
 
-loadComponent("IRp6otmRegulator_1","IRp6RegulatorEC")
+loadComponent("IRp6otmRegulator_1","IRp6Regulator")
 IRp6otmRegulator_1.loadService("rosparam")
 IRp6otmRegulator_1.rosparam.getAll()
 IRp6otmRegulator_1.configure()
 
 
-loadComponent("IRp6otmRegulator_2","IRp6RegulatorEC")
+loadComponent("IRp6otmRegulator_2","IRp6Regulator")
 IRp6otmRegulator_2.loadService("rosparam")
 IRp6otmRegulator_2.rosparam.getAll()
 IRp6otmRegulator_2.configure()
 
 
-loadComponent("IRp6otmRegulator_3","IRp6RegulatorEC")
+loadComponent("IRp6otmRegulator_3","IRp6Regulator")
 IRp6otmRegulator_3.loadService("rosparam")
 IRp6otmRegulator_3.rosparam.getAll()
 IRp6otmRegulator_3.configure()
 
 
-loadComponent("IRp6otmRegulator_4","IRp6RegulatorEC")
+loadComponent("IRp6otmRegulator_4","IRp6Regulator")
 IRp6otmRegulator_4.loadService("rosparam")
 IRp6otmRegulator_4.rosparam.getAll()
 IRp6otmRegulator_4.configure()
 
 
-loadComponent("IRp6otmRegulator_5","IRp6RegulatorEC")
+loadComponent("IRp6otmRegulator_5","IRp6Regulator")
 IRp6otmRegulator_5.loadService("rosparam")
 IRp6otmRegulator_5.rosparam.getAll()
 IRp6otmRegulator_5.configure()

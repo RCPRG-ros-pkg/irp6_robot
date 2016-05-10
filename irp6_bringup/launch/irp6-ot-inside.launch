@@ -36,7 +36,7 @@
           enc_res: 2000.0
           synchro_step_coarse: -0.05
           synchro_step_fine: 0.05  
-          current_mode: 0 
+          current_mode: 1 
         irp6ottfg:
           label: irp6ottfg
           ports_adresses: /dev/ttyMI7
@@ -121,9 +121,9 @@
         A: 0.412429378531
         BB0: 1.5569592
         BB1: 1.5028614
-        current_reg_kp: 0.2
-        output_multiplicator: 1638.4
-        max_output_current: 22
+        current_reg_kp: 200.0
+        output_multiplicator: 1.6384
+        max_output_current: 20000.0
         max_desired_increment: 2000.0
         enc_res: 4000.0
       IRp6otmRegulator_1:
@@ -132,10 +132,10 @@
         A: 0.412429378531
         BB0: 1.5569592
         BB1: 1.5028614
-        current_reg_kp: 0.2
-        output_multiplicator: 100.0
-        max_output_current: 20
-        max_desired_increment: 2000.0
+        current_reg_kp: 200.0
+        output_multiplicator: 0.1
+        max_output_current: 20000.0
+        max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6otmRegulator_2:
         debug: false
@@ -143,10 +143,10 @@
         A: 0.655629139073
         BB0: 0.6181068
         BB1: 0.5916852
-        current_reg_kp: 0.15
-        output_multiplicator: 100.0
-        max_output_current: 15
-        max_desired_increment: 2000.0
+        current_reg_kp: 100.0
+        output_multiplicator: 0.1
+        max_output_current: 15000.0
+        max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6otmRegulator_3:
         debug: false
@@ -154,10 +154,10 @@
         A: 0.315789473684
         BB0: 1.1984784
         BB1: 1.1424828
-        current_reg_kp: 0.2
-        output_multiplicator: 100.0
-        max_output_current: 20
-        max_desired_increment: 2000.0
+        current_reg_kp: 120.0
+        output_multiplicator: 0.1
+        max_output_current: 18000.0
+        max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6otmRegulator_4:
         debug: false
@@ -165,10 +165,10 @@
         A: 0.548946716233
         BB0: 0.6305064
         BB1: 0.5874396
-        current_reg_kp: 0.17
-        output_multiplicator: 1638.4
-        max_output_current: 15
-        max_desired_increment: 2000.0
+        current_reg_kp: 170.0
+        output_multiplicator: 1.6384
+        max_output_current: 15000.0
+        max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6otmRegulator_5:
         debug: false
@@ -176,10 +176,10 @@
         A: 0.391982182628
         BB0: 0.4458592
         BB1: 0.4085392
-        current_reg_kp: 0.005
-        output_multiplicator: 1638.4
-        max_output_current: 8
-        max_desired_increment: 2000.0
+        current_reg_kp: 110.0
+        output_multiplicator: 1.6384
+        max_output_current: 8000.0
+        max_desired_increment: 200.0
         enc_res: 4000.0
       IRp6otmRegulator_6:
         debug: false
@@ -187,8 +187,9 @@
         A: 0.3
         BB0: 0.5456
         BB1: 0.5056
-        current_mode: false
+        current_mode: true
         current_reg_kp: 11.0
+        output_multiplicator: 1.0
         max_output_current: 1000.0
         max_desired_increment: 200.0
         enc_res: 2000.0
@@ -200,6 +201,7 @@
         BB1: 15.784375
         current_mode: true
         current_reg_kp: 0.33
+        output_multiplicator: 1.0
         max_output_current: 80.0
         max_desired_increment: 10000.0
         enc_res: 128.0

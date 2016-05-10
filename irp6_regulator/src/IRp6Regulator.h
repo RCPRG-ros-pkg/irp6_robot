@@ -68,12 +68,12 @@ class IRp6Regulator : public RTT::TaskContext {
   double A_;
   double BB0_;
   double BB1_;
-  bool current_mode_;
   double max_output_current_;
   double current_reg_kp_;
   double eint_dif_;
   double max_desired_increment_;
   double enc_res_;
+  double output_multiplicator_;
 
   // przedosatnio odczytany przyrost polozenie (delta y[k-2]
   double position_increment_old;
