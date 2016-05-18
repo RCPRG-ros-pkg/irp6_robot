@@ -137,6 +137,9 @@ terminals:
        - index: 0x6077
          subindex: 0
          bit_length: 16
+       - index: 0x2023
+         subindex: 1
+         bit_length: 16
     - index: 0x1a40
       entries:
        - index: 0x6841
@@ -150,6 +153,9 @@ terminals:
          bit_length: 32
        - index: 0x6877
          subindex: 0
+         bit_length: 16
+       - index: 0x2823
+         subindex: 1
          bit_length: 16
     - index: 0x1a80
       entries:
@@ -165,6 +171,9 @@ terminals:
        - index: 0x7077
          subindex: 0
          bit_length: 16
+       - index: 0x3023
+         subindex: 1
+         bit_length: 16
     - index: 0x1ac0
       entries:
        - index: 0x7841
@@ -178,6 +187,9 @@ terminals:
          bit_length: 32
        - index: 0x7877
          subindex: 0
+         bit_length: 16
+       - index: 0x3823
+         subindex: 1
          bit_length: 16
    RPDO:
     - index: 0x1600
@@ -255,6 +267,7 @@ domains:
         speed_low: 2000
         acceleration: 10000
       control_mode: current
+      dio_type: elmo
     - name: irp6otm_3
       type: elmo_driver
       terminal: irp_4
@@ -267,6 +280,7 @@ domains:
         speed_low: 2000
         acceleration: 10000
       control_mode: current
+      dio_type: elmo
     - name: irp6otm_1
       type: elmo_driver
       terminal: irp_2
@@ -279,6 +293,7 @@ domains:
         speed_low: 2000
         acceleration: 10000
       control_mode: current
+      dio_type: elmo
     - name: irp6otm_4
       type: elmo_driver
       terminal: irp_5_6_1
@@ -292,6 +307,7 @@ domains:
         speed_low: 10000
         acceleration: 1000000
       control_mode: current
+      dio_type: amc
     - name: irp6otm_5
       type: elmo_driver
       terminal: irp_5_6_1
@@ -305,6 +321,7 @@ domains:
         speed_low: 20000
         acceleration: 1000000
       control_mode: current
+      dio_type: amc
     - name: irp6otm_0
       type: elmo_driver
       terminal: irp_5_6_1
@@ -318,3 +335,4 @@ domains:
         speed_low: 100000
         acceleration: 1000000
       control_mode: current
+      dio_type: amc
