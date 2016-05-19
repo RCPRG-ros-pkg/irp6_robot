@@ -69,7 +69,11 @@ bool HwModel::configureHook() {
       || (number_of_servos_ != inertia_.size())
       || (number_of_servos_ != viscous_friction_.size())
       || (number_of_servos_ != enc_res_.size())) {
-    std::cout << std::endl << RED << "[error] hardware model " << getName()
+    std::cout
+        << std::endl
+        << RED
+        << "[error] hardware model "
+        << getName()
         << " configuration failed: wrong properties vector length in launch file."
         << RESET << std::endl;
     return false;
@@ -158,7 +162,6 @@ bool HwModel::startHook() {
 }
 
 void HwModel::updateHook() {
-
   for (int servo = 0; servo < number_of_servos_; servo++) {
     port_desired_input_list_[servo]->read(desired_input_[servo]);
 

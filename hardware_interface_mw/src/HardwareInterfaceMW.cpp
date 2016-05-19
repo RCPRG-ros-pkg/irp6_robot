@@ -213,9 +213,9 @@ bool HardwareInterfaceMW::configureHookInitHardware() {
 
     if (std::string(hostname) != hardware_hostname_) {
       std::cout << std::endl << RED << getName()
-          << " [error] ERROR wrong host_name for hardware_mode: "
-          << std::string(hostname) << ", " << hardware_hostname_ << RESET
-          << std::endl << std::endl;
+                << " [error] ERROR wrong host_name for hardware_mode: "
+                << std::string(hostname) << ", " << hardware_hostname_ << RESET
+                << std::endl << std::endl;
     }
 
     std::cout << getName() << " hostname: " << hostname << std::endl;
@@ -244,7 +244,10 @@ bool HardwareInterfaceMW::configureHookInitHardware() {
   } catch (std::exception& e) {
     log(RTT::Info) << e.what() << RTT::endlog();
 
-    std::cout << std::endl << RED << getName()
+    std::cout
+        << std::endl
+        << RED
+        << getName()
         << " [error] ERROR configuring HardwareInterfaceMW, check power switches"
         << RESET << std::endl << std::endl;
 
@@ -271,7 +274,7 @@ uint16_t HardwareInterfaceMW::convert_to_115(float input) {
   } else if (input < 0.0) {
     output = 65535 + static_cast<int>(input * 32768.0);
   } else if (input >= 0.0) {
-    output = (uint16_t)(input * 32768.0);
+    output = (uint16_t) (input * 32768.0);
   }
 
 //  printf("convert_to_115 i: %f, o: %x\n",input, output);
@@ -352,7 +355,7 @@ void HardwareInterfaceMW::updateHookInit() {
     port_is_hardware_panic_.write(true);
     if (error_msg_hardware_panic_ == 0) {
       std::cout << RED << std::endl << getName() << " [error] hardware panic"
-          << RESET << std::endl << std::endl;
+                << RESET << std::endl << std::endl;
       error_msg_hardware_panic_++;
     }
   } else {
@@ -366,7 +369,7 @@ void HardwareInterfaceMW::updateHookInit() {
   bool emergency_stop;
   if (port_emergency_stop_.read(emergency_stop) == RTT::NewData) {
     std::cout << RED << std::endl << getName() << " emergency_stop" << RESET
-        << std::endl << std::endl;
+              << std::endl << std::endl;
     if (emergency_stop) {
       hi_->set_hardware_panic();
     }
@@ -432,13 +435,15 @@ void HardwareInterfaceMW::updateHookStateMachine() {
           if (synchro_needed_[synchro_drive_]) {
             if (hi_->in_synchro_area(synchro_drive_)) {
               RTT::log(RTT::Debug) << "[servo " << synchro_drive_
-                  << " ] MOVE_TO_SYNCHRO_AREA ended" << RTT::endlog();
+                                   << " ] MOVE_TO_SYNCHRO_AREA ended"
+                                   << RTT::endlog();
 
               synchro_state_ = STOP;
             } else {
               // ruszam powoli w stronę synchro area
               RTT::log(RTT::Debug) << "[servo " << synchro_drive_
-                  << " ] MOVE_TO_SYNCHRO_AREA" << RTT::endlog();
+                                   << " ] MOVE_TO_SYNCHRO_AREA"
+                                   << RTT::endlog();
               desired_position_[synchro_drive_] +=
                   synchro_step_coarse_[synchro_drive_];
             }
@@ -464,12 +469,14 @@ void HardwareInterfaceMW::updateHookStateMachine() {
         case MOVE_FROM_SYNCHRO_AREA:
           if (!hi_->in_synchro_area(synchro_drive_)) {
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
-                << " ] MOVE_FROM_SYNCHRO_AREA ended" << RTT::endlog();
+                                 << " ] MOVE_FROM_SYNCHRO_AREA ended"
+                                 << RTT::endlog();
 
             synchro_state_ = WAIT_FOR_IMPULSE;
           } else {
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
-                << " ] MOVE_FROM_SYNCHRO_AREA" << RTT::endlog();
+                                 << " ] MOVE_FROM_SYNCHRO_AREA"
+                                 << RTT::endlog();
             desired_position_[synchro_drive_] +=
                 synchro_step_fine_[synchro_drive_];
           }
@@ -478,7 +485,8 @@ void HardwareInterfaceMW::updateHookStateMachine() {
         case WAIT_FOR_IMPULSE:
           if (hi_->drive_synchronized(synchro_drive_)) {
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
-                << " ] WAIT_FOR_IMPULSE ended" << RTT::endlog();
+                                 << " ] WAIT_FOR_IMPULSE ended"
+                                 << RTT::endlog();
 
             hi_->finish_synchro(synchro_drive_);
             hi_->reset_position(synchro_drive_);
@@ -492,7 +500,7 @@ void HardwareInterfaceMW::updateHookStateMachine() {
 
           } else {
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
-                << " ] WAIT_FOR_IMPULSE" << RTT::endlog();
+                                 << " ] WAIT_FOR_IMPULSE" << RTT::endlog();
             desired_position_[synchro_drive_] +=
                 synchro_step_fine_[synchro_drive_];
           }
@@ -508,7 +516,7 @@ void HardwareInterfaceMW::updateHookStateMachine() {
 
             port_is_synchronised_.write(true);
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
-                << " ] SYNCHRONIZING ended" << RTT::endlog();
+                                 << " ] SYNCHRONIZING ended" << RTT::endlog();
             std::cout << getName() << " synchro finished" << std::endl;
           } else if (synchro_stop_iter_ <= 0) {
             state_ = PRE_SERVOING;

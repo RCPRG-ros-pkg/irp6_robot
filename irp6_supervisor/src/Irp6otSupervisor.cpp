@@ -35,13 +35,13 @@
 #include "common_headers/string_colors.h"
 
 Irp6otSupervisor::Irp6otSupervisor(const std::string& name)
-: TaskContext(name),
-  robot_state_(NOT_OPERATIONAL),
-  number_of_servos_(0),
-  last_servo_synchro_(0),
-  servos_state_changed_(0),
-  auto_(false),
-  hi_mw_synchronised(false) {
+    : TaskContext(name),
+      robot_state_(NOT_OPERATIONAL),
+      number_of_servos_(0),
+      last_servo_synchro_(0),
+      servos_state_changed_(0),
+      auto_(false),
+      hi_mw_synchronised(false) {
   // ports addition
 
   this->ports()->addPort("DoSynchroIn", port_do_synchro_in_);
@@ -70,20 +70,22 @@ Irp6otSupervisor::Irp6otSupervisor(const std::string& name)
   this->addProperty("fault_autoreset", fault_autoreset_).doc("");
   this->addProperty("services_names", services_names_).doc("");
   this->addProperty("regulators_names", regulators_names_).doc("");
-  this->addOperation("auto", &Irp6otSupervisor::autoRun, this, RTT::OwnThread).doc(
-      "");
-  this->addOperation("resetFault", &Irp6otSupervisor::resetFaultAll, this,
-                     RTT::OwnThread).doc("");
-  this->addOperation("disable", &Irp6otSupervisor::disableAll, this,
-                     RTT::OwnThread).doc("");
-  this->addOperation("enable", &Irp6otSupervisor::enableAll, this, RTT::OwnThread)
-      .doc("");
-  this->addOperation("beginHoming", &Irp6otSupervisor::beginHomingAll, this,
-                     RTT::OwnThread).doc("");
-  this->addOperation("homingDone", &Irp6otSupervisor::homingDoneAll, this,
-                     RTT::OwnThread).doc("");
-  this->addOperation("state", &Irp6otSupervisor::stateAll, this, RTT::OwnThread)
-      .doc("");
+  /*
+   this->addOperation("auto", &Irp6otSupervisor::autoRun, this, RTT::OwnThread).doc(
+   "");
+   this->addOperation("resetFault", &Irp6otSupervisor::resetFaultAll, this,
+   RTT::OwnThread).doc("");
+   this->addOperation("disable", &Irp6otSupervisor::disableAll, this,
+   RTT::OwnThread).doc("");
+   this->addOperation("enable", &Irp6otSupervisor::enableAll, this, RTT::OwnThread)
+   .doc("");
+   this->addOperation("beginHoming", &Irp6otSupervisor::beginHomingAll, this,
+   RTT::OwnThread).doc("");
+   this->addOperation("homingDone", &Irp6otSupervisor::homingDoneAll, this,
+   RTT::OwnThread).doc("");
+   this->addOperation("state", &Irp6otSupervisor::stateAll, this, RTT::OwnThread)
+   .doc("");
+   */
 }
 
 Irp6otSupervisor::~Irp6otSupervisor() {
@@ -96,7 +98,10 @@ bool Irp6otSupervisor::configureHook() {
 
   number_of_servos_ = services_names_.size();
   if (number_of_servos_ != regulators_names_.size()) {
-    std::cout << std::endl << RED << "[error] Irp6otSupervisor "
+    std::cout
+        << std::endl
+        << RED
+        << "[error] Irp6otSupervisor "
         << "configuration failed: wrong properties vector length in launch file."
         << RESET << std::endl;
     return false;
@@ -105,9 +110,46 @@ bool Irp6otSupervisor::configureHook() {
     std::cout << "servos: " << number_of_servos_ << std::endl;
   }
 
+  digital_in_port_list_.resize(number_of_servos_);
+  upper_limit_port_list_.resize(number_of_servos_);
+  lower_limit_port_list_.resize(number_of_servos_);
+  current_upper_limit_.resize(number_of_servos_);
+  previous_upper_limit_.resize(number_of_servos_);
+  current_lower_limit_.resize(number_of_servos_);
+  previous_lower_limit_.resize(number_of_servos_);
+  upper_limit_bit_mask_.resize(number_of_servos_);
+  lower_limit_bit_mask_.resize(number_of_servos_);
+
   servo_state_.resize(number_of_servos_);
+
   for (int i = 0; i < number_of_servos_; i++) {
+    current_upper_limit_[i] = previous_upper_limit_[i] = false;
+    current_lower_limit_[i] = previous_lower_limit_[i] = false;
+
+    upper_limit_bit_mask_[i] = (1 << UPPER_LIMIT_BIT_POSITION[i]);
+    lower_limit_bit_mask_[i] = (1 << LOWER_LIMIT_BIT_POSITION[i]);
+
     servo_state_[i] = NOT_OPERATIONAL;
+
+    char digital_in_port_name[32];
+    snprintf(digital_in_port_name, sizeof(digital_in_port_name),
+             "digitial_in_%s", services_names_[i].c_str());
+    digital_in_port_list_[i] = new typeof(*digital_in_port_list_[i]);
+    this->ports()->addPort(digital_in_port_name, *digital_in_port_list_[i]);
+
+    char UpperLimit_out_port_name[32];
+    snprintf(UpperLimit_out_port_name, sizeof(UpperLimit_out_port_name),
+             "upper_limit_out_%s", services_names_[i].c_str());
+    upper_limit_port_list_[i] = new typeof(*upper_limit_port_list_[i]);
+    this->ports()->addPort(UpperLimit_out_port_name,
+                           *upper_limit_port_list_[i]);
+
+    char LowerLimit_out_port_name[32];
+    snprintf(LowerLimit_out_port_name, sizeof(LowerLimit_out_port_name),
+             "lower_limit_out_%s", services_names_[i].c_str());
+    lower_limit_port_list_[i] = new typeof(*lower_limit_port_list_[i]);
+    this->ports()->addPort(LowerLimit_out_port_name,
+                           *lower_limit_port_list_[i]);
   }
   return true;
 }
@@ -130,10 +172,67 @@ bool Irp6otSupervisor::startHook() {
 
   auto_ = autostart_;
 
+  for (int i = 0; i < number_of_servos_; i++) {
+    upper_limit_port_list_[i]->write(current_upper_limit_[i]);
+    lower_limit_port_list_[i]->write(current_lower_limit_[i]);
+  }
+
   return true;
 }
 
+void Irp6otSupervisor::readLimits() {
+  uint32_t di;
+  bool command_emergency_stop = false;
+
+  for (int i = 0; i < number_of_servos_; i++) {
+    if (RTT::NewData == digital_in_port_list_[i]->read(di)) {
+      if ((di & upper_limit_bit_mask_[i]) == upper_limit_bit_mask_[i]) {
+        current_upper_limit_[i] = true;
+      } else {
+        current_upper_limit_[i] = false;
+      }
+      if ((di & lower_limit_bit_mask_[i]) == lower_limit_bit_mask_[i]) {
+        current_lower_limit_[i] = true;
+      } else {
+        current_lower_limit_[i] = false;
+      }
+
+      if (current_upper_limit_[i] != previous_upper_limit_[i]) {
+        upper_limit_port_list_[i]->write(current_upper_limit_[i]);
+        if (current_upper_limit_[i] == true) {
+          std::cout << std::endl << RED << getName()
+                    << " [error] UPPER LIMIT SWITCH DRIVE: " << i << RESET
+                    << std::endl << std::endl;
+          command_emergency_stop = true;
+        }
+      }
+
+      if (current_lower_limit_[i] != previous_lower_limit_[i]) {
+        lower_limit_port_list_[i]->write(current_lower_limit_[i]);
+        if (current_lower_limit_[i] == true) {
+          std::cout << std::endl << RED << getName()
+                    << " [error] LOWER LIMIT SWITCH DRIVE: " << i << RESET
+                    << std::endl << std::endl;
+          command_emergency_stop = true;
+        }
+      }
+
+      previous_upper_limit_[i] = current_upper_limit_[i];
+      previous_lower_limit_[i] = current_lower_limit_[i];
+
+      if (command_emergency_stop) {
+        port_emergency_stop_hi_mw_out_.write(true);
+        std::cout << RED << getName()
+                  << " Emergency stop commanded due to limit switch" << RESET
+                  << std::endl;
+      }
+    }
+  }
+}
+
 void Irp6otSupervisor::updateHook() {
+  readLimits();
+
   if (port_do_synchro_in_.read(do_synchro) == RTT::NewData) {
     if (do_synchro.data) {
       std::cout << getName() << " Synchronisation commanded" << std::endl;
@@ -145,8 +244,9 @@ void Irp6otSupervisor::updateHook() {
   if (port_emergency_stop_in_.read(emergency_stop) == RTT::NewData) {
     if (emergency_stop.data) {
       port_emergency_stop_hi_mw_out_.write(true);
-      std::cout << RED << getName() << " Emergency stop commanded" << RESET
-          << std::endl;
+      std::cout << RED << getName()
+                << " Emergency stop commanded due to external command" << RESET
+                << std::endl;
     }
   }
 
@@ -180,13 +280,14 @@ void Irp6otSupervisor::updateHook() {
         if (servo_state_[i] != NOT_SYNCHRONIZED) {
           RTT::Attribute<ECServoState> * servo_ec_state = (RTT::Attribute<
               ECServoState> *) EC->provides(services_names_[i])->getAttribute(
-                  "state");
+              "state");
           ec_servo_state_ = servo_ec_state->get();
 
           // set "resetFault" if fault
           if (ec_servo_state_ == FAULT) {
             RTT::OperationCaller<bool(void)> resetFault;
-            resetFault = EC->provides(services_names_[i])->getOperation("resetFault");
+            resetFault = EC->provides(services_names_[i])->getOperation(
+                "resetFault");
             resetFault.setCaller(this->engine());
             resetFault();
           }
@@ -226,16 +327,16 @@ void Irp6otSupervisor::updateHook() {
 
       if (hi_mw_synchronised) {
         for (int i = 0; i < number_of_servos_; i++) {
-          RTT::Attribute<bool> * homing = (RTT::Attribute<bool> *) EC
-              ->provides(services_names_[i])->getAttribute("homing_done");
+          RTT::Attribute<bool> * homing = (RTT::Attribute<bool> *) EC->provides(
+              services_names_[i])->getAttribute("homing_done");
           if (homing->get()) {
             disable_vec_.clear();
             enable_vec_.clear();
             enable_vec_.push_back(regulators_names_[i]);
             RTT::OperationCaller<
-            bool(const std::vector<std::string> &disable_block_names,
-                 const std::vector<std::string> &enable_block_names,
-                 const bool strict, const bool force)> switchBlocks;
+                bool(const std::vector<std::string> &disable_block_names,
+                     const std::vector<std::string> &enable_block_names,
+                     const bool strict, const bool force)> switchBlocks;
             switchBlocks = Scheme->getOperation("switchBlocks");
             switchBlocks.setCaller(this->engine());
             switchBlocks(disable_vec_, enable_vec_, true, true);
@@ -243,7 +344,8 @@ void Irp6otSupervisor::updateHook() {
             ++servos_state_changed_;
           } else {
             RTT::OperationCaller<bool(void)> forceHomingDone;
-            forceHomingDone = EC->provides(services_names_[i])->getOperation("forceHomingDone");
+            forceHomingDone = EC->provides(services_names_[i])->getOperation(
+                "forceHomingDone");
             forceHomingDone.setCaller(this->engine());
             forceHomingDone();
           }
@@ -262,7 +364,7 @@ void Irp6otSupervisor::updateHook() {
       for (int i = 0; i < number_of_servos_; i++) {
         RTT::Attribute<ECServoState> * servo_state = (RTT::Attribute<
             ECServoState> *) EC->provides(services_names_[i])->getAttribute(
-                "state");
+            "state");
         ec_servo_state_ = servo_state->get();
 
         if (ec_servo_state_ == OPERATION_ENABLED) {
@@ -276,16 +378,16 @@ void Irp6otSupervisor::updateHook() {
                 beginHoming();
                 servo_state_[i] = SYNCHRONIZING;
                 std::cout << services_names_[i] << ": SYNCHRONIZING"
-                    << std::endl;
+                          << std::endl;
               }
               break;
             case SYNCHRONIZING:
               RTT::Attribute<bool> * homing = (RTT::Attribute<bool> *) EC
-              ->provides(services_names_[i])->getAttribute("homing_done");
+                  ->provides(services_names_[i])->getAttribute("homing_done");
               if (homing->get()) {
                 servo_state_[i] = SYNCHRONIZED;
                 std::cout << services_names_[i] << ": SYNCHRONIZED"
-                    << std::endl;
+                          << std::endl;
                 last_servo_synchro_ = i + 1;
                 ++servos_state_changed_;
 
@@ -294,9 +396,9 @@ void Irp6otSupervisor::updateHook() {
                 enable_vec_.clear();
                 enable_vec_.push_back(regulators_names_[i]);
                 RTT::OperationCaller<
-                bool(const std::vector<std::string> &disable_block_names,
-                     const std::vector<std::string> &enable_block_names,
-                     const bool strict, const bool force)> switchBlocks;
+                    bool(const std::vector<std::string> &disable_block_names,
+                         const std::vector<std::string> &enable_block_names,
+                         const bool strict, const bool force)> switchBlocks;
                 switchBlocks = Scheme->getOperation("switchBlocks");
                 switchBlocks.setCaller(this->engine());
                 switchBlocks(disable_vec_, enable_vec_, true, true);
@@ -343,7 +445,7 @@ bool Irp6otSupervisor::resetFaultAll() {
   for (int i = 0; i < number_of_servos_; i++) {
     RTT::Attribute<ECServoState> * servo_ec_state =
         (RTT::Attribute<ECServoState> *) EC->provides(services_names_[i])
-        ->getAttribute("state");
+            ->getAttribute("state");
     ec_servo_state_ = servo_ec_state->get();
 
     // set "resetFault" if fault
@@ -362,7 +464,7 @@ bool Irp6otSupervisor::enableAll() {
   for (int i = 0; i < number_of_servos_; i++) {
     RTT::Attribute<ECServoState> * servo_ec_state =
         (RTT::Attribute<ECServoState> *) EC->provides(services_names_[i])
-        ->getAttribute("state");
+            ->getAttribute("state");
     ec_servo_state_ = servo_ec_state->get();
 
     // set "enable" if powered on
@@ -381,7 +483,7 @@ bool Irp6otSupervisor::disableAll() {
   for (int i = 0; i < number_of_servos_; i++) {
     RTT::Attribute<ECServoState> * servo_ec_state =
         (RTT::Attribute<ECServoState> *) EC->provides(services_names_[i])
-        ->getAttribute("state");
+            ->getAttribute("state");
     ec_servo_state_ = servo_ec_state->get();
 
     // set "disable" if powered on
@@ -410,10 +512,10 @@ void Irp6otSupervisor::stateAll() {
   for (int i = 0; i < number_of_servos_; i++) {
     RTT::Attribute<ECServoState> * servo_ec_state =
         (RTT::Attribute<ECServoState> *) EC->provides(services_names_[i])
-        ->getAttribute("state");
+            ->getAttribute("state");
     ec_servo_state_ = servo_ec_state->get();
     std::cout << services_names_[i] << ": " << state_text(ec_servo_state_)
-        << std::endl;
+              << std::endl;
   }
 }
 

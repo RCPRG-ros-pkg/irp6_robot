@@ -47,6 +47,9 @@
 #include <string>
 #include <vector>
 
+const uint8_t UPPER_LIMIT_BIT_POSITION[] = { 1, 1, 2, 3, 4, 5, 6, 7 };
+const uint8_t LOWER_LIMIT_BIT_POSITION[] = { 1, 1, 2, 3, 4, 5, 6, 7 };
+
 typedef enum {
   NOT_OPERATIONAL,
   NOT_SYNCHRONIZED,
@@ -95,6 +98,11 @@ class Irp6otSupervisor : public RTT::TaskContext {
   std::vector<std::string> disable_vec_;
   std::vector<std::string> enable_vec_;
 
+  std::vector<bool> current_upper_limit_, previous_upper_limit_;
+  std::vector<bool> current_lower_limit_, previous_lower_limit_;
+  std::vector<uint32_t> upper_limit_bit_mask_;
+  std::vector<uint32_t> lower_limit_bit_mask_;
+
   // ports
 
   RTT::InputPort<std_msgs::Bool> port_do_synchro_in_;
@@ -110,6 +118,10 @@ class Irp6otSupervisor : public RTT::TaskContext {
 
   RTT::OutputPort<std_msgs::Bool> port_do_synchro_hi_mw_out_;
   RTT::OutputPort<bool> port_emergency_stop_hi_mw_out_;
+
+  std::vector<RTT::InputPort<uint32_t>*> digital_in_port_list_;
+  std::vector<RTT::OutputPort<bool>*> upper_limit_port_list_;
+  std::vector<RTT::OutputPort<bool>*> lower_limit_port_list_;
 
   // Properties
   bool debug_;
@@ -133,6 +145,8 @@ class Irp6otSupervisor : public RTT::TaskContext {
   bool configureHook();
   bool startHook();
   void updateHook();
+
+  void readLimits();
 
   void autoRun();
 
