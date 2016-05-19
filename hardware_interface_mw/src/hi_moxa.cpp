@@ -70,6 +70,7 @@ HI_moxa::HI_moxa(unsigned int numberOfDrivers,
     receiveFail[drive_number] = false;
     receiveFailCnt[drive_number] = 0;
     SerialPort[drive_number] = NULL;
+    check_ridicolous_increment_[drive_number] = false;
     // clear_buffer(drive_number);
   }
   memset(&NFComBuf, 0, sizeof(NF_STRUCT_ComBuf));

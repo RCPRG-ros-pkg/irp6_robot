@@ -73,12 +73,6 @@ bool ConvSupervisor::startHook() {
 
 void ConvSupervisor::updateHook() {
   std_msgs::Bool do_synchro;
-  if (port_do_synchro_in_.read(do_synchro) == RTT::NewData) {
-    if (do_synchro.data) {
-      port_do_synchro_hi_mw_out_.write(do_synchro);
-      std::cout << getName() << " Synchronisation commanded" << std::endl;
-    }
-  }
 
   std_msgs::Bool emergency_stop;
   if (port_emergency_stop_in_.read(emergency_stop) == RTT::NewData) {

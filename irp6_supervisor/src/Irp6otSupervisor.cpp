@@ -41,7 +41,11 @@ Irp6otSupervisor::Irp6otSupervisor(const std::string& name)
       last_servo_synchro_(0),
       servos_state_changed_(0),
       auto_(false),
-      hi_mw_synchronised(false) {
+      hi_mw_synchronised(false),
+      EC(NULL),
+      control_mode_(PROFILE_CURRENT),
+      Scheme(NULL),
+      ec_servo_state_(INVALID) {
   // ports addition
 
   this->ports()->addPort("DoSynchroIn", port_do_synchro_in_);
@@ -70,22 +74,21 @@ Irp6otSupervisor::Irp6otSupervisor(const std::string& name)
   this->addProperty("fault_autoreset", fault_autoreset_).doc("");
   this->addProperty("services_names", services_names_).doc("");
   this->addProperty("regulators_names", regulators_names_).doc("");
-  /*
-   this->addOperation("auto", &Irp6otSupervisor::autoRun, this, RTT::OwnThread).doc(
-   "");
-   this->addOperation("resetFault", &Irp6otSupervisor::resetFaultAll, this,
-   RTT::OwnThread).doc("");
-   this->addOperation("disable", &Irp6otSupervisor::disableAll, this,
-   RTT::OwnThread).doc("");
-   this->addOperation("enable", &Irp6otSupervisor::enableAll, this, RTT::OwnThread)
-   .doc("");
-   this->addOperation("beginHoming", &Irp6otSupervisor::beginHomingAll, this,
-   RTT::OwnThread).doc("");
-   this->addOperation("homingDone", &Irp6otSupervisor::homingDoneAll, this,
-   RTT::OwnThread).doc("");
-   this->addOperation("state", &Irp6otSupervisor::stateAll, this, RTT::OwnThread)
-   .doc("");
-   */
+
+  this->addOperation("auto", &Irp6otSupervisor::autoRun, this, RTT::OwnThread)
+      .doc("");
+  this->addOperation("resetFault", &Irp6otSupervisor::resetFaultAll, this,
+                     RTT::OwnThread).doc("");
+  this->addOperation("disable", &Irp6otSupervisor::disableAll, this,
+                     RTT::OwnThread).doc("");
+  this->addOperation("enable", &Irp6otSupervisor::enableAll, this,
+                     RTT::OwnThread).doc("");
+  this->addOperation("beginHoming", &Irp6otSupervisor::beginHomingAll, this,
+                     RTT::OwnThread).doc("");
+  this->addOperation("homingDone", &Irp6otSupervisor::homingDoneAll, this,
+                     RTT::OwnThread).doc("");
+  this->addOperation("state", &Irp6otSupervisor::stateAll, this, RTT::OwnThread)
+      .doc("");
 }
 
 Irp6otSupervisor::~Irp6otSupervisor() {
@@ -98,10 +101,7 @@ bool Irp6otSupervisor::configureHook() {
 
   number_of_servos_ = services_names_.size();
   if (number_of_servos_ != regulators_names_.size()) {
-    std::cout
-        << std::endl
-        << RED
-        << "[error] Irp6otSupervisor "
+    std::cout << std::endl << RED << "[error] Irp6otSupervisor "
         << "configuration failed: wrong properties vector length in launch file."
         << RESET << std::endl;
     return false;
@@ -201,8 +201,8 @@ void Irp6otSupervisor::readLimits() {
         upper_limit_port_list_[i]->write(current_upper_limit_[i]);
         if (current_upper_limit_[i] == true) {
           std::cout << std::endl << RED << getName()
-                    << " [error] UPPER LIMIT SWITCH DRIVE: " << i << RESET
-                    << std::endl << std::endl;
+              << " [error] UPPER LIMIT SWITCH DRIVE: " << i << RESET
+              << std::endl << std::endl;
           command_emergency_stop = true;
         }
       }
@@ -211,8 +211,8 @@ void Irp6otSupervisor::readLimits() {
         lower_limit_port_list_[i]->write(current_lower_limit_[i]);
         if (current_lower_limit_[i] == true) {
           std::cout << std::endl << RED << getName()
-                    << " [error] LOWER LIMIT SWITCH DRIVE: " << i << RESET
-                    << std::endl << std::endl;
+              << " [error] LOWER LIMIT SWITCH DRIVE: " << i << RESET
+              << std::endl << std::endl;
           command_emergency_stop = true;
         }
       }
@@ -223,8 +223,8 @@ void Irp6otSupervisor::readLimits() {
       if (command_emergency_stop) {
         port_emergency_stop_hi_mw_out_.write(true);
         std::cout << RED << getName()
-                  << " Emergency stop commanded due to limit switch" << RESET
-                  << std::endl;
+            << " Emergency stop commanded due to limit switch" << RESET
+            << std::endl;
       }
     }
   }
@@ -245,8 +245,8 @@ void Irp6otSupervisor::updateHook() {
     if (emergency_stop.data) {
       port_emergency_stop_hi_mw_out_.write(true);
       std::cout << RED << getName()
-                << " Emergency stop commanded due to external command" << RESET
-                << std::endl;
+          << " Emergency stop commanded due to external command" << RESET
+          << std::endl;
     }
   }
 
@@ -378,7 +378,7 @@ void Irp6otSupervisor::updateHook() {
                 beginHoming();
                 servo_state_[i] = SYNCHRONIZING;
                 std::cout << services_names_[i] << ": SYNCHRONIZING"
-                          << std::endl;
+                    << std::endl;
               }
               break;
             case SYNCHRONIZING:
@@ -387,7 +387,7 @@ void Irp6otSupervisor::updateHook() {
               if (homing->get()) {
                 servo_state_[i] = SYNCHRONIZED;
                 std::cout << services_names_[i] << ": SYNCHRONIZED"
-                          << std::endl;
+                    << std::endl;
                 last_servo_synchro_ = i + 1;
                 ++servos_state_changed_;
 
@@ -515,7 +515,7 @@ void Irp6otSupervisor::stateAll() {
             ->getAttribute("state");
     ec_servo_state_ = servo_ec_state->get();
     std::cout << services_names_[i] << ": " << state_text(ec_servo_state_)
-              << std::endl;
+        << std::endl;
   }
 }
 
