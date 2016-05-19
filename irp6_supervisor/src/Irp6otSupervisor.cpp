@@ -133,7 +133,7 @@ bool Irp6otSupervisor::configureHook() {
 
     char digital_in_port_name[32];
     snprintf(digital_in_port_name, sizeof(digital_in_port_name),
-             "digitial_in_%s", services_names_[i].c_str());
+             "digital_in_%s", services_names_[i].c_str());
     digital_in_port_list_[i] = new typeof(*digital_in_port_list_[i]);
     this->ports()->addPort(digital_in_port_name, *digital_in_port_list_[i]);
 

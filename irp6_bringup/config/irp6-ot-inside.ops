@@ -621,7 +621,7 @@ connect("Irp6otSupervisor.IsHardwarePanicHiMwIn",Irp6ot_hi_component_mw()+".IsHa
 for (var int i=0; i < 6; i = i+1) {
 	connect("IRp6otmPortDoubleSum_"+i+".InputPort_0","IRp6otmRegulator_"+i+".computedPwm_out", ConnPolicy())
 	connect(Irp6ot_hi_component_ec()+"."+irp6ot_joint_labels[i]+".motor_current_command","IRp6otmPortDoubleSum_"+i+".OutputPort", ConnPolicy())
-	//connect("IRp6otmRegulator_"+i+".DesiredPosition",Irp6ot_hi_component_ec()+".DesiredPosition_out_"+irp6ot_joint_labels[i], ConnPolicy())
+	connect(Irp6ot_hi_component_ec()+"."+irp6ot_joint_labels[i]+".digital_inputs","Irp6otSupervisor.digital_in_"+irp6ot_joint_labels[i], ConnPolicy())
 	connect("IRp6otmRegulator_"+i+".MeasuredPosition",Irp6ot_hi_component_ec()+"."+irp6ot_joint_labels[i]+".motor_position", ConnPolicy())
 }
 
