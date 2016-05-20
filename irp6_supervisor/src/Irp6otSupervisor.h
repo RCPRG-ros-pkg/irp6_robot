@@ -47,8 +47,8 @@
 #include <string>
 #include <vector>
 
-const uint8_t UPPER_LIMIT_BIT_POSITION[] = { 1, 1, 2, 3, 4, 5, 6, 7 };
-const uint8_t LOWER_LIMIT_BIT_POSITION[] = { 1, 1, 2, 3, 4, 5, 6, 7 };
+const uint32_t UPPER_LIMIT_MASK[] = { 1, 2, 2, 2, 0, 0, 0, 0 };
+const uint32_t LOWER_LIMIT_MASK[] = { 4, 1, 1, 1, 0, 0, 0, 0 };
 
 typedef enum {
   NOT_OPERATIONAL,
@@ -100,8 +100,6 @@ class Irp6otSupervisor : public RTT::TaskContext {
 
   std::vector<bool> current_upper_limit_, previous_upper_limit_;
   std::vector<bool> current_lower_limit_, previous_lower_limit_;
-  std::vector<uint32_t> upper_limit_bit_mask_;
-  std::vector<uint32_t> lower_limit_bit_mask_;
 
   // ports
 

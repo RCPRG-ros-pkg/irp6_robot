@@ -117,17 +117,12 @@ bool Irp6otSupervisor::configureHook() {
   previous_upper_limit_.resize(number_of_servos_);
   current_lower_limit_.resize(number_of_servos_);
   previous_lower_limit_.resize(number_of_servos_);
-  upper_limit_bit_mask_.resize(number_of_servos_);
-  lower_limit_bit_mask_.resize(number_of_servos_);
 
   servo_state_.resize(number_of_servos_);
 
   for (int i = 0; i < number_of_servos_; i++) {
     current_upper_limit_[i] = previous_upper_limit_[i] = false;
     current_lower_limit_[i] = previous_lower_limit_[i] = false;
-
-    upper_limit_bit_mask_[i] = (1 << UPPER_LIMIT_BIT_POSITION[i]);
-    lower_limit_bit_mask_[i] = (1 << LOWER_LIMIT_BIT_POSITION[i]);
 
     servo_state_[i] = NOT_OPERATIONAL;
 
@@ -186,15 +181,20 @@ void Irp6otSupervisor::readLimits() {
 
   for (int i = 0; i < number_of_servos_; i++) {
     if (RTT::NewData == digital_in_port_list_[i]->read(di)) {
-      if ((di & upper_limit_bit_mask_[i]) == upper_limit_bit_mask_[i]) {
-        current_upper_limit_[i] = true;
-      } else {
-        current_upper_limit_[i] = false;
+      if (UPPER_LIMIT_MASK[i]) {
+        if ((di & UPPER_LIMIT_MASK[i]) == UPPER_LIMIT_MASK[i]) {
+          current_upper_limit_[i] = true;
+        } else {
+          current_upper_limit_[i] = false;
+        }
       }
-      if ((di & lower_limit_bit_mask_[i]) == lower_limit_bit_mask_[i]) {
-        current_lower_limit_[i] = true;
-      } else {
-        current_lower_limit_[i] = false;
+
+      if (LOWER_LIMIT_MASK[i]) {
+        if ((di & LOWER_LIMIT_MASK[i]) == LOWER_LIMIT_MASK[i]) {
+          current_lower_limit_[i] = true;
+        } else {
+          current_lower_limit_[i] = false;
+        }
       }
 
       if (current_upper_limit_[i] != previous_upper_limit_[i]) {
@@ -378,7 +378,7 @@ void Irp6otSupervisor::updateHook() {
                 beginHoming();
                 servo_state_[i] = SYNCHRONIZING;
                 std::cout << services_names_[i] << ": SYNCHRONIZING"
-                    << std::endl;
+                          << std::endl;
               }
               break;
             case SYNCHRONIZING:
@@ -387,7 +387,7 @@ void Irp6otSupervisor::updateHook() {
               if (homing->get()) {
                 servo_state_[i] = SYNCHRONIZED;
                 std::cout << services_names_[i] << ": SYNCHRONIZED"
-                    << std::endl;
+                          << std::endl;
                 last_servo_synchro_ = i + 1;
                 ++servos_state_changed_;
 
@@ -515,7 +515,7 @@ void Irp6otSupervisor::stateAll() {
             ->getAttribute("state");
     ec_servo_state_ = servo_ec_state->get();
     std::cout << services_names_[i] << ": " << state_text(ec_servo_state_)
-        << std::endl;
+              << std::endl;
   }
 }
 
