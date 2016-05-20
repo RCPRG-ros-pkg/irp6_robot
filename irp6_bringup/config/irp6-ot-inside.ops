@@ -623,6 +623,7 @@ for (var int i=0; i < 6; i = i+1) {
 	connect(Irp6ot_hi_component_ec()+"."+irp6ot_joint_labels[i]+".motor_current_command","IRp6otmPortDoubleSum_"+i+".OutputPort", ConnPolicy())
 	connect(Irp6ot_hi_component_ec()+"."+irp6ot_joint_labels[i]+".digital_inputs","Irp6otSupervisor.digital_in_"+irp6ot_joint_labels[i], ConnPolicy())
 	connect("IRp6otmRegulator_"+i+".MeasuredPosition",Irp6ot_hi_component_ec()+"."+irp6ot_joint_labels[i]+".motor_position", ConnPolicy())
+	connect("IRp6otmRegulator_"+i+".EmergencyStopOut","Irp6otSupervisor.EmergencyStopIn", ConnPolicy())
 }
 
 
@@ -632,7 +633,7 @@ connect("IRp6otmRegulator_6.DesiredPosition",Irp6ot_hi_component_mw()+".DesiredP
 connect("IRp6otmRegulator_6.MeasuredPosition",Irp6ot_hi_component_mw()+".MotorPosition_irp6otm_6", ConnPolicy())
 connect("IRp6otmRegulator_6.ResetSignalIn",Irp6ot_hi_component_mw()+".RegulatorResetOutput_irp6otm_6", ConnPolicy())
 connect("IRp6otmRegulator_6.SynchroStateIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
-connect("IRp6otmRegulator_6.EmergencyStopOut",Irp6ot_hi_component_mw()+".EmergencyStopIn", ConnPolicy())
+connect("IRp6otmRegulator_6.EmergencyStopOut","Irp6otSupervisor.EmergencyStopIn", ConnPolicy())
 
 
 
@@ -642,7 +643,7 @@ connect("Irp6ottfgRegulator.DesiredPosition",Irp6ot_hi_component_mw()+".DesiredP
 connect("Irp6ottfgRegulator.MeasuredPosition",Irp6ot_hi_component_mw()+".MotorPosition_irp6ottfg", ConnPolicy())
 connect("Irp6ottfgRegulator.ResetSignalIn",Irp6ot_hi_component_mw()+".RegulatorResetOutput_irp6ottfg", ConnPolicy())
 connect("Irp6ottfgRegulator.SynchroStateIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
-connect("Irp6ottfgRegulator.EmergencyStopOut",Irp6ot_hi_component_mw()+".EmergencyStopIn", ConnPolicy())
+connect("Irp6ottfgRegulator.EmergencyStopOut","Irp6otSupervisor.EmergencyStopIn", ConnPolicy())
 
 
 

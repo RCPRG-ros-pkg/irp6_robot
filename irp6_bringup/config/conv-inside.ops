@@ -188,7 +188,7 @@ connect("ConveyorRegulator.DesiredPosition",Conv_hi_component()+".DesiredPositio
 connect("ConveyorRegulator.MeasuredPosition",Conv_hi_component()+".MotorPosition_conveyor", ConnPolicy())
 connect("ConveyorRegulator.ResetSignalIn",Conv_hi_component()+".RegulatorResetOutput_conveyor", ConnPolicy())
 connect("ConveyorRegulator.SynchroStateIn",Conv_hi_component()+".IsSynchronised", ConnPolicy())
-connect("ConveyorRegulator.EmergencyStopOut",Conv_hi_component()+".EmergencyStopIn", ConnPolicy())
+connect("ConveyorRegulator.EmergencyStopOut","ConvSupervisor.EmergencyStopIn", ConnPolicy())
 
 
 
