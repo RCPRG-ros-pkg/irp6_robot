@@ -50,7 +50,7 @@ class IRp6Regulator : public RTT::TaskContext {
   RTT::InputPort<bool> synchro_state_in_;
   RTT::InputPort<bool> reset_signal_in_;
 
-  RTT::OutputPort<double> computedPwm_out;
+  RTT::OutputPort<double> computed_current_out_;
   RTT::OutputPort<bool> emergency_stop_out_;
 
   double desired_position_increment_;

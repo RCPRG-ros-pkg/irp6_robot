@@ -45,7 +45,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
 : TaskContext(name),
   desired_position_("DesiredPosition"),
   measured_position_("MeasuredPosition"),
-  computedPwm_out("computedPwm_out"),
+  computed_current_out_("ComputedCurrentOut"),
   synchro_state_in_("SynchroStateIn"),
   reset_signal_in_("ResetSignalIn"),
   emergency_stop_out_("EmergencyStopOut"),
@@ -77,7 +77,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addEventPort(desired_position_).doc(
       "Receiving a value of position step");
   this->addPort(measured_position_).doc("Receiving a measured position");
-  this->addPort(computedPwm_out).doc(
+  this->addPort(computed_current_out_).doc(
       "Sending value of calculated pwm or current.");
   this->addPort(synchro_state_in_).doc("Synchro State from HardwareInterface");
   this->addPort(reset_signal_in_).doc("Reset signal from HardwareInterface");
@@ -154,7 +154,7 @@ void IRp6Regulator::updateHook() {
 
     int output = doServo(desired_position_increment_, deltaIncData);
 
-    computedPwm_out.write(output);
+    computed_current_out_.write(output);
     if (debug_) {
       std::cout << std::dec << GREEN << "output: " << output << " pos_inc: "
           << desired_position_increment_ << " inp_inc: " << deltaIncData

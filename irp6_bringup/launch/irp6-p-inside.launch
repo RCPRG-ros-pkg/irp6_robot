@@ -235,7 +235,7 @@
         current_mode: true
         current_reg_kp: 0.33
         output_multiplicator: 1.0
-        max_output_current: 80.0
+        max_output_current: 60.0
         max_desired_increment: 10000.0
         enc_res: 128.0
       IRp6pmPortDoubleSum_0:

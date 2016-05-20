@@ -182,7 +182,7 @@ connect("ConveyorSplineTrajectoryGeneratorMotor.GeneratorActiveOut","ConvSupervi
 
 
 
-connect("ConveyorPortDoubleSum.InputPort_0","ConveyorRegulator.computedPwm_out", ConnPolicy())
+connect("ConveyorPortDoubleSum.InputPort_0","ConveyorRegulator.ComputedCurrentOut", ConnPolicy())
 connect(Conv_hi_component()+".computedReg_in_conveyor","ConveyorPortDoubleSum.OutputPort", ConnPolicy())
 connect("ConveyorRegulator.DesiredPosition",Conv_hi_component()+".DesiredPosition_out_conveyor", ConnPolicy())
 connect("ConveyorRegulator.MeasuredPosition",Conv_hi_component()+".MotorPosition_conveyor", ConnPolicy())

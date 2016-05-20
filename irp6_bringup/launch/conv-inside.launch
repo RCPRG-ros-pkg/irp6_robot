@@ -65,8 +65,10 @@
         enc_res: 4000.0
         current_mode: true
         current_reg_kp: 120.0
+        output_multiplicator: 1.0
         max_output_current: 15000.0
         max_desired_increment: 200.0
+        enc_res: 4000.0
       ConveyorPortDoubleSplit_hw_cp:
         number_of_ports: 1
       ConveyorPortDoubleAggregate_hw_p:
