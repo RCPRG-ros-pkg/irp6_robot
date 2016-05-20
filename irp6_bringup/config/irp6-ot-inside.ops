@@ -690,7 +690,7 @@ connect("Irp6otmPortDoubleAggregate_hw_curr.InputPort_6",Irp6ot_hi_component_mw(
 // stream(Irp6ot_hi_component_mw()+".DoSynchroIn", ros.comm.topic("/irp6ot_hardware_interface/do_synchro_in"))
 
 stream("Irp6otSupervisor.DoSynchroIn", ros.comm.topic("/irp6ot_supervisor/do_synchro_in"))
-stream("Irp6otSupervisor.EmegencyStopIn", ros.comm.topic("/irp6ot_supervisor/emergency_stop_in"))
+stream("Irp6otSupervisor.EmergencyStopIn", ros.comm.topic("/irp6ot_supervisor/emergency_stop_in"))
 
 stream("Irp6otDiag.Diagnostics", ros.comm.topic("/diagnostics"));
 

@@ -42,38 +42,39 @@
 #include "common_headers/string_colors.h"
 
 IRp6Regulator::IRp6Regulator(const std::string& name)
-: TaskContext(name),
-  desired_position_("DesiredPosition"),
-  measured_position_("MeasuredPosition"),
-  computed_current_out_("ComputedCurrentOut"),
-  synchro_state_in_("SynchroStateIn"),
-  reset_signal_in_("ResetSignalIn"),
-  emergency_stop_out_("EmergencyStopOut"),
-  a_(0.0),
-  b0_(0.0),
-  b1_(0.0),
-  delta_eint_old(0.0),
-  delta_eint(0.0),
-  deltaIncData(0.0),
-  output_value(0.0),
-  desired_position_increment_(0.0),
-  position_increment_new(0.0),
-  position_increment_old(0.0),
-  measured_position_old_(0.0),
-  measured_position_new_(0.0),
-  set_value_new(0.0),
-  set_value_old(0.0),
-  set_value_very_old(0.0),
-  step_new(0.0),
-  step_old(0.0),
-  step_old_pulse(0.0),
-  update_hook_iteration_number_(0),
-  new_position_iteration_number_(0),
-  max_desired_increment_(0.0),
-  desired_position_old_(0.0),
-  desired_position_new_(0.0),
-  synchro_state_old_(false),
-  synchro_state_new_(false) {
+    : TaskContext(name),
+      desired_position_("DesiredPosition"),
+      measured_position_("MeasuredPosition"),
+      computed_current_out_("ComputedCurrentOut"),
+      synchro_state_in_("SynchroStateIn"),
+      reset_signal_in_("ResetSignalIn"),
+      emergency_stop_out_("EmergencyStopOut"),
+      a_(0.0),
+      b0_(0.0),
+      b1_(0.0),
+      delta_eint_old(0.0),
+      delta_eint(0.0),
+      deltaIncData(0.0),
+      output_value(0.0),
+      desired_position_increment_(0.0),
+      position_increment_new(0.0),
+      position_increment_old(0.0),
+      measured_position_old_(0.0),
+      measured_position_new_(0.0),
+      set_value_new(0.0),
+      set_value_old(0.0),
+      set_value_very_old(0.0),
+      step_new(0.0),
+      step_old(0.0),
+      step_old_pulse(0.0),
+      update_hook_iteration_number_(0),
+      new_position_iteration_number_(0),
+      max_desired_increment_(0.0),
+      max_position_error_(0.0),
+      desired_position_old_(0.0),
+      desired_position_new_(0.0),
+      synchro_state_old_(false),
+      synchro_state_new_(false) {
   this->addEventPort(desired_position_).doc(
       "Receiving a value of position step");
   this->addPort(measured_position_).doc("Receiving a measured position");
@@ -91,6 +92,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addProperty("debug", debug_).doc("");
   this->addProperty("eint_dif", eint_dif_).doc("");
   this->addProperty("max_desired_increment", max_desired_increment_).doc("");
+  this->addProperty("max_position_error", max_position_error_).doc("");
   this->addProperty("enc_res", enc_res_).doc("");
 }
 
@@ -111,6 +113,8 @@ bool IRp6Regulator::configureHook() {
 
 void IRp6Regulator::updateHook() {
   if (RTT::NewData == measured_position_.read(measured_position_new_)) {
+    bool activate_emergency_stop = false;
+
     update_hook_iteration_number_++;
     deltaIncData = (measured_position_new_ - measured_position_old_);
     measured_position_old_ = measured_position_new_;
@@ -141,19 +145,33 @@ void IRp6Regulator::updateHook() {
 
     desired_position_increment_ =
         (desired_position_new_ - desired_position_old_)
-        * (enc_res_ / (2.0 * M_PI));
+            * (enc_res_ / (2.0 * M_PI));
 
     if (fabs(desired_position_increment_) > max_desired_increment_) {
       std::cout << "very high pos_inc_: " << getName() << " pos_inc: "
-          << desired_position_increment_ << std::endl;
+                << desired_position_increment_ << std::endl;
 
-      emergency_stop_out_.write(true);
+      activate_emergency_stop = true;
+    }
+
+    double position_error_ = desired_position_new_ * (enc_res_ / (2.0 * M_PI))
+        - measured_position_new_;
+
+    if (fabs(position_error_) > max_position_error_) {
+      std::cout << "very high position error in " << getName()
+                << " postion_error_: " << position_error_ << std::endl;
+      activate_emergency_stop = true;
     }
 
     desired_position_old_ = desired_position_new_;
 
-    int output = doServo(desired_position_increment_, deltaIncData);
+    if (activate_emergency_stop) {
+      std_msgs::Bool out_bool;
+      out_bool.data = true;
+      emergency_stop_out_.write(out_bool);
+    }
 
+    int output = doServo(desired_position_increment_, deltaIncData);
     computed_current_out_.write(output);
     if (debug_) {
       std::cout << std::dec << GREEN << "output: " << output << " pos_inc: "
@@ -164,37 +182,37 @@ void IRp6Regulator::updateHook() {
 }
 
 int IRp6Regulator::doServo(double step_new, double pos_inc) {
-  // algorytm regulacji dla serwomechanizmu
-  // position_increment_old - przedostatnio odczytany przyrost polozenie
-  //                         (delta y[k-2] -- mierzone w impulsach)
-  // position_increment_new - ostatnio odczytany przyrost polozenie
-  //                         (delta y[k-1] -- mierzone w impulsach)
-  // step_old_pulse               - poprzednia wartosc zadana dla jednego kroku
-  //                         regulacji (przyrost wartosci zadanej polozenia --
-  //                         delta r[k-2] -- mierzone w impulsach)
-  // step_new               - nastepna wartosc zadana dla jednego kroku
-  //                         regulacji (przyrost wartosci zadanej polozenia --
-  //                         delta r[k-1] -- mierzone w radianach)
-  // set_value_new          - wielkosc kroku do realizacji przez HIP
-  //                         (wypelnienie PWM -- u[k]): czas trwania jedynki
-  // set_value_old          - wielkosc kroku do realizacji przez HIP
-  //                         (wypelnienie PWM -- u[k-1]): czas trwania jedynki
-  // set_value_very_old     - wielkosc kroku do realizacji przez HIP
-  //                         (wypelnienie PWM -- u[k-2]): czas trwania jedynki
+// algorytm regulacji dla serwomechanizmu
+// position_increment_old - przedostatnio odczytany przyrost polozenie
+//                         (delta y[k-2] -- mierzone w impulsach)
+// position_increment_new - ostatnio odczytany przyrost polozenie
+//                         (delta y[k-1] -- mierzone w impulsach)
+// step_old_pulse               - poprzednia wartosc zadana dla jednego kroku
+//                         regulacji (przyrost wartosci zadanej polozenia --
+//                         delta r[k-2] -- mierzone w impulsach)
+// step_new               - nastepna wartosc zadana dla jednego kroku
+//                         regulacji (przyrost wartosci zadanej polozenia --
+//                         delta r[k-1] -- mierzone w radianach)
+// set_value_new          - wielkosc kroku do realizacji przez HIP
+//                         (wypelnienie PWM -- u[k]): czas trwania jedynki
+// set_value_old          - wielkosc kroku do realizacji przez HIP
+//                         (wypelnienie PWM -- u[k-1]): czas trwania jedynki
+// set_value_very_old     - wielkosc kroku do realizacji przez HIP
+//                         (wypelnienie PWM -- u[k-2]): czas trwania jedynki
 
   double step_new_pulse;  // nastepna wartosc zadana dla jednego kroku regulacji
 
   step_new_pulse = step_new;
   position_increment_new = pos_inc;
 
-  // Przyrost calki uchybu
+// Przyrost calki uchybu
   delta_eint = delta_eint_old
       + (1.0 + eint_dif_) * (step_new_pulse - position_increment_new)
       - (1.0 - eint_dif_) * (step_old_pulse - position_increment_old);
 
-  // std::cout << "POS INCREMENT NEW: " << position_increment_new <<  std::endl;
+// std::cout << "POS INCREMENT NEW: " << position_increment_new <<  std::endl;
 
-  // obliczenie nowej wartosci wypelnienia PWM algorytm PD + I
+// obliczenie nowej wartosci wypelnienia PWM algorytm PD + I
   set_value_new = (1 + a_) * set_value_old - a_ * set_value_very_old
       + b0_ * delta_eint - b1_ * delta_eint_old;
 
@@ -205,8 +223,8 @@ int IRp6Regulator::doServo(double step_new, double pos_inc) {
     output_value = -max_output_current_;
   }
 
-  // przepisanie nowych wartosci zmiennych
-  // do zmiennych przechowujacych wartosci poprzednie
+// przepisanie nowych wartosci zmiennych
+// do zmiennych przechowujacych wartosci poprzednie
   position_increment_old = position_increment_new;
   delta_eint_old = delta_eint;
   step_old_pulse = step_new_pulse;

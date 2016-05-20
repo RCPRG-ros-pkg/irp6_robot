@@ -31,6 +31,8 @@
 #ifndef IRP6REGULATOR_H_
 #define IRP6REGULATOR_H_
 
+#include <std_msgs/Bool.h>
+
 #include <string>
 
 class IRp6Regulator : public RTT::TaskContext {
@@ -51,7 +53,7 @@ class IRp6Regulator : public RTT::TaskContext {
   RTT::InputPort<bool> reset_signal_in_;
 
   RTT::OutputPort<double> computed_current_out_;
-  RTT::OutputPort<bool> emergency_stop_out_;
+  RTT::OutputPort<std_msgs::Bool> emergency_stop_out_;
 
   double desired_position_increment_;
   double desired_position_old_, desired_position_new_;
@@ -72,6 +74,7 @@ class IRp6Regulator : public RTT::TaskContext {
   double current_reg_kp_;
   double eint_dif_;
   double max_desired_increment_;
+  double max_position_error_;
   double enc_res_;
   double output_multiplicator_;
 

@@ -222,7 +222,7 @@ connect("ConveyorM2J.JointPosition", "ConveyorJntPub.JointEffort", ConnPolicy())
 
 
 stream("ConvSupervisor.DoSynchroIn", ros.comm.topic("/conv_supervisor/do_synchro_in"))
-stream("ConvSupervisor.EmegencyStopIn", ros.comm.topic("/conv_supervisor/emergency_stop_in"))
+stream("ConvSupervisor.EmergencyStopIn", ros.comm.topic("/conv_supervisor/emergency_stop_in"))
 
 stream("ConvDiag.Diagnostics", ros.comm.topic("/diagnostics"));
 stream("ConveyorJntPub.joint_state", ros.comm.topic("conveyor/joint_states"));

@@ -125,6 +125,7 @@
         output_multiplicator: 1.6384
         max_output_current: 20000.0
         max_desired_increment: 2000.0
+        max_position_error: 1000.0
         enc_res: 4000.0
       IRp6otmRegulator_1:
         debug: false
@@ -136,6 +137,7 @@
         output_multiplicator: 0.1
         max_output_current: 20000.0
         max_desired_increment: 200.0
+        max_position_error: 1000.0
         enc_res: 4000.0
       IRp6otmRegulator_2:
         debug: false
@@ -147,6 +149,7 @@
         output_multiplicator: 0.1
         max_output_current: 15000.0
         max_desired_increment: 200.0
+        max_position_error: 1000.0
         enc_res: 4000.0
       IRp6otmRegulator_3:
         debug: false
@@ -158,6 +161,7 @@
         output_multiplicator: 0.1
         max_output_current: 18000.0
         max_desired_increment: 200.0
+        max_position_error: 1000.0
         enc_res: 4000.0
       IRp6otmRegulator_4:
         debug: false
@@ -169,6 +173,7 @@
         output_multiplicator: 1.6384
         max_output_current: 15000.0
         max_desired_increment: 200.0
+        max_position_error: 1000.0
         enc_res: 4000.0
       IRp6otmRegulator_5:
         debug: false
@@ -180,6 +185,7 @@
         output_multiplicator: 1.6384
         max_output_current: 8000.0
         max_desired_increment: 200.0
+        max_position_error: 1000.0
         enc_res: 4000.0
       IRp6otmRegulator_6:
         debug: false
@@ -192,6 +198,7 @@
         output_multiplicator: 1.0
         max_output_current: 1000.0
         max_desired_increment: 200.0
+        max_position_error: 1000.0
         enc_res: 2000.0
       Irp6ottfgRegulator:
         debug: false
@@ -204,6 +211,7 @@
         output_multiplicator: 1.0
         max_output_current: 60.0
         max_desired_increment: 10000.0
+        max_position_error: 1000.0
         enc_res: 128.0
       IRp6otmPortDoubleSum_0:
         number_of_ports: 1

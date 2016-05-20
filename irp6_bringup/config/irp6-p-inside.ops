@@ -635,7 +635,7 @@ connect("Irp6ptfgJ2M.MotorPosition", "IRp6ptfgLimitDetector.InputPort", ConnPoli
 //
 
 stream("Irp6pSupervisor.DoSynchroIn", ros.comm.topic("/irp6p_supervisor/do_synchro_in"))
-stream("Irp6pSupervisor.EmegencyStopIn", ros.comm.topic("/irp6p_supervisor/emergency_stop_in"))
+stream("Irp6pSupervisor.EmergencyStopIn", ros.comm.topic("/irp6p_supervisor/emergency_stop_in"))
 
 stream("Irp6pDiag.Diagnostics", ros.comm.topic("/diagnostics"));
 #stream("Irp6pmToolInt.CartesianPositionCommand", ros.comm.topic("/irp6p_arm/tool"))

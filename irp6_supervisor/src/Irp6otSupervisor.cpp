@@ -49,7 +49,7 @@ Irp6otSupervisor::Irp6otSupervisor(const std::string& name)
   // ports addition
 
   this->ports()->addPort("DoSynchroIn", port_do_synchro_in_);
-  this->ports()->addPort("EmegencyStopIn", port_emergency_stop_in_);
+  this->ports()->addPort("EmergencyStopIn", port_emergency_stop_in_);
   this->ports()->addPort("GeneratorActiveIn", port_generator_active_in_);
 
   this->ports()->addPort("IsSynchronisedHiMwIn",
