@@ -198,7 +198,7 @@
         output_multiplicator: 1.0
         max_output_current: 1000.0
         max_desired_increment: 200.0
-        max_position_error: 1000.0
+        max_position_error: 100000.0
         enc_res: 2000.0
       Irp6ottfgRegulator:
         debug: false
@@ -211,7 +211,7 @@
         output_multiplicator: 1.0
         max_output_current: 60.0
         max_desired_increment: 10000.0
-        max_position_error: 1000.0
+        max_position_error: 100000.0
         enc_res: 128.0
       IRp6otmPortDoubleSum_0:
         number_of_ports: 1

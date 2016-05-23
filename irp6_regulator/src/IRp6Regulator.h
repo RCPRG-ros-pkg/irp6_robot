@@ -46,6 +46,7 @@ class IRp6Regulator : public RTT::TaskContext {
  private:
   bool configureHook();
   void updateHook();
+  bool startHook();
 
   RTT::InputPort<double> desired_position_;
   RTT::InputPort<double> measured_position_;

@@ -111,6 +111,17 @@ bool IRp6Regulator::configureHook() {
   return true;
 }
 
+bool IRp6Regulator::startHook() {
+  if (RTT::NoData != measured_position_.read(measured_position_new_)) {
+    measured_position_old_ = measured_position_new_;
+    desired_position_new_ = desired_position_old_ = measured_position_new_
+        * ((2.0 * M_PI) / enc_res_);
+    desired_position_increment_ = 0.0;
+  }
+
+  return true;
+}
+
 void IRp6Regulator::updateHook() {
   if (RTT::NewData == measured_position_.read(measured_position_new_)) {
     bool activate_emergency_stop = false;
