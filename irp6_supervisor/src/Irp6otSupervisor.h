@@ -90,7 +90,7 @@ class Irp6otSupervisor : public RTT::TaskContext {
   State robot_state_;
   std::vector<State> servo_state_;
 
-  ECServoState ec_servo_state_;
+  std::vector<ECServoState>  ec_servo_state_;
 
   int number_of_servos_;
   int last_servo_synchro_;
