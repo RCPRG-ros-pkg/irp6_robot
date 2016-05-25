@@ -490,6 +490,7 @@ void HardwareInterfaceMW::updateHookStateMachine() {
 
             hi_->finish_synchro(synchro_drive_);
             hi_->reset_position(synchro_drive_);
+            desired_position_[synchro_drive_] = motor_position_(synchro_drive_);
             port_regulator_reset_list_[synchro_drive_]->write(
                 static_cast<double>(true));
             if (++synchro_drive_ == number_of_drives_) {

@@ -148,9 +148,9 @@ void IRp6Regulator::updateHook() {
       }
     }
 
-    bool tmp_signal;
+    bool reset_signal;
 
-    if (RTT::NewData == reset_signal_in_.read(tmp_signal)) {
+    if (RTT::NewData == reset_signal_in_.read(reset_signal)) {
       deltaIncData = 0.0;
     }
 
