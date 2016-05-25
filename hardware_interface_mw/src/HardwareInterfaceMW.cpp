@@ -513,6 +513,8 @@ void HardwareInterfaceMW::updateHookStateMachine() {
             for (int i = 0; i < number_of_drives_; i++) {
               motor_position_command_(i) = motor_position_(i);
               desired_position_[i] = motor_position_(i);
+              port_regulator_reset_list_[i]->write(
+                              static_cast<double>(true));
             }
 
             port_is_synchronised_.write(true);

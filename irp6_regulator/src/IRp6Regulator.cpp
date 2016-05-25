@@ -46,7 +46,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
       desired_position_("DesiredPosition"),
       measured_position_("MeasuredPosition"),
       computed_current_out_("ComputedCurrentOut"),
-      synchro_state_in_("SynchroStateIn"),
+      // synchro_state_in_("SynchroStateIn"),
       reset_signal_in_("ResetSignalIn"),
       emergency_stop_out_("EmergencyStopOut"),
       a_(0.0),
@@ -80,7 +80,7 @@ IRp6Regulator::IRp6Regulator(const std::string& name)
   this->addPort(measured_position_).doc("Receiving a measured position");
   this->addPort(computed_current_out_).doc(
       "Sending value of calculated pwm or current.");
-  this->addPort(synchro_state_in_).doc("Synchro State from HardwareInterface");
+  //  this->addPort(synchro_state_in_).doc("Synchro State from HardwareInterface");
   this->addPort(reset_signal_in_).doc("Reset signal from HardwareInterface");
   this->addPort(emergency_stop_out_).doc("Emergency Stop Out");
   this->addProperty("A", A_).doc("");
@@ -126,14 +126,6 @@ void IRp6Regulator::updateHook() {
   if (RTT::NewData == measured_position_.read(measured_position_new_)) {
     bool activate_emergency_stop = false;
 
-    update_hook_iteration_number_++;
-    deltaIncData = (measured_position_new_ - measured_position_old_);
-    measured_position_old_ = measured_position_new_;
-
-    if (update_hook_iteration_number_ <= 1) {
-      deltaIncData = 0.0;
-    }
-
     if (RTT::NewData == desired_position_.read(desired_position_new_)) {
       new_position_iteration_number_++;
       if (new_position_iteration_number_ <= 1) {
@@ -141,19 +133,26 @@ void IRp6Regulator::updateHook() {
       }
     }
 
-    if (RTT::NewData == synchro_state_in_.read(synchro_state_new_)) {
-      if (synchro_state_new_ != synchro_state_old_) {
-        desired_position_old_ = desired_position_new_;
-        synchro_state_old_ = synchro_state_new_;
-      }
+    if (++update_hook_iteration_number_ <= 1) {
+      measured_position_old_ = measured_position_new_;
     }
 
     bool reset_signal;
 
     if (RTT::NewData == reset_signal_in_.read(reset_signal)) {
-      deltaIncData = 0.0;
+      measured_position_old_ = measured_position_new_;
+      desired_position_old_ = desired_position_new_;
     }
 
+    deltaIncData = (measured_position_new_ - measured_position_old_);
+    /*
+     if (RTT::NewData == synchro_state_in_.read(synchro_state_new_)) {
+     if (synchro_state_new_ != synchro_state_old_) {
+     desired_position_old_ = desired_position_new_;
+     synchro_state_old_ = synchro_state_new_;
+     }
+     }
+     */
     desired_position_increment_ =
         (desired_position_new_ - desired_position_old_)
             * (enc_res_ / (2.0 * M_PI));
@@ -174,8 +173,6 @@ void IRp6Regulator::updateHook() {
       activate_emergency_stop = true;
     }
 
-    desired_position_old_ = desired_position_new_;
-
     if (activate_emergency_stop) {
       std_msgs::Bool out_bool;
       out_bool.data = true;
@@ -189,6 +186,8 @@ void IRp6Regulator::updateHook() {
           << desired_position_increment_ << " inp_inc: " << deltaIncData
           << RESET << std::endl;
     }
+    measured_position_old_ = measured_position_new_;
+    desired_position_old_ = desired_position_new_;
   }
 }
 

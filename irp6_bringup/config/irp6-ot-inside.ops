@@ -632,7 +632,7 @@ connect(Irp6ot_hi_component_mw()+".computedReg_in_irp6otm_6","IRp6otmPortDoubleS
 connect("IRp6otmRegulator_6.DesiredPosition",Irp6ot_hi_component_mw()+".DesiredPosition_out_irp6otm_6", ConnPolicy())
 connect("IRp6otmRegulator_6.MeasuredPosition",Irp6ot_hi_component_mw()+".MotorPosition_irp6otm_6", ConnPolicy())
 connect("IRp6otmRegulator_6.ResetSignalIn",Irp6ot_hi_component_mw()+".RegulatorResetOutput_irp6otm_6", ConnPolicy())
-connect("IRp6otmRegulator_6.SynchroStateIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
+// connect("IRp6otmRegulator_6.SynchroStateIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
 connect("IRp6otmRegulator_6.EmergencyStopOut","Irp6otSupervisor.EmergencyStopIn", ConnPolicy())
 
 
@@ -642,7 +642,7 @@ connect(Irp6ot_hi_component_mw()+".computedReg_in_irp6ottfg","Irp6ottfgPortDoubl
 connect("Irp6ottfgRegulator.DesiredPosition",Irp6ot_hi_component_mw()+".DesiredPosition_out_irp6ottfg", ConnPolicy())
 connect("Irp6ottfgRegulator.MeasuredPosition",Irp6ot_hi_component_mw()+".MotorPosition_irp6ottfg", ConnPolicy())
 connect("Irp6ottfgRegulator.ResetSignalIn",Irp6ot_hi_component_mw()+".RegulatorResetOutput_irp6ottfg", ConnPolicy())
-connect("Irp6ottfgRegulator.SynchroStateIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
+// connect("Irp6ottfgRegulator.SynchroStateIn",Irp6ot_hi_component_mw()+".IsSynchronised", ConnPolicy())
 connect("Irp6ottfgRegulator.EmergencyStopOut","Irp6otSupervisor.EmergencyStopIn", ConnPolicy())
 
 

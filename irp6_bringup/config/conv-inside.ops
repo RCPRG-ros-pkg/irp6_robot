@@ -187,7 +187,7 @@ connect(Conv_hi_component()+".computedReg_in_conveyor","ConveyorPortDoubleSum.Ou
 connect("ConveyorRegulator.DesiredPosition",Conv_hi_component()+".DesiredPosition_out_conveyor", ConnPolicy())
 connect("ConveyorRegulator.MeasuredPosition",Conv_hi_component()+".MotorPosition_conveyor", ConnPolicy())
 connect("ConveyorRegulator.ResetSignalIn",Conv_hi_component()+".RegulatorResetOutput_conveyor", ConnPolicy())
-connect("ConveyorRegulator.SynchroStateIn",Conv_hi_component()+".IsSynchronised", ConnPolicy())
+// connect("ConveyorRegulator.SynchroStateIn",Conv_hi_component()+".IsSynchronised", ConnPolicy())
 connect("ConveyorRegulator.EmergencyStopOut","ConvSupervisor.EmergencyStopIn", ConnPolicy())
 
 
