@@ -406,6 +406,8 @@ void Irp6otSupervisor::updateHook() {
               }
               break;
           }
+        } else {
+          port_emergency_stop_hi_mw_out_.write(true);
         }
       }
       // all servos synhronized
@@ -426,9 +428,14 @@ void Irp6otSupervisor::updateHook() {
       break;
 
     case RUNNING:
-      if (fault_autoreset_) {
-        resetFaultAll();
-        enableAll();
+      for (int i = 0; i < number_of_servos_; i++) {
+        RTT::Attribute<ECServoState> * servo_ec_state = (RTT::Attribute<
+            ECServoState> *) EC->provides(services_names_[i])->getAttribute(
+            "state");
+        ec_servo_state_ = servo_ec_state->get();
+        if (ec_servo_state_ != OPERATION_ENABLED) {
+          port_emergency_stop_hi_mw_out_.write(true);
+        }
       }
       break;
     default:
@@ -515,7 +522,7 @@ void Irp6otSupervisor::stateAll() {
             ->getAttribute("state");
     ec_servo_state_ = servo_ec_state->get();
     std::cout << services_names_[i] << ": " << state_text(ec_servo_state_)
-              << std::endl;
+        << std::endl;
   }
 }
 
