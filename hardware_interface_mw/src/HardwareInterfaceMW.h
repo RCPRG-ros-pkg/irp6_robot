@@ -45,7 +45,7 @@
 
 #include <vector>
 
-#include "../../hardware_interface_mw/src/hi_moxa.h"
+#include "hi_moxa.h"
 
 #define HI_SERVOS_NR 17
 
