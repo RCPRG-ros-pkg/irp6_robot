@@ -7,7 +7,15 @@ import rospkg
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
-from python_qt_binding.QtGui import QWidget
+
+from python_qt_binding.QtCore import QT_VERSION_STR
+print("Qt version:", QT_VERSION_STR)
+
+if (QT_VERSION_STR >= '5'):
+	from python_qt_binding.QtWidgets import QWidget
+else:
+	from python_qt_binding.QtGui import QWidget
+	
 
 from .irp6_motors import Irp6Stop
 from .irp6p_motors import Irp6pMotors

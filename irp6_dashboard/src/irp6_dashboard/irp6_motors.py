@@ -30,7 +30,11 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from python_qt_binding.QtGui import QMessageBox
+from python_qt_binding.QtCore import QT_VERSION_STR
+if (QT_VERSION_STR >= '5'):
+	from python_qt_binding.QtWidgets import QMessageBox
+else:
+	from python_qt_binding.QtGui import QMessageBox
 
 import actionlib
 import rospy
