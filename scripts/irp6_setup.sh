@@ -19,4 +19,4 @@ cd $1
 wstool init
 
 bash /tmp/update_and_compile.bash
-cp var.cfg $1/robot/src/irp6_robot/scripts
+cp /tmp/var.cfg $1/robot/src/irp6_robot/scripts
