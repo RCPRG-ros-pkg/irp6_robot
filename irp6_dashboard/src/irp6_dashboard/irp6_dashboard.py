@@ -33,7 +33,11 @@ class Irp6Dashboard(Dashboard):
 
         
         # Diagnostics
-        self._monitor = MonitorDashWidget(self.context)
+	# wylaczono ikone self._monitor bo cyklicznie pojawial sie komunikat
+	# QObject::startTimer: Timers cannot be started from another thread
+	# QObject::killTimer: Timers cannot be stopped from another thread
+	# mozna robot monitor wlaczyc z poziomu menu rqt jako plugin rqt: Robot Tools => Diagnostics Viewer
+        # self._monitor = MonitorDashWidget(self.context)
 
         # Rosout
         self._console = ConsoleDashWidget(self.context, minimal=False)
@@ -56,7 +60,8 @@ class Irp6Dashboard(Dashboard):
 
     def get_widgets(self):
         return [
-                [self._monitor, self._console, self._irp6ot_motors_button, self._irp6p_motors_button, self._conveyor_motors_button, self._stop_button]
+                # [self._monitor, self._console, self._irp6ot_motors_button, self._irp6p_motors_button, self._conveyor_motors_button, self._stop_button]
+                [self._console, self._irp6ot_motors_button, self._irp6p_motors_button, self._conveyor_motors_button, self._stop_button]
                ]
 
 
@@ -99,11 +104,11 @@ class Irp6Dashboard(Dashboard):
 
     def save_settings(self, plugin_settings, instance_settings):
         self._console.save_settings(plugin_settings, instance_settings)
-        self._monitor.save_settings(plugin_settings, instance_settings)
+        # self._monitor.save_settings(plugin_settings, instance_settings)
 
 
     def restore_settings(self, plugin_settings, instance_settings):
         self._console.restore_settings(plugin_settings, instance_settings)
-        self._monitor.restore_settings(plugin_settings, instance_settings)
+        # self._monitor.restore_settings(plugin_settings, instance_settings)
 
 
