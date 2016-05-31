@@ -32,9 +32,9 @@
 
 from python_qt_binding.QtCore import QT_VERSION_STR
 if (QT_VERSION_STR >= '5'):
-	from python_qt_binding.QtWidgets import QMessageBox
+	from python_qt_binding.QtWidgets import QMessageBox,  QMenu, QToolButton
 else:
-	from python_qt_binding.QtGui import QMessageBox
+	from python_qt_binding.QtGui import QMessageBox, QMenu, QToolButton
 
 import actionlib
 import rospy
@@ -45,7 +45,6 @@ import datetime, threading, time
 from std_msgs.msg import *
 from irpos import *
 
-from QtGui import QMenu, QToolButton
 
 class Irp6MotorStatus():
     def __init__(self, context):
