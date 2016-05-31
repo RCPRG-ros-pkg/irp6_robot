@@ -1,5 +1,8 @@
 #!/bin/bash
 
+
+
+
 if [ "x$ROS_MASTER_URI" == "x" ]
 then
 	echo "Please source ros"
@@ -17,3 +20,4 @@ cd $1
 wstool init
 
 bash /tmp/update_and_compile.bash
+cp var.cfg $1/robot/src/irp6_robot/scripts

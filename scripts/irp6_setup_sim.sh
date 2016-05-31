@@ -18,3 +18,4 @@ wstool init
 
 bash /tmp/update_and_compile.bash
 
+
