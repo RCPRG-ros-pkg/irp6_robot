@@ -2,7 +2,7 @@
 # Skrypt powinien być wołany z katalogu robot/src/irp6_robot/scripts
 
 bash init.bash
-if [ $? == 1 ]
+if [ $? -eq 1 ]
 then
 	exit
 fi
@@ -19,3 +19,7 @@ fi
 cd ../../../../
 
 bash /tmp/update_and_compile.bash
+if [ $? -eq 1 ]
+then
+	exit
+fi
