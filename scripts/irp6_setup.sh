@@ -27,4 +27,9 @@ cd $1
 wstool init
 
 bash /tmp/update_and_compile.bash
+if [ $? -eq 1 ]
+then
+	exit
+fi
+
 cp /tmp/var.cfg $1/robot/src/irp6_robot/scripts
