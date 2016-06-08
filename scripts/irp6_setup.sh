@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wget https://raw.githubusercontent.com/RCPRG-ros-pkg/irp6_robot/master/scripts/init.bash -O /tmp/init.bash
+wget https://raw.githubusercontent.com/RCPRG-ros-pkg/irp6_robot/stable/scripts/init.bash -O /tmp/init.bash
 
 bash /tmp/init.bash
 if [ $? == 1 ]
