@@ -11,7 +11,6 @@ else
 	exit 1
 fi
 
-echo "Config for the ros_version: $ros_version" >&2
 echo "Config for the hardware_mode: $hardware_mode" >&2
 
 if [ "x$ROS_MASTER_URI" != "x" ]
