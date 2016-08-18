@@ -2,8 +2,8 @@
 - git: {local-name: underlay_isolated/src/orocos/rtt_geometry, uri: 'git@github.com:orocos/rtt_geometry.git', version: 'jade-devel'}
 - git: {local-name: underlay_isolated/src/orocos/orocos_kinematics_dynamics, uri: 'git@github.com:orocos/orocos_kinematics_dynamics.git', version: 'master'}
 - git: {local-name: underlay_isolated/src/orocos/orocos_toolchain, uri: 'git@github.com:orocos-toolchain/orocos_toolchain.git', version: 'toolchain-2.8'}
-- git: {local-name: underlay/src/orocos/rtt_ros_integration, uri: 'git@github.com:orocos/rtt_ros_integration.git', version: 'jade-devel'}
 # Normal Workspace
+- git: {local-name: underlay/src/orocos/rtt_ros_integration, uri: 'git@github.com:orocos/rtt_ros_integration.git', version: 'jade-devel'}
 - git: {local-name: underlay/src/conman, uri: 'git@github.com:RCPRG-ros-pkg/conman.git', version: 'stable'}
 - git: {local-name: underlay/src/cartesian_trajectory_msgs, uri: 'git@github.com:RCPRG-ros-pkg/cartesian_trajectory_msgs.git', version: 'stable'}
 - git: {local-name: underlay/src/orocos_controllers, uri: 'git@github.com:RCPRG-ros-pkg/orocos_controllers.git', version: 'stable'}
