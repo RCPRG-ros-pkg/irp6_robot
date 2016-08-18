@@ -9,13 +9,7 @@ then
 fi
 
 source ./var.cfg
-if [ "$ros_version" == "jade" ]
-then
-	source /opt/ros/jade/setup.bash
-elif [ "$ros_version" == "kinetic" ]
-then
-	source /opt/ros/kinetic/setup.bash
-fi
+source /opt/ros/kinetic/setup.bash
 
 if [ ! -d $1 ]; then
   mkdir $1

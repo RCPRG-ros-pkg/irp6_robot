@@ -344,9 +344,9 @@ void HardwareInterfaceMW::updateHookInit() {
 
   for (int i = 0; i < number_of_drives_; i++) {
     if (current_mode_[i]) {
-      hi_->set_current(i, pwm_or_current_[i]);
+      hi_->set_current(i, (double) pwm_or_current_[i]);
     } else {
-      hi_->set_pwm(i, pwm_or_current_[i]);
+      hi_->set_pwm(i, (double) pwm_or_current_[i]);
     }
   }
 

@@ -21,35 +21,13 @@ then
 fi
 
 
-if [ "$ros_version" == "jade" ]
-then
-	source /opt/ros/jade/setup.bash
-elif [ "$ros_version" == "kinetic" ]
-then
-	source /opt/ros/kinetic/setup.bash
-else 
-	echo "w pliku var.cfg ustaw ros_version=\"jade\" albo ros_version=\"kinetic\""
-	exit 1
-fi
-
 if [ "$hardware_mode" == "true" ]
 then
-	if [ "$ros_version" == "jade" ]
-	then
-		wget https://raw.githubusercontent.com/RCPRG-ros-pkg/irp6_robot/stable/scripts/irp6_hardware_jade.rosinstall -O /tmp/irp6.rosinstall
-	elif [ "$ros_version" == "kinetic" ]
-	then
-		wget https://raw.githubusercontent.com/RCPRG-ros-pkg/irp6_robot/stable/scripts/irp6_hardware_kinetic.rosinstall -O /tmp/irp6.rosinstall
-	fi
+	wget https://raw.githubusercontent.com/RCPRG-ros-pkg/irp6_robot/stable/scripts/irp6_hardware_kinetic.rosinstall -O /tmp/irp6.rosinstall
+
 elif [ "$hardware_mode" == "false"  ]
 then
-	if [ "$ros_version" == "jade" ]
-	then
-		wget https://raw.githubusercontent.com/RCPRG-ros-pkg/irp6_robot/stable/scripts/irp6_sim_jade.rosinstall -O /tmp/irp6.rosinstall
-	elif [ "$ros_version" == "kinetic" ]
-	then
-		wget https://raw.githubusercontent.com/RCPRG-ros-pkg/irp6_robot/stable/scripts/irp6_sim_kinetic.rosinstall -O /tmp/irp6.rosinstall
-	fi
+	wget https://raw.githubusercontent.com/RCPRG-ros-pkg/irp6_robot/stable/scripts/irp6_sim_kinetic.rosinstall -O /tmp/irp6.rosinstall
 else 
 	echo "w pliku var.cfg ustaw hardware_mode=\"true\" albo hardware_mode=\"false\""
 	exit 1
