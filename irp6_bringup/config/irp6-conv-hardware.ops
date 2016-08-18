@@ -14,6 +14,7 @@ ros.import("force_control")
 ros.import("irp6_force_sensor")
 ros.import("irp6_haptic")
 ros.import("irp6_supervisor")
+ros.import("optoforce_component");
 
 
 //------------------------------------------------------------------------------

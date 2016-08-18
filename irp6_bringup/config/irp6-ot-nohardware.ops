@@ -11,5 +11,6 @@ ros.import("irp6otm_kinematic")
 ros.import("irp6tfg_kinematic")
 ros.import("force_control")
 ros.import("irp6_force_sensor")
+ros.import("optoforce_component");
 
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-nohardware-inside.ops")

@@ -11,6 +11,7 @@ ros.import("irp6_force_sensor")
 ros.import("irp6_haptic")
 ros.import("ec_hw_model")
 ros.import("irp6_supervisor")
+ros.import("optoforce_component");
 
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-nohardware-inside.ops")
 

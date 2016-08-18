@@ -17,6 +17,42 @@
         services_names: [irp6otm_0, irp6otm_1, irp6otm_2, irp6otm_3, irp6otm_4, irp6otm_5]
         regulators_names: [IRp6otmRegulator_0, IRp6otmRegulator_1, IRp6otmRegulator_2, IRp6otmRegulator_3, IRp6otmRegulator_4, IRp6otmRegulator_5]
         scheme_component_name: Irp6otScheme
+      HandForce1:
+        device_name: can0
+        prefix: right
+        n_sensors: 1      
+        can_rx_id: 256
+        can_tx_id: 257
+        nominal_capacity_x: 20.0
+        nominal_capacity_y: 20.0
+        nominal_capacity_z: 40.0
+        counts_nc_0_x: 15917
+        counts_nc_0_y: 15917
+        counts_nc_0_z: 15917
+        counts_nc_1_x: 15917
+        counts_nc_1_y: 15917
+        counts_nc_1_z: 15917
+        counts_nc_2_x: 15875
+        counts_nc_2_y: 15875
+        counts_nc_2_z: 15875
+      HandForce2:
+        device_name: can0
+        prefix: right
+        n_sensors: 1      
+        can_rx_id: 258
+        can_tx_id: 259
+        nominal_capacity_x: 20.0
+        nominal_capacity_y: 20.0
+        nominal_capacity_z: 40.0
+        counts_nc_0_x: 15917
+        counts_nc_0_y: 15917
+        counts_nc_0_z: 15917
+        counts_nc_1_x: 15917
+        counts_nc_1_y: 15917
+        counts_nc_1_z: 15917
+        counts_nc_2_x: 15875
+        counts_nc_2_y: 15875
+        counts_nc_2_z: 15875
       Irp6otDiag:
         hardware_label: Irp6ot
       Irp6otScheme:

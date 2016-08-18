@@ -7,6 +7,10 @@
         hal_component_name: Irp6otHwModel_EC
       ATI3084:
         test_mode: true
+      HandForce1:
+        test_mode: true
+      HandForce2:
+        test_mode: true
     </rosparam>
   </group>
 </launch>

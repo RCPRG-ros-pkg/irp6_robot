@@ -10,6 +10,48 @@
 //
 
 
+
+## Load an OptoforceComponent component
+loadComponent("HandForce1","OptoforceComponent")
+
+## Give it a periodic activity
+setActivity("HandForce1",0.001,3,ORO_SCHED_RT)
+HandForce1.loadService("rosparam");
+HandForce1.rosparam.getAll();
+
+stream("HandForce1.force0_out", ros.comm.topic("/optoforce1/force0"))
+stream("HandForce1.force1_out", ros.comm.topic("/optoforce1/force1"))
+stream("HandForce1.force2_out", ros.comm.topic("/optoforce1/force2"))
+stream("HandForce1.force0_scaled_out", ros.comm.topic("/optoforce1/force0_scaled"))
+stream("HandForce1.force1_scaled_out", ros.comm.topic("/optoforce1/force1_scaled"))
+stream("HandForce1.force2_scaled_out", ros.comm.topic("/optoforce1/force2_scaled"))
+
+stream("HandForce1.tare_in", ros.comm.topic("/optoforce1/tare"))
+
+HandForce1.configure()
+
+
+
+## Load an OptoforceComponent component
+loadComponent("HandForce2","OptoforceComponent")
+
+## Give it a periodic activity
+setActivity("HandForce2",0.001,3,ORO_SCHED_RT)
+HandForce2.loadService("rosparam");
+HandForce2.rosparam.getAll();
+
+stream("HandForce2.force0_out", ros.comm.topic("/optoforce2/force0"))
+stream("HandForce2.force1_out", ros.comm.topic("/optoforce2/force1"))
+stream("HandForce2.force2_out", ros.comm.topic("/optoforce2/force2"))
+stream("HandForce2.force0_scaled_out", ros.comm.topic("/optoforce2/force0_scaled"))
+stream("HandForce2.force1_scaled_out", ros.comm.topic("/optoforce2/force1_scaled"))
+stream("HandForce2.force2_scaled_out", ros.comm.topic("/optoforce2/force2_scaled"))
+
+stream("HandForce2.tare_in", ros.comm.topic("/optoforce2/tare"))
+
+HandForce2.configure()
+
+
 //------------------------------------------------------------------------------
 //-- Controller manager
 //------------------------------------------------------------------------------
@@ -869,6 +911,9 @@ Irp6otScheme.latchConnections(Irp6ot_hi_component_mw(), "Irp6ottfgRegulator", tr
 
 ## Start it
 
+
+HandForce1.start()
+HandForce2.start()
 
 
 //

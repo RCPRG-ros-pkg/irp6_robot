@@ -10,6 +10,10 @@
         timeouts_to_print: 3
       ATI3084:
         test_mode: false
+      HandForce1:
+        test_mode: false
+      HandForce2:
+        test_mode: false
     </rosparam>
   </group>
 </launch>
