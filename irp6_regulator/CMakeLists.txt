@@ -11,11 +11,6 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${USE_OROCOS_INCLUDE_DIRS})
 
-catkin_package(
-  DEPENDS rtt 
-  CATKIN_DEPENDS rtt_ros 
-)
-
 orocos_component(${PROJECT_NAME} src/IRp6Regulator.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
