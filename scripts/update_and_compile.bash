@@ -4,7 +4,6 @@
 export LANG=en_US.UTF-8
 export LANG=en
 
-rm .rosinstall
 wstool merge /tmp/irp6.rosinstall
 wstool update
 cd underlay_isolated
