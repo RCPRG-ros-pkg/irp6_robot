@@ -25,3 +25,5 @@ scripts/irp6pm_synchro.py
 scripts/update_monitor.py
 scripts/IRPOS/irpos_test.py
 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+install(PROGRAMS scripts/run_common.sh DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
