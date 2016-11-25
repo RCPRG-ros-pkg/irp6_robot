@@ -39,14 +39,15 @@ ConveyorM2J::ConveyorM2J(const std::string& name)
 
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("JointPosition", port_joint_position_);
+  motor_position_.resize(1);
+  joint_position_.resize(1);
+  port_joint_position_.setDataSample(joint_position_);
 }
 
 ConveyorM2J::~ConveyorM2J() {
 }
 
 bool ConveyorM2J::configureHook() {
-  motor_position_.resize(1);
-  joint_position_.resize(1);
   return true;
 }
 

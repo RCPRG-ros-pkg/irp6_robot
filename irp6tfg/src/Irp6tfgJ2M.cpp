@@ -42,14 +42,15 @@ Irp6tfgJ2M::Irp6tfgJ2M(const std::string& name)
   inv_b_7 = 0.2622172716e19;
   inv_c_7 = -0.2831300000e20;
   inv_d_7 = -2564.034320;
+
+  motor_position_.resize(1);
+  joint_position_.resize(1);
 }
 
 Irp6tfgJ2M::~Irp6tfgJ2M() {
 }
 
 bool Irp6tfgJ2M::configureHook() {
-  motor_position_.resize(1);
-  joint_position_.resize(1);
   return true;
 }
 

@@ -236,7 +236,7 @@ Irp6ptfgJ2M.configure()
 loadComponent("Irp6pmSplineTrajectoryGeneratorJoint", "InternalSpaceSplineTrajectoryGenerator")
 Irp6pmSplineTrajectoryGeneratorJoint.loadService("rosparam");
 Irp6pmSplineTrajectoryGeneratorJoint.rosparam.getAll();
-Irp6pmSplineTrajectoryGeneratorJoint.configure()
+
 
 
 // Irp6ptfgSplineTrajectoryGeneratorJoint
@@ -244,7 +244,7 @@ Irp6pmSplineTrajectoryGeneratorJoint.configure()
 loadComponent("Irp6ptfgSplineTrajectoryGeneratorJoint", "InternalSpaceSplineTrajectoryGenerator")
 Irp6ptfgSplineTrajectoryGeneratorJoint.loadService("rosparam");
 Irp6ptfgSplineTrajectoryGeneratorJoint.rosparam.getAll();
-Irp6ptfgSplineTrajectoryGeneratorJoint.configure()
+
 
 
 // Irp6pmSplineTrajectoryGeneratorMotor
@@ -252,7 +252,7 @@ Irp6ptfgSplineTrajectoryGeneratorJoint.configure()
 loadComponent("Irp6pmSplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
 Irp6pmSplineTrajectoryGeneratorMotor.loadService("rosparam");
 Irp6pmSplineTrajectoryGeneratorMotor.rosparam.getAll();
-Irp6pmSplineTrajectoryGeneratorMotor.configure()
+
 
 
 
@@ -261,7 +261,8 @@ Irp6pmSplineTrajectoryGeneratorMotor.configure()
 loadComponent("Irp6ptfgSplineTrajectoryGeneratorMotor", "InternalSpaceSplineTrajectoryGenerator")
 Irp6ptfgSplineTrajectoryGeneratorMotor.loadService("rosparam");
 Irp6ptfgSplineTrajectoryGeneratorMotor.rosparam.getAll();
-Irp6ptfgSplineTrajectoryGeneratorMotor.configure()
+
+
 
 
 // Irp6pmPoseInt
@@ -466,10 +467,10 @@ irp6p_joint_labels[4] = "irp6pm_4"
 irp6p_joint_labels[5] = "irp6pm_5"
 irp6p_joint_labels[6] = "irp6ptfg"
 
-connect("Irp6ptfgSplineTrajectoryGeneratorJoint.IsSynchronisedIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
-connect("Irp6ptfgSplineTrajectoryGeneratorJoint.GeneratorActiveOut","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
-connect("Irp6pmSplineTrajectoryGeneratorJoint.IsSynchronisedIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
-connect("Irp6pmSplineTrajectoryGeneratorJoint.GeneratorActiveOut","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryGeneratorJoint.IsSynchronised_INPORT",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryGeneratorJoint.GeneratorActive_OUTPORT","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorJoint.IsSynchronised_INPORT",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorJoint.GeneratorActive_OUTPORT","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
 
 connect("Irp6pDiag.SynchroStateIn","Irp6pSupervisor.IsSynchronisedOut", ConnPolicy())
 connect("Irp6pDiag.HardwaPanicIn","Irp6pSupervisor.IsHardwarePanicOut", ConnPolicy())
@@ -480,10 +481,10 @@ connect("Irp6pSupervisor.EmergencyStopHiMwOut",Irp6p_hi_component()+".EmergencyS
 connect("Irp6pSupervisor.IsSynchronisedHiMwIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
 connect("Irp6pSupervisor.IsHardwarePanicHiMwIn",Irp6p_hi_component()+".IsHardwarePanic", ConnPolicy())
 
-connect("Irp6pmSplineTrajectoryGeneratorMotor.IsSynchronisedIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
-connect("Irp6pmSplineTrajectoryGeneratorMotor.GeneratorActiveOut","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
-connect("Irp6ptfgSplineTrajectoryGeneratorMotor.IsSynchronisedIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
-connect("Irp6ptfgSplineTrajectoryGeneratorMotor.GeneratorActiveOut","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorMotor.IsSynchronised_INPORT",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorMotor.GeneratorActive_OUTPORT","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryGeneratorMotor.IsSynchronised_INPORT",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryGeneratorMotor.GeneratorActive_OUTPORT","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
 connect("Irp6pmPoseInt.IsSynchronisedIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
 connect("Irp6pmPoseInt.GeneratorActiveOut","Irp6pSupervisor.GeneratorActiveIn", ConnPolicy())
 connect("Irp6pmForceControlLaw.IsSynchronisedIn",Irp6p_hi_component()+".IsSynchronised", ConnPolicy())
@@ -550,33 +551,33 @@ connect("Irp6pmToolIntAction.CartesianTrajectoryCommand","Irp6pmToolInt.Cartesia
 connect("Irp6pmPoseIntAction.CartesianTrajectoryCommand","Irp6pmPoseInt.CartesianTrajectoryCommand", ConnPolicy())
 connect("Irp6pmForceTransformation.OutputEndEffectorWrench", "Irp6pmPoseIntAction.CartesianWrench", ConnPolicy())
 
-connect("Irp6ptfgSplineTrajectoryActionMotor.trajectoryPtr","Irp6ptfgSplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryActionMotor.trajectoryPtr","Irp6ptfgSplineTrajectoryGeneratorMotor.trajectoryPtr_INPORT", ConnPolicy())
 connect("Irp6ptfgIM2RM.RadianMotorPosition","Irp6ptfgSplineTrajectoryActionMotor.JointPosition", ConnPolicy())
-connect("Irp6ptfgSplineTrajectoryGeneratorMotor.JointPositionCommand","Irp6ptfgSplineTrajectoryActionMotor.JointPositionCommand", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryGeneratorMotor.JointPositionCommand_OUTPORT","Irp6ptfgSplineTrajectoryActionMotor.JointPositionCommand", ConnPolicy())
 
 
-connect("Irp6ptfgSplineTrajectoryActionJoint.trajectoryPtr","Irp6ptfgSplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryActionJoint.trajectoryPtr","Irp6ptfgSplineTrajectoryGeneratorJoint.trajectoryPtr_INPORT", ConnPolicy())
 connect("Irp6ptfgM2J.JointPosition","Irp6ptfgSplineTrajectoryActionJoint.JointPosition", ConnPolicy())
-connect("Irp6ptfgSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6ptfgSplineTrajectoryActionJoint.JointPositionCommand", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryGeneratorJoint.JointPositionCommand_OUTPORT","Irp6ptfgSplineTrajectoryActionJoint.JointPositionCommand", ConnPolicy())
 
-connect("Irp6pmSplineTrajectoryActionJoint.trajectoryPtr","Irp6pmSplineTrajectoryGeneratorJoint.trajectoryPtr", ConnPolicy())
+connect("Irp6pmSplineTrajectoryActionJoint.trajectoryPtr","Irp6pmSplineTrajectoryGeneratorJoint.trajectoryPtr_INPORT", ConnPolicy())
 connect("Irp6pmM2J.JointPosition","Irp6pmSplineTrajectoryActionJoint.JointPosition", ConnPolicy())
-connect("Irp6pmSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6pmSplineTrajectoryActionJoint.JointPositionCommand", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorJoint.JointPositionCommand_OUTPORT","Irp6pmSplineTrajectoryActionJoint.JointPositionCommand", ConnPolicy())
 
 
-connect("Irp6pmSplineTrajectoryActionMotor.trajectoryPtr","Irp6pmSplineTrajectoryGeneratorMotor.trajectoryPtr", ConnPolicy())
+connect("Irp6pmSplineTrajectoryActionMotor.trajectoryPtr","Irp6pmSplineTrajectoryGeneratorMotor.trajectoryPtr_INPORT", ConnPolicy())
 connect("Irp6pmIM2RM.RadianMotorPosition","Irp6pmSplineTrajectoryActionMotor.JointPosition", ConnPolicy())
-connect("Irp6pmSplineTrajectoryGeneratorMotor.JointPositionCommand","Irp6pmSplineTrajectoryActionMotor.JointPositionCommand", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorMotor.JointPositionCommand_OUTPORT","Irp6pmSplineTrajectoryActionMotor.JointPositionCommand", ConnPolicy())
 
 
 
-connect("Irp6ptfgM2J.JointPosition","Irp6ptfgSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
-connect("Irp6ptfgSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6ptfgJ2M.JointPosition", ConnPolicy())
+connect("Irp6ptfgM2J.JointPosition","Irp6ptfgSplineTrajectoryGeneratorJoint.JointPosition_INPORT", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryGeneratorJoint.JointPositionCommand_OUTPORT","Irp6ptfgJ2M.JointPosition", ConnPolicy())
 
 
 
-connect("Irp6pmM2J.JointPosition","Irp6pmSplineTrajectoryGeneratorJoint.JointPosition", ConnPolicy())
-connect("Irp6pmSplineTrajectoryGeneratorJoint.JointPositionCommand","Irp6pmJ2M.JointPosition", ConnPolicy())
+connect("Irp6pmM2J.JointPosition","Irp6pmSplineTrajectoryGeneratorJoint.JointPosition_INPORT", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorJoint.JointPositionCommand_OUTPORT","Irp6pmJ2M.JointPosition", ConnPolicy())
 
 
 connect("Irp6pmJ2M.JointPosition","Irp6pmInverseKinematic.OutputJointPosition", ConnPolicy())
@@ -587,15 +588,15 @@ connect("Irp6pmM2J.JointPosition","Irp6pmForwardKinematic.JointPosition", ConnPo
 
 connect("IRp6pmLimitDetector.OutputPort","Irp6pmPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 connect("Irp6pmPortDoubleAggregate_hw_p.OutputPort","Irp6pmIM2RM.IncrementalMotorPosition", ConnPolicy())
-connect("Irp6pmIM2RM.RadianMotorPosition","Irp6pmSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
-connect("Irp6pmSplineTrajectoryGeneratorMotor.JointPositionCommand","IRp6pmLimitDetector.InputPort", ConnPolicy())
+connect("Irp6pmIM2RM.RadianMotorPosition","Irp6pmSplineTrajectoryGeneratorMotor.JointPosition_INPORT", ConnPolicy())
+connect("Irp6pmSplineTrajectoryGeneratorMotor.JointPositionCommand_OUTPORT","IRp6pmLimitDetector.InputPort", ConnPolicy())
 
 
 connect("IRp6ptfgLimitDetector.OutputPort","Irp6ptfgPortDoubleSplit_hw_cp.InputPort", ConnPolicy())
 
 connect("Irp6ptfgPortDoubleAggregate_hw_p.OutputPort","Irp6ptfgIM2RM.IncrementalMotorPosition", ConnPolicy())
-connect("Irp6ptfgIM2RM.RadianMotorPosition","Irp6ptfgSplineTrajectoryGeneratorMotor.JointPosition", ConnPolicy())
-connect("Irp6ptfgSplineTrajectoryGeneratorMotor.JointPositionCommand","IRp6ptfgLimitDetector.InputPort", ConnPolicy())
+connect("Irp6ptfgIM2RM.RadianMotorPosition","Irp6ptfgSplineTrajectoryGeneratorMotor.JointPosition_INPORT", ConnPolicy())
+connect("Irp6ptfgSplineTrajectoryGeneratorMotor.JointPositionCommand_OUTPORT","IRp6ptfgLimitDetector.InputPort", ConnPolicy())
 
 connect("Irp6pmForwardKinematic.EndEffectorOutputPose", "Irp6pmPoseInt.CartesianPosition", ConnPolicy())
 connect("Irp6pmPoseInt.CartesianPositionCommand", "Irp6pmInverseKinematic.InputEndEffectorPose", ConnPolicy())
@@ -625,6 +626,14 @@ connect("Irp6ptfgJ2M.MotorPosition", "IRp6ptfgLimitDetector.InputPort", ConnPoli
 
 
 
+// CONFIGURE SOME COMPONENTS
+
+
+
+Irp6ptfgSplineTrajectoryGeneratorJoint.configure()
+Irp6pmSplineTrajectoryGeneratorJoint.configure()
+Irp6ptfgSplineTrajectoryGeneratorMotor.configure()
+Irp6pmSplineTrajectoryGeneratorMotor.configure()
 
 
 
@@ -804,6 +813,9 @@ Irp6pScheme.latchConnections(Irp6p_hi_component(), "Irp6ptfgSplineTrajectoryGene
 Irp6pScheme.latchConnections(Irp6p_hi_component(), "Irp6pmSplineTrajectoryGeneratorMotor", true);
 Irp6pScheme.latchConnections(Irp6p_hi_component(), "Irp6ptfgSplineTrajectoryGeneratorMotor", true);
 Irp6pScheme.latchConnections(Irp6p_hi_component(), "Irp6pmPoseInt", true);
+
+
+
 
 
 //

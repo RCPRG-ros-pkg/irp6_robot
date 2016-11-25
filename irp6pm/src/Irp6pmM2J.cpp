@@ -43,16 +43,18 @@ Irp6pmM2J::Irp6pmM2J(const std::string& name)
 
   this->addProperty("synchro_motor_position", synchro_motor_position_);
   this->addProperty("step", step_);
+
+  motor_position_.resize(NUMBER_OF_SERVOS);
+  joint_position_.resize(NUMBER_OF_SERVOS);
+  previous_joint_position_.resize(NUMBER_OF_SERVOS);
+  joint_estimated_velocity_.resize(NUMBER_OF_SERVOS);
+  port_joint_position_.setDataSample(joint_position_);
 }
 
 Irp6pmM2J::~Irp6pmM2J() {
 }
 
 bool Irp6pmM2J::configureHook() {
-  motor_position_.resize(NUMBER_OF_SERVOS);
-  joint_position_.resize(NUMBER_OF_SERVOS);
-  previous_joint_position_.resize(NUMBER_OF_SERVOS);
-  joint_estimated_velocity_.resize(NUMBER_OF_SERVOS);
   return true;
 }
 

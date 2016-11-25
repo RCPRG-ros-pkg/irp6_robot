@@ -40,14 +40,16 @@ Irp6tfgM2J::Irp6tfgM2J(const std::string& name)
   dir_a_7 = -0.00000000283130;
   dir_b_7 = 0.00001451910074;
   dir_c_7 = 0.074;
+
+  motor_position_.resize(1);
+  joint_position_.resize(1);
+  port_joint_position_.setDataSample(joint_position_);
 }
 
 Irp6tfgM2J::~Irp6tfgM2J() {
 }
 
 bool Irp6tfgM2J::configureHook() {
-  motor_position_.resize(1);
-  joint_position_.resize(1);
   return true;
 }
 

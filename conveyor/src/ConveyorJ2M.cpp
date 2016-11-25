@@ -40,14 +40,15 @@ ConveyorJ2M::ConveyorJ2M(const std::string& name)
 
   this->ports()->addPort("MotorPosition", port_motor_position_);
   this->ports()->addPort("JointPosition", port_joint_position_);
+
+  motor_position_.resize(1);
+  joint_position_.resize(1);
 }
 
 ConveyorJ2M::~ConveyorJ2M() {
 }
 
 bool ConveyorJ2M::configureHook() {
-  motor_position_.resize(1);
-  joint_position_.resize(1);
   return true;
 }
 
