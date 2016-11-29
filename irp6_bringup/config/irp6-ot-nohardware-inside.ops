@@ -1,27 +1,37 @@
-
+ros.import("fake_imu");
 
 bool Irp6otSimulation() { return true; }
 
+string Irp6ot_imu_component() { return string("Irp6otIMU"); }
+loadComponent("Irp6otIMU","FakeIMU")
+setActivity("Irp6otIMU",0.001,3,ORO_SCHED_RT)
+Irp6otIMU.loadService("rosparam")
+Irp6otIMU.rosparam.getAll()
+Irp6otIMU.configure()
+// stream do przeniesienia do inside (jest tam zaremowane)
+stream(Irp6ot_imu_component()+".IMU_Msr_OUTPORT", ros.comm.topic("/irp6ot_imu/msr"))
+
 string Irp6ot_hi_component_mw() { return string("Irp6otHwModel_MW"); }
-
-
 loadComponent("Irp6otHwModel_MW","HwModel")
 Irp6otHwModel_MW.loadService("rosparam")
 Irp6otHwModel_MW.rosparam.getAll()
 Irp6otHwModel_MW.configure()
 
-string Irp6ot_hi_component_ec() { return string("Irp6otHwModel_EC"); }
 
+string Irp6ot_hi_component_ec() { return string("Irp6otHwModel_EC"); }
 loadComponent("Irp6otHwModel_EC","EcHwModel")
 Irp6otHwModel_EC.loadService("rosparam")
 Irp6otHwModel_EC.rosparam.getAll()
 // Irp6otHwModel_EC.rosparam.getParam("~/Irp6otmMotorParameters/enc_res", "enc_res")
 Irp6otHwModel_EC.configure()
 
+
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside.ops")
+
 
 addPeer("Irp6otSupervisor", "Irp6otHwModel_EC");
 
+Irp6otIMU.start()
 Irp6otHwModel_EC.start()
 Irp6otHwModel_MW.start()
 Irp6otScheme.start()

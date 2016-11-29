@@ -3,6 +3,8 @@
 //-- irp6 otm and ottfg
 //------------------------------------------------------------------------------
 
+
+
 //
 //
 //            LOAD COMPONENTS
@@ -758,6 +760,9 @@ stream("Irp6otmForwardKinematic.EndEffectorOutputPose", ros.comm.topic("/irp6ot_
 
 // ati wrench
 #stream("Irp6otmForceTransformation.OutputEndEffectorWrench", ros.comm.topic("/irp6ot_arm/ati_wrench"))
+
+// imu
+# stream(Irp6ot_imu_component()+".IMU_Msr_OUTPORT", ros.comm.topic("/irp6ot_imu/msr"))
 
 //
 //
