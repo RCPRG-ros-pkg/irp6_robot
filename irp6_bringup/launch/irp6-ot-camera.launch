@@ -10,6 +10,11 @@
       <param name="serial" value="14180973" />
       <param name="camera_track_info_url" if="$(arg calibrated)"
              value="file://$(env HOME)/.ros/camera_track_info/14180973.yaml" />
+      <param name="frame_rate" value="30.0" />
+      <param name="auto_gain" value="False" />
+      <param name="gain" value="20" />
+      <param name="auto_shutter" value="False" />
+      <param name="shutter_speed" value="0.005" />
     </node>
 
     <node pkg="nodelet" type="nodelet" name="image_proc_debayer"
