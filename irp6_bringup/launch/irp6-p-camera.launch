@@ -9,7 +9,12 @@
       <param name="frame_id" value="camera_postument" />
       <param name="serial" value="13481977" />
       <param name="camera_postument_info_url" if="$(arg calibrated)"
-             value="file://$(env HOME)/.ros/camera_postument_info/$(arg camera_postument_serial).yaml" />
+             value="file://$(env HOME)/.ros/camera_postument_info/13481977.yaml" />
+      <param name="frame_rate" value="30.0" />
+      <param name="auto_gain" value="False" />
+      <param name="gain" value="20" />
+      <param name="auto_shutter" value="False" />
+      <param name="shutter_speed" value="0.005" />
     </node>
 
     <node pkg="nodelet" type="nodelet" name="image_proc_debayer"
