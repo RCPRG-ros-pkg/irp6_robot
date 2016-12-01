@@ -1,0 +1,21 @@
+<launch>
+  <arg name="camera_track_serial" default="14180973" />
+  <arg name="calibrated" default="0" />
+
+  <group ns="camera_track">
+    <node pkg="nodelet" type="nodelet" name="camera_nodelet_manager" args="manager" />
+
+    <node pkg="nodelet" type="nodelet" name="camera_nodelet"
+          args="load pointgrey_camera_driver/PointGreyCameraNodelet camera_nodelet_manager" >
+      <param name="frame_id" value="camera_track" />
+      <param name="serial" value="$(arg camera_track_serial)" />
+      <param name="camera_track_info_url" if="$(arg calibrated)"
+             value="file://$(env HOME)/.ros/camera_track_info/$(arg camera_track_serial).yaml" />
+    </node>
+
+    <node pkg="nodelet" type="nodelet" name="image_proc_debayer"
+          args="load image_proc/debayer camera_nodelet_manager">
+    </node>
+
+  </group>
+</launch>
