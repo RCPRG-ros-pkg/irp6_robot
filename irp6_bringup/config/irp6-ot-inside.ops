@@ -762,7 +762,7 @@ stream("Irp6otmForwardKinematic.EndEffectorOutputPose", ros.comm.topic("/irp6ot_
 #stream("Irp6otmForceTransformation.OutputEndEffectorWrench", ros.comm.topic("/irp6ot_arm/ati_wrench"))
 
 // imu
-# stream(Irp6ot_imu_component()+".IMU_Msr_OUTPORT", ros.comm.topic("/irp6ot_imu/msr"))
+stream(Irp6ot_imu_component()+".IMU_Msr_OUTPORT", ros.comm.topic("/irp6ot_imu/msr"))
 
 //
 //
