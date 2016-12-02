@@ -1,6 +1,10 @@
 #!/bin/bash
 # Skrypt powinien być wołany z katalogu robot/src/irp6_robot/scripts
 
+cp ../../../../.rosinstall ../../../../.rosinstall.bk2
+cp ../../../../.rosinstall.bak ../../../../.rosinstall
+
+
 wget https://raw.githubusercontent.com/RCPRG-ros-pkg/irp6_robot/stable/scripts/init.bash -O /tmp/init.bash
 
 bash /tmp/init.bash
