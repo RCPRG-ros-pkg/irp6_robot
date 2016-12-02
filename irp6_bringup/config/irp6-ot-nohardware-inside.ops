@@ -8,8 +8,7 @@ setActivity("Irp6otIMU",0.001,3,ORO_SCHED_RT)
 Irp6otIMU.loadService("rosparam")
 Irp6otIMU.rosparam.getAll()
 Irp6otIMU.configure()
-// stream do przeniesienia do inside (jest tam zaremowane)
-stream(Irp6ot_imu_component()+".IMU_Msr_OUTPORT", ros.comm.topic("/irp6ot_imu/msr"))
+
 
 string Irp6ot_hi_component_mw() { return string("Irp6otHwModel_MW"); }
 loadComponent("Irp6otHwModel_MW","HwModel")

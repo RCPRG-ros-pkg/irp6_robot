@@ -21,8 +21,12 @@ loadComponent("Irp6otHardwareInterface_EC","ECHardware")
 // setActivity("Irp6otHardwareInterface_EC", 0.001, 80, ORO_SCHED_RT)
 Irp6otHardwareInterface_EC.loadService("rosparam")
 Irp6otHardwareInterface_EC.loadService("elmo_driver")
+Irp6otHardwareInterface_EC.loadService("imu_driver")
 Irp6otHardwareInterface_EC.rosparam.getAll()
 Irp6otHardwareInterface_EC.configure();
+
+string Irp6ot_imu_component() { return string(Irp6ot_hi_component_ec()+".Imu"); }
+
 
 runScript( ros.find("irp6_bringup") + "/config/irp6-ot-inside.ops")
 
