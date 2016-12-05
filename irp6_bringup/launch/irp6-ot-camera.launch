@@ -6,7 +6,7 @@
 
     <node pkg="nodelet" type="nodelet" name="camera_nodelet"
           args="load pointgrey_camera_driver/PointGreyCameraNodelet camera_nodelet_manager" >
-      <param name="frame_id" value="camera_track" />
+      <param name="frame_id" value="t_c_optical_frame" />
       <param name="serial" value="14180973" />
       <param name="camera_track_info_url" if="$(arg calibrated)"
              value="file://$(env HOME)/.ros/camera_track_info/14180973.yaml" />
