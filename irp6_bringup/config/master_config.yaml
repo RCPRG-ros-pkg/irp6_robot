@@ -370,3 +370,4 @@ domains:
       type: imu_driver
       terminal: imu
       range: 2
+      frame_id: base_link
