@@ -7,6 +7,15 @@
 
   <xacro:property name="M_PI" value="3.14159"/>
 
+
+    <material name="orange">
+      <color rgba=".99 .4 .1 1" />
+    </material>
+
+    <material name="silver">
+      <color rgba=".8 .8 .8 1" />
+    </material>
+
   <link name="world">
     <!--<inertial>
       <mass value="0.05" />
@@ -41,9 +50,7 @@
     <geometry>
       <box size=".462 1.609 .25" />
     </geometry>
-    <material name="gray">
-      <color rgba=".2 .2 .2 1" />
-    </material>
+    <material name="orange"/>
   </visual>
 
   <collision>
@@ -65,9 +72,7 @@
     <geometry>
       <box size="0.4 0.4 0.15" />
     </geometry>
-    <material name="gray">
-      <color rgba=".2 .2 .2 1" />
-    </material>
+    <material name="orange"/>
   </visual>
 
   <collision>
@@ -108,6 +113,7 @@
       <geometry>
         <mesh filename="package://irp6_description/meshes/link1.3ds" />
       </geometry>
+      <material name="orange"/>
     </visual>
 
     <collision>
@@ -307,6 +313,7 @@
       <geometry>
          <box size="0.05 0.04 0.12" />
       </geometry>
+      <material name="silver"/>
     </visual>
 
     <collision>
@@ -330,6 +337,7 @@
       <geometry>
          <box size="0.05 0.04 0.12" />
       </geometry>
+      <material name="silver"/>
     </visual>
 
     <collision>
@@ -416,9 +424,7 @@
       <geometry>
         <box size="0.4 0.4 0.4" />
       </geometry>
-      <material name="gray">
-      <color rgba=".2 .2 .2 1" />
-    </material>
+      <material name="orange"/>
   </visual>
   </link>
 
@@ -442,6 +448,7 @@
       <geometry>
         <mesh filename="package://irp6_description/meshes/link1.3ds" />
       </geometry>
+       <material name="orange"/>
     </visual>
 
     <collision>
@@ -633,6 +640,7 @@
       <geometry>
          <box size="0.05 0.04 0.12" />
       </geometry>
+      <material name="silver"/>
     </visual>
 
     <collision>
@@ -655,7 +663,8 @@
       <origin rpy="0 0 0.0" xyz="0 -0.02 0.0"/>
       <geometry>
          <box size="0.05 0.04 0.12" />
-      </geometry>origin
+      </geometry>
+      <material name="silver"/>
     </visual>
 
     <collision>
