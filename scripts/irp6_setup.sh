@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $? -le 1 ]
+if [ $# -eq 0 ]
 then
 	echo "USAGE: $0 KATALOG"
 	exit
