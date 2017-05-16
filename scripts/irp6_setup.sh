@@ -1,12 +1,14 @@
 #!/bin/bash
 
+if [ $? -le 1 ]
+then
+	echo "USAGE: $0 KATALOG"
+	exit
+fi
+
 wget https://raw.githubusercontent.com/RCPRG-ros-pkg/irp6_robot/stable/scripts/init.bash -O /tmp/init.bash
 
 bash /tmp/init.bash
-if [ $? == 1 ]
-then
-	exit
-fi
 
 source ./var.cfg
 source /opt/ros/kinetic/setup.bash
