@@ -294,7 +294,7 @@
     </inertial>
 
     <visual>
-      <origin rpy="0 0 0.0" xyz="0 0.0 0.15"/>
+      <origin rpy="0 0 0.0" xyz="0 0.0 0.105"/>
       <geometry>
          <mesh filename="package://irp6_description/meshes/link6.3ds" />
       </geometry>
@@ -624,7 +624,7 @@
     </inertial>
 
     <visual>
-      <origin rpy="0 0 0.0" xyz="0 0.0 0.15"/>
+      <origin rpy="0 0 0.0" xyz="0 0.0 0.105"/>
       <geometry>
          <mesh filename="package://irp6_description/meshes/link6.3ds" />
       </geometry>
