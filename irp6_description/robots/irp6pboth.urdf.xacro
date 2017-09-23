@@ -33,10 +33,38 @@
     </collision>
   </link>
 
-  <joint name="base_joint" type="fixed">
+  <joint name="t_base_joint" type="fixed">
     <parent link="world"/>
     <child link="tl_base"/>
   </joint>
+  
+  <joint name="conv_base_joint" type="fixed">
+    <parent link="world"/>
+    <child link="conveyor"/>
+  </joint>
+
+
+<link name="conveyor">
+  <inertial>
+    <mass value="1"/>
+    <inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
+    <origin xyz="0 0 0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.5 1 0.0" />
+    <geometry>
+      <mesh filename="package://irp6_description/meshes/conveyor.3ds" />
+    </geometry>
+    <material name="orange"/>
+  </visual>
+
+  <collision>
+    <origin xyz="0 0 0" />
+    <geometry>
+      <box size=".0 .0 .0" />
+    </geometry>
+  </collision>
+</link>
 
 
 <link name="tl_base">
