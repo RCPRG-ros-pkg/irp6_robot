@@ -51,7 +51,7 @@
     <origin xyz="0 0 0"/>
   </inertial>
   <visual>
-    <origin xyz="0.5 1 0.0" />
+    <origin xyz="0.59 0.7 0.0" />
     <geometry>
       <mesh filename="package://irp6_description/meshes/conveyor.3ds" />
     </geometry>
