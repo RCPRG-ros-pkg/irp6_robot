@@ -51,7 +51,7 @@
     <origin xyz="0 0 0"/>
   </inertial>
   <visual>
-    <origin xyz="0.59 0.7 0.0" />
+    <origin xyz="0.59 0.45 0.0" />
     <geometry>
       <mesh filename="package://irp6_description/meshes/conveyor.3ds" />
     </geometry>
@@ -76,15 +76,15 @@
   <visual>
     <origin xyz="0 .6045 .125" />
     <geometry>
-      <box size=".462 1.609 .25" />
+      <box size=".48 2.0 .25" />
     </geometry>
     <material name="orange"/>
   </visual>
 
   <collision>
-    <origin xyz="0 .6045 .07" />
+    <origin xyz="0 .6045 .125" />
     <geometry>
-      <box size=".462 1.609 .2" />
+      <box size=".48 2.0 .25" />
     </geometry>
   </collision>
 </link>
