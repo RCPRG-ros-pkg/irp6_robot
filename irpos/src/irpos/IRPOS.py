@@ -83,11 +83,11 @@ class IRPOS:
 
 		if scheme_name == 'irp6p_manager':
 			rospy.wait_for_service('/irp6p_manager/switch_controller')
-  			self.conmanSwitch = rospy.ServiceProxy('/irp6p_manager/switch_controller', SwitchController)
+			self.conmanSwitch = rospy.ServiceProxy('/irp6p_manager/switch_controller', SwitchController)
 
 		if scheme_name == 'irp6ot_manager':
 			rospy.wait_for_service('/irp6ot_manager/switch_controller')
-  			self.conmanSwitch = rospy.ServiceProxy('/irp6ot_manager/switch_controller', SwitchController)
+			self.conmanSwitch = rospy.ServiceProxy('/irp6ot_manager/switch_controller', SwitchController)
 
 		self.motor_position_subscriber = rospy.Subscriber('/'+robotNameLower+'_arm/motor_states', JointState, self.motor_position_callback)
 		self.joint_position_subscriber = rospy.Subscriber('/'+robotNameLower+'_arm/joint_states', JointState, self.joint_position_callback)
@@ -191,7 +191,7 @@ class IRPOS:
 			return "INVALID_POSTURE"
 		return "UNKNOWN"
 
-        def move_to_synchro_position(self, duration):
+	def move_to_synchro_position(self, duration):
 		print self.BCOLOR+"[IRPOS] Move to synchro position"+self.ENDC
 
 		self.conmanSwitch([self.robot_name+'mSplineTrajectoryGeneratorMotor'], [], True)
@@ -210,7 +210,7 @@ class IRPOS:
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorMotor'], True)
 
-	# MOTOR POSITION   
+	# MOTOR POSITION
 
 	def move_to_motor_position(self, motor_positions, time_from_start):
 		print self.BCOLOR+"[IRPOS] Move to motor position"+self.ENDC
@@ -457,26 +457,26 @@ class IRPOS:
 		p1 = array([P1.position.x, P1.position.y, P1.position.z])
 		p2 = array([P2.position.x, P2.position.y, P2.position.z])
 		p3 = array([P3.position.x, P3.position.y, P3.position.z])
-  
+
 		#r = (norm(p1-p2) * norm(p2-p3) * norm(p3-p1))/(2*norm(cross(p1-p2, p2-p3)))
 		a = (norm(p2-p3) * norm(p2-p3) * dot(p1-p2, p1-p3))/(2 * norm(cross(p1-p2, p2-p3)) * norm(cross(p1-p2, p2-p3)))
 		b = (norm(p1-p3) * norm(p1-p3) * dot(p2-p1, p2-p3))/(2 * norm(cross(p1-p2, p2-p3)) * norm(cross(p1-p2, p2-p3)))
 		c = (norm(p1-p2) * norm(p1-p2) * dot(p3-p1, p3-p2))/(2 * norm(cross(p1-p2, p2-p3)) * norm(cross(p1-p2, p2-p3)))
-  
+
 		pc = a*p1 + b*p2 + c*p3
 
 		n = cross(p2-p1, p3-p1)/norm(cross(p2-p1, p3-p1))
-  
+
 		cosang = dot(p1-pc, p3-pc)
 		sinang = norm(cross(p1-pc, p3-pc))
 		alpha = arctan2(sinang, cosang)
-  
+
 		trj = []
-  
+
 		number_of_points = time_from_start/0.01
-  
+
 		i = 1
-  
+
 		while (i<=number_of_points):
 			pz = pc + (p1-pc)*cos((i/number_of_points)*alpha) + cross(n, p1-pc) * sin((i/number_of_points)*alpha)
 			trj.append(CartesianTrajectoryPoint(rospy.Duration(time_from_start*i/number_of_points), Pose(Point(pz[0], pz[1], pz[2]), P1.orientation), Twist()))
@@ -494,7 +494,7 @@ class IRPOS:
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mPoseInt'], True)
-  
+
 	def get_cartesian_pose(self):
 		self.lcp_lock.acquire()
 		ret = self.last_cartesian_position
@@ -534,13 +534,13 @@ class IRPOS:
 		forceControlGoal.reciprocaldamping = reciprocaldamping
 		forceControlGoal.wrench = wrench
 		forceControlGoal.twist = twist
-  
+
 		self.fcl_param_publisher.publish(forceControlGoal)
- 
+
 		tg_goal = ToolGravityParam()
 		tg_goal.weight = self.tool_weight
 		tg_goal.mass_center = self.tool_mass_center
- 
+
 		self.tg_param_publisher.publish(tg_goal)
 
 		self.conmanSwitch([self.robot_name+'mForceTransformation'], [], True)
@@ -553,13 +553,13 @@ class IRPOS:
 		forceControlGoal.reciprocaldamping = reciprocaldamping
 		forceControlGoal.wrench = wrench
 		forceControlGoal.twist = twist
-  
+
 		self.fcl_param_publisher.publish(forceControlGoal)
- 
+
 		tg_goal = ToolGravityParam()
 		tg_goal.weight = self.tool_weight
 		tg_goal.mass_center = self.tool_mass_center
- 
+
 		self.tg_param_publisher.publish(tg_goal)
 
 	def stop_force_controller(self):
@@ -579,7 +579,7 @@ class IRPOS:
 	def tfg_to_motor_position(self, motor_position, time_from_start):
 		print self.BCOLOR+"[IRPOS] Tfg to motor position"+self.ENDC		
 		self.conmanSwitch([self.robot_name+'tfgSplineTrajectoryGeneratorMotor'], [], True)
-  
+
 		goal = FollowJointTrajectoryGoal()
 		goal.trajectory.joint_names = ['joint1']
 		goal.trajectory.points.append(JointTrajectoryPoint([motor_position], [0.0], [], [], rospy.Duration(time_from_start)))
@@ -589,13 +589,13 @@ class IRPOS:
 		self.tfg_motor_client.wait_for_result()
 
 		command_result = self.tfg_motor_client.get_result()
-    
-		self.conmanSwitch([], [self.robot_name+'tfgSplineTrajectoryGeneratorMotor'], True)  
+
+		self.conmanSwitch([], [self.robot_name+'tfgSplineTrajectoryGeneratorMotor'], True)
 
 	def tfg_to_joint_position(self, joint_position, time_from_start):
 		print self.BCOLOR+"[IRPOS] Tfg to joint position"+self.ENDC	
 		self.conmanSwitch([self.robot_name+'tfgSplineTrajectoryGeneratorJoint'], [], True)
-  
+
 		goal = FollowJointTrajectoryGoal()
 		goal.trajectory.joint_names = ['joint1']
 		goal.trajectory.points.append(JointTrajectoryPoint([joint_position], [0.0], [], [], rospy.Duration(time_from_start)))
@@ -605,7 +605,7 @@ class IRPOS:
 		self.tfg_joint_client.wait_for_result()
 
 		command_result = self.tfg_joint_client.get_result()
-     
+
 		self.conmanSwitch([], [self.robot_name+'tfgSplineTrajectoryGeneratorJoint'], True)
 
 	def get_tfg_motor_position(self):
