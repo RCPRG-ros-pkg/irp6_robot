@@ -14,3 +14,4 @@
 - git: {local-name: underlay/src/common_controllers, uri: 'git@github.com:RCPRG-ros-pkg/common_controllers.git', version: 'stable'}
 # Robot Workspace
 - git: {local-name: robot/src/irp6_robot, uri: 'git@github.com:RCPRG-ros-pkg/irp6_robot.git', version: 'stable'}
+- git: {local-name: robot/src/irp6_ui, uri: 'git@github.com:RCPRG-ros-pkg/irp6_ui.git', version: 'stable'}
