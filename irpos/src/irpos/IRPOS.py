@@ -28,7 +28,12 @@ import tf_conversions.posemath as pm
 class IRPOS:
 
 	BCOLOR = '\033[94m'
+	RCOLOR = '\033[91m'
 	ENDC = '\033[0m'
+	MOTOR_POS_TOLERANCE = 1.0
+	JOINT_POS_TOLERANCE = 0.01
+	CART_POS_TOLERANCE = 0.01
+	CART_ROT_TOLERANCE = 0.01
 
 	robot_name = None
 	robot_joint_names = None
@@ -167,28 +172,28 @@ class IRPOS:
 		if (error_code==0): 
 			return "SUCCESSFUL"
 		elif (error_code==-1): 
-			return "INVALID_GOAL"
+			return self.RCOLOR+"INVALID_GOAL"
 		elif (error_code==-2): 
-			return "INVALID_JOINTS"
+			return self.RCOLOR+"INVALID_JOINTS"
 		elif (error_code==-3): 
-			return "OLD_HEADER_TIMESTAMP"
+			return self.RCOLOR+"OLD_HEADER_TIMESTAMP"
 		elif (error_code==-4): 
-			return "PATH_TOLERANCE_VIOLATED"
+			return self.RCOLOR+"PATH_TOLERANCE_VIOLATED"
 		elif (error_code==-5): 
-			return "GOAL_TOLERANCE_VIOLATED"
+			return self.RCOLOR+"GOAL_TOLERANCE_VIOLATED"
 		return "UNKNOWN"
 
 	def cartesian_error_code_to_string(self, error_code):
 		if (error_code==0): 
 			return "SUCCESSFUL"
 		elif (error_code==-1): 
-			return "ROOT_TRANSFORM_FAILED"
+			return self.RCOLOR+"ROOT_TRANSFORM_FAILED"
 		elif (error_code==-2): 
-			return "TOOL_TRANSFORM_FAILED"
+			return self.RCOLOR+"TOOL_TRANSFORM_FAILED"
 		elif (error_code==-3): 
-			return "PATH_TOLERANCE_VIOLATED"
+			return self.RCOLOR+"PATH_TOLERANCE_VIOLATED"
 		elif (error_code==-4): 
-			return "INVALID_POSTURE"
+			return self.RCOLOR+"INVALID_POSTURE"
 		return "UNKNOWN"
 
 	def move_to_synchro_position(self, duration):
@@ -200,6 +205,9 @@ class IRPOS:
 		motorGoal.trajectory.joint_names = self.robot_joint_names
 		motorGoal.trajectory.points.append(JointTrajectoryPoint(self.get_zeros_vector(), self.get_zeros_vector(), [], [], rospy.Duration(duration)))
 		motorGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+		for j in self.robot_joint_names:
+			motorGoal.path_tolerance.append(JointTolerance(j, self.MOTOR_POS_TOLERANCE, 0, 0))
+			motorGoal.goal_tolerance.append(JointTolerance(j, self.MOTOR_POS_TOLERANCE, 0, 0))
 
 		self.motor_client.send_goal(motorGoal)
 		self.motor_client.wait_for_result()
@@ -209,6 +217,7 @@ class IRPOS:
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorMotor'], True)
+		return result
 
 	# MOTOR POSITION
 
@@ -221,7 +230,10 @@ class IRPOS:
 		motorGoal.trajectory.joint_names = self.robot_joint_names
 		motorGoal.trajectory.points.append(JointTrajectoryPoint(motor_positions, self.get_zeros_vector(), [], [], rospy.Duration(time_from_start)))
 		motorGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
-
+		for j in self.robot_joint_names:
+			motorGoal.path_tolerance.append(JointTolerance(j, self.MOTOR_POS_TOLERANCE, 0, 0))
+			motorGoal.goal_tolerance.append(JointTolerance(j, self.MOTOR_POS_TOLERANCE, 0, 0))
+		
 		self.motor_client.send_goal(motorGoal)
 		self.motor_client.wait_for_result()
 
@@ -230,6 +242,7 @@ class IRPOS:
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorMotor'], True)
+		return result
 
 	def move_rel_to_motor_position(self, motor_positions, time_from_start):
 		print self.BCOLOR+"[IRPOS] Move to motor position"+self.ENDC
@@ -242,6 +255,9 @@ class IRPOS:
 		motorGoal.trajectory.joint_names = self.robot_joint_names
 		motorGoal.trajectory.points.append(JointTrajectoryPoint(map(sum, zip(list(actual_motors),motor_positions)), self.get_zeros_vector(), [], [], rospy.Duration(time_from_start)))
 		motorGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+		for j in self.robot_joint_names:
+			motorGoal.path_tolerance.append(JointTolerance(j, self.MOTOR_POS_TOLERANCE, 0, 0))
+			motorGoal.goal_tolerance.append(JointTolerance(j, self.MOTOR_POS_TOLERANCE, 0, 0))
 
 		self.motor_client.send_goal(motorGoal)
 		self.motor_client.wait_for_result()
@@ -251,6 +267,7 @@ class IRPOS:
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorMotor'], True)
+		return result
 
 	def move_along_motor_trajectory(self, points):
 		print self.BCOLOR+"[IRPOS] Move along motor trajectory"+self.ENDC
@@ -263,6 +280,9 @@ class IRPOS:
 			motorGoal.trajectory.points.append(JointTrajectoryPoint(i.positions, i.velocities, i.accelerations, i.effort, i.time_from_start))
 			#print str(i.positions)
 		motorGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+		for j in self.robot_joint_names:
+			motorGoal.path_tolerance.append(JointTolerance(j, self.MOTOR_POS_TOLERANCE, 0, 0))
+			motorGoal.goal_tolerance.append(JointTolerance(j, self.MOTOR_POS_TOLERANCE, 0, 0))
 
 		self.motor_client.send_goal(motorGoal)
 		self.motor_client.wait_for_result()
@@ -272,7 +292,8 @@ class IRPOS:
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorMotor'], True)
-
+		return result
+		
 	def get_motor_position(self):
 		self.lmp_lock.acquire()
 		ret = self.last_motor_position
@@ -290,6 +311,9 @@ class IRPOS:
 		jointGoal.trajectory.joint_names = self.robot_joint_names
 		jointGoal.trajectory.points.append(JointTrajectoryPoint(joint_positions, self.get_zeros_vector(), [], [], rospy.Duration(time_from_start)))
 		jointGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+		for j in self.robot_joint_names:
+			jointGoal.path_tolerance.append(JointTolerance(j, self.JOINT_POS_TOLERANCE, 0, 0))
+			jointGoal.goal_tolerance.append(JointTolerance(j, self.JOINT_POS_TOLERANCE, 0, 0))
 
 		self.joint_client.send_goal(jointGoal)
 		self.joint_client.wait_for_result()
@@ -299,6 +323,7 @@ class IRPOS:
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorJoint'], True)
+		return result
 
 	def move_rel_to_joint_position(self, joint_positions, time_from_start):
 		print self.BCOLOR+"[IRPOS] Move relative to joint position"+self.ENDC
@@ -311,6 +336,9 @@ class IRPOS:
 		jointGoal.trajectory.joint_names = self.robot_joint_names
 		jointGoal.trajectory.points.append(JointTrajectoryPoint(map(sum, zip(list(actual_joints),joint_positions)), self.get_zeros_vector(), [], [], rospy.Duration(time_from_start)))
 		jointGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+		for j in self.robot_joint_names:
+			jointGoal.path_tolerance.append(JointTolerance(j, self.JOINT_POS_TOLERANCE, 0, 0))
+			jointGoal.goal_tolerance.append(JointTolerance(j, self.JOINT_POS_TOLERANCE, 0, 0))
 
 		self.joint_client.send_goal(jointGoal)
 		self.joint_client.wait_for_result()
@@ -320,6 +348,7 @@ class IRPOS:
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorJoint'], True)
+		return result
 
 	def move_along_joint_trajectory(self, points):
 		print self.BCOLOR+"[IRPOS] Move along joint trajectory"+self.ENDC
@@ -332,6 +361,10 @@ class IRPOS:
 			jointGoal.trajectory.points.append(JointTrajectoryPoint(i.positions, i.velocities, i.accelerations, i.effort, i.time_from_start))
 			print str(i.positions)
 		jointGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+		for j in self.robot_joint_names:
+			jointGoal.path_tolerance.append(JointTolerance(j, self.JOINT_POS_TOLERANCE, 0, 0))
+			jointGoal.goal_tolerance.append(JointTolerance(j, self.JOINT_POS_TOLERANCE, 0, 0))
+			
 
 		self.joint_client.send_goal(jointGoal)
 		self.joint_client.wait_for_result()
@@ -341,6 +374,7 @@ class IRPOS:
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mSplineTrajectoryGeneratorJoint'], True)
+		return result
 
 
 	def get_joint_position(self):
@@ -359,6 +393,9 @@ class IRPOS:
 		cartesianGoal = CartesianTrajectoryGoal()
 		cartesianGoal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(time_from_start), pose, Twist()))
 		cartesianGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.1)
+		cartesianGoal.path_tolerance = CartesianTolerance(Vector3(self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE),Vector3(self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE))
+		cartesianGoal.goal_tolerance = CartesianTolerance(Vector3(self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE),Vector3(self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE))
+		
 
 		self.pose_client.send_goal(cartesianGoal)
 		self.pose_client.wait_for_result()
@@ -368,6 +405,7 @@ class IRPOS:
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mPoseInt'], True)
+		return result
 
 	def move_rel_to_cartesian_pose(self, time_from_start, rel_pose):
 		print self.BCOLOR+"[IRPOS] Move relative to cartesian trajectory"+self.ENDC
@@ -388,6 +426,9 @@ class IRPOS:
 		cartesianGoal = CartesianTrajectoryGoal()
 		cartesianGoal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(time_from_start), pose, Twist()))
 		cartesianGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.1)
+		cartesianGoal.path_tolerance = CartesianTolerance(Vector3(self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE),Vector3(self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE))
+		cartesianGoal.goal_tolerance = CartesianTolerance(Vector3(self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE),Vector3(self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE))
+		
 		
 		self.pose_client.send_goal(cartesianGoal)
 		self.pose_client.wait_for_result()
@@ -397,6 +438,7 @@ class IRPOS:
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mPoseInt'], True)
+		return result
 
 	def move_rel_to_cartesian_pose_with_contact(self, time_from_start, rel_pose, wrench_constraint):
 		print self.BCOLOR+"[IRPOS] Move relative to cartesian trajectory with contact"+self.ENDC
@@ -419,6 +461,9 @@ class IRPOS:
 		cartesianGoal.wrench_constraint = wrench_constraint
 		cartesianGoal.trajectory.points.append(CartesianTrajectoryPoint(rospy.Duration(time_from_start), pose, Twist()))
 		cartesianGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.1)
+		cartesianGoal.path_tolerance = CartesianTolerance(Vector3(self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE),Vector3(self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE))
+		cartesianGoal.goal_tolerance = CartesianTolerance(Vector3(self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE),Vector3(self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE))
+		
 
 		self.pose_client.send_goal(cartesianGoal)
 		self.pose_client.wait_for_result()
@@ -428,6 +473,7 @@ class IRPOS:
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mPoseInt', self.robot_name+'mForceTransformation'], True)
+		return result
 
 	def move_along_cartesian_trajectory(self, points):
 		print self.BCOLOR+"[IRPOS] Move along cartesian trajectory"+self.ENDC
@@ -439,6 +485,8 @@ class IRPOS:
 			cartesianGoal.trajectory.points.append(CartesianTrajectoryPoint(i.time_from_start, i.pose, i.twist))
 			#print str(i.pose.position.x)+str(i.pose.position.y)+str(i.pose.position.z)
 		cartesianGoal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.1)
+		cartesianGoal.path_tolerance = CartesianTolerance(Vector3(self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE),Vector3(self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE))
+		cartesianGoal.goal_tolerance = CartesianTolerance(Vector3(self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE),Vector3(self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE))
 
 		self.pose_client.send_goal(cartesianGoal)
 		self.pose_client.wait_for_result()
@@ -448,6 +496,7 @@ class IRPOS:
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mPoseInt'], True)
+		return result
 
 	def move_along_cartesian_circle(self, P1, P2, P3, time_from_start):
 		print self.BCOLOR+"[IRPOS] Move along cartesian circle"+self.ENDC
@@ -485,6 +534,10 @@ class IRPOS:
 		goal = CartesianTrajectoryGoal()
 		goal.trajectory.points = trj
 		goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+		goal.path_tolerance = CartesianTolerance(Vector3(self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE),Vector3(self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE))
+		goal.goal_tolerance = CartesianTolerance(Vector3(self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE,self.CART_POS_TOLERANCE),Vector3(self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE,self.CART_ROT_TOLERANCE))
+		
+
 
 		self.pose_client.send_goal(goal)
 		self.pose_client.wait_for_result()
@@ -494,6 +547,7 @@ class IRPOS:
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
 
 		self.conmanSwitch([], [self.robot_name+'mPoseInt'], True)
+		return result
 
 	def get_cartesian_pose(self):
 		self.lcp_lock.acquire()
@@ -517,6 +571,7 @@ class IRPOS:
 		result = self.tool_client.get_result()
 		code = self.cartesian_error_code_to_string(result.error_code)
 		print self.BCOLOR+"[IRPOS] Result: "+str(code)+self.ENDC
+		return result
 	
 	def set_tool_physical_params(self, weight, mass_center_position):
 		print self.BCOLOR+"[IRPOS] Set tool physical params"+self.ENDC
@@ -584,6 +639,9 @@ class IRPOS:
 		goal.trajectory.joint_names = ['joint1']
 		goal.trajectory.points.append(JointTrajectoryPoint([motor_position], [0.0], [], [], rospy.Duration(time_from_start)))
 		goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+		goal.path_tolerance.append(JointTolerance('joint1', 10000, 0, 0))
+		goal.goal_tolerance.append(JointTolerance('joint1', 10000, 0, 0))
+		
 
 		self.tfg_motor_client.send_goal(goal)
 		self.tfg_motor_client.wait_for_result()
@@ -591,6 +649,7 @@ class IRPOS:
 		command_result = self.tfg_motor_client.get_result()
 
 		self.conmanSwitch([], [self.robot_name+'tfgSplineTrajectoryGeneratorMotor'], True)
+		
 
 	def tfg_to_joint_position(self, joint_position, time_from_start):
 		print self.BCOLOR+"[IRPOS] Tfg to joint position"+self.ENDC	
@@ -600,6 +659,8 @@ class IRPOS:
 		goal.trajectory.joint_names = ['joint1']
 		goal.trajectory.points.append(JointTrajectoryPoint([joint_position], [0.0], [], [], rospy.Duration(time_from_start)))
 		goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.2)
+		goal.path_tolerance.append(JointTolerance('joint1', self.JOINT_POS_TOLERANCE, 0, 0))
+		goal.goal_tolerance.append(JointTolerance('joint1', self.JOINT_POS_TOLERANCE, 0, 0))
 
 		self.tfg_joint_client.send_goal(goal)
 		self.tfg_joint_client.wait_for_result()
