@@ -67,6 +67,7 @@ void SimClock::updateHook() {
   rosgraph_msgs::Clock now_exp;
   now_exp.clock = now;
   port_ros_time_.write(now_exp);
+ // simclock_singleton::update_sim_clock();
 
 //  std::cout << "now: " << rtt_rosclock::host_now() << std::endl;
 }

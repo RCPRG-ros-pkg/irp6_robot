@@ -31,13 +31,14 @@
 #ifndef HWMODEL_H_
 #define HWMODEL_H_
 
-
 #include <std_msgs/Bool.h>
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
 #include <Eigen/Dense>
 #include <string>
 #include <vector>
+#include "rosgraph_msgs/Clock.h"
+#include "rtt_rosclock/rtt_rosclock.h"
 
 class HwModel : public RTT::TaskContext {
  public:
@@ -52,27 +53,31 @@ class HwModel : public RTT::TaskContext {
   // RTT::InputPort<Eigen::VectorXd> port_desired_input_;
   // RTT::OutputPort<Eigen::VectorXd> port_motor_position_;
 
+  // Ports
+  RTT::OutputPort<rosgraph_msgs::Clock> port_ros_time_;
+
   std::vector<RTT::InputPort<double>*> port_desired_input_list_;
   std::vector<RTT::OutputPort<double>*> port_motor_position_list_;
 
   std::vector<RTT::OutputPort<double>*> desired_position_out_list_;
   std::vector<RTT::InputPort<double>*> port_motor_position_command_list_;
   std::vector<RTT::OutputPort<double>*> port_motor_current_list_;
-  std::vector<RTT::OutputPort<bool>*>  port_regulator_reset_list_;
-
+  std::vector<RTT::OutputPort<bool>*> port_regulator_reset_list_;
 
   RTT::InputPort<bool> port_emergency_stop_;
   RTT::InputPort<std_msgs::Bool> port_do_synchro_;  // do przerobienia na wersje ze zwrotnym statusem synchronziacji
   RTT::OutputPort<bool> port_is_synchronised_;
   RTT::OutputPort<bool> port_is_hardware_panic_;
 
-  Eigen::VectorXd motor_position_, motor_velocity_, motor_acceleration_, inc_motor_position_;
+  Eigen::VectorXd motor_position_, motor_velocity_, motor_acceleration_,
+      inc_motor_position_;
   Eigen::VectorXd desired_input_, desired_torque_, effective_torque_;
 
   int number_of_servos_;
   int m_factor_;
 
   // properties
+  int robot_code_;
   int iteration_per_step_;
   int step_per_second_;
   std::vector<double> torque_constant_;

@@ -33,21 +33,24 @@
 
 #include "HwModel.h"
 #include "common_headers/string_colors.h"
+#include "simclock_singleton/simclock_singleton_interface.h"
 
 HwModel::HwModel(const std::string& name)
     : RTT::TaskContext(name, PreOperational),
       number_of_servos_(0),
-      m_factor_(0) {
+      m_factor_(0),
+      robot_code_(0) {
   // this->ports()->addPort("MotorPosition", port_motor_position_);
   // this->ports()->addPort("DesiredInput", port_desired_input_);
 
   // ports addition
-
+  this->ports()->addPort("ROS_TIME", port_ros_time_).doc("");
   this->ports()->addPort("EmergencyStopIn", port_emergency_stop_);
   this->ports()->addPort("DoSynchroIn", port_do_synchro_);
   this->ports()->addPort("IsSynchronised", port_is_synchronised_);
   this->ports()->addPort("IsHardwarePanic", port_is_hardware_panic_);
 
+  this->addProperty("robot_code", robot_code_);
   this->addProperty("iteration_per_step", iteration_per_step_);
   this->addProperty("step_per_second", step_per_second_);
   this->addProperty("torque_constant", torque_constant_);
@@ -152,6 +155,8 @@ bool HwModel::configureHook() {
   }
   m_factor_ = step_per_second_ * iteration_per_step_;
 
+  simclock_singleton::register_robot_active(robot_code_);
+
   return true;
 }
 
@@ -181,6 +186,15 @@ void HwModel::updateHook() {
 
     port_motor_position_list_[servo]->write(inc_motor_position_[servo]);
   }
+  std::cout << "hi robot code: " << robot_code_ << std::endl;
+  if (simclock_singleton::declare_readiness(robot_code_)) {
+    ros::Time now = rtt_rosclock::host_now();
+    rosgraph_msgs::Clock now_exp;
+    now_exp.clock = now;
+    port_ros_time_.write(now_exp);
+    // std::cout << "now: " << rtt_rosclock::host_now() << std::endl;
+  }
+
 }
 
 ORO_CREATE_COMPONENT(HwModel)

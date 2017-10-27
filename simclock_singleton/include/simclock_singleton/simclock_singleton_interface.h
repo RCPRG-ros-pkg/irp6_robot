@@ -28,36 +28,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SIMCLOCK_H_
-#define SIMCLOCK_H_
+#ifndef SIMCLOCK_SINGLETON_INTERFACE_H_
+#define SIMCLOCK_SINGLETON_INTERFACE_H_
 
-#include <rtt/TaskContext.hpp>
-#include <rtt/Port.hpp>
+#include <rtt/RTT.hpp>
+#include <rtt/os/TimeService.hpp>
+#include <ros/time.h>
 
-#include <string>
-#include "rtt_rosclock/rtt_rosclock.h"
-#include "simclock_singleton/simclock_singleton_interface.h"
-#include "rosgraph_msgs/Clock.h"
+namespace simclock_singleton {
 
-class SimClock : public RTT::TaskContext {
- public:
-  explicit SimClock(const std::string& name);
-  virtual ~SimClock();
+const bool register_robot_active(const int robot_code);
+const bool declare_readiness(const int robot_code);
+}
+// namespace simclock_singleton
 
-  virtual bool configureHook();
-  virtual bool startHook();
-  void updateHook();
-
- private:
-  int final_ns_interval_;
-
-  // Ports
-  RTT::OutputPort<rosgraph_msgs::Clock> port_ros_time_;
-  ros::Time now;
-
-  // Properties
-  int simclock_ns_interval_;
-  // double simclock_ratio_;
-};
-
-#endif  // SIMCLOCK_H_
+#endif  // SIMCLOCK_SINGLETON_INTERFACE_H_
