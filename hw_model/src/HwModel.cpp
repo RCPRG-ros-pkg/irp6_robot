@@ -186,7 +186,9 @@ void HwModel::updateHook() {
 
     port_motor_position_list_[servo]->write(inc_motor_position_[servo]);
   }
-  std::cout << "hi robot code: " << robot_code_ << std::endl;
+
+  // std::cout << "hi robot code: " << robot_code_ << std::endl;
+
   if (simclock_singleton::declare_readiness(robot_code_)) {
     ros::Time now = rtt_rosclock::host_now();
     rosgraph_msgs::Clock now_exp;
