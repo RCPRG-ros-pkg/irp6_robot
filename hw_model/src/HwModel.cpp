@@ -39,7 +39,8 @@ HwModel::HwModel(const std::string& name)
     : RTT::TaskContext(name, PreOperational),
       number_of_servos_(0),
       m_factor_(0),
-      robot_code_(0) {
+      robot_code_(0),
+      first_update_hook_(true) {
   // this->ports()->addPort("MotorPosition", port_motor_position_);
   // this->ports()->addPort("DesiredInput", port_desired_input_);
 
@@ -72,11 +73,7 @@ bool HwModel::configureHook() {
       || (number_of_servos_ != inertia_.size())
       || (number_of_servos_ != viscous_friction_.size())
       || (number_of_servos_ != enc_res_.size())) {
-    std::cout
-        << std::endl
-        << RED
-        << "[error] hardware model "
-        << getName()
+    std::cout << std::endl << RED << "[error] hardware model " << getName()
         << " configuration failed: wrong properties vector length in launch file."
         << RESET << std::endl;
     return false;
@@ -155,8 +152,6 @@ bool HwModel::configureHook() {
   }
   m_factor_ = step_per_second_ * iteration_per_step_;
 
-  simclock_singleton::register_robot_active(robot_code_);
-
   return true;
 }
 
@@ -189,6 +184,11 @@ void HwModel::updateHook() {
 
   // std::cout << "hi robot code: " << robot_code_ << std::endl;
 
+  if (first_update_hook_) {
+    simclock_singleton::register_robot_active(robot_code_);
+    first_update_hook_ = false;
+  }
+
   if (simclock_singleton::declare_readiness(robot_code_)) {
     ros::Time now = rtt_rosclock::host_now();
     rosgraph_msgs::Clock now_exp;
@@ -196,7 +196,6 @@ void HwModel::updateHook() {
     port_ros_time_.write(now_exp);
     // std::cout << "now: " << rtt_rosclock::host_now() << std::endl;
   }
-
 }
 
 ORO_CREATE_COMPONENT(HwModel)

@@ -75,6 +75,7 @@ class HwModel : public RTT::TaskContext {
 
   int number_of_servos_;
   int m_factor_;
+  bool first_update_hook_;
 
   // properties
   int robot_code_;

@@ -34,6 +34,7 @@
 #include <rtt/Service.hpp>
 #include <rtt/os/Thread.hpp>
 #include <rtt/os/TimeService.hpp>
+#include <rtt/os/MutexLock.hpp>
 
 #include <ros/ros.h>
 #include <ros/subscriber.h>
@@ -45,7 +46,6 @@
 #define TRACK 1
 #define POSTUMENT 2
 #define CONVEYOR 3
-
 
 namespace simclock_singleton {
 
@@ -88,13 +88,14 @@ class SimClockSingleton {
   static boost::shared_ptr<SimClockSingleton> singleton;
 
  private:
+  RTT::os::Mutex m_;
+
   bool is_track_active, is_postument_active, is_conveyor_active;
-  bool is_track_ready, is_postument_ready, is_conveyor_ready;
+  int is_track_ready, is_postument_ready, is_conveyor_ready;
   ros::Time now;
 
   // rozwazenia w przyszlosci jako property
   int simclock_ns_interval_;
-
 };
 
 }  // namespace simclock_singleton

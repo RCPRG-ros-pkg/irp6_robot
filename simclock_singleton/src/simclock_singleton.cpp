@@ -73,16 +73,15 @@ SimClockSingleton::SimClockSingleton()
     : is_track_active(false),
       is_postument_active(false),
       is_conveyor_active(false),
-      is_track_ready(false),
-      is_postument_ready(false),
-      is_conveyor_ready(false),
+      is_track_ready(0),
+      is_postument_ready(0),
+      is_conveyor_ready(0),
       simclock_ns_interval_(2000000) {
   now = ros::Time(0, 0);
   rtt_rosclock::enable_sim();
 }
 
 SimClockSingleton::~SimClockSingleton() {
-
 }
 
 bool SimClockSingleton::registerRobotActive(int robot_code) {
@@ -120,20 +119,19 @@ bool SimClockSingleton::registerRobotActive(int robot_code) {
 }
 
 bool SimClockSingleton::declareReadiness(int robot_code) {
-
 //  std::cout << "update_clock_counter: " << update_clock_counter << std::endl;
-
+  RTT::os::MutexLock lock(m_);
   bool to_return = false;
 
   switch (robot_code) {
     case TRACK:
-      is_track_ready = true;
+      is_track_ready++;
       break;
     case POSTUMENT:
-      is_postument_ready = true;
+      is_postument_ready++;
       break;
     case CONVEYOR:
-      is_conveyor_ready = true;
+      is_conveyor_ready++;
       break;
     default:
       std::cout << "SimClockSingleton::declareReadiness, robot_code argument: "
@@ -144,12 +142,20 @@ bool SimClockSingleton::declareReadiness(int robot_code) {
   if ((!is_track_active || (is_track_active && is_track_ready))
       && (!is_postument_active || (is_postument_active && is_postument_ready))
       && (!is_conveyor_active || (is_conveyor_active && is_conveyor_ready))) {
-    is_track_ready = false;
-    is_postument_ready = false;
-    is_conveyor_ready = false;
+    if (is_track_ready) {
+      is_track_ready--;
+    }
+    if (is_postument_ready) {
+      is_postument_ready--;
+    }
+    if (is_conveyor_ready) {
+      is_conveyor_ready--;
+    }
     now += ros::Duration(0, simclock_ns_interval_);
     /*
      std::cout << "robot_code: " << robot_code << " , now 2: " << now
+     << " is_track_ready: " << is_track_ready << " is_postument_ready: "
+     << is_postument_ready << " is_conveyor_ready: " << is_conveyor_ready
      << std::endl;
      */
     rtt_rosclock::update_sim_clock(now);
