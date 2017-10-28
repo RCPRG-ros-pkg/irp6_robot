@@ -34,8 +34,8 @@
 #include <simclock_singleton/simclock_singleton.h>
 #include <simclock_singleton/simclock_singleton_interface.h>
 
-const bool simclock_singleton::register_robot_active(const int robot_code) {
-  return SimClockSingleton::Instance()->registerRobotActive(robot_code);
+const bool simclock_singleton::register_robot_active(const int robot_code, const int ns_interval) {
+  return SimClockSingleton::Instance()->registerRobotActive(robot_code, ns_interval);
 }
 
 const bool simclock_singleton::declare_readiness(const int robot_code) {

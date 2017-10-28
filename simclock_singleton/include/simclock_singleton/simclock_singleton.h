@@ -72,7 +72,7 @@ class SimClockSingleton {
    * can be called manually via the ros.clock global service's updateSimClock()
    * operation.
    */
-  bool registerRobotActive(int robot_code);
+  bool registerRobotActive(int robot_code, int ns_interval);
 
   // returns true when time was incremented.
   // If so, the calling component should publish new time on port to be then streamed to ROS

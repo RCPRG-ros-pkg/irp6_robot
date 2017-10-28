@@ -37,7 +37,7 @@
 
 namespace simclock_singleton {
 
-const bool register_robot_active(const int robot_code);
+const bool register_robot_active(const int robot_code, const int ns_interval);
 const bool declare_readiness(const int robot_code);
 }
 // namespace simclock_singleton

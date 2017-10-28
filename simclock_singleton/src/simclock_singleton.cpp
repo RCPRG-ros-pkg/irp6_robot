@@ -76,7 +76,7 @@ SimClockSingleton::SimClockSingleton()
       is_track_ready(0),
       is_postument_ready(0),
       is_conveyor_ready(0),
-      simclock_ns_interval_(2000000) {
+      simclock_ns_interval_(0) {
   now = ros::Time(0, 0);
   rtt_rosclock::enable_sim();
 }
@@ -84,38 +84,59 @@ SimClockSingleton::SimClockSingleton()
 SimClockSingleton::~SimClockSingleton() {
 }
 
-bool SimClockSingleton::registerRobotActive(int robot_code) {
+bool SimClockSingleton::registerRobotActive(int robot_code, int ns_interval) {
 //  std::cout << "update_clock_counter: " << update_clock_counter << std::endl;
 
-  bool to_return = false;
+  bool to_return_robot_code = false;
+  bool to_return_ns_interval = false;
 
   switch (robot_code) {
     case TRACK:
       if (!is_track_active) {
         is_track_active = true;
-        to_return = true;
+        to_return_robot_code = true;
       }
       break;
     case POSTUMENT:
       if (!is_postument_active) {
         is_postument_active = true;
-        to_return = true;
+        to_return_robot_code = true;
       }
       break;
     case CONVEYOR:
       if (!is_conveyor_active) {
         is_conveyor_active = true;
-        to_return = true;
+        to_return_robot_code = true;
       }
       break;
     default:
       std::cout
           << "SimClockSingleton::registerRobotActive, robot_code argument: "
-          << robot_code << "out of range: " << robot_code << std::endl;
+          << robot_code << "out of range" << std::endl;
       break;
   }
 
-  return to_return;
+  RTT::os::MutexLock lock(m_);
+
+  if (ns_interval > 0) {
+    if (!simclock_ns_interval_) {
+      simclock_ns_interval_ = ns_interval;
+      to_return_ns_interval = true;
+    } else {
+      if (!(ns_interval == simclock_ns_interval_)) {
+        std::cout
+            << "SimClockSingleton::registerRobotActive, ns_interval argument: "
+            << ns_interval << "differs from previous one: "
+            << simclock_ns_interval_ << std::endl;
+      }
+    }
+  } else {
+    std::cout
+        << "SimClockSingleton::registerRobotActive, ns_interval argument: "
+        << ns_interval << "out of range" << std::endl;
+  }
+
+  return to_return_robot_code && to_return_ns_interval;
 }
 
 bool SimClockSingleton::declareReadiness(int robot_code) {

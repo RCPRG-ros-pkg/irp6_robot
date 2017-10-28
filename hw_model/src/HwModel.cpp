@@ -185,7 +185,10 @@ void HwModel::updateHook() {
   // std::cout << "hi robot code: " << robot_code_ << std::endl;
 
   if (first_update_hook_) {
-    simclock_singleton::register_robot_active(robot_code_);
+    int ns_interval = static_cast<int>((1.0
+        / static_cast<double>(step_per_second_)) * 1000000000.0);
+
+    simclock_singleton::register_robot_active(robot_code_, ns_interval);
     first_update_hook_ = false;
   }
 
