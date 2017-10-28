@@ -43,9 +43,7 @@
 #include <rosgraph_msgs/Clock.h>
 #include "rtt_rosclock/rtt_rosclock.h"
 
-#define TRACK 1
-#define POSTUMENT 2
-#define CONVEYOR 3
+#define MAX_NR_OF_ROBOTS 5
 
 namespace simclock_singleton {
 
@@ -90,8 +88,9 @@ class SimClockSingleton {
  private:
   RTT::os::Mutex m_;
 
-  bool is_track_active, is_postument_active, is_conveyor_active;
-  int is_track_ready, is_postument_ready, is_conveyor_ready;
+  bool is_robot_active[MAX_NR_OF_ROBOTS];
+  int is_robot_ready[MAX_NR_OF_ROBOTS];
+
   ros::Time now;
 
   // rozwazenia w przyszlosci jako property

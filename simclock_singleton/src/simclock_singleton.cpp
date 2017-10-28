@@ -70,15 +70,14 @@ RTT::os::CleanupFunction cleanup(&SimClockSingleton::Release);
 }
 
 SimClockSingleton::SimClockSingleton()
-    : is_track_active(false),
-      is_postument_active(false),
-      is_conveyor_active(false),
-      is_track_ready(0),
-      is_postument_ready(0),
-      is_conveyor_ready(0),
-      simclock_ns_interval_(0) {
+    : simclock_ns_interval_(0) {
   now = ros::Time(0, 0);
   rtt_rosclock::enable_sim();
+
+  for (int i = 0; i < MAX_NR_OF_ROBOTS; i++) {
+    is_robot_active[i] = false;
+    is_robot_ready[i] = 0;
+  }
 }
 
 SimClockSingleton::~SimClockSingleton() {
@@ -90,33 +89,21 @@ bool SimClockSingleton::registerRobotActive(int robot_code, int ns_interval) {
   bool to_return_robot_code = false;
   bool to_return_ns_interval = false;
 
-  switch (robot_code) {
-    case TRACK:
-      if (!is_track_active) {
-        is_track_active = true;
-        to_return_robot_code = true;
-      }
-      break;
-    case POSTUMENT:
-      if (!is_postument_active) {
-        is_postument_active = true;
-        to_return_robot_code = true;
-      }
-      break;
-    case CONVEYOR:
-      if (!is_conveyor_active) {
-        is_conveyor_active = true;
-        to_return_robot_code = true;
-      }
-      break;
-    default:
+  RTT::os::MutexLock lock(m_);
+
+  if ((robot_code >= 0) && (robot_code < MAX_NR_OF_ROBOTS)) {
+    if (!is_robot_active[robot_code]) {
+      is_robot_active[robot_code] = true;
+      to_return_robot_code = true;
+    } else {
       std::cout
           << "SimClockSingleton::registerRobotActive, robot_code argument: "
-          << robot_code << "out of range" << std::endl;
-      break;
+          << robot_code << "previously registered" << std::endl;
+    }
+  } else {
+    std::cout << "SimClockSingleton::registerRobotActive, robot_code argument: "
+        << robot_code << "out of range" << std::endl;
   }
-
-  RTT::os::MutexLock lock(m_);
 
   if (ns_interval > 0) {
     if (!simclock_ns_interval_) {
@@ -128,6 +115,8 @@ bool SimClockSingleton::registerRobotActive(int robot_code, int ns_interval) {
             << "SimClockSingleton::registerRobotActive, ns_interval argument: "
             << ns_interval << "differs from previous one: "
             << simclock_ns_interval_ << std::endl;
+      } else {
+        to_return_ns_interval = true;
       }
     }
   } else {
@@ -144,34 +133,26 @@ bool SimClockSingleton::declareReadiness(int robot_code) {
   RTT::os::MutexLock lock(m_);
   bool to_return = false;
 
-  switch (robot_code) {
-    case TRACK:
-      is_track_ready++;
-      break;
-    case POSTUMENT:
-      is_postument_ready++;
-      break;
-    case CONVEYOR:
-      is_conveyor_ready++;
-      break;
-    default:
-      std::cout << "SimClockSingleton::declareReadiness, robot_code argument: "
-          << robot_code << "out of range: " << robot_code << std::endl;
-      break;
+  if ((robot_code >= 0) && (robot_code < MAX_NR_OF_ROBOTS)) {
+    is_robot_ready[robot_code]++;
+  } else {
+    std::cout << "SimClockSingleton::declareReadiness, robot_code argument: "
+        << robot_code << "out of range" << std::endl;
   }
 
-  if ((!is_track_active || (is_track_active && is_track_ready))
-      && (!is_postument_active || (is_postument_active && is_postument_ready))
-      && (!is_conveyor_active || (is_conveyor_active && is_conveyor_ready))) {
-    if (is_track_ready) {
-      is_track_ready--;
+  bool do_increment_time = true;
+
+  for (int i = 0; i < MAX_NR_OF_ROBOTS; i++) {
+    if (is_robot_active[i] && (!is_robot_ready[i])) {
+      do_increment_time = false;
     }
-    if (is_postument_ready) {
-      is_postument_ready--;
+  }
+
+  if (do_increment_time) {
+    for (int i = 0; i < MAX_NR_OF_ROBOTS; i++) {
+      is_robot_ready[i]--;
     }
-    if (is_conveyor_ready) {
-      is_conveyor_ready--;
-    }
+
     now += ros::Duration(0, simclock_ns_interval_);
     /*
      std::cout << "robot_code: " << robot_code << " , now 2: " << now
