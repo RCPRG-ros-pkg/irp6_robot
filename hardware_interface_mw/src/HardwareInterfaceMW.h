@@ -79,12 +79,10 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   RTT::OutputPort<bool> port_is_synchronised_;
   RTT::OutputPort<bool> port_is_hardware_panic_;
 
-  std::vector<RTT::OutputPort<bool>*>  port_regulator_reset_list_;
+  std::vector<RTT::OutputPort<bool>*> port_regulator_reset_list_;
 
-
-
-  Eigen::VectorXd motor_position_, previous_motor_position_, motor_increment_, motor_current_,
-      motor_position_command_;
+  Eigen::VectorXd motor_position_, previous_motor_position_, motor_increment_,
+      motor_current_, motor_position_command_;
 
   std::vector<std::string> ports_adresses_;
   std::vector<int> max_current_;
@@ -112,7 +110,6 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   int synchro_start_iter_;
   int servo_start_iter_;
 
-
   State state_;
   SynchroState synchro_state_;
   int synchro_drive_;
@@ -130,7 +127,7 @@ class HardwareInterfaceMW : public RTT::TaskContext {
   bool configureHookInitHardware();
   void updateHookStateMachine();
   void updateHookInit();
-
+  bool is_drive_synchronised(int& synchro_drive);
  public:
   explicit HardwareInterfaceMW(const std::string& name);
   ~HardwareInterfaceMW();

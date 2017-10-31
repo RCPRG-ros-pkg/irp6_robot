@@ -344,9 +344,9 @@ void HardwareInterfaceMW::updateHookInit() {
 
   for (int i = 0; i < number_of_drives_; i++) {
     if (current_mode_[i]) {
-      hi_->set_current(i, (double) pwm_or_current_[i]);
+      hi_->set_current(i, static_cast<double>(pwm_or_current_[i]));
     } else {
-      hi_->set_pwm(i, (double) pwm_or_current_[i]);
+      hi_->set_pwm(i, static_cast<double>(pwm_or_current_[i]));
     }
   }
 
@@ -431,7 +431,9 @@ void HardwareInterfaceMW::updateHookStateMachine() {
     case SYNCHRONIZING:
       switch (synchro_state_) {
         case MOVE_TO_SYNCHRO_AREA:
-
+          /*
+           std::cout << "MOVE_TO_SYNCHRO_AREA" << std::endl;
+           */
           if (synchro_needed_[synchro_drive_]) {
             if (hi_->in_synchro_area(synchro_drive_)) {
               RTT::log(RTT::Debug) << "[servo " << synchro_drive_
@@ -460,6 +462,9 @@ void HardwareInterfaceMW::updateHookStateMachine() {
           break;
 
         case STOP:
+          /*
+           std::cout << "STOP" << std::endl;
+           */
           hi_->start_synchro(synchro_drive_);
 
           synchro_state_ = MOVE_FROM_SYNCHRO_AREA;
@@ -467,7 +472,14 @@ void HardwareInterfaceMW::updateHookStateMachine() {
           break;
 
         case MOVE_FROM_SYNCHRO_AREA:
-          if (!hi_->in_synchro_area(synchro_drive_)) {
+          /*
+           std::cout << "MOVE_FROM_SYNCHRO_AREA: " << synchro_drive_ << " "
+           << motor_position_(synchro_drive_) << std::endl;
+           */
+          if (is_drive_synchronised(synchro_drive_)) {
+            std::cout << "MOVE_FROM_SYNCHRO_AREA: UNEXPECTED INDEX!!! "
+                      << std::endl;
+          } else if (!hi_->in_synchro_area(synchro_drive_)) {
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
                                  << " ] MOVE_FROM_SYNCHRO_AREA ended"
                                  << RTT::endlog();
@@ -481,30 +493,19 @@ void HardwareInterfaceMW::updateHookStateMachine() {
                 synchro_step_fine_[synchro_drive_];
           }
           break;
-
         case WAIT_FOR_IMPULSE:
-          if (hi_->drive_synchronized(synchro_drive_)) {
-            RTT::log(RTT::Debug) << "[servo " << synchro_drive_
-                                 << " ] WAIT_FOR_IMPULSE ended"
-                                 << RTT::endlog();
-
-            hi_->finish_synchro(synchro_drive_);
-            hi_->reset_position(synchro_drive_);
-            desired_position_[synchro_drive_] = motor_position_(synchro_drive_);
-            port_regulator_reset_list_[synchro_drive_]->write(
-                static_cast<double>(true));
-            if (++synchro_drive_ == number_of_drives_) {
-              synchro_state_ = SYNCHRO_END;
-            } else {
-              synchro_state_ = MOVE_TO_SYNCHRO_AREA;
-            }
-
+          /*
+           std::cout << "WAIT_FOR_IMPULSE: " << synchro_drive_ << " "
+           << motor_position_(synchro_drive_) << std::endl;
+           */
+          if (is_drive_synchronised(synchro_drive_)) {
           } else {
             RTT::log(RTT::Debug) << "[servo " << synchro_drive_
                                  << " ] WAIT_FOR_IMPULSE" << RTT::endlog();
             desired_position_[synchro_drive_] +=
                 synchro_step_fine_[synchro_drive_];
           }
+
           break;
 
         case SYNCHRO_END:
@@ -513,8 +514,7 @@ void HardwareInterfaceMW::updateHookStateMachine() {
             for (int i = 0; i < number_of_drives_; i++) {
               motor_position_command_(i) = motor_position_(i);
               desired_position_[i] = motor_position_(i);
-              port_regulator_reset_list_[i]->write(
-                              static_cast<double>(true));
+              port_regulator_reset_list_[i]->write(static_cast<double>(true));
             }
 
             port_is_synchronised_.write(true);
@@ -534,6 +534,27 @@ void HardwareInterfaceMW::updateHookStateMachine() {
       desired_position_out_list_[i]->write(
           static_cast<double>(desired_position_[i]));
     }
+  }
+}
+
+bool HardwareInterfaceMW::is_drive_synchronised(int& synchro_drive) {
+  if (hi_->drive_synchronized(synchro_drive)) {
+    RTT::log(RTT::Debug) << "[servo " << synchro_drive_
+                         << " ] WAIT_FOR_IMPULSE ended" << RTT::endlog();
+
+    hi_->finish_synchro(synchro_drive);
+    hi_->reset_position(synchro_drive);
+    desired_position_[synchro_drive] = motor_position_(synchro_drive_);
+    port_regulator_reset_list_[synchro_drive_]->write(
+        static_cast<double>(true));
+    if (++synchro_drive == number_of_drives_) {
+      synchro_state_ = SYNCHRO_END;
+    } else {
+      synchro_state_ = MOVE_TO_SYNCHRO_AREA;
+    }
+    return true;
+  } else {
+    return false;
   }
 }
 
